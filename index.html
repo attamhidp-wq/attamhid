@@ -738,7 +738,7 @@ return `<h2>بوابة الهيئة</h2><div class="box"><h3>${esc(f.name)}</h3>
 const out=h=>$('#out').innerHTML=h;
 function ver(f){const q=fv(f).n.toUpperCase();const byId=S.certs.filter(x=>x.type=='exam'&&String(x.pid||'').toUpperCase()==q);if(byId.length)return out(byId.map(exVer).join('')),false;const c=S.certs.find(x=>x.rec==q),m=!c&&[...S.students,...S.faculty].find(x=>x.id==q&&x.active!==false);if(m)return out(`<div class="msg"><b style="color:var(--ok)">✔ بطاقة سارية</b><br>الاسم: ${esc(m.name)}<br>الرقم: ${m.id}</div>`),false;out(c?`<div class="msg${c.revoked?' er':''}"><b style="color:var(${c.revoked?'--er':'--ok'})">${c.revoked?'✖ وثيقة ملغاة'+(c.reason?' — '+esc(c.reason):'')+(c.rdate?' ('+c.rdate+')':''):'✔ وثيقة معتمدة'}</b><br>الاسم: ${esc(c.name)}<br>${c.type=='exam'?'الاختبار: '+esc(c.examTitle)+'<br>تاريخ الاختبار: '+c.testDate+' · الدرجة: '+c.score+'/'+c.max+' · المستوى: '+esc(c.level):'البرنامج: '+esc(P(c.prog).name)+'<br>الساعات: '+c.hours+' · التقدير: '+c.grade} · الإصدار: ${c.date}</div>`:'<div class="msg er">رقم السجل غير موجود. تحقق من الرقم المطبوع على الوثيقة.</div>');return false}
 const SB_URL='https://ttuelhswxyjbjdnydmns.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0dWVsaHN3eHlqYmpkbnlkbW5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NDk3MDYsImV4cCI6MjEwNzUyNTcwNn0.tkO2kZLHpKbgPx_II4cepqCVftjjG46oseR6aGGCbPA';
-let sb=null;try{sb=window.supabase.createClient(SB_URL,SB_KEY)}catch(e){console.error('Supabase init failed',e)}
+let sb=null;try{sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{lock:function(n,t,f){return f()}}})}catch(e){console.error('Supabase init failed',e)}
 async function sbSend(v,id){if(!sb)return;const p=S.programs.find(x=>x.id==+v.prog);
 const {error}=await sb.from('requests').insert([{id,data:{...v,id,prog:+v.prog,progName:p?p.name:'',status:'قيد المراجعة',date:new Date().toISOString().slice(0,10)}}]);
 if(error){console.error('Supabase:',error.message);toast('حُفظ طلبك محليًا، لكن تعذّر إرساله إلى الخادم. تواصل مع الإدارة.')}}
@@ -19774,11 +19774,16 @@ function lockSet(o){try{localStorage.setItem(LK,JSON.stringify(o))}catch(e){}}
 H.adm63=function(f){if(typeof me!=='undefined'&&me&&!(me.r==='admin'&&!me.unit)){me=null;V5.mc63=null;try{sessionStorage.removeItem('mc63')}catch(e){}}var u=String((f.u&&f.u.value)||'').trim(),p=String((f.p&&f.p.value)||''),li=lockInfo(),c=cfg(),O=function(h){outEl(document.getElementById('out')?'out':'out63a',h)};
  if(li.until&&li.until>Date.now()){O('<div class="msg er">'+msg('locked',hm(new Date(li.until).toISOString()))+'</div>');return false}
  if(typeof sb==='undefined'||!sb){O('<div class="msg er">'+msg('no_server')+'</div>');return false}
- (async function(){O('<p class="mu">… '+L('جارٍ التحقق','Checking')+'</p>');var au=await sb.auth.signInWithPassword({email:u,password:p});
+ (async function(){O('<p class="mu">… '+L('جارٍ التحقق','Checking')+'</p>');try{
+  /* v77: جلسة قديمة عالقة في المتصفح كانت توقف الدخول عند «جارٍ التحقق» — تُمسح قبل الدخول، ولكل خطوة مهلة */
+  clr77();var au=await to77(sb.auth.signInWithPassword({email:u,password:p}),20000);
   if(au.error){li.n=(li.n||0)+1;if(li.n>=c.maxFail){li={until:Date.now()+c.lockMin*6e4}}lockSet(li);O('<div class="msg er">'+(li.until?msg('locked',hm(new Date(li.until).toISOString())):msg('bad'))+'</div>');return}
-  lockSet({});var pf=(await sb.from('profiles').select('role').eq('id',au.data.user.id).maybeSingle()).data;
+  lockSet({});var pf=(await to77(sb.from('profiles').select('role').eq('id',au.data.user.id).maybeSingle(),20000)).data;
   if(!pf||pf.role!=='admin'){await sb.auth.signOut();O('<div class="msg er">'+msg('bad')+'</div>');return}
-  await mfaStep()})();return false};
+  await to77(mfaStep(),20000)}catch(e){console.error('adm63',e);clr77();O('<div class="msg er">'+L('تعذّر إكمال الدخول بسبب انقطاع الاتصال بالخادم. أعد المحاولة الآن.','Sign-in could not complete because the server did not respond. Please try again now.')+'</div>')}})();return false};
+function to77(p,ms){return Promise.race([p,new Promise(function(_,rj){setTimeout(function(){rj(new Error('timeout'))},ms)})])}
+function clr77(){try{Object.keys(localStorage).forEach(function(k){if(/^sb-.*-auth-token/.test(k))localStorage.removeItem(k)})}catch(e){}try{if(sb&&sb.auth&&sb.auth._removeSession)sb.auth._removeSession().catch(function(){})}catch(e){}}
+V5.clr77=clr77;
 /* ---------- التحقق الثنائي: صفحة مستقلة بعد البريد وكلمة المرور ---------- */
 async function mfaStep(){var a=null;try{a=(await sb.auth.mfa.getAuthenticatorAssuranceLevel()).data}catch(e){}
  if(a&&a.currentLevel==='aal2')return adminEnter();
@@ -24587,7 +24592,7 @@ try{SVC_ADMIN.push(['v75r','إدارة بوابة التسجيل','Registration 
      بنك معتمد يُحدَّث آلياً فقط إذا كان التغيير في الخيارات الخاطئة وحدها، مع رفع رقم إصداره وإعادة ربط اختباره.
    ===================================================================== */
 (function(){
-var B77={"s": "R9brbBa9yYHxhjqWRvIQzg==", "i": "2XResY9IG7GZRehG", "it": 250000, "n": {"dip": 31, "p73": 333}, "src": "banks77.json"};/* v78: البيانات المشفّرة في ملف banks77.json بجوار الصفحة، تُنزَّل للإدارة المركزية وحدها عند الحاجة */
+var B77={"s": "5N6ruC1oblTTaDdNmsCizA==", "i": "+jRHGStaqHlbeIqZ", "it": 250000, "n": {"dip": 31, "p73": 333}, "src": "banks77.json"};/* v78: البيانات المشفّرة في ملف banks77.json بجوار الصفحة، تُنزَّل للإدارة المركزية وحدها عند الحاجة */
 var needD=async function(){if(B77.d)return;var r;try{r=await fetch(B77.src,{cache:'no-cache'})}catch(e){r=null}if(!r||!r.ok)throw new Error('B77LOAD');var j=await r.json();if(!j||!j.d)throw new Error('B77LOAD');B77.d=j.d};
 var H=V5.h,W=window,KEY='tamhid.bk77';
 var e7=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
