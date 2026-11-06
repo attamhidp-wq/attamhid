@@ -1,7 +1,7 @@
 // v63-accounts — الجزء الخاص بالبريد الرسمي (إرسال عبر Gmail SMTP)
 // العمليات المنفّذة: probe, mail_status, mail_ready, mail, mail_log, retry_due
 // أي عملية أخرى يُرجَع لها {error:'fn_unavailable'} فيبقى الموقع على مساره الاحتياطي الحالي (الدخول وغيره) دون تغيير.
-// الأسرار المطلوبة في Supabase → Edge Functions → Secrets: GMAIL_USER, GMAIL_APP_PASSWORD
+// بيانات Gmail: أسرار الدالة GMAIL_USER/GMAIL_APP_PASSWORD، أو الخزنة المشفّرة (vault: gmail_user, gmail_app_password)
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import nodemailer from "npm:nodemailer@6.9.16";
 
@@ -14,10 +14,24 @@ const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: 
 
 const URL_ = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const GUSER = (Deno.env.get("GMAIL_USER") || "").trim();
-const GPASS = (Deno.env.get("GMAIL_APP_PASSWORD") || "").replace(/\s+/g, "");
-const ON = !!(GUSER && GPASS);
 const admin = createClient(URL_, SRK, { auth: { persistSession: false } });
+// بيانات Gmail: من أسرار الدالة إن وُجدت، وإلا من الخزنة المشفّرة في قاعدة البيانات (v82_mail_cred)
+let GUSER = (Deno.env.get("GMAIL_USER") || "").trim();
+let GPASS = (Deno.env.get("GMAIL_APP_PASSWORD") || "").replace(/\s+/g, "");
+let ON = !!(GUSER && GPASS);
+let TOKEN = "";
+async function loadCred() {
+  if (ON && TOKEN) return;
+  try {
+    const { data } = await admin.rpc("v82_mail_cred");
+    const c = (data || {}) as { user?: string; pass?: string; token?: string };
+    TOKEN = String(c.token || "");
+    if (ON) return;
+    GUSER = String(c.user || "").trim();
+    GPASS = String(c.pass || "").replace(/\s+/g, "");
+    ON = !!(GUSER && GPASS);
+  } catch { /* يبقى غير مفعّل */ }
+}
 
 async function caller(req: Request) {
   const tok = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
@@ -72,8 +86,24 @@ Deno.serve(async (req) => {
   let body: Record<string, unknown> = {};
   try { body = await req.json(); } catch { /* empty */ }
   const action = String(body.action || "");
+  await loadCred();
 
   if (action === "probe") return json({ ok: true, v: "v82-mail", mail: ON });
+
+  // فحص ذاتي من الخادم: يرسل رسالة اختبار إلى بريد المعهد نفسه؛ محمي برمز في الخزنة
+  if (action === "selftest") {
+    if (!TOKEN || String(body.token || "") !== TOKEN) return json({ error: "forbidden" });
+    if (!ON) return json({ error: "mail_off" });
+    try {
+      await deliver({ to: GUSER, subject: "اختبار البريد الرسمي — معهد التمهيد / Mail test — At-Tamhid", text: "هذه رسالة اختبار آلية من نظام معهد التمهيد للتحقق من عمل البريد الرسمي. لا يلزم الرد.\n\nThis is an automatic test message from the At-Tamhid system to verify official email. No reply needed." });
+      await admin.from("v63_mail_log").insert({ type: "selftest", to_addr: GUSER, subject: "selftest", status: "sent", sent_at: new Date().toISOString(), attempts: 1 });
+      return json({ ok: true, sent_to: GUSER });
+    } catch (e) {
+      const msg = String((e as Error)?.message || e).slice(0, 500);
+      await admin.from("v63_mail_log").insert({ type: "selftest", to_addr: GUSER, subject: "selftest", status: "failed", error: msg, attempts: 1 });
+      return json({ error: "send_failed", detail: msg });
+    }
+  }
 
   const known = ["mail_status", "mail_ready", "mail", "mail_log", "retry_due"];
   if (!known.includes(action)) return json({ error: "fn_unavailable" });
