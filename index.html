@@ -25205,12 +25205,19 @@ function bad(no,dt){var fs=firstStart(),today=day(new Date().toISOString()),hy=(
  if(hy&&hyear(dt)&&hyear(dt)!==hy)return L('السنة الهجرية لتاريخ القرار ('+hyear(dt)+'هـ) تخالف رقم القرار ('+no+').','The Hijri year of the decision date ('+hyear(dt)+' AH) does not match the decision number ('+no+').');
  return ''}
 V5.decBad80=bad;
+/* أول محرم من السنة الهجرية لرقم القرار (أم القرى)، يُبحث عنه حول بداية أول فصل */
+function muharram1(hy){var fs=firstStart();if(!fs||!hy)return '';var base=Date.parse(fs+'T12:00:00Z');
+ for(var i=-120;i<=10;i++){var d=new Date(base+i*864e5),s=d.toISOString().slice(0,10);try{var p=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{year:'numeric',month:'numeric',day:'numeric'}).formatToParts(d),g={};p.forEach(function(x){g[x.type]=x.value});
+  if(+g.month===1&&+g.day===1&&String(g.year).replace(/\D/g,'')===String(hy))return s}catch(e){return ''}}return ''}
+V5.muharram80=muharram1;
 /* منع حفظ تاريخ مخالف من نموذج «تصحيح رقم القرار أو تاريخه» */
 var H=V5.h,_dec=H.off72dec;
 if(typeof _dec==='function'){H.off72dec=function(f){try{var v=fv(f),no=String(v.no||'').trim(),dt=String(v.date||'').trim(),why=/^\d{4}-\d{2}-\d{2}$/.test(dt)?bad(no,dt):'';if(why){toast(why);return false}}catch(e){}return _dec.apply(this,arguments)};try{if(W.V51&&W.V51.h&&W.V51.h!==H)W.V51.h.off72dec=H.off72dec}catch(e){}}
 /* إصلاح آلي لتاريخ محفوظ مخالف */
-function heal(){if(!central())return 0;var P=plan();if(!P||!P.off72)return 0;var o=P.off72,dt=day(o.date);if(!dt||!bad(o.no,dt))return 0;
- var D=V5.offDate72&&V5.offDate72();if(!D||bad(o.no,D))return 0;var b=JSON.stringify({no:o.no,date:o.date});
+function heal(){if(!central())return 0;var P=plan();if(!P||!P.off72)return 0;var o=P.off72,dt=day(o.date),hy=(String(o.no||'').match(/\/(\d{4})\s*$/)||[])[1];
+ /* التاريخ الرسمي = أول محرم من سنة القرار؛ يُصلَح المخالف وكذلك التاريخ المحسوب سابقاً (شهر قبل الفصل) */
+ var D=muharram1(hy);if(!D||bad(o.no,D))return 0;var old=V5.offDate72&&V5.offDate72();
+ if(dt===D)return 0;if(dt&&!bad(o.no,dt)&&dt!==old)return 0;var b=JSON.stringify({no:o.no,date:o.date});
  o.date=D;if(P.dec67)P.dec67.date=D;if(P.pkg70)P.pkg70.date=D;P.okAt=D+'T09:00:00.000Z';
  try{var DP=(S.programs||[]).find(function(x){return x.id==DIP});if(DP&&DP.eng&&DP.eng.off72){DP.eng.off72.date=D;if(typeof touch==='function')touch(DP)}}catch(e){}
  try{aud(L('إعادة تاريخ الاعتماد الرسمي إلى أصله التاريخي','Official approval date restored to its historical original'),PID,b+' → '+D)}catch(e){}
