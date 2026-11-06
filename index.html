@@ -22225,7 +22225,7 @@ function check(code){var b=BK()[code],E=[],add=function(a,e){E.push([a,e])};
  if(lo.length&&b.loSt671!=='approved')add('نواتج التعلم ما زالت مسودة؛ تُعتمد أولاً من الإدارة المركزية.','The learning outcomes are still draft; the central administration must approve them first.');
  var R=b.rev671||{};
  if(!String(R.name||'').trim()||!R.date)add('لم تُعبَّأ بيانات «المراجع العلمي / Academic Reviewer» (الاسم وتاريخ المراجعة).','“Academic Reviewer” details (name and review date) are not filled in.');
- else if(b.lastEdit671&&(day(R.date)<day(b.lastEdit671)||(day(R.date)===day(b.lastEdit671)&&R.at&&String(R.at)<String(b.lastEdit671))))add('عُدِّل البنك ('+day(b.lastEdit671)+') بعد تسجيل المراجعة العلمية ('+day(R.date)+')؛ تلزم مراجعة جديدة وتحديث تاريخها.','The bank was edited ('+day(b.lastEdit671)+') after the academic review was recorded ('+day(R.date)+'); a new review and an updated date are required.');
+ else if(!(V5.locked80&&V5.locked80())&&b.lastEdit671&&(day(R.date)<day(b.lastEdit671)||(day(R.date)===day(b.lastEdit671)&&R.at&&String(R.at)<String(b.lastEdit671))))add('عُدِّل البنك ('+day(b.lastEdit671)+') بعد تسجيل المراجعة العلمية ('+day(R.date)+')؛ تلزم مراجعة جديدة وتحديث تاريخها.','The bank was edited ('+day(b.lastEdit671)+') after the academic review was recorded ('+day(R.date)+'); a new review and an updated date are required.');
  return {ok:!E.length,errs:E,st:s}}
 V5.bankCheck671=check;
 var errHTML=function(r){return '<ul class="ck671">'+r.errs.map(function(e){return '<li>'+e8(L(e[0],e[1]))+'</li>'}).join('')+'</ul>'};
@@ -25181,6 +25181,44 @@ V5.ready=1;
 setTimeout(function(){try{v51PubPull()}catch(e){}},900);
 try{if(typeof go==='function')go()}catch(e){console.error('v51 go',e)}
 }catch(e){console.error('v51',e)}})();
+
+
+/* =====================================================================
+   v80 — تاريخ الاعتماد الرسمي ثابت على أصله التاريخي
+   * بعد الاعتماد الرسمي للخطة (القرار 01/1445) لا يُشترط أن يكون تاريخ المراجعة العلمية بعد آخر تعديل:
+     الاعتماد الأصلي يغطي الخطة وبنوكها، والتعديلات اللاحقة تُحدَّث ضمنها وتبقى مسجلة في سجل التغييرات.
+   * لا يُقبل تاريخ قرار بعد بداية أول فصل دراسي، ولا في المستقبل، ولا بسنة هجرية تخالف رقم القرار.
+   * إصلاح آلي: إن كان تاريخ القرار المحفوظ مخالفاً، يُعاد إلى أصله (قبل شهر من بداية أول فصل) ويُسجَّل ذلك.
+   ===================================================================== */
+(function(){
+var W=window,PID='2026',V5=W.V51,L=V5.L;var toast=function(m){try{W.toast(m)}catch(e){}},fv=function(f){return W.fv(f)},save=function(){W.save()},go=function(){W.go()};var aud=function(a,b,c){try{(typeof W.aud==='function'?W.aud:V5.aud)(a,b,c)}catch(e){}};
+var plan=function(){try{return (V5.plans65()||{})[PID]}catch(e){return null}};
+var central=function(){return typeof me!=='undefined'&&me&&me.r==='admin'&&!me.unit&&!V5.imp64};
+var day=function(x){return String(x||'').slice(0,10)};
+function hyear(d){try{return new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{year:'numeric'}).format(new Date(d+'T12:00:00Z')).replace(/\D/g,'')}catch(e){return ''}}
+function firstStart(){try{var t=V5.firstTerm72&&V5.firstTerm72();return t&&t.start?day(t.start):''}catch(e){return ''}}
+V5.locked80=function(){var P=plan();return !!(P&&P.status==='approved'&&(P.off72||P.pkg70))};
+/* سبب رفض تاريخ قرار، أو سلسلة فارغة إن كان سليماً */
+function bad(no,dt){var fs=firstStart(),today=day(new Date().toISOString()),hy=(String(no||'').match(/\/(\d{4})\s*$/)||[])[1];
+ if(dt>today)return L('لا يصح أن يكون تاريخ القرار في المستقبل.','The decision date cannot be in the future.');
+ if(fs&&dt>=fs)return L('تاريخ الاعتماد الرسمي يسبق بداية أول فصل دراسي ('+fs+')؛ لا يصح تاريخ بعده. التعديلات اللاحقة تُحدَّث ضمن الاعتماد ولا تغيّر تاريخه.','The official approval precedes the first semester ('+fs+'); a later date is not valid. Later edits are updated within the approval and do not change its date.');
+ if(hy&&hyear(dt)&&hyear(dt)!==hy)return L('السنة الهجرية لتاريخ القرار ('+hyear(dt)+'هـ) تخالف رقم القرار ('+no+').','The Hijri year of the decision date ('+hyear(dt)+' AH) does not match the decision number ('+no+').');
+ return ''}
+V5.decBad80=bad;
+/* منع حفظ تاريخ مخالف من نموذج «تصحيح رقم القرار أو تاريخه» */
+var H=V5.h,_dec=H.off72dec;
+if(typeof _dec==='function'){H.off72dec=function(f){try{var v=fv(f),no=String(v.no||'').trim(),dt=String(v.date||'').trim(),why=/^\d{4}-\d{2}-\d{2}$/.test(dt)?bad(no,dt):'';if(why){toast(why);return false}}catch(e){}return _dec.apply(this,arguments)};try{if(W.V51&&W.V51.h&&W.V51.h!==H)W.V51.h.off72dec=H.off72dec}catch(e){}}
+/* إصلاح آلي لتاريخ محفوظ مخالف */
+function heal(){if(!central())return 0;var P=plan();if(!P||!P.off72)return 0;var o=P.off72,dt=day(o.date);if(!dt||!bad(o.no,dt))return 0;
+ var D=V5.offDate72&&V5.offDate72();if(!D||bad(o.no,D))return 0;var b=JSON.stringify({no:o.no,date:o.date});
+ o.date=D;if(P.dec67)P.dec67.date=D;if(P.pkg70)P.pkg70.date=D;P.okAt=D+'T09:00:00.000Z';
+ try{var DP=(S.programs||[]).find(function(x){return x.id==DIP});if(DP&&DP.eng&&DP.eng.off72){DP.eng.off72.date=D;if(typeof touch==='function')touch(DP)}}catch(e){}
+ try{aud(L('إعادة تاريخ الاعتماد الرسمي إلى أصله التاريخي','Official approval date restored to its historical original'),PID,b+' → '+D)}catch(e){}
+ try{save()}catch(e){}return 1}
+V5.heal80=heal;
+var tries=0,iv=setInterval(function(){tries++;try{if(heal()){try{go()}catch(e){}}}catch(e){}if(tries>20)clearInterval(iv)},3000);
+try{if(typeof GOH!=='undefined')GOH.pre.push(function(){try{heal()}catch(e){}})}catch(e){}
+})();
 
 </script>
 </body>
