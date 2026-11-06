@@ -572,7 +572,7 @@ programs:[{id:1,name:'القاعدة المدنية - تعليم القراءة 
 faculty:[{id:'TF-2026-001',name:'أ. المفتي منير الإسلام بن معيذ الدين',role:'رئيس المعهد',spec:'الدراسات الإسلامية واللغوية',courses:[1,2],pass:'tf1234',active:true}],
 students:[{id:'ST-2026-001',name:'طالب تجريبي',email:'demo@example.com',phone:'0500000000',nat:'سعودي',pid:'0000000000',prog:1,status:'منتظم',pass:'1234'}],
 requests:[],certs:[{rec:'TISA-2026-0001',sid:'ST-2026-001',name:'طالب تجريبي',prog:1,from:'2026-09-01',to:'2026-10-15',hours:30,grade:'ممتاز',date:'2026-10-14'}]};
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}if(typeof sbQueue=='function')sbQueue()};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){try{window.__lsFail81&&window.__lsFail81(e)}catch(x){}}if(typeof sbQueue=='function')sbQueue()};
 S.home=S.home||{hero:'مؤسسة تعليمية رائدة (مرخصة ومسجلة لدى حكومة بنغلاديش برقم 028412/2025)، تقدّم برامج تعليمية وبرامج قصيرة ودورات تدريبية وورش عمل بإنجاز معتمد.',about:'يرأس المعهد أ. المفتي منير الإسلام بن معيذ الدين، ويعمل معه نخبة من الأساتذة والمشرفين والمدرّسين.',vision:'معهد رائد في تقديم تعليم إسلامي ولغوي رصين ميسّر للجميع.',mission:'تأهيل المتعلمين علمياً ولغوياً بمناهج واضحة ومشرفين متخصصين.',goals:'نشر العلم الشرعي واللغة العربية، وتوثيق الإنجاز بشهادات معتمدة.',ann:''};
 S.home.p1=S.home.p1||'+8801822510180';S.home.p2=S.home.p2||'+880 1886-684922';S.home.em=S.home.em||'attamhidp@gmail.com';
 S.news=S.news||[];S.lib=S.lib||[];S.docReqs=S.docReqs||[];S.n.dr=S.n.dr||1;
@@ -745,7 +745,7 @@ if(error){console.error('Supabase:',error.message);toast('حُفظ طلبك مح
 function reg(f){const v=fv(f),id='REQ-'+Date.now().toString(36).toUpperCase();S.requests.push({...v,id,prog:DIP,status:'قيد المراجعة'});save();sbSend(v,id);out(`<div class=\"msg\">تم استلام طلبك بنجاح. رقم التتبع: <b>${id}</b></div>`);f.reset();return false}
 function decide(id,yes){const r=S.requests.find(x=>x.id==id);
 if(yes){const sid='ST-2026-'+pad(S.n.st++),p=pw();S.students.push({id:sid,name:r.name,email:r.email,phone:r.phone,nat:r.nat,pid:r.pid,prog:DIP,reg:[],sp:[],status:'منتظم',pass:p,exlang:r.exlang||'',adm:window.adm48def?adm48def():undefined});r.status='مقبول';r.sid=sid;flash=`تم القبول. الرقم الأكاديمي: <b>${sid}</b> · الدخول برقم الجواز: <b>${esc(r.pid)}</b> · كلمة المرور: <b>${p}</b> · <a href="mailto:${esc(r.email)}?subject=${encodeURIComponent('قبول وتهنئة - بيانات الدخول')}&body=${encodeURIComponent('السلام عليكم '+r.name+'\nمبارك قبولك في معهد التمهيد.\nاسم المستخدم (رقم الجواز): '+r.pid+'\nكلمة المرور: '+p+'\nرابط البوابة: '+location.href.split('#')[0]+'#/login')}">إرسال رسالة القبول والتهنئة بالبريد</a>`}else{r.status='مرفوض';flash='تم رفض الطلب.'}save();go()}
-function stat(id,v){S.students.find(s=>s.id==id).status=v;save()}
+function stat(id,v){const s=S.students.find(s=>s.id==id);if(!s)return;s.status=v;s.u=new Date().toISOString();save()}
 function addTF(f){const v=fv(f),id='TF-2026-'+pad(S.n.tf++),p=pw();S.faculty.push({id,name:v.name,role:v.role,spec:v.spec,courses:[+v.c],pass:p,active:true});save();flash=`أُضيف العضو. رقم العضوية: <b>${id}</b> · كلمة المرور: <b>${p}</b>`;go();return false}
 function togTF(id){const f=S.faculty.find(x=>x.id==id);f.active=!f.active;save();go()}
 const prForm=(p,act,btn)=>`<form onsubmit="return ${act}(this)"><label>الاسم<input name="name" required value="${esc(p.name)}"></label><label>الوصف<input name="desc" required value="${esc(p.desc)}"></label><label>المشرف<input name="teacher" required value="${esc(p.teacher)}"></label><label>من<input name="from" type="date" required value="${esc(p.from)}"></label><label>إلى<input name="to" type="date" required value="${esc(p.to)}"></label><label>الساعات<input name="hours" type="number" required value="${esc(p.hours)}"></label><label>الرسوم<input name="fee" value="${esc(p.fee||'مجاني')}"></label><label>الخطة<input name="plan" required value="${esc(p.plan)}"></label><button class="btn">${btn}</button>${p.id?' <button type="button" class="btn s" onclick="pre=null;go()">إلغاء التعديل</button>':''}</form>`;
@@ -951,7 +951,7 @@ const _ver=ver;ver=function(f){const q=fv(f).n.trim();if(!sb||!q)return _ver(f);
 (async()=>{if(!sb)return;try{const {data:{session}}=await sb.auth.getSession();if(me&&me.r=='admin'){if(!session){me=null;go();return}const {data:pf}=await sb.from('profiles').select('role').eq('id',session.user.id).maybeSingle();if(!pf||pf.role!='admin'){me=null;go();return}sbAdmin=true;await sbPull();go()}else sbPubPull()}catch(e){console.error(e)}})();
 
 /* ===== ربط Supabase - المرحلة الثانية ===== */
-const sbDemo=['1234','tf1234','admin123'],save0=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const sbDemo=['1234','tf1234','admin123'],save0=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){try{window.__lsFail81&&window.__lsFail81(e)}catch(x){}}};
 let sbUser=null,PAPER={},exHash={},sbSetH='';
 COLS.subs='submissions';
 const sbKey=(o,k)=>String(k=='certs'?o.rec:o.id);
@@ -1163,7 +1163,7 @@ const freeEd=c=>`${xi('title','عنوان الوثيقة',c.title)}${xi('titleEn
 /* ===== v2 — الكمال التشغيلي: إشعارات · تصدير · تحقق · تدقيق · معاينة حية · ترقيم ===== */
 (()=>{
 S.audit=S.audit||[];S.outbox=S.outbox||[];S.cfg=S.cfg||{};
-const persist=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const persist=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){try{window.__lsFail81&&window.__lsFail81(e)}catch(x){}}};
 const LBL={name:'الاسم',email:'البريد',phone:'الجوال',nat:'الجنسية',pid:'رقم الهوية/الجواز',prog:'البرنامج',status:'الحالة',sex:'الجنس',role:'المنصب',spec:'التخصص',courses:'المقررات',active:'تفعيل الحساب',pass:'كلمة المرور',user:'اسم المستخدم',exlang:'لغة الاختبار',title:'العنوان',cat:'التصنيف',url:'الرابط',desc:'الوصف',body:'النص',type:'النوع',revoked:'الإلغاء',reason:'السبب',text:'النص',grade:'التقدير',hours:'الساعات',from:'من',to:'إلى',fee:'الرسوم',teacher:'المشرف',cancelled:'إلغاء البرنامج',photo:'الصورة',rec:'رقم السجل',sid:'الرقم الأكاديمي'};
 const COLL={requests:['طلب تسجيل',o=>o.id],students:['طالب',o=>o.id],faculty:['عضو',o=>o.id],programs:['برنامج',o=>o.id],certs:['وثيقة',o=>o.rec],docReqs:['طلب وثيقة',o=>o.id],news:['خبر/فعالية',o=>o.id],lib:['مادة مكتبة',o=>o.id]};
 const snap=()=>{const s={};for(const k in COLL)s[k]=new Map((S[k]||[]).map(o=>[String(COLL[k][1](o)),JSON.stringify(o)]));return s};
@@ -4661,13 +4661,13 @@ function health(){let ch=0;try{
  }catch(e){console.error('health39',e)}return ch}
 let hb=0;
 function guard39(why){const lsGone=localStorage.getItem(K)===null,fixed=health();
- if(lsGone||fixed){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+ if(lsGone||fixed){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){try{window.__lsFail81&&window.__lsFail81(e)}catch(x){}}}
  if(fixed||lsGone){if(fixed){toast('أُعيد بناء بيانات المقررات والاختبارات تلقائياً');try{go()}catch(e){}}}
  return fixed}
 let ready=0,lastBk='';
 async function startup(){let r=0;try{
   if(typeof sbUser!='undefined'&&sbUser){ready=1;return}
-  if(pristine(S)){const b=await bkGet();if(b&&typeof b=='string'){const o=JSON.parse(b);if(o&&!pristine(o)){S=o;health();try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}r=1;toast('أُعيدت البيانات من النسخة الاحتياطية المحلية');try{go()}catch(e){}}}}
+  if(pristine(S)){const b=await bkGet();if(b&&typeof b=='string'){const o=JSON.parse(b);if(o&&!pristine(o)){S=o;health();try{localStorage.setItem(K,JSON.stringify(S))}catch(e){try{window.__lsFail81&&window.__lsFail81(e)}catch(x){}}r=1;toast('أُعيدت البيانات من النسخة الاحتياطية المحلية');try{go()}catch(e){}}}}
  }catch(e){console.error('restore39',e)}ready=1}
 async function backup(){if(!ready||document.hidden||pristine(S)&&lastBk)return;try{const j=JSON.stringify(S);if(j===lastBk)return;await bkPut(j);lastBk=j}catch(e){}}
 const fixed0=guard39('start');startup();
@@ -23282,7 +23282,7 @@ H.plan70ok=function(f,pid){pid=pid||PID;if(!central()){toast(L('الاعتماد
  toast(L('اعتُمدت الخطة كاملة، وفُعّل ربط البنوك بالاختبارات ونُشرت الاختبارات.','The complete plan is approved; banks are linked to exams and the exams are published.'));go();return false};
 
 /* ---------- التحديث الآلي بعد الاعتماد ---------- */
-function sync(code,quiet){var P=plan(PID);if(!P||!P.pkg70||!central())return 0;var B=BK(),ks=code?[code]:Object.keys(B),n=0,off=0;
+function sync(code,quiet){var P=plan(PID);if(!P||!P.pkg70||!central()||V5.banksReady81===false)return 0;var B=BK(),ks=code?[code]:Object.keys(B),n=0,off=0;
  ks.forEach(function(k){var b=B[k];if(!b)return;var c=courses(PID).find(function(x){return code4(x.code)===k});if(!c)return;
   var e=b.eid?(S.exams||[]).find(function(x){return x.id==b.eid}):null,fresh=b.status==='approved'&&e&&e.bank65&&+e.bank65.ver===+b.ver&&e.pub;if(fresh)return;
   var lo=LOs(b),loOk=lo.length>=3&&lo.length<=5&&lo.every(function(x){return String(x.ar||'').trim()&&String(x.en||'').trim()});
@@ -24632,7 +24632,7 @@ function applyP73(p73,R){S.bank73=S.bank73||{};var B=S.bank73,now=NOW(),todo={};
   if(cur&&cur.status==='approved'&&!onlyDistractors(cur,nb)){R.held.push(k);return}todo[k]=nb});
  var ks=Object.keys(todo);if(!ks.length||!V5.bankImport73)return;var before={};ks.forEach(function(k){before[k]=B[k]?B[k].ver:null});
  V5.bankImport73(todo);ks.forEach(function(k){var b=B[k];if(b&&(before[k]==null||b.ver!==before[k]||b.at>=now)){b.h77=todo[k].h77;b.at77=NOW();b.u=b.at=b.at77;if(before[k]==null)R.add++;else R.upd++}else R.held.push(k)})}
-async function run(force){if(!B77||!central()||st.busy)return;var k=ls.get();if(!k){st.state='locked';return}st.busy=1;
+async function run(force){if(!B77||!central()||st.busy||V5.banksReady81===false)return;var k=ls.get();if(!k){st.state='locked';return}st.busy=1;
  try{var pay=await open(k);var R={add:0,upd:0,same:0,manual:[],held:[],at:NOW()};applyDip(pay.dip,R);applyP73(pay.p73,R);st.res=R;st.state='open';st.done=1;
   if(R.add||R.upd){try{V5.aud(L('مزامنة بنوك الأسئلة المضمّنة','Embedded question banks synchronised'),'v77',R.add+'+'+R.upd)}catch(e){}save();try{V5.sync73&&V5.sync73()}catch(e){}try{W.QL36&&W.QL36.run()}catch(e){}}
   if(force)toast(L('تمت المزامنة: '+R.add+' جديد، '+R.upd+' محدَّث، '+R.same+' مطابق.','Synchronised: '+R.add+' new, '+R.upd+' updated, '+R.same+' unchanged.'))}
@@ -25227,6 +25227,41 @@ var tries=0,iv=setInterval(function(){tries++;try{if(heal()){try{go()}catch(e){}
 try{if(typeof GOH!=='undefined')GOH.pre.push(function(){try{heal()}catch(e){}})}catch(e){}
 })();
 
+
+/* =====================================================================
+   v81 — خفة النظام واستقراره: بنوك الأسئلة خارج التخزين اليومي
+   * كانت البنوك (364 بنكاً ≈ 4 ملايين حرف) تُحفظ مع كل البيانات في تخزين المتصفح المحدود (≈5.2 مليون حرف)،
+     فيثقل كل حفظ وإعادة رسم، ويفشل الحفظ بصمت عند بلوغ الحد فترجع التعديلات.
+   * الآن: البنوك في قاعدة المتصفح الكبيرة (IndexedDB) وفي الذاكرة، ولا تدخل في الحفظ اليومي ولا في بصمة إعادة الرسم.
+   * مهام البنوك الخلفية تنتظر اكتمال تحميلها؛ وفشل الحفظ يظهر للمستخدم ولا يُخفى.
+   ===================================================================== */
+(function(){
+var W=window,V5=W.V51,L=V5.L,KEYS=['bank65','bank73'],DBN='tamhid81',STN='kv',cache={},lastS=null,sigs={};
+var toast=function(m){try{W.toast(m)}catch(e){}};
+function db(){return new Promise(function(res,rej){try{var r=indexedDB.open(DBN,1);r.onupgradeneeded=function(){r.result.createObjectStore(STN)};r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}}catch(e){rej(e)}})}
+function put(k,v){return db().then(function(d){return new Promise(function(res,rej){var t=d.transaction(STN,'readwrite');t.objectStore(STN).put(v,k);t.oncomplete=function(){res(1)};t.onerror=function(){rej(t.error)}})})}
+function get(k){return db().then(function(d){return new Promise(function(res,rej){var t=d.transaction(STN,'readonly'),r=t.objectStore(STN).get(k);r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}})})}
+/* بصمة رخيصة لتغيّر البنوك: العدد + الإصدارات والحالات وأوقات التعديل */
+function fp(B){if(!B)return '0';var s=0,n=0;Object.keys(B).forEach(function(k){var b=B[k]||{};n++;var x=k+'|'+(b.ver||'')+'|'+(b.status||'')+'|'+(b.u||'')+'|'+(b.at||'')+'|'+(b.lastEdit671||'')+'|'+(b.rev671&&b.rev671.date||'')+'|'+(b.dirty?1:0)+'|'+((b.q||[]).length);for(var i=0;i<x.length;i++){s=(s*31+x.charCodeAt(i))|0}});return n+':'+s}
+/* إخفاء البنوك عن JSON.stringify (الحفظ وبصمة العرض) مع بقائها في S كما هي للكود كله */
+function hide(){if(typeof S==='undefined'||!S)return 0;var moved=0;KEYS.forEach(function(k){var d=Object.getOwnPropertyDescriptor(S,k);
+  if(d&&d.enumerable){var v=S[k];delete S[k];if(v&&cache[k]&&v!==cache[k]&&!Object.keys(v).length&&Object.keys(cache[k]).length)v=cache[k];Object.defineProperty(S,k,{value:v,writable:true,configurable:true,enumerable:false});cache[k]=v;moved++}
+  else if(!d&&cache[k]){Object.defineProperty(S,k,{value:cache[k],writable:true,configurable:true,enumerable:false})}
+  else if(d)cache[k]=S[k]});lastS=S;return moved}
+var wt=0;function persist(){clearTimeout(wt);wt=setTimeout(function(){KEYS.forEach(function(k){var v=cache[k];if(!v)return;var f=fp(v);if(sigs[k]===f)return;put(k,v).then(function(){sigs[k]=f}).catch(function(e){console.warn('v81 idb',e)})})},1500)}
+/* فشل الحفظ في تخزين المتصفح: يُبلَّغ مرة، ويُعاد المحاولة بعد تخفيف البيانات */
+var warned=0;W.__lsFail81=function(e){console.error('save failed',e);try{hide()}catch(x){}if(!warned){warned=1;toast(L('تعذّر حفظ البيانات في هذا المتصفح (امتلأت المساحة). تُحفظ في الخادم، وجارٍ التخفيف تلقائياً.','Could not save data in this browser (storage full). It is saved on the server; lightening automatically.'))}};
+/* الإقلاع: إن كانت البنوك ما تزال داخل البيانات القديمة تُنقل فوراً؛ وإلا تُحمَّل من قاعدة المتصفح */
+var had=false;try{KEYS.forEach(function(k){var d=S&&Object.getOwnPropertyDescriptor(S,k);if(d&&d.enumerable&&S[k]&&Object.keys(S[k]).length)had=true})}catch(e){}
+if(had){hide();V5.banksReady81=true;KEYS.forEach(function(k){if(cache[k])put(k,cache[k]).then(function(){sigs[k]=fp(cache[k])}).catch(function(){})});try{W.save()}catch(e){}}
+else{V5.banksReady81=false;hide();Promise.all(KEYS.map(function(k){return get(k).catch(function(){return null})})).then(function(vals){
+  KEYS.forEach(function(k,i){var v=vals[i];if(!v)return;var cur=S[k];if(cur&&Object.keys(cur).length){Object.keys(v).forEach(function(c){if(!(c in cur))cur[c]=v[c]})}else{try{delete S[k]}catch(e){}Object.defineProperty(S,k,{value:v,writable:true,configurable:true,enumerable:false});cache[k]=v}sigs[k]=fp(S[k])});
+  V5.banksReady81=true;hide();try{if(typeof me!=='undefined'&&me&&me.r==='admin')W.go()}catch(e){}}).catch(function(){V5.banksReady81=true})}
+V5.banks81={hide:hide,persist:persist,cache:cache,fp:fp};
+/* بعد كل حفظ: إبقاء البنوك خارج التخزين اليومي وحفظها في قاعدة المتصفح إن تغيّرت */
+var _s=W.save;if(typeof _s==='function'){W.save=function(){if(S!==lastS||KEYS.some(function(k){var d=Object.getOwnPropertyDescriptor(S,k);return d&&d.enumerable}))hide();var r=_s.apply(this,arguments);persist();return r};try{save=W.save}catch(e){}}
+setInterval(function(){try{if(S!==lastS||KEYS.some(function(k){var d=Object.getOwnPropertyDescriptor(S,k);return d&&d.enumerable}))hide();if(V5.banksReady81!==false)persist()}catch(e){}},2000);
+})();
 </script>
 </body>
 </html>
