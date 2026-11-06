@@ -16483,7 +16483,9 @@ function termVal(t,lang){var cfg=(S.v51.terms||{})[t.k]||{},i=lang==='en'?1:0;
  return def}
 V5.termVal=termVal;
 /* أزواج الاستبدال [من، إلى، نوع] — تُبنى فقط لما يختلف عن الافتراضي، فلا أثر لأي شيء ما لم يُغيَّر */
-function identityPairs(){var out=[],ch=[];DEF_TERMS.forEach(function(t){['ar','en'].forEach(function(lg){var to=termVal(t,lg),from=(lg==='en'?t.en0:t.ar0);
+/* v83: نتيجة ثابتة ما لم تتغير المصطلحات؛ تُحفظ مؤقتاً بدل إعادة حسابها لكل وثيقة */
+var IP83={k:null,v:null};function identityPairs(){var k;try{k=JSON.stringify([S.v51.terms||null,S.v51.custom||null,S.v51.i18n&&S.v51.i18n.v||null,typeof LG!=='undefined'?LG:''])}catch(e){k=null}if(k!==null&&IP83.k===k&&IP83.v)return IP83.v.slice();var r=identityPairs0();if(k!==null){IP83.k=k;IP83.v=r}return r.slice()}
+function identityPairs0(){var out=[],ch=[];DEF_TERMS.forEach(function(t){['ar','en'].forEach(function(lg){var to=termVal(t,lg),from=(lg==='en'?t.en0:t.ar0);
   if(!from[0]||!to||to===from[0])return;from.forEach(function(f){if(f&&f!==to){out.push([f,to,t.stem?(lg==='en'?'se':'sa'):'']);ch.push(f)}})})});
  out.slice().forEach(function(p){if(/[a-z]/.test(p[0])&&!p[2]){out.push([p[0].toUpperCase(),p[1].toUpperCase(),'']);if(/^At-Tamhid/.test(p[0]))out.push([p[0].toUpperCase().replace('AT-TAMHID','AT TAMHID'),p[1].toUpperCase(),''])}});
  live(S.v51.custom).forEach(function(c){if(c.from&&c.to!=null&&c.from!==c.to){out.push([c.from,c.to,'']);ch.push(c.from)}});
@@ -18491,7 +18493,7 @@ var _mk55=W.mkBlob;if(typeof _mk55==='function')W.mkBlob=async function(h,f){if(
 var _rq55=req53;req53=function(c){var m=_rq55(c);if(isG55(c)){var have=m.map(function(x){return x[0]});miss55(c).forEach(function(x){if(have.indexOf(x.k)<0)m.push([x.k,x.ar,x.en])})}return m};V5.req53=req53;
 
 /* --- (2) قالب واحد: معاينة نموذج الإصدار اليدوي القديمة كانت تستدعي القالب القديم gradHTML مباشرة --- */
-W.gradHTML=function(c){var d=Object.assign({},c,{type:'dgrad'});if(d.boardNo==='—')d.boardNo='';if(d.sessNo==='—')d.sessNo='';return W.certHTML(d)};
+var _gr83=W.gradHTML;W.gradHTML=function(c){if(W.__g83||typeof _gr83!=='function'){if(typeof _gr83==='function')return _gr83.apply(this,arguments);return ''}W.__g83=1;try{var d=Object.assign({},c,{type:'dgrad'});if(d.boardNo==='—')d.boardNo='';if(d.sessNo==='—')d.sessNo='';return W.certHTML(d)}finally{W.__g83=0}};
 
 /* المعدل غير المحسوب (NaN/undefined) يُعامل حقلاً ناقصاً */
 EMPTY55=function(v){v=String(v==null?'':v).trim();return !v||v==='—'||v==='-'||/^(NaN|undefined|null)$/i.test(v)||/^\(?\s*—\s*\)?$/.test(v)};
@@ -19889,7 +19891,7 @@ var STL=function(a){if(!a)return '<span class="tag">'+L('لم يُنشأ بعد'
 V5.stl63=STL;
 var EVL={create:['إنشاء حساب','Account created'],reveal:['عرض كلمة المرور الأولى','Initial password shown'],reset:['إعادة تعيين','Reset'],login:['دخول ناجح','Successful sign-in'],login_fail:['دخول فاشل','Failed sign-in'],locked:['قفل مؤقت','Temporary lock'],unlock:['فتح القفل','Unlocked'],pw_changed:['تغيير كلمة المرور','Password changed'],rename:['تغيير الرقم','Number changed'],remove:['حذف حساب','Account removed'],send:['إرسال بالبريد','Sent by email'],forgot_sent:['رابط استعادة','Recovery link'],forgot_nomatch:['استعادة: بيانات غير مطابقة','Recovery: no match'],forgot_nomail:['استعادة: البريد غير مفعّل','Recovery: mail off'],disable:['تعطيل','Disabled'],enable:['تفعيل','Enabled']};
 function tab63(){if(!isCentral())return '<p class="msg er">'+L('هذه الخدمة للإدارة المركزية فقط.','This service is for the central administration only.')+'</p>';
- if(!V5.accAt63&&!V5._ld63){V5._ld63=1;refresh().then(function(){V5._ld63=0;provision().then(function(){if(tab==='v63a')go()})})}
+ if(!V5.accAt63&&!V5._ld63&&!(V5.accFail63&&Date.now()-V5.accFail63<60000)){V5._ld63=1;refresh().then(function(r){V5._ld63=0;if(r&&r.ok){provision().then(function(){if(tab==='v63a')go()},function(){})}else{V5.accFail63=Date.now();if(tab==='v63a')go()}},function(){V5._ld63=0;V5.accFail63=Date.now()})}
  var c=cfg(),E=entities(),q=(V5.q63||'').toLowerCase(),fk=V5.k63||'',A=V5.acc63,miss=E.filter(function(e){return !A[e.ref]}).length;
  var rows=E.filter(function(e){return (!fk||e.role===fk)&&(!q||(e.ref+' '+(e.name||'')).toLowerCase().indexOf(q)>-1)}).map(function(e){var a=A[e.ref],s=V5.shown63[e.ref],pwc;
   if(s)pwc='<b dir="ltr" class="pw63">'+e3(s.pw)+'</b><br><small class="mu">'+L('صالحة حتى ','Valid until ')+e3(String(s.exp||'').slice(0,10))+'</small><br>'+bt(L('إخفاء','Hide'),"V51.h.hide63('"+e.ref+"')")+' '+bt(L('إرسال البريد','Send Email'),"V51.h.mail64('"+e.ref+"','reset')",'');
@@ -24700,7 +24702,7 @@ var H=V5.h,W=window;
 var e7=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var central=function(){return typeof me!=='undefined'&&me&&me.r==='admin'&&!me.unit&&!V5.imp64};
 var TABS={st:1,tf:1,v51u:1,v74p:1,v51m:1};
-var ld=0;function load(){if(ld||!central()||V5.accAt63||!V5.refresh63)return;ld=1;V5.refresh63().then(function(){ld=0;try{if(TABS[tab])go()}catch(e){}},function(){ld=0})}
+var ld=0;function load(){if(ld||!central()||V5.accAt63||!V5.refresh63||(V5.accFail63&&Date.now()-V5.accFail63<60000))return;ld=1;V5.refresh63().then(function(r){ld=0;if(r&&r.ok){try{if(TABS[tab])go()}catch(e){}}else V5.accFail63=Date.now()},function(){ld=0;V5.accFail63=Date.now()})}
 function refOf(id){id=String(id||'').trim();if(!id)return '';var K=V5.kind63||function(){return null};if(K(id))return id;try{var a=V5.alias61&&V5.alias61(id);if(a&&K(a))return a}catch(e){}return ''}
 function entBy(id){var r=refOf(id),E=(V5.entities63?V5.entities63():[]);return E.find(function(e){return e.ref===r||(e.o&&e.o.id==id)})||null}
 function cell(e){var A=V5.acc63||{},a=A[e.ref],s=(V5.shown63||{})[e.ref],pw;
@@ -25159,9 +25161,11 @@ function install(){if(typeof W.go!=='function'||W.go.__s71)return;var inner=W.go
  var g=function(){try{if((typeof taking!=='undefined'&&taking)||(typeof plTk!=='undefined'&&plTk))return inner.apply(this,arguments)}catch(e){}var r0=route(),ev=W.event,direct=!!(ev&&/^(click|submit|change|input|keydown|keyup|pointerup|mouseup|touchend|hashchange|popstate)$/.test(ev.type)),src=!!W.__bg71;if(!src){try{src=BGX.test(new Error().stack||'')}catch(e){}}
   /* أي إعادة رسم لا يطلقها المستخدم مباشرة (مؤقت، مزامنة، وعد مؤجل) على الصفحة نفسها تُعامل كخلفية تحفظ الحالة */
   var real=src;if(!direct&&!src)src=1;var bg=src&&r0===lastRoute&&lastSig!==null,idle=Date.now()-lastUser>1500;
+  /* v83: حدّ لإعادة الرسم الخلفية — مرة كل 1.5 ثانية على الأكثر؛ ما زاد يُدمج في رسمة واحدة مؤجلة. فعل المستخدم يُرسم فوراً */
+  if(!direct&&r0===lastRoute){var nw=Date.now();if(nw-(ST.lastBg83||0)<1500){ST.capped83=(ST.capped83||0)+1;if(!ST.pend83)ST.pend83=setTimeout(function(){ST.pend83=0;ST.lastBg83=Date.now();try{W.go()}catch(e){}},1500-(nw-(ST.lastBg83||0)));return}ST.lastBg83=nw}
   if(bg&&!real&&Date.now()-lastSubmit<5000)bg=false;/* بعد حفظ نموذج: إعادة رسم عادية حتى تُفرَّغ الحقول */
   if(!bg){ST.user++;var r=inner.apply(this,arguments);lastRoute=route();setTimeout(function(){lastSig=sig()},0);return r}
-  if(real&&busy()){ST.deferred++;if(!pend)pend=setTimeout(function(){pend=0;try{g()}catch(e){}},4000);return}
+  if(busy()){ST.deferred++;if(!pend)pend=setTimeout(function(){pend=0;try{g()}catch(e){}},4000);return}
   var s=real?sig():null;if(real&&idle&&s===lastSig){ST.skipped++;return}
   ST.bg++;var app=document.getElementById('app'),kids=app?[].slice.call(app.childNodes):[],h0=app?app.innerHTML:'',o=snap(),res=inner.apply(this,arguments);
   /* المحتوى لم يتغير بعد إعادة الرسم: تُعاد العناصر القائمة نفسها كما هي (لا وميض، ولا فقد لحالة القوائم والتركيز) */
@@ -25206,7 +25210,8 @@ function bad(no,dt){var fs=firstStart(),today=day(new Date().toISOString()),hy=(
  return ''}
 V5.decBad80=bad;
 /* أول محرم من السنة الهجرية لرقم القرار (أم القرى)، يُبحث عنه حول بداية أول فصل */
-function muharram1(hy){var fs=firstStart();if(!fs||!hy)return '';var base=Date.parse(fs+'T12:00:00Z');
+var M1C={};function muharram1(hy){var fs=firstStart();if(!fs||!hy)return '';var ck=hy+'|'+fs;if(ck in M1C)return M1C[ck];return M1C[ck]=m1x(hy,fs)}
+function m1x(hy,fs){var base=Date.parse(fs+'T12:00:00Z');
  for(var i=-120;i<=10;i++){var d=new Date(base+i*864e5),s=d.toISOString().slice(0,10);try{var p=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{year:'numeric',month:'numeric',day:'numeric'}).formatToParts(d),g={};p.forEach(function(x){g[x.type]=x.value});
   if(+g.month===1&&+g.day===1&&String(g.year).replace(/\D/g,'')===String(hy))return s}catch(e){return ''}}return ''}
 V5.muharram80=muharram1;
