@@ -25,7 +25,7 @@ async function verify(req: Request, body: string) {
   return sig.split(" ").some((p) => { const [v, s] = p.split(","); return v === "v1" && !!s && same(s, mac); });
 }
 const RANK: Record<string, number> = { sent: 1, delayed: 2, delivered: 3, opened: 3, clicked: 3, bounced: 4, complained: 4, failed: 4 };
-const MAP: Record<string, string> = { "email.sent": "sent", "email.delivered": "delivered", "email.delivery_delayed": "delayed", "email.bounced": "bounced", "email.complained": "complained", "email.failed": "failed" };
+const MAP: Record<string, string> = { "email.sent": "sent", "email.delivered": "delivered", "email.delivery_delayed": "delayed", "email.bounced": "bounced", "email.complained": "complained", "email.failed": "failed", "email.suppressed": "bounced" };
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return res({ ok: true });
@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
   if (!row) return res({ ok: true, unknown: mid });
   if ((RANK[row.delivery || ""] || 0) > RANK[st]) return res({ ok: true, kept: row.delivery });
   const b = (ev.data?.bounce || ev.data?.failed || {}) as Record<string, unknown>;
-  const detail = [b.type, b.subType, b.message || b.reason].filter(Boolean).join(" — ").slice(0, 400) || null;
+  const detail = (ev.type === "email.suppressed" ? "suppressed — " : "") + ([b.type, b.subType, b.message || b.reason].filter(Boolean).join(" — ").slice(0, 400)) || null;
   await admin.from("v63_mail_log").update({ delivery: st, delivery_at: ev.created_at || new Date().toISOString(), delivery_detail: detail }).eq("id", row.id);
   return res({ ok: true, id: row.id, delivery: st });
 });
