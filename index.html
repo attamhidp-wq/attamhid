@@ -566,6 +566,7 @@ a.pc:hover,a.pc:focus-visible{transform:translateY(-3px);box-shadow:0 8px 24px #
 </style>
 <style id="css113">#app.adm69>.tabs .hm69{display:none!important}#app.adm69>.tabs .hb69{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}#app.adm69>.tabs .hb69 small{font-size:11px;min-width:20px;padding:0 6px;border-radius:99px;background:var(--bd);color:var(--mu);text-align:center;line-height:18px}
 .hs69{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 10px;margin:0 0 4px;border-bottom:1px solid var(--bd);scrollbar-width:thin}.hs69 .btn{white-space:nowrap;flex:0 0 auto;min-height:38px}</style>
+<style id="css118">.b118{height:7px;border-radius:4px;background:var(--bd);overflow:hidden;margin-top:4px;min-width:60px}.b118 i{display:block;height:100%}.g118 td{vertical-align:top;min-width:110px}.t118{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:5px 7px;margin:2px 0}.t118 b{display:block;font-size:.88rem}.t118 small{color:var(--mu)}#an118 .kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}#an118 .kp>div{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:10px 12px}#an118 .kp b{display:block;font-size:1.4rem;color:var(--pr)}#an118 .kp span{font-size:.8rem;color:var(--mu)}#an118 .an-h{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}#an118 .wrap{overflow-x:auto}#an118 .fn{margin:0 0 10px}</style>
 </head>
 <body>
 <header><div class="nav" id="nav" role="navigation" aria-label="التنقل الرئيسي"></div></header>
@@ -20591,7 +20592,7 @@ V51TABS.push(['v64a','التعيين','Appointments',tabAppt]);TABLBL['التع�
 /* البطاقة التعريفية للخريج والإداري منفصلتان: لا تظهر وثائق الطالب في بوابة الإدارة */
 
 /* ---------- (7) البوابة: الفصل الحالي والمقررات والجدول ---------- */
-var DAY=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],DAYE=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var DAY=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'],DAYE=['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
 var tm=function(v){if(!v)return '';var p=String(v).split(':'),h=+p[0],m=+(p[1]||0);return ((h%12)||12)+':'+String(m).padStart(2,'0')+' '+(h>=12?L('م','PM'):L('ص','AM'))};
 function slots(c){if(Array.isArray(c.slots)&&c.slots.length)return c.slots;return c.day!=null&&!isNaN(c.day)&&(c.from||c.to)?[{day:+c.day,from:c.from,to:c.to,room:c.room}]:[]}
 function portalBox(s){var t=null,up=0;try{var ta=s.admTerm&&V5.termById61(s.admTerm),tc=V5.curTerm61();t=tc;if(ta&&(!tc||ta.start>tc.end||ta.start>TODAY4())){t=ta;up=1}}catch(e){}var N=t?V5.termNames61(t):{ar:'—',en:'—'},lv=+s.lvl||1,LV=['','الأول','الثاني','الثالث','الرابع'],LVE=['','One','Two','Three','Four'];
@@ -22303,6 +22304,195 @@ GOH.post.push(function(){try{if(/^#\/admin/.test(location.hash||'')&&V5.banksRea
 /* لم تعد أرقام القيود الإضافية تُولَّد (لكل مرحلة سجلها) */
 V5.ensureNos115=function(){};
 })();
+
+/* =====================================================================
+   v118 — الجدول الأسبوعي للمستوى الأول (الدبلوم العام، مسائي)، والتحليلات حسب البرنامج والقسم،
+          وملف الاعتماد الأكاديمي لكل برنامج
+   ===================================================================== */
+(function(){
+var e2=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var Qs=function(x){return String(x).replace(/\\/g,'\\\\').replace(/'/g,"\\'")};
+var H=V5.h,W=window,NOW8=function(){return new Date().toISOString()},TODAY8=function(){return new Date(Date.now()+3*3600e3).toISOString().slice(0,10)};
+var isAdm=function(){return typeof me!=='undefined'&&me&&me.r==='admin'&&!V5.imp64};
+var central=function(){return isAdm()&&!me.unit};
+var canP=function(p){return central()||(V5.canProg112&&V5.canProg112(p))};
+var pnm=function(p){return p?L(p.name,(p.eng&&p.eng.nameEn)||p.name):'—'};
+var DIP8=1000,DN=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'],DNE=['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
+var dn=function(d){return L(DN[d]||'—',DNE[d]||'—')};
+var mins=function(t){var m=/^(\d{1,2}):(\d{2})/.exec(String(t||''));return m?(+m[1])*60+(+m[2]):null};
+var tm8=function(t){var m=mins(t);if(m==null)return t||'';var h=Math.floor(m/60),mm=m%60,ap=h>=12?L('م','pm'):L('ص','am'),h12=h%12||12;return h12+':'+(mm<10?'0':'')+mm+' '+ap};
+var overlap=function(a,b){if(+a.day!==+b.day)return false;var a1=mins(a.from),a2=mins(a.to),b1=mins(b.from),b2=mins(b.to);if(a1==null||b1==null)return false;return a1<(b2==null?b1+50:b2)&&b1<(a2==null?a1+50:a2)};
+var slotsOf8=function(c){if(c&&Array.isArray(c.slots)&&c.slots.length)return c.slots;return c&&c.day!=null&&!isNaN(c.day)&&(c.from||c.to)?[{day:+c.day,from:c.from,to:c.to,room:c.room}]:[]};
+var fac=function(){return (S.faculty||[]).filter(function(f){return !f.deleted&&f.active!==false&&f.active!=='false'})};
+var teacherOf=function(c){var t=(S.faculty||[]).find(function(f){return (f.teach||[]).indexOf(c.id)>-1});return t||null};
+var allCourses=function(){var o=[];(S.programs||[]).forEach(function(p){if(p.deleted)return;(V5.pCourses(p)||[]).forEach(function(c){o.push(c)})});return o};
+
+/* ======================= 1) الجدول الأسبوعي — المستوى الأول ======================= */
+var DEF_T={days:[1,2,3,4,5],periods:[['17:00','17:50'],['18:00','18:50'],['19:30','20:20'],['20:30','21:20']],room:''};
+function cfgT(p){var c=p.tt118||{};return {days:(c.days&&c.days.length?c.days:DEF_T.days).map(Number),periods:(c.periods&&c.periods.length?c.periods:DEF_T.periods),room:c.room!=null?c.room:DEF_T.room}}
+function lvl1(p){return (V5.pCourses(p)||[]).filter(function(c){return (+c.term||1)===1&&!c.deleted})}
+/* انشغال المدرّس في مقررات أخرى (أي برنامج) */
+function busyOf(fid,except){var B=[];if(!fid)return B;var f=(S.faculty||[]).find(function(x){return x.id==fid});var ids=(f&&f.teach)||[];allCourses().forEach(function(c){if(except[c.id]||ids.indexOf(c.id)<0)return;slotsOf8(c).forEach(function(s){B.push(s)})});return B}
+function generate(p){var C=lvl1(p),cf=cfgT(p),ex={};C.forEach(function(c){ex[c.id]=1});
+ var grid=[];cf.days.forEach(function(d){cf.periods.forEach(function(pr,i){grid.push({day:d,from:pr[0],to:pr[1],i:i,used:null})})});
+ var need=C.map(function(c){return {c:c,h:Math.max(1,Math.round(+c.hrs||1)),t:teacherOf(c)}}).sort(function(a,b){return b.h-a.h});
+ var out={},miss=[];need.forEach(function(n){out[n.c.id]=[]});
+ var tBusy={};need.forEach(function(n){if(n.t&&!tBusy[n.t.id])tBusy[n.t.id]=busyOf(n.t.id,ex)});
+ var dayUse=function(cid,d){return out[cid].filter(function(s){return s.day===d}).length};
+ for(var round=0;round<6;round++){need.forEach(function(n){if(out[n.c.id].length>=n.h)return;
+   /* اختيار اليوم الأقل استعمالاً لهذا المقرر ثم أبكر فترة حرة */
+   var best=null;grid.forEach(function(g){if(g.used)return;var du=dayUse(n.c.id,g.day);if(du>round)return;
+    if(n.t){var tb=(tBusy[n.t.id]||[]);if(tb.some(function(b){return overlap(b,g)}))return}
+    var load=grid.filter(function(x){return x.day===g.day&&x.used}).length;var sc=du*100+load*10+g.i;if(!best||sc<best.sc)best={g:g,sc:sc}});
+   if(best){best.g.used=n.c.id;out[n.c.id].push({day:best.g.day,from:best.g.from,to:best.g.to,room:cf.room||''});if(n.t)tBusy[n.t.id].push({day:best.g.day,from:best.g.from,to:best.g.to})}})}
+ need.forEach(function(n){if(out[n.c.id].length<n.h)miss.push([n.c,n.h-out[n.c.id].length])});
+ return {out:out,miss:miss,cap:grid.length,need:need.reduce(function(a,n){return a+n.h},0)}}
+/* فحص التعارضات في الجدول الحالي */
+function conflicts(p){var C=lvl1(p),R=[];
+ for(var i=0;i<C.length;i++)for(var j=i+1;j<C.length;j++){slotsOf8(C[i]).forEach(function(a){slotsOf8(C[j]).forEach(function(b){if(overlap(a,b))R.push(L('تداخل في جدول المستوى الأول: ','Level 1 clash: ')+C[i].name+' / '+C[j].name+' — '+dn(a.day)+' '+tm8(a.from))})})}
+ var ex={};C.forEach(function(c){ex[c.id]=1});
+ C.forEach(function(c){var t=teacherOf(c);if(!t)return;var B=busyOf(t.id,ex);slotsOf8(c).forEach(function(a){if(B.some(function(b){return overlap(a,b)}))R.push(L('تعارض للمدرّس ','Teacher clash: ')+t.name+' — '+c.name+' ('+dn(a.day)+' '+tm8(a.from)+')')})});
+ return R}
+function gridHtml(p,forWho){var C=lvl1(p),cf=cfgT(p);var cell=function(d,pr){var hit=C.filter(function(c){return slotsOf8(c).some(function(s){return +s.day===d&&s.from===pr[0]})});
+  return hit.length?hit.map(function(c){var t=teacherOf(c);return '<div class="t118"><b>'+e2(c.name)+'</b>'+(forWho!=='teacher'&&t?'<small>'+e2(t.name)+'</small>':'')+'</div>'}).join(''):'<span class="mu">—</span>'};
+ return '<div class="tw"><table class="v51t g118"><tr><th>'+L('اليوم','Day')+'</th>'+cf.periods.map(function(pr){return '<th><bdi>'+e2(tm8(pr[0]))+' – '+e2(tm8(pr[1]))+'</bdi></th>'}).join('')+'</tr>'+
+  cf.days.map(function(d){return '<tr><th>'+dn(d)+'</th>'+cf.periods.map(function(pr){return '<td>'+cell(d,pr)+'</td>'}).join('')+'</tr>'}).join('')+'</table></div>'}
+var TB=V5.p112tabs||{};
+var _sub2=V5.p112sub2;V5.p112sub2=function(p){var a=_sub2?_sub2(p):[];if(p&&p.id==DIP8)a.unshift(['tt118',L('الجدول الأسبوعي — المستوى الأول','Weekly timetable — Level 1')]);a.push(['acr118',L('ملف الاعتماد الأكاديمي','Accreditation file')]);return a};
+TB.tt118=function(p){var C=lvl1(p),cf=cfgT(p),can=canP(p),F=fac(),tot=C.reduce(function(a,c){return a+(+c.hrs||0)},0),cap=cf.days.length*cf.periods.length,X=conflicts(p);
+ var set=C.filter(function(c){return slotsOf8(c).length}).length;
+ var h='<p class="mu">'+L('أسنِد كل مقرر إلى مدرّسه، ثم اضغط «توليد الجدول»، فيوزّع النظام مقررات المستوى الأول على الفترات المسائية تلقائياً دون تعارض في الوقت أو للمدرّس، ويظهر الجدول للطلاب في بوابتهم وللمدرّسين في بوابتهم.','Assign each course to its teacher, then press “Generate timetable”: the system spreads the Level 1 courses over the evening periods automatically without time or teacher clashes, and the timetable appears to students and teachers in their portals.')+'</p>';
+ h+='<div class="g112">'+[[C.length,L('مقررات المستوى الأول','Level 1 courses')],[tot,L('ساعة أسبوعياً','hours per week')],[cap,L('فترة مسائية متاحة','evening periods available')],[C.filter(teacherOf).length+' / '+C.length,L('مقررات مسندة','courses assigned')],[set+' / '+C.length,L('مقررات مجدولة','courses scheduled')]].map(function(k){return '<div class="k112"><b>'+k[0]+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>';
+ h+='<h4>'+L('1) إسناد المقررات إلى المدرّسين','1) Assign courses to teachers')+'</h4>'+T([L('الرمز','Code'),L('المقرر','Course'),L('الساعات','Hours'),L('المدرّس','Teacher'),L('المواعيد','Times')],C.map(function(c){var t=teacherOf(c);
+  return '<tr><td dir="ltr">'+e2(c.code||'')+'</td><td>'+e2(c.name)+'</td><td>'+e2(c.hrs)+'</td><td>'+(can?'<select onchange="V51.h.tt118t(\''+Qs(c.id)+'\',this.value)" aria-label="'+L('مدرّس ','Teacher of ')+e2(c.name)+'"><option value="">'+L('— غير مسند —','— unassigned —')+'</option>'+F.map(function(f){return '<option value="'+e2(f.id)+'"'+(t&&t.id==f.id?' selected':'')+'>'+e2(f.name)+'</option>'}).join('')+'</select>':e2(t?t.name:'—'))+'</td><td>'+(slotsOf8(c).map(function(s){return dn(+s.day)+' <bdi>'+e2(tm8(s.from))+'</bdi>'}).join('<br>')||'<span class="mu">—</span>')+'</td></tr>'}));
+ if(can)h+='<h4>'+L('2) الفترات المسائية','2) Evening periods')+'</h4><form class="v51g" onsubmit="return V51.h.tt118c(this,\''+Qs(p.id)+'\')"><fieldset style="grid-column:1/-1;border:0;padding:0;margin:0"><legend>'+L('أيام الدراسة','Study days')+'</legend>'+[0,1,2,3,4,5,6].map(function(d){return '<label style="display:inline-flex;gap:6px;margin-inline-end:14px"><input type="checkbox" name="d" value="'+d+'"'+(cf.days.indexOf(d)>-1?' checked':'')+'> '+dn(d)+'</label>'}).join('')+'</fieldset>'+
+  '<label style="grid-column:1/-1">'+L('الفترات (بداية-نهاية، مفصولة بفاصلة)','Periods (start-end, comma separated)')+'<input name="pr" dir="ltr" value="'+e2(cf.periods.map(function(x){return x[0]+'-'+x[1]}).join(', '))+'"></label>'+
+  '<label style="grid-column:1/-1">'+L('القاعة أو رابط الحضور (لكل المستوى)','Room or join link (whole level)')+'<input name="room" dir="auto" value="'+e2(cf.room)+'"></label><div><button class="btn s">'+L('حفظ الفترات','Save periods')+'</button></div></form>'+
+  '<h4>'+L('3) التوليد والنشر','3) Generate & publish')+'</h4><p>'+(tot>cap?'<span class="tag er">'+L('الساعات المطلوبة أكثر من الفترات المتاحة؛ أضف أياماً أو فترات.','Required hours exceed available periods; add days or periods.')+'</span> ':'')+'<button type="button" class="btn" onclick="V51.h.tt118g(\''+Qs(p.id)+'\')">'+L('توليد الجدول','Generate timetable')+'</button> <button type="button" class="btn s" onclick="V51.h.tt118x(\''+Qs(p.id)+'\')">'+L('مسح الجدول','Clear timetable')+'</button></p>';
+ h+=X.length?'<div class="msg er"><b>'+L('تعارضات:','Clashes:')+'</b><br>'+X.map(e2).join('<br>')+'</div>':(set?'<p class="tag ok">'+L('لا تعارض في الجدول.','No clashes in the timetable.')+'</p>':'');
+ h+='<h4>'+L('الجدول كما يراه الطلاب','The timetable as students see it')+'</h4>'+gridHtml(p,'admin');
+ return h};
+H.tt118t=function(cid,fid){var p=V5.prog(DIP8);if(!p||!canP(p))return;var c=(V5.pCourses(p)||[]).find(function(x){return x.id==cid});if(!c)return;
+ (S.faculty||[]).forEach(function(f){if(f.teach&&f.teach.indexOf(cid)>-1&&f.id!=fid){f.teach=f.teach.filter(function(x){return x!==cid});f.u=NOW8()}});
+ if(fid){var f=(S.faculty||[]).find(function(x){return x.id==fid});if(f){f.teach=f.teach||[];if(f.teach.indexOf(cid)<0)f.teach.push(cid);f.u=NOW8()}}
+ c.teacher=fid||'';c.u=NOW8();p.u=NOW8();
+ var X=conflicts(p);try{V5.aud(L('إسناد مقرر إلى مدرّس','Course assigned to teacher'),cid,fid||'—')}catch(e){}save();if(X.length)toast(L('انتبه: يوجد تعارض للمدرّس في الجدول الحالي.','Note: the teacher has a clash in the current timetable.'));go()};
+H.tt118c=function(f,pid){var p=V5.prog(+pid||pid);if(!p||!canP(p))return false;var days=[].slice.call(f.querySelectorAll('input[name=d]:checked')).map(function(i){return +i.value});
+ var pr=String(f.pr.value||'').split(/[,،]+/).map(function(x){var m=/(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})/.exec(x);return m?[m[1].padStart(5,'0'),m[2].padStart(5,'0')]:null}).filter(Boolean);
+ if(!days.length||!pr.length){toast(L('اختر يوماً وفترة واحدة على الأقل بصيغة 17:00-17:50.','Choose at least one day and one period like 17:00-17:50.'));return false}
+ if(pr.some(function(x){return mins(x[0])>=mins(x[1])})){toast(L('بداية كل فترة يجب أن تسبق نهايتها.','Each period must start before it ends.'));return false}
+ p.tt118={days:days,periods:pr.sort(function(a,b){return mins(a[0])-mins(b[0])}),room:String(f.room.value||'').trim().slice(0,300)};p.u=NOW8();try{V5.aud(L('فترات الجدول المسائي','Evening timetable periods'),String(p.id),JSON.stringify(p.tt118))}catch(e){}save();toast(L('حُفظت الفترات. اضغط «توليد الجدول».','Periods saved. Press “Generate timetable”.'));go();return false};
+H.tt118g=function(pid){var p=V5.prog(+pid||pid);if(!p||!canP(p))return;var C=lvl1(p);
+ if(C.some(function(c){return slotsOf8(c).length})&&!confirm(L('سيُستبدل الجدول الحالي للمستوى الأول. متابعة؟','The current Level 1 timetable will be replaced. Continue?')))return;
+ var bak={};C.forEach(function(c){bak[c.id]={slots:c.slots,day:c.day,from:c.from,to:c.to};c.slots=[];c.from='';c.to=''});
+ var r=generate(p);C.forEach(function(c){c.slots=r.out[c.id]||[];var f0=c.slots[0];if(f0){c.day=f0.day;c.from=f0.from;c.to=f0.to;c.room=f0.room||c.room||''}c.u=NOW8()});
+ p.u=NOW8();p.sched64=p.sched64||{};try{var t=V5.curTerm61&&V5.curTerm61();if(t)p.sched64[t.id]=1}catch(e){}
+ try{V5.aud(L('توليد الجدول الأسبوعي للمستوى الأول','Level 1 weekly timetable generated'),String(p.id),r.need+'/'+r.cap)}catch(e){}save();
+ toast(r.miss.length?L('تعذّر جدولة: ','Could not schedule: ')+r.miss.map(function(m){return m[0].name+' ('+m[1]+')'}).join('، '):L('وُلّد الجدول ونُشر للطلاب والمدرّسين.','Timetable generated and published to students and teachers.'));go()};
+H.tt118x=function(pid){var p=V5.prog(+pid||pid);if(!p||!canP(p)||!confirm(L('مسح مواعيد مقررات المستوى الأول؟','Clear the Level 1 course times?')))return;lvl1(p).forEach(function(c){c.slots=[];c.from='';c.to='';c.u=NOW8()});p.u=NOW8();save();go()};
+
+/* ======================= 2) مؤشرات برنامج (مشتركة بين التحليلات وملف الاعتماد) ======================= */
+var termIdx=function(id){var m=/^(\d{4})-(\d)/.exec(String(id||''));return m?(+m[1])*3+(+m[2]):null};
+function gOf(s,cid){return (s.gr||{})[cid]||null}
+function stats(p){var C=V5.pCourses(p)||[],Ss=(V5.progStudents?V5.progStudents(p.id):[]).filter(function(s){return !s.deleted}),st={},gp=[],risk=0,grads=0,wd=0,dur=[];
+ var stOf=function(s){return V5.enStatus?V5.enStatus(s,p.id):(s.status||'منتظم')};
+ Ss.forEach(function(s){var x=stOf(s)||'منتظم';st[x]=(st[x]||0)+1;if(x==='متخرج'){grads++;var a=termIdx(s.admTerm),g=termIdx(s.gradTerm);if(a!=null&&g!=null&&g>=a)dur.push(g-a+1)}if(/منسحب|مفصول|مطوي/.test(x))wd++;
+  var w=0,h=0;C.forEach(function(c){var g=gOf(s,c.id);if(g&&g.fin&&!g.eq&&g.pts!=null&&!isNaN(+g.pts)){w+=(+g.pts)*(+c.hrs||0);h+=(+c.hrs||0)}});if(h>0){var v=w/h;gp.push(v);if(x==='منتظم'&&v<2)risk++}});
+ var crs=C.map(function(c){var reg=0,fin=0,ok=0,sc=[];Ss.forEach(function(s){if((s.reg||[]).indexOf(c.id)>-1)reg++;var g=gOf(s,c.id);if(g&&g.fin&&!g.eq){fin++;if(g.ok===true||g.ok===1)ok++;if(g.score!=null&&!isNaN(+g.score))sc.push(+g.score)}});
+  var t=teacherOf(c);var clo=(c.clo||c.clos||c.outcomes||[]);var ex=(S.exams||[]).filter(function(e){return e.courseId==c.id&&!e.deleted}).length;
+  return {c:c,reg:reg,fin:fin,ok:ok,pass:fin?Math.round(ok*100/fin):null,avg:sc.length?Math.round(sc.reduce(function(a,b){return a+b},0)/sc.length*10)/10:null,t:t,clo:Array.isArray(clo)?clo.length:(clo?1:0),ex:ex}});
+ var F={};crs.forEach(function(x){if(x.t){var f=F[x.t.id]=F[x.t.id]||{f:x.t,n:0,stu:0,fin:0,reg:0,pass:[]};f.n++;f.reg+=x.reg;f.fin+=x.fin;if(x.pass!=null)f.pass.push(x.pass)}});
+ var finT=crs.reduce(function(a,x){return a+x.fin},0),okT=crs.reduce(function(a,x){return a+x.ok},0),bins=[0,0,0,0,0];gp.forEach(function(v){bins[v>=4.5?0:v>=3.75?1:v>=2.75?2:v>=2?3:4]++});
+ var apps=(S.requests||[]).filter(function(r){return r.prog==p.id&&!r.deleted}),ac=apps.filter(function(r){return r.status==='مقبول'}).length,rj=apps.filter(function(r){return r.status==='مرفوض'}).length;
+ var active=st['منتظم']||0,nf=Object.keys(F).length;
+ return {p:p,C:C,Ss:Ss,st:st,total:Ss.length,active:active,grads:grads,wd:wd,risk:risk,gpa:gp.length?Math.round(gp.reduce(function(a,b){return a+b},0)/gp.length*100)/100:null,bins:bins,crs:crs,F:F,nf:nf,
+  pass:finT?Math.round(okT*100/finT):null,retention:Ss.length?Math.round((Ss.length-wd)*100/Ss.length):null,gradRate:Ss.length?Math.round(grads*100/Ss.length):null,dur:dur.length?Math.round(dur.reduce(function(a,b){return a+b},0)/dur.length*10)/10:null,
+  ratio:nf?Math.round(active/nf*10)/10:null,assigned:C.length?Math.round(crs.filter(function(x){return x.t}).length*100/C.length):null,cloPct:C.length?Math.round(crs.filter(function(x){return x.clo>0}).length*100/C.length):null,exPct:C.length?Math.round(crs.filter(function(x){return x.ex>0}).length*100/C.length):null,
+  hours:C.reduce(function(a,c){return a+(+c.hrs||0)},0),apps:apps.length,acc:ac,rej:rj,docs:(S.certs||[]).filter(function(c){return c.prog==p.id&&!c.revoked}).length,gradDocs:(S.certs||[]).filter(function(c){return c.prog==p.id&&!c.revoked&&/grad/.test(c.type)}).length}}
+V5.stats118=stats;
+var pct=function(v){return v==null?'—':v+'%'},nv=function(v){return v==null?'—':v};
+var bar=function(v,c){v=v==null?0:Math.max(0,Math.min(100,v));return '<div class="b118" role="img" aria-label="'+v+'%"><i style="width:'+v+'%;background:'+(c||'var(--pr)')+'"></i></div>'};
+var depts=function(){return V5.live(S.v51.units||[]).filter(function(u){return u.academic&&u.type==='department'&&!u.deleted})};
+var progsOf=function(uid){return (S.programs||[]).filter(function(p){return !p.deleted&&p.kind!=='short'&&(!uid||(V5.pDept?V5.pDept(p):((p.eng||{}).unitId))===uid)&&(V5.pCourses(p)||[]).length})};
+
+/* ======================= 3) التحليلات حسب البرنامج والقسم (أعلى صفحة التحليلات) ======================= */
+var SC=V5.__an118||(V5.__an118={k:'all'});
+function anHtml(){var D=depts(),P,title;if(SC.k.indexOf('d:')===0){P=progsOf(SC.k.slice(2));var u=D.find(function(x){return x.id===SC.k.slice(2)});title=u?L(u.nameAr,u.nameEn||u.nameAr):''}
+ else if(SC.k.indexOf('p:')===0){var pp=V5.prog(+SC.k.slice(2)||SC.k.slice(2));P=pp?[pp]:[];title=pnm(pp)}else{P=progsOf('');title=L('المعهد كله','Whole institute')}
+ var X=P.map(stats),sum=function(k){return X.reduce(function(a,x){return a+(+x[k]||0)},0)};
+ var gp=X.filter(function(x){return x.gpa!=null}),gpa=gp.length?Math.round(gp.reduce(function(a,x){return a+x.gpa*Math.max(1,x.active)},0)/gp.reduce(function(a,x){return a+Math.max(1,x.active)},0)*100)/100:null;
+ var fin=X.reduce(function(a,x){return a+x.crs.reduce(function(b,c){return b+c.fin},0)},0),ok=X.reduce(function(a,x){return a+x.crs.reduce(function(b,c){return b+c.ok},0)},0);
+ var h='<div class="box" id="an118"><div class="an-h"><h3 style="margin:0">'+L('التحليلات حسب البرنامج والقسم','Analytics by programme and department')+'</h3><div><label>'+L('النطاق: ','Scope: ')+'<select onchange="V51.h.an118(this.value)"><option value="all">'+L('المعهد كله','Whole institute')+'</option>'+
+  D.map(function(u){return '<optgroup label="'+e2(L(u.nameAr,u.nameEn||u.nameAr))+'"><option value="d:'+e2(u.id)+'"'+(SC.k==='d:'+u.id?' selected':'')+'>'+L('كل برامج القسم','All department programmes')+'</option>'+progsOf(u.id).map(function(p){return '<option value="p:'+e2(p.id)+'"'+(SC.k==='p:'+p.id?' selected':'')+'>'+e2(pnm(p))+'</option>'}).join('')+'</optgroup>'}).join('')+'</select></label> <button type="button" class="btn s" onclick="V51.h.an118x()">'+L('تصدير Excel','Export Excel')+'</button></div></div>';
+ h+='<p class="mu">'+e2(title)+' · '+X.length+L(' برنامج',' programmes')+'</p><div class="kp">'+[[sum('total'),L('طالب مقيد','Enrolled students')],[sum('active'),L('منتظم','Regular')],[sum('grads'),L('خريج','Graduates')],[nv(gpa),L('متوسط المعدل التراكمي','Average GPA')],[fin?Math.round(ok*100/fin)+'%':'—',L('نسبة النجاح في المقررات','Course pass rate')],[sum('risk'),L('متعثر (أقل من 2.00)','At risk (below 2.00)')],[sum('apps'),L('طلب تسجيل','Applications')],[sum('docs'),L('وثيقة صادرة','Documents issued')]].map(function(k){return '<div><b>'+k[0]+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>';
+ h+='<h4 style="margin-top:14px">'+L('مقارنة البرامج','Programme comparison')+'</h4><div class="wrap">'+T([L('البرنامج','Programme'),L('القسم','Department'),L('الطلاب','Students'),L('منتظم','Regular'),L('خريج','Graduates'),L('متوسط المعدل','Avg GPA'),L('النجاح','Pass rate'),L('الاستبقاء','Retention'),L('متعثرون','At risk'),L('الهيئة','Faculty'),L('طالب/مدرّس','Student/faculty')],X.map(function(x){var u=(V5.pDept?V5.pDept(x.p):'');var un=D.find(function(d){return d.id===u});
+  return '<tr><td>'+e2(pnm(x.p))+'</td><td><small>'+e2(un?L(un.nameAr,un.nameEn||un.nameAr):'—')+'</small></td><td class="num">'+x.total+'</td><td class="num">'+x.active+'</td><td class="num">'+x.grads+'</td><td class="num">'+nv(x.gpa)+'</td><td class="num">'+pct(x.pass)+bar(x.pass,'var(--ok)')+'</td><td class="num">'+pct(x.retention)+'</td><td class="num">'+x.risk+'</td><td class="num">'+x.nf+'</td><td class="num">'+nv(x.ratio)+'</td></tr>'}))+'</div>';
+ var Fa={};X.forEach(function(x){Object.keys(x.F).forEach(function(k){var f=x.F[k],a=Fa[k]=Fa[k]||{f:f.f,n:0,reg:0,fin:0,pass:[],progs:[]};a.n+=f.n;a.reg+=f.reg;a.fin+=f.fin;a.pass=a.pass.concat(f.pass);a.progs.push(pnm(x.p))})});
+ var FL=Object.keys(Fa).map(function(k){return Fa[k]});
+ h+='<h4 style="margin-top:14px">'+L('أداء هيئة التدريس في النطاق','Faculty performance in scope')+'</h4>'+(FL.length?'<div class="wrap">'+T([L('المدرّس','Teacher'),L('البرامج','Programmes'),L('المقررات','Courses'),L('الطلاب المسجلون','Registered students'),L('درجات مرصودة','Grades posted'),L('اكتمال الرصد','Grading completion'),L('متوسط نسبة النجاح','Avg pass rate')],FL.map(function(a){var cp=a.reg?Math.round(a.fin*100/a.reg):null,ap=a.pass.length?Math.round(a.pass.reduce(function(x,y){return x+y},0)/a.pass.length):null;
+  return '<tr><td>'+e2(a.f.name)+'</td><td><small>'+e2(a.progs.join('، '))+'</small></td><td class="num">'+a.n+'</td><td class="num">'+a.reg+'</td><td class="num">'+a.fin+'</td><td class="num">'+pct(cp)+bar(cp)+'</td><td class="num">'+pct(ap)+'</td></tr>'}))+'</div>':'<p class="mu">'+L('لم تُسنَد مقررات هذا النطاق إلى مدرّسين بعد.','No courses in this scope are assigned to teachers yet.')+'</p>');
+ var bins=[0,0,0,0,0];X.forEach(function(x){x.bins.forEach(function(v,i){bins[i]+=v})});var bt=bins.reduce(function(a,b){return a+b},0);
+ h+='<h4 style="margin-top:14px">'+L('توزيع المعدلات التراكمية','GPA distribution')+'</h4>'+(bt?['4.50–5.00','3.75–4.49','2.75–3.74','2.00–2.74','< 2.00'].map(function(l,i){var v=Math.round(bins[i]*100/bt);return '<div class="fn"><span><bdi dir="ltr">'+l+'</bdi> · '+bins[i]+'</span>'+bar(v,i===4?'var(--er,#b42318)':'var(--pr)')+'</div>'}).join(''):'<p class="mu">'+L('لا درجات معتمدة في النطاق بعد.','No approved grades in scope yet.')+'</p>');
+ h+='<p class="mu" style="margin-top:12px">'+L('أدناه: تحليلات القبول والتسكين الخاصة بالدبلوم العام.','Below: the General Diploma admission and placement analytics.')+'</p></div>';
+ V5.__an118x={X:X,FL:FL,title:title};return h}
+V5.anHtml118=function(){return anHtml()};H.an118=function(v){SC.k=v||'all';var el=document.getElementById('an118');if(el)el.outerHTML=anHtml()};
+H.an118x=function(){var d=V5.__an118x;if(!d)return;var X=d.X,sh={};
+ sh[L('البرامج','Programmes')]=[[L('البرنامج','Programme'),L('الطلاب','Students'),L('منتظم','Regular'),L('خريج','Graduates'),L('متوسط المعدل','Avg GPA'),L('النجاح ٪','Pass %'),L('الاستبقاء ٪','Retention %'),L('متعثرون','At risk'),L('الهيئة','Faculty'),L('طالب/مدرّس','Student/faculty'),L('طلبات','Applications')]].concat(X.map(function(x){return [pnm(x.p),x.total,x.active,x.grads,x.gpa,x.pass,x.retention,x.risk,x.nf,x.ratio,x.apps]}));
+ sh[L('الهيئة','Faculty')]=[[L('المدرّس','Teacher'),L('المقررات','Courses'),L('المسجلون','Registered'),L('مرصود','Posted')]].concat(d.FL.map(function(a){return [a.f.name,a.n,a.reg,a.fin]}));
+ sh[L('المقررات','Courses')]=[[L('البرنامج','Programme'),L('الرمز','Code'),L('المقرر','Course'),L('المسجلون','Registered'),L('مرصود','Posted'),L('النجاح ٪','Pass %'),L('متوسط الدرجة','Avg score'),L('المدرّس','Teacher')]].concat([].concat.apply([],X.map(function(x){return x.crs.map(function(c){return [pnm(x.p),c.c.code||'',c.c.name,c.reg,c.fin,c.pass,c.avg,c.t?c.t.name:'']})})));
+ xl(sh,'analytics-'+TODAY8());try{V5.aud(L('تصدير التحليلات حسب النطاق','Scoped analytics export'),'',d.title)}catch(e){}};
+function xl(sh,name){if(typeof XLSX!=='undefined'){var wb=XLSX.utils.book_new();Object.keys(sh).forEach(function(k){XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(sh[k]),String(k).slice(0,31))});wb.Workbook={Views:[{RTL:LG!=='en'}]};XLSX.writeFile(wb,name+'.xlsx');return}
+ var q=function(x){return '"'+String(x==null?'':x).replace(/"/g,'""')+'"'},csv='﻿'+Object.keys(sh).map(function(k){return k+'\n'+sh[k].map(function(r){return r.map(q).join(',')}).join('\n')}).join('\n\n');var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=name+'.csv';document.body.appendChild(a);a.click();a.remove()}
+/* إدراج القسم أعلى صفحة التحليلات */
+GOH.post.push(function(){try{var an=document.getElementById('an');if(!an||document.getElementById('an118'))return;var d=document.createElement('div');d.innerHTML=anHtml();an.insertBefore(d.firstChild,an.querySelector('#an-data'))}catch(e){console.error('v118 an',e)}});
+setInterval(function(){try{var an=document.getElementById('an');if(an&&!document.getElementById('an118')){var d=document.createElement('div');d.innerHTML=anHtml();an.insertBefore(d.firstChild,an.querySelector('#an-data'))}}catch(e){}},1500);
+
+/* ======================= 4) ملف الاعتماد الأكاديمي لكل برنامج ======================= */
+function kpis(x){var R=V5.rules115?V5.rules115(x.p):{dNorm:(x.p.eng||{}).levels||'—'};
+ return [
+  ['1.1',L('عدد الطلاب المقيدين','Enrolled students'),x.total,null,''],
+  ['1.2',L('الطلاب المنتظمون','Regular students'),x.active,null,''],
+  ['1.3',L('نسبة الاستبقاء','Retention rate'),pct(x.retention),80,x.retention],
+  ['1.4',L('نسبة التخرج','Graduation rate'),pct(x.gradRate),null,''],
+  ['1.5',L('متوسط مدة التخرج (فصول)','Average time to graduate (terms)'),nv(x.dur)+(R.dNorm?' / '+R.dNorm:''),null,''],
+  ['2.1',L('متوسط المعدل التراكمي','Average cumulative GPA'),nv(x.gpa)+' / 5',null,''],
+  ['2.2',L('نسبة النجاح في المقررات','Course pass rate'),pct(x.pass),85,x.pass],
+  ['2.3',L('نسبة الطلاب المتعثرين','Students at academic risk'),x.active?Math.round(x.risk*100/x.active)+'%':'—',null,''],
+  ['3.1',L('نسبة الطلاب إلى أعضاء هيئة التدريس','Student-to-faculty ratio'),x.ratio==null?'—':x.ratio+' : 1',null,''],
+  ['3.2',L('المقررات المسندة إلى مدرّسين','Courses assigned to teachers'),pct(x.assigned),100,x.assigned],
+  ['4.1',L('المقررات ذات نواتج تعلم موثقة','Courses with documented learning outcomes'),pct(x.cloPct),100,x.cloPct],
+  ['4.2',L('المقررات ذات اختبارات وبنوك أسئلة','Courses with exams and question banks'),pct(x.exPct),100,x.exPct],
+  ['4.3',L('الساعات المعتمدة / عدد المقررات','Credit hours / number of courses'),x.hours+' / '+x.C.length,null,''],
+  ['5.1',L('طلبات التسجيل / المقبولون','Applications / accepted'),x.apps+' / '+x.acc,null,''],
+  ['5.2',L('وثائق التخرج الصادرة','Graduation documents issued'),x.gradDocs,null,'']]}
+var stTag=function(k){if(k[3]==null||k[4]===''||k[4]==null)return '<span class="mu">—</span>';return k[4]>=k[3]?'<span class="tag ok">'+L('محقق','Met')+'</span>':'<span class="tag wn">'+L('دون المستهدف','Below target')+'</span>'};
+function decInfo(p){var d=V5.dec112||{},g=(p.eng||{}).ggrad||{};return {no:g.decNo||d.no||'',date:g.decDate||d.date||'',by:d.by||''}}
+TB.acr118=function(p){var x=stats(p),K=kpis(x),dc=decInfo(p),u=V5.pDept?V5.pDept(p):'',un=depts().find(function(d){return d.id===u});
+ var h='<p class="mu">'+L('مؤشرات الأداء الرئيسة للبرنامج محسوبة من بياناته الفعلية، مع جداول المقررات وهيئة التدريس، جاهزة للطباعة أو التصدير لملف الاعتماد.','The programme\'s key performance indicators, computed from its actual data, with course and faculty tables, ready to print or export for the accreditation file.')+'</p>';
+ h+='<p>'+L('القسم: ','Department: ')+'<b>'+e2(un?L(un.nameAr,un.nameEn||un.nameAr):'—')+'</b>'+(dc.no?' · '+L('قرار الاعتماد: ','Approval decision: ')+'<b dir="ltr">'+e2(dc.no)+'</b> '+L('بتاريخ ','dated ')+'<bdi dir="ltr">'+e2(dc.date)+'</bdi>':'')+'</p>';
+ h+='<p><button type="button" class="btn" onclick="V51.h.acr118p(\''+Qs(p.id)+'\')">'+L('طباعة التقرير / حفظ PDF','Print report / save PDF')+'</button> <button type="button" class="btn s" onclick="V51.h.acr118x(\''+Qs(p.id)+'\')">'+L('تصدير Excel','Export Excel')+'</button></p>';
+ h+='<h4>'+L('مؤشرات الأداء','Key performance indicators')+'</h4>'+T([L('الرمز','Code'),L('المؤشر','Indicator'),L('القيمة','Value'),L('المستهدف','Target'),L('الحالة','Status')],K.map(function(k){return '<tr><td dir="ltr">'+k[0]+'</td><td>'+e2(k[1])+'</td><td class="num"><b>'+e2(k[2])+'</b></td><td class="num">'+(k[3]!=null?k[3]+'%':'—')+'</td><td>'+stTag(k)+'</td></tr>'}));
+ h+='<h4>'+L('المقررات','Courses')+'</h4><div class="tw">'+T([L('الرمز','Code'),L('المقرر','Course'),L('الساعات','Hours'),L('المدرّس','Teacher'),L('المسجلون','Registered'),L('النجاح','Pass'),L('متوسط الدرجة','Avg score'),L('نواتج التعلم','Outcomes'),L('الاختبارات','Exams')],x.crs.map(function(c){return '<tr><td dir="ltr">'+e2(c.c.code||'')+'</td><td>'+e2(c.c.name)+'</td><td class="num">'+e2(c.c.hrs)+'</td><td>'+e2(c.t?c.t.name:'—')+'</td><td class="num">'+c.reg+'</td><td class="num">'+pct(c.pass)+'</td><td class="num">'+nv(c.avg)+'</td><td class="num">'+c.clo+'</td><td class="num">'+c.ex+'</td></tr>'}))+'</div>';
+ var FL=Object.keys(x.F).map(function(k){return x.F[k]});
+ h+='<h4>'+L('هيئة التدريس','Faculty')+'</h4>'+(FL.length?T([L('المدرّس','Teacher'),L('المقررات','Courses'),L('المسجلون','Registered'),L('مرصود','Posted')],FL.map(function(f){return '<tr><td>'+e2(f.f.name)+'</td><td class="num">'+f.n+'</td><td class="num">'+f.reg+'</td><td class="num">'+f.fin+'</td></tr>'})):'<p class="mu">'+L('لم تُسنَد مقررات البرنامج إلى مدرّسين بعد.','No programme courses are assigned to teachers yet.')+'</p>');
+ return h};
+H.acr118x=function(pid){var p=V5.prog(+pid||pid);if(!p)return;var x=stats(p),K=kpis(x),sh={};
+ sh[L('المؤشرات','Indicators')]=[[L('الرمز','Code'),L('المؤشر','Indicator'),L('القيمة','Value'),L('المستهدف','Target')]].concat(K.map(function(k){return [k[0],k[1],k[2],k[3]!=null?k[3]+'%':'']}));
+ sh[L('المقررات','Courses')]=[[L('الرمز','Code'),L('المقرر','Course'),L('الساعات','Hours'),L('المدرّس','Teacher'),L('المسجلون','Registered'),L('مرصود','Posted'),L('النجاح ٪','Pass %'),L('متوسط الدرجة','Avg score'),L('نواتج التعلم','Outcomes'),L('الاختبارات','Exams')]].concat(x.crs.map(function(c){return [c.c.code||'',c.c.name,c.c.hrs,c.t?c.t.name:'',c.reg,c.fin,c.pass,c.avg,c.clo,c.ex]}));
+ sh[L('الطلاب','Students')]=[[L('الحالة','Status'),L('العدد','Count')]].concat(Object.keys(x.st).map(function(k){return [k,x.st[k]]}));
+ xl(sh,'accreditation-'+p.id+'-'+TODAY8());try{V5.aud(L('تصدير ملف الاعتماد','Accreditation file export'),String(p.id),'xlsx')}catch(e){}};
+H.acr118p=function(pid){var p=V5.prog(+pid||pid);if(!p)return;var x=stats(p),K=kpis(x),dc=decInfo(p),u=V5.pDept?V5.pDept(p):'',un=depts().find(function(d){return d.id===u}),I=(S.v51&&S.v51.inst)||{};
+ var tb=function(head,rows){return '<table><thead><tr>'+head.map(function(t){return '<th>'+e2(t)+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+e2(c==null?'—':c)+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'};
+ var html='<!doctype html><html lang="'+(LG==='en'?'en':'ar')+'" dir="'+(LG==='en'?'ltr':'rtl')+'"><head><meta charset="utf-8"><title>'+e2(L('ملف الاعتماد — ','Accreditation file — ')+pnm(p))+'</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#16202E;margin:28px;font-size:13px}h1{font-size:20px;margin:0 0 4px;color:#14284B}h2{font-size:15px;margin:22px 0 8px;color:#14284B;border-bottom:2px solid #9AA6AE;padding-bottom:4px}p{margin:4px 0}table{width:100%;border-collapse:collapse;margin:6px 0}th,td{border:1px solid #C9D1DA;padding:5px 7px;text-align:start}th{background:#EEF1F5}.hd{display:flex;justify-content:space-between;gap:12px;border-bottom:3px solid #14284B;padding-bottom:10px;margin-bottom:12px}.sg{display:flex;justify-content:space-between;margin-top:46px}.sg div{width:30%;border-top:1px solid #16202E;padding-top:6px;text-align:center}@media print{body{margin:12mm}h2{break-after:avoid}table{break-inside:auto}tr{break-inside:avoid}}</style></head><body>'+
+  '<div class="hd"><div><h1>'+e2(L('ملف الاعتماد الأكاديمي للبرنامج','Programme Accreditation File'))+'</h1><p><b>'+e2(pnm(p))+'</b></p><p>'+e2(un?L(un.nameAr,un.nameEn||un.nameAr):'')+'</p></div><div><p><b>'+e2(L(I.nameAr||'معهد التمهيد للدراسات الإسلامية واللغوية',I.nameEn||'At-Tamhid Institute'))+'</b></p>'+(dc.no?'<p>'+e2(L('قرار الاعتماد: ','Approval decision: '))+'<bdi dir="ltr">'+e2(dc.no)+'</bdi> — <bdi dir="ltr">'+e2(dc.date)+'</bdi></p>':'')+'<p>'+e2(L('تاريخ التقرير: ','Report date: '))+'<bdi dir="ltr">'+TODAY8()+'</bdi></p></div></div>'+
+  '<h2>'+e2(L('أولاً: مؤشرات الأداء الرئيسة','1. Key performance indicators'))+'</h2>'+tb([L('الرمز','Code'),L('المؤشر','Indicator'),L('القيمة','Value'),L('المستهدف','Target')],K.map(function(k){return [k[0],k[1],k[2],k[3]!=null?k[3]+'%':'—']}))+
+  '<h2>'+e2(L('ثانياً: المقررات','2. Courses'))+'</h2>'+tb([L('الرمز','Code'),L('المقرر','Course'),L('الساعات','Hours'),L('المدرّس','Teacher'),L('المسجلون','Registered'),L('النجاح','Pass'),L('نواتج التعلم','Outcomes'),L('الاختبارات','Exams')],x.crs.map(function(c){return [c.c.code||'',c.c.name,c.c.hrs,c.t?c.t.name:'—',c.reg,pct(c.pass),c.clo,c.ex]}))+
+  '<h2>'+e2(L('ثالثاً: الطلاب حسب الحالة','3. Students by status'))+'</h2>'+tb([L('الحالة','Status'),L('العدد','Count')],Object.keys(x.st).map(function(k){return [k,x.st[k]]}))+
+  '<h2>'+e2(L('رابعاً: هيئة التدريس','4. Faculty'))+'</h2>'+tb([L('المدرّس','Teacher'),L('المقررات','Courses'),L('المسجلون','Registered'),L('مرصود','Posted')],Object.keys(x.F).map(function(k){var f=x.F[k];return [f.f.name,f.n,f.reg,f.fin]}))+
+  '<div class="sg"><div>'+e2(L('رئيس القسم','Head of Department'))+'</div><div>'+e2(L('وحدة الجودة والاعتماد','Quality & Accreditation'))+'</div><div>'+e2(L('عميد المعهد','Dean of the Institute'))+'</div></div><script>setTimeout(function(){print()},300)<\/script></body></html>';
+ var w=window.open('','_blank');if(!w){toast(L('اسمح بالنوافذ المنبثقة لطباعة التقرير.','Allow pop-ups to print the report.'));return}w.document.open();w.document.write(html);w.document.close();try{V5.aud(L('طباعة ملف الاعتماد','Accreditation file printed'),String(p.id),'')}catch(e){}};
+})();
+
 
 
 
@@ -26276,7 +26466,7 @@ setInterval(function(){try{if(S!==lastS||anyVisible())hide();persist()}catch(e){
 <script>(function(){try{var im=new Image();im.onload=function(){if(im.naturalWidth&&im.naturalHeight)window.LGAR89=im.naturalWidth/im.naturalHeight};im.src=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}window.LGAR89=1600/431})();window.LOGOS=IMG108('logos-a2f6204d.webp');window.LOGOM=IMG108('logom-243bc940.webp');IMGH108('logos-a2f6204d.webp',function(v){window.LOGOS=v});IMGH108('logom-243bc940.webp',function(v){window.LOGOM=v});</script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v117';
+window.__BUILD__='v118';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}
