@@ -1002,7 +1002,7 @@ async function sbRefresh(){if(!sbAdmin||!sb)return;let ch=false;for(const k of [
 setInterval(sbRefresh,45000);
 /* ---- دخول الطالب والمعلم ---- */
 async function sbUserPull(role,ref){await sbPubPull();const q=async t=>{const {data}=await sb.from(t).select('id,data');return (data||[]).map(r=>r.data)};
- S.students=role=='student'?await q('students'):[];S.faculty=role=='faculty'?await q('faculty'):[];S.certs=await q('certs');S.docReqs=await q('doc_requests');S.subs=await q('submissions');S.requests=[];
+ S.students=(role=='student'||role=='faculty')?await q('students'):[];S.faculty=role=='faculty'?await q('faculty'):[];S.certs=await q('certs');S.docReqs=await q('doc_requests');S.subs=await q('submissions');S.requests=[];
  const {data:ex}=await sb.from('exams').select('id,data');S.exams=(ex||[]).map(r=>({...r.data,q:[]}));sbKnown.doc_requests=new Set(S.docReqs.map(o=>String(o.id)));save0()}
 async function sbUserLogin(v){const bad=()=>out('<div class="msg er">بيانات الدخول غير صحيحة أو الحساب معطّل.</div>');
  const {data:em}=await sb.rpc('login_email',{ident:v.u.trim()});if(!em){bad();return}
@@ -1727,7 +1727,7 @@ const mine=L.map(c=>c.id),stu=new Set();L.forEach(c=>fStu(c).forEach(s=>stu.add(
 const pend=S.students.reduce((n,s)=>n+Object.values(s.gr||{}).filter(g=>g.fin&&!g.rel&&g.tch==f.id).length,0);
 const wait=S.subs.filter(b=>b.st=='بانتظار التقييم'&&mine.includes((exFind(b.eid)||{}).courseId)).length;
 let b='';
-const sbNote=(typeof sb!=='undefined'&&sb&&typeof sbUser!=='undefined'&&sbUser&&!S.students.length)?'<div class="msg er">بيانات الطلاب غير متاحة لهذا الحساب على الخادم حالياً؛ يلزم إعداد صلاحيات الخادم للأساتذة (انظر ملاحظات التسليم).</div>':'';
+const sbNote=(typeof sb!=='undefined'&&sb&&typeof sbUser!=='undefined'&&sbUser&&L.length&&!S.students.length)?'<div class="msg">'+(typeof LG!=='undefined'&&LG==='en'?'No students are registered in your courses yet.':'لا يوجد طلاب مسجَّلون في مقرراتك بعد.')+'</div>':'';
 if(ftab=='dash'){
 b=`<div class="grid">${kp(L.length,'مقررات مسندة إليك')}${kp(stu.size,'طلاب في مقرراتك')}${kp(wait,'تسليمات بانتظار تقييمك')}${kp(pend,'درجات بانتظار اعتماد الإدارة')}</div>`
 +`<h3>مقرراتي</h3>`+tbl(['الرمز','المقرر','المستوى','الساعات','الطلاب','الاختبارات',''],L.map(c=>`<tr><td>${esc(c.code||'—')}</td><td>${esc(c.name)}</td><td>${c.term}</td><td>${c.hrs}</td><td>${fStu(c).length}</td><td>${S.exams.filter(e=>e.courseId==c.id).length}</td><td><button class="btn s" onclick="fcs='${c.id}';ftab='gr';go()">رصد الدرجات</button> <button class="btn s" onclick="fcs='${c.id}';ftab='st';go()">الطلاب</button></td></tr>`))
@@ -19875,7 +19875,7 @@ H.pwM=function(id){if(!isCentral())return onlyCentral();H.reset63(id)};
 H.reset63=function(ref){if(!isCentral())return onlyCentral();if(!confirm(L('إعادة تعيين كلمة المرور للحساب ','Reset the password of ')+ref+L('؟ ستُولَّد كلمة مرور أولى جديدة ويُلزم صاحبها بتغييرها.','? A new initial password will be generated and must be changed at next sign-in.')))return;
  (async function(){var r=await fn({action:'reset',ref_id:ref,days:cfg().initDays});if(!r.ok){toast(L('تعذّرت إعادة التعيين: ','Reset failed: ')+(r.error||''));return}
   V5.acc63[ref]=r.view||V5.acc63[ref];V5.shown63[ref]={pw:r.password,exp:r.expires};try{aud(L('إعادة تعيين كلمة مرور (الإدارة المركزية)','Password reset (central administration)'),ref,'')}catch(e){}if(!V5.stay77){tab='v63a';V5.f63=ref;location.hash='#/admin'}V5.stay77=0;go()})()};
-H.reveal63=function(ref){if(!isCentral())return onlyCentral();(async function(){var r=await fn({action:'reveal',ref_id:ref});if(!r.ok){toast(r.error==='gone'?L('غُيّرت كلمة المرور الأولى ولم تعد متاحة.','The initial password was changed and is no longer available.'):r.error==='expired'?L('انتهت صلاحية كلمة المرور الأولى؛ أعد التعيين.','The initial password expired; reset it.'):L('تعذّر العرض: ','Could not show: ')+(r.error||''));await refresh();go();return}
+H.reveal63=function(ref){if(!isCentral())return onlyCentral();(async function(){var r=await fn({action:'reveal',ref_id:ref});if(!r.ok){toast(r.error==='gone'?L('غيّرها صاحبها قبل تفعيل الحفظ؛ أعد التعيين لتظهر.','Changed before saving was enabled; reset to show it.'):r.error==='expired'?L('انتهت صلاحية كلمة المرور الأولى؛ أعد التعيين.','The initial password expired; reset it.'):L('تعذّر العرض: ','Could not show: ')+(r.error||''));await refresh();go();return}
  V5.shown63[ref]={pw:r.password,exp:r.expires};try{aud(L('عرض كلمة مرور أولى','Initial password shown'),ref,'')}catch(e){}go()})()};
 H.hide63=function(ref){delete V5.shown63[ref];go()};
 H.unlock63=function(ref){(async function(){var r=await fn({action:'unlock',ref_id:ref});if(r.ok)V5.acc63[ref]=r.view;go()})()};
@@ -19894,10 +19894,10 @@ function tab63(){if(!isCentral())return '<p class="msg er">'+L('هذه الخد�
  if(!V5.accAt63&&!V5._ld63&&!(V5.accFail63&&Date.now()-V5.accFail63<60000)){V5._ld63=1;refresh().then(function(r){V5._ld63=0;if(r&&r.ok){provision().then(function(){if(tab==='v63a')go()},function(){})}else{V5.accFail63=Date.now();if(tab==='v63a')go()}},function(){V5._ld63=0;V5.accFail63=Date.now()})}
  var c=cfg(),E=entities(),q=(V5.q63||'').toLowerCase(),fk=V5.k63||'',A=V5.acc63,miss=E.filter(function(e){return !A[e.ref]}).length;
  var rows=E.filter(function(e){return (!fk||e.role===fk)&&(!q||(e.ref+' '+(e.name||'')).toLowerCase().indexOf(q)>-1)}).map(function(e){var a=A[e.ref],s=V5.shown63[e.ref],pwc;
-  if(s)pwc='<b dir="ltr" class="pw63">'+e3(s.pw)+'</b><br><small class="mu">'+L('صالحة حتى ','Valid until ')+e3(String(s.exp||'').slice(0,10))+'</small><br>'+bt(L('إخفاء','Hide'),"V51.h.hide63('"+e.ref+"')")+' '+bt(L('إرسال البريد','Send Email'),"V51.h.mail64('"+e.ref+"','reset')",'');
-  else if(a&&a.has_init)pwc=bt(L('عرض كلمة المرور الأولى','Show initial password'),"V51.h.reveal63('"+e.ref+"')");
+  if(s)pwc='<b dir="ltr" class="pw63">'+e3(s.pw)+'</b><br><small class="mu">'+(s.exp?L('صالحة حتى ','Valid until ')+e3(String(s.exp).slice(0,10)):L('الحالية — اختارها صاحب الحساب','Current — chosen by the owner'))+'</small><br>'+bt(L('إخفاء','Hide'),"V51.h.hide63('"+e.ref+"')")+' '+bt(L('إرسال البريد','Send Email'),"V51.h.mail64('"+e.ref+"','reset')",'');
+  else if(a&&a.has_init)pwc=bt(a.must_change===false?L('عرض كلمة المرور الحالية','Show current password'):L('عرض كلمة المرور الأولى','Show initial password'),"V51.h.reveal63('"+e.ref+"')");
   else if(a&&a.expired)pwc='<span class="mu">'+L('منتهية — أعد التعيين','Expired — reset')+'</span>';
-  else if(a)pwc='<span class="mu">'+L('مخفية نهائياً بعد التغيير','Hidden permanently after the change')+'</span>';else pwc='—';
+  else if(a)pwc='<span class="mu">'+L('غيّرها صاحبها قبل تفعيل الحفظ — أعد التعيين لتظهر هنا','Changed before saving was enabled — reset to show it here')+'</span>';else pwc='—';
   return '<tr'+(V5.f63===e.ref?' class="hl63"':'')+'><td dir="ltr"><b>'+e3(e.ref)+'</b></td><td>'+e3(e.name||'')+'</td><td>'+L(KL[e.role][0],KL[e.role][1])+'</td><td>'+STL(a)+'</td><td>'+pwc+'</td><td dir="ltr"><small>'+(a&&a.last_login?e3(a.last_login.slice(0,16).replace('T',' ')):'—')+'</small></td><td>'+bt(L('إعادة التعيين','Reset'),"V51.h.reset63('"+e.ref+"')")+(a&&a.locked?' '+bt(L('فتح القفل','Unlock'),"V51.h.unlock63('"+e.ref+"')"):'')+'</td></tr>'});
  var h='<p class="mu">'+L('لا تُحفظ أي كلمة مرور مكشوفة. تظهر كلمة المرور الأولى هنا للإدارة المركزية فقط حتى يدخل صاحب الحساب ويغيّرها، ثم تُحذف نهائياً ولا يراها أحد. يُسجَّل كل عرض وإعادة تعيين ودخول في سجل التدقيق.','No password is stored in clear text. The initial password appears here for the central administration only until the owner signs in and changes it; then it is deleted permanently and nobody can see it. Every view, reset and sign-in is audited.')+'</p>'+
   (V5.accErr63?'<div class="msg er">'+(V5.accErr63==='fn_unavailable'?L('الدالة الطرفية v63-accounts غير منشورة على الخادم. انشرها ثم أعد المحاولة.','The v63-accounts edge function is not deployed. Deploy it, then retry.'):V5.accErr63==='mfa_required'?L('أكمل التحقق الثنائي أولاً.','Complete two-factor verification first.'):e3(V5.accErr63))+'</div>':'')+
@@ -24709,7 +24709,7 @@ function cell(e){var A=V5.acc63||{},a=A[e.ref],s=(V5.shown63||{})[e.ref],pw;
  if(s)pw='<b dir="ltr" class="pw63">'+e7(s.pw)+'</b> '+bt(L('إخفاء','Hide'),"V51.h.hide63('"+e.ref+"')",'s');
  else if(a&&a.has_init)pw=bt(L('عرض كلمة المرور','Show password'),"V51.h.reveal63('"+e.ref+"')",'s');
  else if(a&&a.expired)pw='<span class="mu">'+L('انتهت صلاحيتها','Expired')+'</span>';
- else if(a)pw='<span class="mu" title="'+e7(L('غيّرها صاحب الحساب فلا يعرفها غيره؛ أعد التعيين لإصدار كلمة جديدة تظهر هنا.','Changed by the owner, so only they know it; reset to issue a new one shown here.'))+'</span>'+L('غيّرها صاحب الحساب','Changed by the owner')+'</span>';
+ else if(a)pw='<span class="mu" title="'+e7(L('غيّرها صاحبها قبل تفعيل الحفظ؛ أعد التعيين لتظهر هنا.','Changed before saving was enabled; reset to show it here.'))+'</span>'+L('غيّرها صاحب الحساب','Changed by the owner')+'</span>';
  else pw='<span class="mu">'+L('لم يُنشأ الحساب بعد','Account not created yet')+'</span>';
  return '<div class="cr77"><div><small class="mu">'+L('الرقم','No.')+':</small> <b dir="ltr">'+e7(e.ref)+'</b></div><div><small class="mu">'+L('البريد','Email')+':</small> <span dir="ltr">'+e7(e.email||(e.o&&e.o.email)||'—')+'</span></div><div><small class="mu">'+L('كلمة المرور','Password')+':</small> '+pw+'</div><div>'+bt(L('إعادة تعيين كلمة المرور','Reset password'),"V51.stay77=1;V51.h.reset63('"+e.ref+"')",'s')+'</div></div>'}
 function post(){if(!central()||!TABS[tab])return;load();

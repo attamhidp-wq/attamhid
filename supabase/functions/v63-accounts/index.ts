@@ -139,7 +139,8 @@ Deno.serve(async (req) => {
       st.login = { ok: lg.ok, must_change: lg.must_change, session: !!lg.session };
       const { data: a } = await admin.from("v83_acc").select("user_id").eq("ref_id", ref).single();
       st.change = await accChange(a!.user_id, "NewPassw0rd99");
-      st.reveal2 = await accAdmin("reveal", { ref_id: ref }, fake);
+      const rv2 = await accAdmin("reveal", { ref_id: ref }, fake) as { password?: string; current?: boolean };
+      st.reveal2 = { same: rv2.password === "NewPassw0rd99", current: rv2.current };
       const lg2 = await accLogin(ref, "NewPassw0rd99") as { ok?: boolean; must_change?: boolean };
       st.login2 = { ok: lg2.ok, must_change: lg2.must_change };
       st.list = ((await accAdmin("list", {}, fake)) as { items?: unknown[] }).items?.length;
@@ -196,7 +197,11 @@ Deno.serve(async (req) => {
     const b = body as MailIn & { type?: string; ref_id?: string };
     if (!b.to || !EMAIL.test(String(b.to))) return json({ error: "no_email" });
     const payload = { to: b.to, subject: b.subject, html: b.html, text: b.text, cred_with: b.cred_with, cred_with_text: b.cred_with_text, cred_without: b.cred_without, cred_without_text: b.cred_without_text, from_name: b.from_name, reply_to: b.reply_to, attachments: b.attachments };
-    const pw = await initPw(b.ref_id);
+    let pw = await initPw(b.ref_id);
+    if (!pw && b.ref_id && KIND(String(b.ref_id)) && ["admit", "appoint", "reset"].includes(String(b.type || ""))) {
+      const { data: ex } = await admin.from("v83_acc").select("user_id").eq("ref_id", String(b.ref_id)).maybeSingle();
+      if (!ex) { await accAdmin("ensure", { items: [{ ref_id: String(b.ref_id) }] }, me); pw = await initPw(b.ref_id); }
+    }
     const { data: row } = await admin.from("v63_mail_log").insert({ type: b.type || null, ref_id: b.ref_id || null, to_addr: String(b.to), subject: String(b.subject || "").slice(0, 300), by_user: me.id, payload, attempts: 1 }).select("id").single();
     try {
       await deliver({ ...payload, pw });
@@ -312,7 +317,8 @@ async function accAdmin(action: string, body: Record<string, unknown>, me: { id:
       if (!role) { out.push({ ref_id: ref, error: "bad_id" }); continue; }
       const { data: ex } = await admin.from("v83_acc").select("*").eq("ref_id", ref).maybeSingle();
       if (ex) { out.push(view(ex as Acc)); continue; }
-      const h = await holder(ref, role);
+      let h = await holder(ref, role);
+      for (let i = 0; !h && i < 8; i++) { await new Promise((r) => setTimeout(r, 1000)); h = await holder(ref, role); }
       if (!h) { out.push({ ref_id: ref, error: "not_found" }); continue; }
       const pw = genPw();
       let uid = "";
@@ -382,9 +388,9 @@ async function accAdmin(action: string, body: Record<string, unknown>, me: { id:
   if (!a) return { error: "not_found" };
   if (action === "reveal") {
     if (!a.init_enc) return { error: "gone" };
-    if (a.init_exp && Date.parse(a.init_exp) < Date.now()) return { error: "expired" };
+    if (a.must_change && a.init_exp && Date.parse(a.init_exp) < Date.now()) return { error: "expired" };
     await alog("reveal", ref, by);
-    return { ok: true, password: await dec(a.init_enc), expires: a.init_exp };
+    return { ok: true, password: await dec(a.init_enc), expires: a.init_exp, current: !a.must_change };
   }
   if (action === "unlock") {
     const { data } = await admin.from("v83_acc").update({ fails: 0, locked_until: null }).eq("user_id", a.user_id).select("*").single();
@@ -428,11 +434,13 @@ async function accLogin(ident: string, password: string) {
 async function accChange(uid: string, password: string) {
   if (!strong(password)) return { error: "weak" };
   const { data: a } = await admin.from("v83_acc").select("ref_id,init_enc").eq("user_id", uid).maybeSingle();
-  if (a?.init_enc && (await dec(a.init_enc)) === password) return { error: "weak" };
+  const { data: mc } = await admin.from("v83_acc").select("must_change").eq("user_id", uid).maybeSingle();
+  if (mc?.must_change && a?.init_enc && (await dec(a.init_enc)) === password) return { error: "weak" };
   const up = await admin.auth.admin.updateUserById(uid, { password });
   if (up.error) return { error: "weak", detail: up.error.message };
   if (a) {
-    await admin.from("v83_acc").update({ init_enc: null, init_exp: null, must_change: false, changed_at: new Date().toISOString() }).eq("user_id", uid);
+    // v83.1: بطلب الإدارة تبقى نسخة مشفّرة من كلمة المرور الحالية لتعرضها الإدارة المركزية وحدها (كل عرض يُسجَّل)
+    await admin.from("v83_acc").update({ init_enc: await enc(password), init_exp: null, must_change: false, changed_at: new Date().toISOString() }).eq("user_id", uid);
     await alog("pw_changed", a.ref_id, a.ref_id);
   }
   return { ok: true };

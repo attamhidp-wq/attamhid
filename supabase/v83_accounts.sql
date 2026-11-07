@@ -18,3 +18,6 @@ create table if not exists public.v63_rc_fail(user_id uuid not null, at timestam
 
 -- v83_retire_old_faculty_ids: حُذفت نسخ هيئة التدريس القديمة TF-2026-001..004 (مكررة بأرقامها الجديدة 12026001..004)
 -- وأضيفت إلى v81_retired مع مشغّل v81_block_retired على faculty حتى لا ترجع من أي متصفح.
+
+-- v83_faculty_course_students: الأستاذ يقرأ ويحدّث (رصد الدرجات) طلاب مقرراته فقط، ويقرأ تسليمات اختبارات مقرراته
+-- الدالة v83_my_teach() تُرجع مقررات الأستاذ من faculty.data.teach ؛ سياسات: v83_fac_read_students, v83_fac_grade_students, v83_fac_read_subs, v83_fac_grade_subs
