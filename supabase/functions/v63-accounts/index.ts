@@ -1,4 +1,4 @@
-// v63-accounts (v115) — البريد الرسمي (Resend بنطاق المعهد + Gmail احتياطي)، الإشعارات، «نسيت كلمة المرور»، الحسابات
+// v63-accounts (v119) — البريد الرسمي (Resend بنطاق المعهد + Gmail احتياطي)، الإشعارات، «نسيت كلمة المرور»، الحسابات
 // العمليات: probe, selftest, mail_status, mail_ready, mail, mail_log, retry_due
 // v83 — الحسابات: list, ensure, reset, reveal, unlock, log, login, change, rename, remove, purge, rc_generate, rc_use, rc_status
 // بيانات Gmail: أسرار الدالة GMAIL_USER/GMAIL_APP_PASSWORD، أو الخزنة المشفّرة (vault: gmail_user, gmail_app_password)
@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
   const action = String(body.action || "");
   await loadCred(["mail_test", "mail_status", "mail_ready", "probe"].includes(action));
 
-  if (action === "probe") return json({ ok: true, v: "v115-accounts", mail: ON, provider: PROVIDER() });
+  if (action === "probe") return json({ ok: true, v: "v119-accounts", mail: ON, provider: PROVIDER() });
 
   // فحص ذاتي من الخادم: يرسل رسالة اختبار إلى بريد المعهد نفسه؛ محمي برمز في الخزنة
   if (action === "selftest") {
@@ -664,7 +664,7 @@ async function notifyRun() {
   const { data: q } = await admin.from("v108_notify").select("*").eq("status", "pending").lt("tries", 5).order("id").limit(300);
   if (!q || !q.length) return { sent: 0, failed: 0 };
   // v113: إشعارات الأقسام وإدارة القبول والمدرّسين والتقرير اليومي — تُعالَج منفصلة عن إشعارات الطلاب
-  const SK = ["app_new", "app_pre", "teach", "daily", "reg_pend", "risk", "alumni", "backup"];
+  const SK = ["app_new", "app_pre", "teach", "daily", "reg_pend", "risk", "alumni", "backup", "msg"];
   const sq = q.filter((r) => SK.includes(r.kind));
   const staffRes = sq.length ? await staffRun(sq) : null;
   q.splice(0, q.length, ...q.filter((r) => !SK.includes(r.kind)));
@@ -834,6 +834,18 @@ async function staffRun(q: Array<Record<string, any>>) {
           ar: String(r.data?.body || ""), en: "This message from the Institute to its graduates is in Arabic above.",
           btn: { url: B.base + "?p=" + encodeURIComponent(per.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" } };
       }
+    } else if (r.kind === "msg") {
+      // v119: رسالة عامة لشخص (طالب/مدرّس/موظف): تذكيرات التقويم وتحديثات الجدول
+      const kind = KIND(String(r.ref_id)), tbl = kind ? TBL[kind] : "";
+      const { data: prow } = tbl ? await admin.from(tbl).select("id,data").eq("id", String(r.ref_id)).maybeSingle() : { data: null };
+      const pd = (prow?.data || {}) as Record<string, unknown>;
+      const per = person(String(r.ref_id), pd);
+      if (!prow || pd.deleted || !EMAIL.test(per.email)) { await fin(r, "skipped", "no_email"); skipped++; continue; }
+      to = [per.email];
+      const d = (r.data || {}) as Record<string, string>;
+      t = { subject: `${d.subj || "رسالة من المعهد"}${d.subjEn ? " / " + d.subjEn : ""}`, titleAr: d.subj || "رسالة من المعهد", titleEn: d.subjEn || "A Message from the Institute", dearAr: dearA(per, kind === "student" ? "student" : "staff"), dearEn: dearE(per),
+        ar: d.body || "", en: d.bodyEn || "Details are in Arabic above.",
+        btn: { url: B.base + "?p=" + encodeURIComponent(per.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" } };
     } else if (r.kind === "backup") {
       to = central;
       const { data: bj, error: be } = await admin.rpc("v115_backup_json");

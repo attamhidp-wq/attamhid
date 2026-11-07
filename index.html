@@ -22112,7 +22112,7 @@ var termNm=function(id){try{var t=V5.termById61(id);if(t){var N=V5.termNames61(t
 
 /* ---------- قواعد التسجيل لكل برنامج (افتراضات معقولة قابلة للتعديل) ---------- */
 function rules(p){var e=(p&&p.eng)||{},r=e.reg115||{},lv=Math.max(1,+e.levels||1),tot=+((e.grad||{}).hours)||(V5.pCourses(p)||[]).reduce(function(a,c){return a+(+c.hrs||0)},0)||lv*15,avg=tot/lv;
- return {from:r.from||'',to:r.to||'',term:r.term||'',minH:r.minH!=null?+r.minH:Math.max(3,Math.round(avg*0.7)),maxH:r.maxH!=null?+r.maxH:Math.round(avg*1.3),
+ var cw=(!r.from||!r.to)&&V5.calReg119?V5.calReg119():null;return {from:r.from||(cw&&cw.s)||'',to:r.to||(cw&&cw.e)||'',term:r.term||(cw&&cw.tid)||'',minH:r.minH!=null?+r.minH:Math.max(3,Math.round(avg*0.7)),maxH:r.maxH!=null?+r.maxH:Math.round(avg*1.3),
   dMin:r.dMin!=null?+r.dMin:(lv>=6?lv-1:lv),dNorm:r.dNorm!=null?+r.dNorm:lv,dMax:r.dMax!=null?+r.dMax:lv+Math.ceil(lv/2),levels:lv,hours:tot}}
 V5.rules115=rules;
 var open=function(R){var d=TODAY5();return !!(R.from&&R.to&&d>=R.from&&d<=R.to)};
@@ -22282,6 +22282,10 @@ function newRecord(old,pid,o){o=o||{};var p=V5.prog(+pid||pid);if(!old||!p)retur
  return s}
 V5.newRecord116=newRecord;
 /* إنشاء الحسابات على الخادم للسجلات الجديدة (بعد وصولها إلى الخادم) */
+/* إرسال خطاب القبول وبيانات الدخول تلقائياً للسجل الجديد (بعد وصوله إلى الخادم)، مرة واحدة */
+function mailNew(ids){ids=(ids||[]).filter(Boolean);if(!ids.length||!V5.autoMail64)return;var ch=0;ids.forEach(function(id){var s=(S.students||[]).find(function(x){return x.id==id});if(s&&!s.mail116){s.mail116=NOW6();s.u=NOW6();ch=1}});if(ch)save();
+ setTimeout(function(){ids.forEach(function(id){try{V5.autoMail64(id,'admit')}catch(e){console.error('v116 mail',e)}})},9000)}
+V5.mailNew116=mailNew;
 function accounts(ids){if(!ids.length||!V5.fn63)return;setTimeout(function(){V5.fn63({action:'ensure',days:(V5.cfg63?V5.cfg63().initDays:14),items:ids.map(function(i){return {ref_id:i}})}).then(function(r){try{V5.refresh63&&V5.refresh63()}catch(e){}console.info('v116 accounts',r)}).catch(function(e){console.warn('v116 accounts',e)})},9000)}
 /* «تسجيل طالب في البرنامج»: سجل جديد بدل قيد داخل السجل القديم */
 H.enrol=function(f){var p=V5.prog(+V5.ui.pid||V5.ui.pid),sid=String((f.elements.sid||{}).value||''),s=(S.students||[]).find(function(x){return x.id==sid});if(!s||!p)return false;
@@ -22289,7 +22293,7 @@ H.enrol=function(f){var p=V5.prog(+V5.ui.pid||V5.ui.pid),sid=String((f.elements.
  if(dup){toast(L('لهذا الطالب سجل في هذا البرنامج: ','This student already has a record in this programme: ')+dup.id);return false}
  if(!confirm(L('سيُنشأ للطالب سجل جديد برقم أكاديمي جديد وحساب جديد في «'+p.name+'»، ولا يُنقل إليه إلا بياناته الشخصية. متابعة؟','A new record with a new academic number and a new account will be created for the student in «'+(p.eng&&p.eng.nameEn||p.name)+'»; only personal data is copied. Continue?')))return false;
  var n=newRecord(s,p.id,{});if(!n){toast(L('تعذّر توليد رقم أكاديمي جديد.','Could not generate a new academic number.'));return false}
- save();accounts([n.id]);toast(L('أُنشئ السجل الجديد برقم ','New record created with number ')+n.id+L('، وصدر خطاب قبوله.','; its acceptance letter was issued.'));go();return false};
+ save();mailNew([n.id]);toast(L('أُنشئ السجل الجديد برقم ','New record created with number ')+n.id+L('، وصدر خطاب قبوله.','; its acceptance letter was issued.'));go();return false};
 /* تحويل القيود الإضافية القديمة إلى سجلات مستقلة (مرة واحدة، من الإدارة المركزية) */
 function migrate(){if(!central()||!S.students)return;var made=[];
  S.students.slice().forEach(function(s){if(s.deleted||!s.en51)return;var keep=[];s.en51.forEach(function(e){
@@ -22298,11 +22302,109 @@ function migrate(){if(!central()||!S.students)return;var made=[];
   if(exists){return}
   var n=newRecord(s,e.pid,{no:e.no,from:e.from,admTerm:e.admTerm});if(n){made.push(n.id)}else keep.push(e)});
   if(keep.length!==s.en51.length){s.en51=keep;s.u=NOW6()}});
- if(made.length){save();accounts(made);toast(L('أُنشئت سجلات مستقلة جديدة: ','New separate records created: ')+made.join('، '))}}
+ if(made.length){save();toast(L('أُنشئت سجلات مستقلة جديدة: ','New separate records created: ')+made.join('، '))}
+ /* السجلات الجديدة التي لم يصلها خطاب القبول بعد */
+ var unsent=(S.students||[]).filter(function(x){return !x.deleted&&x.from116&&!x.mail116&&x.email}).map(function(x){return x.id});if(unsent.length){mailNew(unsent);toast(L('يُرسل خطاب القبول وبيانات الدخول إلى: ','Sending the acceptance letter and sign-in details to: ')+unsent.join('، '))}}
 V5.migrate116=migrate;
 GOH.post.push(function(){try{if(/^#\/admin/.test(location.hash||'')&&V5.banksReady81!==false)migrate()}catch(e){console.error('v116 migrate',e)}});
 /* لم تعد أرقام القيود الإضافية تُولَّد (لكل مرحلة سجلها) */
 V5.ensureNos115=function(){};
+})();
+
+/* =====================================================================
+   v119 — التقويم التلقائي (التسجيل والرصد)، بطاقة الطالب الشاملة، حماية رفع الملفات
+   ===================================================================== */
+(function(){
+var e2=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var Qs=function(x){return String(x).replace(/\\/g,'\\\\').replace(/'/g,"\\'")};
+var H=V5.h,W=window,TODAY9=function(){return new Date(Date.now()+3*3600e3).toISOString().slice(0,10)};
+var isAdm=function(){return typeof me!=='undefined'&&me&&me.r==='admin'&&!V5.imp64};
+var central=function(){return isAdm()&&!me.unit};
+var pnm=function(p){return p?L(p.name,(p.eng&&p.eng.nameEn)||p.name):'—'};
+
+/* ---------- 1) التقويم: فئة «رصد الدرجات»، وفترة التسجيل، وفتح الرصد وإغلاقه ---------- */
+try{if(V5.CATS61&&!V5.CATS61.grade)V5.CATS61.grade=['رصد الدرجات','Grade entry','#8a5a00']}catch(e){}
+function events(){var o=[];try{var c=V5.cal61&&V5.cal61();((c&&c.years)||[]).forEach(function(y){(y.terms||[]).forEach(function(t){(t.events||[]).forEach(function(e){if(e&&/^\d{4}-\d{2}-\d{2}$/.test(e.start||''))o.push({tid:t.id,cat:e.cat,s:e.start,e:e.end||e.start,ar:e.ar,en:e.en})})})})}catch(x){}return o}
+/* فترة تسجيل المقررات من التقويم: الجارية اليوم، وإلا القادمة (للعرض) */
+V5.calReg119=function(){var d=TODAY9(),E=events().filter(function(e){return e.cat==='reg'});var cur=E.find(function(e){return d>=e.s&&d<=e.e});if(cur)return cur;
+ return E.filter(function(e){return e.s>d}).sort(function(a,b){return a.s<b.s?-1:1})[0]||null};
+/* فترة الرصد: «رصد الدرجات» إن وُجدت، وإلا من بداية الاختبارات إلى إعلان النتائج */
+function gradeWins(){var E=events(),T={};E.forEach(function(e){(T[e.tid]=T[e.tid]||[]).push(e)});var W2=[];
+ Object.keys(T).forEach(function(k){var L2=T[k],g=L2.filter(function(e){return e.cat==='grade'});if(g.length){g.forEach(function(e){W2.push(e)});return}
+  var ex=L2.filter(function(e){return e.cat==='exam'}).map(function(e){return e.s}).sort()[0],rs=L2.filter(function(e){return e.cat==='results'}).map(function(e){return e.e}).sort().pop();if(ex&&rs)W2.push({tid:k,s:ex,e:rs})});return W2}
+V5.gradeOpen119=function(){var W2=gradeWins();if(!W2.length)return true;var d=TODAY9();return W2.some(function(w){return d>=w.s&&d<=w.e})};
+V5.gradeNext119=function(){var d=TODAY9();return gradeWins().filter(function(w){return w.s>d}).sort(function(a,b){return a.s<b.s?-1:1})[0]||null};
+/* بوابة المدرّس: الرصد مغلق خارج فترته (الخادم يرفضه أيضاً) */
+GOH.post.push(function(){try{if(typeof me==='undefined'||!me||me.r!=='faculty'||typeof ftab==='undefined'||ftab!=='gr')return;if(V5.gradeOpen119())return;
+ var app=document.getElementById('app');if(!app||app.querySelector('.gc119'))return;var nx=V5.gradeNext119();
+ var b=document.createElement('div');b.className='msg gc119';b.setAttribute('role','status');b.innerHTML='<b>'+L('رصد الدرجات مغلق الآن.','Grade entry is closed now.')+'</b> '+(nx?L('يُفتح تلقائياً من ','It opens automatically from ')+'<bdi dir="ltr">'+e2(nx.s)+'</bdi>'+L(' إلى ',' to ')+'<bdi dir="ltr">'+e2(nx.e)+'</bdi>.':L('تفتحه الإدارة في التقويم الأكاديمي.','The administration opens it in the academic calendar.'));
+ var tabs=app.querySelector('.tabs');(tabs&&tabs.parentNode===app?tabs.nextSibling:null)?app.insertBefore(b,tabs.nextSibling):app.insertBefore(b,app.firstChild);
+ app.querySelectorAll('form input,form select,form textarea,form button').forEach(function(x){if(!x.closest('.tabs'))x.disabled=true})}catch(e){}});
+
+/* ---------- 2) بطاقة الطالب الشاملة ---------- */
+var SC9=V5.__c119||(V5.__c119={q:'',id:''});
+function findStu(q){q=String(q||'').trim().toLowerCase();if(!q)return [];return (S.students||[]).filter(function(s){return !s.deleted&&(String(s.id)===q||String(s.pid||'').toLowerCase()===q||String(s.name||'').toLowerCase().indexOf(q)>-1||String(s.nameEn||'').toLowerCase().indexOf(q)>-1||String(s.email||'').toLowerCase()===q)}).slice(0,30)}
+function linked(s){var out=[];(S.students||[]).forEach(function(x){if(x.deleted||x.id==s.id)return;var same=(s.pid&&x.pid&&String(x.pid)===String(s.pid))||(x.from116&&x.from116.id==s.id)||(s.from116&&s.from116.id==x.id);if(same)out.push(x)});return out}
+function gpaOf(s){try{var k=window.gpa5&&window.gpa5(s,0,1);var g=k&&k.gpa;return g==null||g===''||isNaN(+g)?null:(+g).toFixed(2)}catch(e){return null}}
+var row=function(k,v){return '<tr><th scope="row" style="width:34%">'+e2(k)+'</th><td>'+(v==null||v===''?'<span class="mu">—</span>':v)+'</td></tr>'};
+function card(s){var p=V5.prog(+s.prog||s.prog),g=gpaOf(s),Ln=linked(s);
+ var h='<div class="g112">'+[[e2(s.id),L('الرقم الأكاديمي','Academic no.')],[e2(s.status||'منتظم'),L('الحالة','Status')],[e2(s.lvl||1),L('المستوى','Level')],[g==null?'—':g,L('المعدل التراكمي','GPA')],[(s.reg||[]).length,L('مقررات مسجلة','Registered courses')]].map(function(k){return '<div class="k112"><b>'+k[0]+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>';
+ h+='<h4>'+L('البيانات الشخصية','Personal data')+'</h4><table class="v51t">'+row(L('الاسم','Name'),e2(s.name))+row(L('الاسم بالإنجليزية','Name (English)'),'<bdi dir="ltr">'+e2(s.nameEn||'')+'</bdi>')+row(L('الجنس','Sex'),e2(s.sex||''))+row(L('الجنسية','Nationality'),e2(s.nat||''))+row(L('تاريخ الميلاد ومكانه','Date & place of birth'),'<bdi dir="ltr">'+e2(s.dob||'')+'</bdi> '+e2(s.pob||''))+row(L('رقم الجواز / الهوية','Passport / ID'),'<bdi dir="ltr">'+e2(s.pid||'')+'</bdi>')+row(L('البريد','Email'),'<bdi dir="ltr">'+e2(s.email||'')+'</bdi>')+row(L('الهاتف','Phone'),'<bdi dir="ltr">'+e2(s.phone||'')+'</bdi>')+row(L('البرنامج','Programme'),e2(pnm(p)))+row(L('فصل القبول','Admission term'),e2(s.admTerm||''))+'</table>';
+ if(Ln.length)h+='<h4>'+L('سجلات أخرى للشخص نفسه (للإدارة فقط)','Other records of the same person (admin only)')+'</h4>'+T([L('الرقم','No.'),L('البرنامج','Programme'),L('الحالة','Status'),''],Ln.map(function(x){return '<tr><td dir="ltr">'+e2(x.id)+'</td><td>'+e2(pnm(V5.prog(+x.prog||x.prog)))+'</td><td>'+e2(x.status||'منتظم')+'</td><td><button type="button" class="btn s" onclick="V51.h.c119o(\''+Qs(x.id)+'\')">'+L('فتح البطاقة','Open card')+'</button></td></tr>'}));
+ var R=(S.requests||[]).filter(function(r){return !r.deleted&&(r.sid==s.id||(s.pid&&r.pid&&String(r.pid)===String(s.pid)))});
+ h+='<h4>'+L('طلبات التسجيل','Applications')+' ('+R.length+')</h4>'+(R.length?T([L('الطلب','Application'),L('البرنامج','Programme'),L('الحالة','Status'),L('التاريخ','Date')],R.map(function(r){return '<tr><td dir="ltr">'+e2(r.id)+'</td><td>'+e2(pnm(V5.prog(+r.prog||r.prog)))+'</td><td>'+e2(r.status||'')+'</td><td><bdi dir="ltr">'+e2(String(r.date||r.at||'').slice(0,10))+'</bdi></td></tr>'})):'<p class="mu">'+L('لا طلبات.','None.')+'</p>');
+ var C=(S.certs||[]).filter(function(c){return c.sid==s.id});
+ h+='<h4>'+L('الوثائق الصادرة','Issued documents')+' ('+C.length+')</h4>'+(C.length?T([L('النوع','Type'),L('الرقم المرجعي','Reference'),L('التاريخ','Date'),L('الحالة','Status')],C.map(function(c){return '<tr><td>'+e2(c.type)+'</td><td dir="ltr">'+e2(c.rec||'')+'</td><td><bdi dir="ltr">'+e2(c.date||'')+'</bdi></td><td>'+(c.revoked?'<span class="tag er">'+L('ملغاة','Revoked')+'</span>':'<span class="tag ok">'+L('سارية','Valid')+'</span>')+'</td></tr>'})):'<p class="mu">'+L('لا وثائق.','None.')+'</p>');
+ var D=(S.docReqs||[]).filter(function(d){return d.uid==s.id});
+ h+='<h4>'+L('طلبات الوثائق والتسجيل','Document & registration requests')+' ('+D.length+')</h4>'+(D.length?T([L('الطلب','Request'),L('النوع','Type'),L('الحالة','Status'),L('التاريخ','Date')],D.map(function(d){return '<tr><td dir="ltr">'+e2(d.id)+'</td><td>'+e2(d.type)+'</td><td>'+e2(d.status||'')+'</td><td><bdi dir="ltr">'+e2(String(d.date||'').slice(0,10))+'</bdi></td></tr>'})):'<p class="mu">'+L('لا طلبات.','None.')+'</p>');
+ var Q=(s.eq112||[]),RG=(s.reg115||[]);if(Q.length||RG.length)h+='<h4>'+L('المعادلات والتسجيل الفصلي','Equivalencies & term registration')+'</h4><p>'+L('طلبات معادلة: ','Equivalency requests: ')+Q.length+' · '+L('تسجيلات فصلية: ','Term registrations: ')+RG.length+'</p>';
+ var A=(S.audit||[]).filter(function(a){return a&&(a.target==s.id||a.tgt==s.id||String(a.detail||'').indexOf(String(s.id))>-1)}).slice(-40).reverse();
+ h+='<h4>'+L('المراسلات بالبريد','Email correspondence')+'</h4><div id="c119m"><p class="mu">'+L('جارٍ التحميل…','Loading…')+'</p></div>';
+ h+='<h4>'+L('سجل التغييرات على الخادم','Server change history')+'</h4><div id="c119h"><p class="mu">'+L('جارٍ التحميل…','Loading…')+'</p></div>';
+ h+='<h4>'+L('سجل العمليات في بوابة الإدارة','Admin portal activity')+' ('+A.length+')</h4>'+(A.length?T([L('الوقت','Time'),L('العملية','Action'),L('بواسطة','By'),L('التفاصيل','Details')],A.map(function(a){return '<tr><td><bdi dir="ltr">'+e2(String(a.t||a.at||'').slice(0,16).replace('T',' '))+'</bdi></td><td>'+e2(a.action||a.act||'')+'</td><td>'+e2(a.by||a.user||'')+'</td><td><small>'+e2(String(a.detail||'').slice(0,160))+'</small></td></tr>'})):'<p class="mu">'+L('لا عمليات مسجلة.','No recorded activity.')+'</p>');
+ return h}
+function loadSrv(id){if(typeof sb==='undefined'||!sb)return;sb.rpc('v119_person',{sid:String(id)}).then(function(r){var m=document.getElementById('c119m'),hh=document.getElementById('c119h');if(r.error){var t='<p class="mu">'+e2(r.error.message)+'</p>';if(m)m.innerHTML=t;if(hh)hh.innerHTML=t;return}var d=r.data||{};
+ if(m)m.innerHTML=(d.mails||[]).length?T([L('الوقت','Time'),L('النوع','Type'),L('الموضوع','Subject'),L('إلى','To'),L('الإرسال','Sending'),L('التسليم','Delivery')],d.mails.map(function(x){return '<tr><td><bdi dir="ltr">'+e2(String(x.at||'').slice(0,16).replace('T',' '))+'</bdi></td><td>'+e2(x.type||'')+'</td><td><small>'+e2(x.subject||'')+'</small></td><td dir="ltr"><small>'+e2(x.to||'')+'</small></td><td>'+e2(x.status||'')+'</td><td>'+e2(x.delivery||'—')+'</td></tr>'})):'<p class="mu">'+L('لا مراسلات.','None.')+'</p>';
+ if(hh)hh.innerHTML=(d.changes||[]).length?T([L('الوقت','Time'),L('الجدول','Table'),L('العملية','Operation'),L('الدور','Role'),L('الحقول المتغيرة','Changed fields')],d.changes.map(function(x){return '<tr><td><bdi dir="ltr">'+e2(String(x.at||'').slice(0,16).replace('T',' '))+'</bdi></td><td>'+e2(x.tbl)+'</td><td>'+e2(x.op)+'</td><td>'+e2(x.role||'')+'</td><td dir="ltr"><small>'+e2((x.keys||[]).join(', '))+'</small></td></tr>'})):'<p class="mu">'+L('لا تغييرات مسجلة.','None.')+'</p>'})}
+function tabCard(){var h='<h3>'+L('بطاقة الطالب الشاملة','Student 360° card')+'</h3><p class="mu">'+L('ابحث بالرقم الأكاديمي أو الاسم أو رقم الجواز أو البريد. تجمع البطاقة بيانات الطالب وطلباته ووثائقه ومراسلاته وسجل التغييرات عليه.','Search by academic number, name, passport or email. The card gathers the student\'s data, applications, documents, correspondence and change history.')+'</p>'+
+ '<form class="v51g" onsubmit="return V51.h.c119q(this)" role="search"><label style="grid-column:1/-1">'+L('بحث','Search')+'<input name="q" value="'+e2(SC9.q)+'" autocomplete="off"></label><div><button class="btn">'+L('بحث','Search')+'</button></div></form>';
+ var s=SC9.id&&(S.students||[]).find(function(x){return x.id==SC9.id});
+ if(s){h+='<p><button type="button" class="btn s" onclick="V51.h.c119o(\'\')">'+L('رجوع إلى النتائج','Back to results')+'</button></p>'+card(s);setTimeout(function(){loadSrv(s.id)},50);return h}
+ if(SC9.q){var F=findStu(SC9.q);h+=F.length?T([L('الرقم','No.'),L('الاسم','Name'),L('البرنامج','Programme'),L('الحالة','Status'),''],F.map(function(x){return '<tr><td dir="ltr">'+e2(x.id)+'</td><td>'+e2(x.name)+'</td><td>'+e2(pnm(V5.prog(+x.prog||x.prog)))+'</td><td>'+e2(x.status||'منتظم')+'</td><td><button type="button" class="btn s" onclick="V51.h.c119o(\''+Qs(x.id)+'\')">'+L('فتح البطاقة','Open card')+'</button></td></tr>'})):'<p class="mu">'+L('لا نتائج.','No results.')+'</p>'}
+ return h}
+H.c119q=function(f){SC9.q=String(f.q.value||'').trim();SC9.id='';var F=findStu(SC9.q);if(F.length===1)SC9.id=F[0].id;go();return false};
+H.c119o=function(id){SC9.id=id||'';go()};
+V5.card119=function(id){SC9.id=id;SC9.q=id;location.hash='#/admin/v119c'};V5.tab119c=tabCard;
+try{V51TABS.push(['v119c','بطاقة الطالب الشاملة','Student 360° card',tabCard]);TABLBL['بطاقة الطالب الشاملة']='v119c';TABLBL['Student 360° card']='v119c';SVC_ADMIN.push(['v119c','بطاقة الطالب الشاملة','Student 360° card'])}catch(e){console.error('v119 tab',e)}
+
+/* ---------- 3) حماية رفع الملفات: النوع الحقيقي والحجم قبل القبول، وتنظيف SVG ---------- */
+var SIG={png:[0x89,0x50,0x4E,0x47],jpg:[0xFF,0xD8,0xFF],gif:[0x47,0x49,0x46,0x38],webp:[0x52,0x49,0x46,0x46],pdf:[0x25,0x50,0x44,0x46],zip:[0x50,0x4B,0x03,0x04],ole:[0xD0,0xCF,0x11,0xE0]};
+var MAXB={image:5*1048576,svg:1048576,sheet:10*1048576,json:25*1048576,csv:10*1048576,pdf:10*1048576};
+function kindOf(f){var n=String(f.name||'').toLowerCase(),t=String(f.type||'').toLowerCase();
+ if(/\.svg$/.test(n)||t==='image/svg+xml')return 'svg';if(/\.(png|jpe?g|gif|webp)$/.test(n)||/^image\/(png|jpe?g|gif|webp)$/.test(t))return 'image';if(/\.(xlsx|xls)$/.test(n))return 'sheet';if(/\.csv$/.test(n))return 'csv';if(/\.json$/.test(n))return 'json';if(/\.pdf$/.test(n))return 'pdf';return ''}
+function acceptOk(inp,f,k){var a=String(inp.getAttribute('accept')||'').toLowerCase().split(',').map(function(x){return x.trim()}).filter(Boolean);if(!a.length)return !!k;var n=String(f.name||'').toLowerCase(),t=String(f.type||'').toLowerCase();
+ return a.some(function(x){return x===t||(x.slice(-2)==='/*'&&t.indexOf(x.slice(0,-1))===0)||(x[0]==='.'&&n.slice(-x.length)===x)||(x==='image/*'&&(k==='image'||k==='svg'))})}
+function head(f,n){return new Promise(function(res){var r=new FileReader();r.onload=function(){res(new Uint8Array(r.result))};r.onerror=function(){res(new Uint8Array(0))};r.readAsArrayBuffer(f.slice(0,n))})}
+var starts=function(b,s){for(var i=0;i<s.length;i++)if(b[i]!==s[i])return false;return true};
+function cleanSvg(txt){try{var d=new DOMParser().parseFromString(txt,'image/svg+xml');if(d.querySelector('parsererror'))return null;
+ d.querySelectorAll('script,foreignObject,iframe,object,embed,audio,video').forEach(function(x){x.remove()});
+ d.querySelectorAll('*').forEach(function(el){[].slice.call(el.attributes).forEach(function(a){var n=a.name.toLowerCase(),v=String(a.value||'');if(/^on/.test(n)||((n==='href'||n==='xlink:href'||n==='src')&&/^\s*(javascript|data:text\/html)/i.test(v))||(n==='style'&&/expression|javascript:/i.test(v)))el.removeAttribute(a.name)})});
+ return new XMLSerializer().serializeToString(d)}catch(e){return null}}
+async function vet(inp,f){var k=kindOf(f);if(!k||!acceptOk(inp,f,k))return {err:L('نوع الملف غير مسموح هنا.','This file type is not allowed here.')};
+ if(f.size>(MAXB[k]||5*1048576))return {err:L('الملف أكبر من الحد المسموح (','The file exceeds the allowed size (')+Math.round((MAXB[k]||5*1048576)/1048576)+' MB).'};
+ if(!f.size)return {err:L('الملف فارغ.','The file is empty.')};
+ var b=await head(f,16);
+ if(k==='image'){if(!(starts(b,SIG.png)||starts(b,SIG.jpg)||starts(b,SIG.gif)||starts(b,SIG.webp)))return {err:L('محتوى الملف لا يطابق صورة حقيقية.','The file content is not a real image.')}}
+ else if(k==='pdf'){if(!starts(b,SIG.pdf))return {err:L('محتوى الملف ليس PDF.','The file content is not a PDF.')}}
+ else if(k==='sheet'){if(!(starts(b,SIG.zip)||starts(b,SIG.ole)))return {err:L('محتوى الملف ليس جدول Excel.','The file content is not an Excel workbook.')}}
+ else if(k==='json'||k==='csv'){var t=await f.slice(0,2048).text();if(/<\s*script|<\s*html|\u0000/i.test(t))return {err:L('الملف يحوي محتوى غير مسموح.','The file contains disallowed content.')}}
+ else if(k==='svg'){var s=await f.text(),c=cleanSvg(s);if(!c)return {err:L('ملف SVG غير صالح.','Invalid SVG file.')};if(c!==s)return {file:new File([c],f.name,{type:'image/svg+xml'})}}
+ return {ok:1}}
+document.addEventListener('change',function(ev){var inp=ev.target;if(!inp||inp.tagName!=='INPUT'||inp.type!=='file'||inp.__v119)return;var F=[].slice.call(inp.files||[]);if(!F.length)return;
+ ev.stopImmediatePropagation();
+ Promise.all(F.map(function(f){return vet(inp,f)})).then(function(R){var bad=R.find(function(r){return r.err});if(bad){try{inp.value=''}catch(x){}toast(bad.err);return}
+  if(R.some(function(r){return r.file})){try{var dt=new DataTransfer();F.forEach(function(f,i){dt.items.add(R[i].file||f)});inp.files=dt.files}catch(x){}}
+  inp.__v119=1;try{inp.dispatchEvent(new Event('change',{bubbles:true}))}finally{inp.__v119=0}})},true);
 })();
 
 /* =====================================================================
@@ -23572,7 +23674,7 @@ H.dr69=function(on){drawer(!!on)};W.V5gs=function(){V5.gsOpen69&&V5.gsOpen69()};
 var SECT=[
  ['home','الرئيسية','Overview','home',['v69h','v112i','dash']],
  ['aca','الشؤون الأكاديمية','Academic Affairs','book',['v112d','v51p','pr','v73p','v65p','cr','cal','tf','v93s','v64a','ex','v65b','v77b','v67b','v77g','v67g','apv','v60sp','sh','v66d']],
- ['adm','القبول والتسجيل','Admissions & Registration','users',['v112a','req','v75r','v77a','st','v74p','v115g','v71p']],
+ ['adm','القبول والتسجيل','Admissions & Registration','users',['v112a','req','v75r','v77a','st','v119c','v74p','v115g','v71p']],
  ['doc','الوثائق','Documents','doc',['ce','dr','v98g','v51d','v64c','v51s','v64q','v67n','v75n']],
  ['com','التواصل والمحتوى','Communication & Content','chat',['v64m','fb','v77h','nw','lb','pt']],
  ['set','الإعدادات','Settings','cog',['v51i','id','hm','v51o','v63a','v52t','au','v74h','v74d','v108b','sx','v51b','v64p']]];
@@ -23586,7 +23688,7 @@ var HUB=[
  ['hGrade','الدرجات والمزامنة','Grades & Sync',['v67g','apv']],
  ['hSp','البرامج القصيرة والدورات','Short Programmes & Courses',['v60sp','sh','v66d']],
  ['hAdm','القبول ومراجعة الطلبات','Admissions & Applications',['v112a','req','v75r','v77a']],
- ['hStu','الطلاب والخريجون','Students & Alumni',['st','v74p','v115g']],
+ ['hStu','الطلاب والخريجون','Students & Alumni',['st','v119c','v74p','v115g']],
  ['hDoc','الشهادات والوثائق الصادرة','Issued Documents',['ce','dr','v98g']],
  ['hDes','تصميم الوثائق والبطاقات','Document & Card Design',['v51d','v64c','v51s','v64q']],
  ['hNum','أرقام الوثائق','Document Numbers',['v67n','v75n']],
@@ -26466,7 +26568,7 @@ setInterval(function(){try{if(S!==lastS||anyVisible())hide();persist()}catch(e){
 <script>(function(){try{var im=new Image();im.onload=function(){if(im.naturalWidth&&im.naturalHeight)window.LGAR89=im.naturalWidth/im.naturalHeight};im.src=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}window.LGAR89=1600/431})();window.LOGOS=IMG108('logos-a2f6204d.webp');window.LOGOM=IMG108('logom-243bc940.webp');IMGH108('logos-a2f6204d.webp',function(v){window.LOGOS=v});IMGH108('logom-243bc940.webp',function(v){window.LOGOM=v});</script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v118';
+window.__BUILD__='v119';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}
