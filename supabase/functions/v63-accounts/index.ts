@@ -72,7 +72,8 @@ function compose(b: MailIn & { cur?: boolean }) {
   const fx = (t: string) => b.cur ? asCurrent(t) : t;
   const ch = pw ? fx(String(b.cred_with)).split("{{PW}}").join(pw) : String(b.cred_without || "");
   const ct = pw ? fx(String(b.cred_with_text || b.cred_without_text || "")).split("{{PW}}").join(pw) : String(b.cred_without_text || "");
-  const html = String(b.html || "").split("[[CRED]]").join(ch);
+  // القالب يضع موضع بيانات الدخول في HTML بالعلامة <!--CRED--> وفي النص بـ [[CRED]]
+  const html = String(b.html || "").split("[[CRED]]").join(ch).split("<!--CRED-->").join(ch);
   const text = String(b.text || "").split("[[CRED]]").join(ct);
   return { html, text };
 }
@@ -114,7 +115,7 @@ Deno.serve(async (req) => {
   const action = String(body.action || "");
   await loadCred();
 
-  if (action === "probe") return json({ ok: true, v: "v83-accounts", mail: ON });
+  if (action === "probe") return json({ ok: true, v: "v83.3-accounts", mail: ON });
 
   // فحص ذاتي من الخادم: يرسل رسالة اختبار إلى بريد المعهد نفسه؛ محمي برمز في الخزنة
   if (action === "selftest") {
