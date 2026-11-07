@@ -25,8 +25,9 @@ let ON = !!(GUSER && GPASS);
 let TOKEN = "";
 // v105: مزوّد الإرسال — Resend بنطاق المعهد إن ضُبط مفتاحه وعنوانه، وإلا Gmail. الإعدادات تُقرأ من الخزنة كل دقيقة.
 let RESEND = "", MFROM = "", CRED_AT = 0;
-async function loadCred() {
-  if (Date.now() - CRED_AT < 60_000 && TOKEN) return;
+let LAST_RESEND_ERR = "";
+async function loadCred(force = false) {
+  if (!force && Date.now() - CRED_AT < 15_000 && TOKEN) return;
   try {
     const { data } = await admin.rpc("v82_mail_cred");
     const c = (data || {}) as { user?: string; pass?: string; token?: string; resend?: string; from?: string };
@@ -114,8 +115,8 @@ async function deliver(b: MailIn & { cur?: boolean }) {
   const { html, text } = compose(b);
   const name = String(b.from_name || "معهد التمهيد للدراسات الإسلامية واللغوية").replace(/["<>\r\n]/g, "").slice(0, 120);
   if (RESEND && MFROM) {
-    try { await viaResend(b, html, text, name); return "resend"; }
-    catch (e) { if (!(GUSER && GPASS)) throw e; console.warn("resend failed → gmail", String(e)); }
+    try { await viaResend(b, html, text, name); LAST_RESEND_ERR = ""; return "resend"; }
+    catch (e) { LAST_RESEND_ERR = String((e as Error)?.message || e).slice(0, 300); if (!(GUSER && GPASS)) throw e; console.warn("resend failed → gmail", LAST_RESEND_ERR); }
   }
   await transport().sendMail({
     from: { name, address: GUSER },
@@ -142,9 +143,9 @@ Deno.serve(async (req) => {
   let body: Record<string, unknown> = {};
   try { body = await req.json(); } catch { /* empty */ }
   const action = String(body.action || "");
-  await loadCred();
+  await loadCred(["mail_test", "mail_status", "mail_ready", "probe"].includes(action));
 
-  if (action === "probe") return json({ ok: true, v: "v105-accounts", mail: ON, provider: PROVIDER() });
+  if (action === "probe") return json({ ok: true, v: "v106-accounts", mail: ON, provider: PROVIDER() });
 
   // فحص ذاتي من الخادم: يرسل رسالة اختبار إلى بريد المعهد نفسه؛ محمي برمز في الخزنة
   if (action === "selftest") {
@@ -225,8 +226,8 @@ Deno.serve(async (req) => {
     if (!EMAIL.test(to)) return json({ error: "no_email" });
     try {
       const via = await deliver({ to, subject: "اختبار البريد الرسمي — معهد التمهيد / Official email test — At-Tamhid", text: "هذه رسالة اختبار من بوابة الإدارة المركزية للتحقق من عمل البريد الرسمي بنطاق المعهد. لا يلزم الرد.\n\nThis is a test message from the central administration to verify the Institute's official email. No reply needed." });
-      await admin.from("v63_mail_log").insert({ type: "test", to_addr: to, subject: "mail_test " + via, status: "sent", sent_at: new Date().toISOString(), attempts: 1, by_user: me.id });
-      return json({ ok: true, to, provider: via, from: via === "resend" ? MFROM : GUSER });
+      await admin.from("v63_mail_log").insert({ type: "test", to_addr: to, subject: "mail_test " + via, error: via === "resend" ? null : (LAST_RESEND_ERR || null), status: "sent", sent_at: new Date().toISOString(), attempts: 1, by_user: me.id });
+      return json({ ok: true, to, provider: via, from: via === "resend" ? MFROM : GUSER, resend_error: via === "resend" ? undefined : (LAST_RESEND_ERR || (RESEND ? "" : "no_key")) });
     } catch (e) { return json({ error: "send_failed", detail: String((e as Error)?.message || e).slice(0, 400) }); }
   }
 
@@ -260,10 +261,10 @@ Deno.serve(async (req) => {
     }
     const { data: row } = await admin.from("v63_mail_log").insert({ type: b.type || null, ref_id: b.ref_id || null, to_addr: String(b.to), subject: String(b.subject || "").slice(0, 300), by_user: me.id, payload, attempts: 1 }).select("id").single();
     try {
-      await deliver({ ...payload, pw, cur });
-      if (row) await admin.from("v63_mail_log").update({ status: "sent", sent_at: new Date().toISOString(), payload: null }).eq("id", row.id);
+      const via = await deliver({ ...payload, pw, cur });
+      if (row) await admin.from("v63_mail_log").update({ status: "sent", sent_at: new Date().toISOString(), payload: null, error: via === "resend" ? null : ("via gmail" + (LAST_RESEND_ERR ? ": " + LAST_RESEND_ERR : "")) }).eq("id", row.id);
       if (pw) await alog("send", b.ref_id || null, me.email || "admin", String(b.to));
-      return json({ ok: true, id: row?.id, password_included: !!pw });
+      return json({ ok: true, id: row?.id, password_included: !!pw, provider: via });
     } catch (e) {
       const msg = String((e as Error)?.message || e).slice(0, 500);
       if (row) await admin.from("v63_mail_log").update({ status: "failed", error: msg }).eq("id", row.id);
