@@ -1,4 +1,4 @@
-// v63-accounts (v108) — البريد الرسمي (Resend بنطاق المعهد + Gmail احتياطي)، الإشعارات، «نسيت كلمة المرور»، الحسابات
+// v63-accounts (v113) — البريد الرسمي (Resend بنطاق المعهد + Gmail احتياطي)، الإشعارات، «نسيت كلمة المرور»، الحسابات
 // العمليات: probe, selftest, mail_status, mail_ready, mail, mail_log, retry_due
 // v83 — الحسابات: list, ensure, reset, reveal, unlock, log, login, change, rename, remove, purge, rc_generate, rc_use, rc_status
 // بيانات Gmail: أسرار الدالة GMAIL_USER/GMAIL_APP_PASSWORD، أو الخزنة المشفّرة (vault: gmail_user, gmail_app_password)
@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
   const action = String(body.action || "");
   await loadCred(["mail_test", "mail_status", "mail_ready", "probe"].includes(action));
 
-  if (action === "probe") return json({ ok: true, v: "v108-accounts", mail: ON, provider: PROVIDER() });
+  if (action === "probe") return json({ ok: true, v: "v113-accounts", mail: ON, provider: PROVIDER() });
 
   // فحص ذاتي من الخادم: يرسل رسالة اختبار إلى بريد المعهد نفسه؛ محمي برمز في الخزنة
   if (action === "selftest") {
@@ -502,8 +502,22 @@ async function accLogin(ident: string, password: string) {
   return { ok: true, session: { access_token: data.session.access_token, refresh_token: data.session.refresh_token }, role: a.role, ref_id: ref, must_change: !!a.must_change, idle: cfg.idleMin, units };
 }
 
+// v113: حماية كلمات المرور المسرَّبة (Have I Been Pwned بطريقة k-anonymity: لا يُرسل إلا أول 5 رموز من بصمة SHA-1)
+async function pwned(password: string): Promise<number> {
+  try {
+    const h = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-1", new TextEncoder().encode(password)))).map((x) => x.toString(16).padStart(2, "0")).join("").toUpperCase();
+    const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 4000);
+    const r = await fetch("https://api.pwnedpasswords.com/range/" + h.slice(0, 5), { headers: { "Add-Padding": "true", "User-Agent": "attamhid-accounts" }, signal: ctl.signal });
+    clearTimeout(tm);
+    if (!r.ok) return 0;
+    const suf = h.slice(5);
+    for (const line of (await r.text()).split("\n")) { const [s, c] = line.trim().split(":"); if (s === suf) return Number(c) || 0; }
+  } catch { /* تعذّر الفحص: لا نمنع المستخدم */ }
+  return 0;
+}
 async function accChange(uid: string, password: string) {
   if (!strong(password)) return { error: "weak" };
+  if (await pwned(password) > 0) return { error: "pwned" };
   const { data: a } = await admin.from("v83_acc").select("ref_id,init_enc").eq("user_id", uid).maybeSingle();
   const { data: mc } = await admin.from("v83_acc").select("must_change").eq("user_id", uid).maybeSingle();
   if (mc?.must_change && a?.init_enc && (await dec(a.init_enc)) === password) return { error: "weak" };
@@ -635,6 +649,12 @@ async function notifyRun() {
   if (!ON) return { error: "mail_off" };
   const { data: q } = await admin.from("v108_notify").select("*").eq("status", "pending").lt("tries", 5).order("id").limit(300);
   if (!q || !q.length) return { sent: 0, failed: 0 };
+  // v113: إشعارات الأقسام وإدارة القبول والمدرّسين والتقرير اليومي — تُعالَج منفصلة عن إشعارات الطلاب
+  const SK = ["app_new", "app_pre", "teach", "daily"];
+  const sq = q.filter((r) => SK.includes(r.kind));
+  const staffRes = sq.length ? await staffRun(sq) : null;
+  q.splice(0, q.length, ...q.filter((r) => !SK.includes(r.kind)));
+  if (!q.length) return { sent: 0, failed: 0, staff: staffRes };
   const B = await brand();
   const refs = [...new Set(q.map((r) => r.ref_id))];
   const { data: st } = await admin.from("students").select("id,data").in("id", refs);
@@ -695,6 +715,84 @@ async function notifyRun() {
     if (!t) { await done(ids, false, 0, "unknown", true); skipped++; continue; }
     const r = await sendLogged("notify_" + r0.kind, p.id, p.email, t);
     if (r.ok) { await done(ids, true, r.id); sent++; } else { await done(ids, false, 0, r.error); failed++; }
+  }
+  return { sent, failed, skipped, staff: staffRes };
+}
+
+// ---------- v113: إشعارات الأقسام وإدارة القبول والمدرّسين + التقرير اليومي ----------
+const emails = (v: unknown): string[] => (Array.isArray(v) ? v : String(v || "").split(/[,;\s،]+/)).map((x) => String(x).trim().toLowerCase()).filter((x) => EMAIL.test(x));
+async function staffRun(q: Array<Record<string, any>>) {
+  const B = await brand();
+  const { data: cfgRaw } = await admin.rpc("v108_ncfg");
+  const cfg = (cfgRaw || {}) as Record<string, unknown>;
+  const { data: hm } = await admin.from("settings").select("data").eq("key", "home").maybeSingle();
+  const central = emails(cfg.reportTo).length ? emails(cfg.reportTo) : emails((hm?.data as Record<string, unknown> | null)?.em);
+  const { data: un } = await admin.from("v51_units").select("id,data");
+  const U = new Map<string, Record<string, unknown>>((un || []).map((r) => [r.id, r.data as Record<string, unknown>]));
+  const { data: mem } = await admin.from("v51_members").select("id,data");
+  const unitMails = (u: string) => {
+    const d = U.get(u) || {};
+    const fromMembers = (mem || []).map((m) => m.data as Record<string, unknown>).filter((m) => m && !m.deleted && m.active !== 0 && m.active !== false && (m.unitId === u || ((m.units as string[]) || []).includes(u))).flatMap((m) => emails(m.email));
+    return [...new Set([...emails(d.notifyEmail), ...fromMembers])];
+  };
+  const admMails = () => { const a = [...new Set([...emails(cfg.admEmail), ...unitMails("u-adm")])]; return a.length ? a : central; };
+  const pids = [...new Set(q.map((r) => String(r.data?.prog || "")).concat(q.filter((r) => r.kind === "teach").map((r) => (/^P\d+-(\d{4})-/.exec(String(r.data?.course || "")) || [, "1000"])[1] as string)).filter(Boolean))];
+  const { data: pr } = pids.length ? await admin.from("programs").select("id,data").in("id", pids) : { data: [] };
+  const PR = new Map<string, Record<string, any>>((pr || []).map((r) => [String(r.id), r.data as Record<string, any>]));
+  const pn = (id: string) => { const p = PR.get(id) || {}; return { ar: String(p.name || id || "—"), en: String(p.eng?.nameEn || p.nameEn || p.name || id || "—") }; };
+  const un2 = (u: string) => { const d = U.get(u) || {}; return { ar: String(d.nameAr || ""), en: String(d.nameEn || d.nameAr || "") }; };
+  const fin = async (r: Record<string, any>, st: "sent" | "skipped" | "fail", err = "", mid = 0) => {
+    await admin.from("v108_notify").update(st === "sent" ? { status: "sent", sent_at: new Date().toISOString(), mail_id: mid || null, error: null } : st === "skipped" ? { status: "skipped", error: err } : { tries: r.tries + 1, error: err, status: r.tries + 1 >= 5 ? "failed" : "pending" }).eq("id", r.id);
+  };
+  const adminUrl = B.base + "#/admin";
+  const card = (rows: Array<[string, string]>, dir: "rtl" | "ltr") => `<table role="presentation" class="box" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:4px 0 14px;background:${BG};border:1px solid #D5DCE4;border-radius:8px" dir="${dir}">` +
+    rows.map(([k, v]) => `<tr><td class="tx mu" style="padding:7px 12px;border-bottom:1px solid #E1E6EC;color:#4a5a70;font-size:14px;width:42%;text-align:${dir === "rtl" ? "right" : "left"}">${esc(k)}</td><td class="tx" style="padding:7px 12px;border-bottom:1px solid #E1E6EC;font-size:15px;font-weight:700;text-align:${dir === "rtl" ? "right" : "left"}">${esc(v)}</td></tr>`).join("") + `</table>`;
+  let sent = 0, failed = 0, skipped = 0;
+  for (const r of q) {
+    let to: string[] = [], t: Tpl | null = null;
+    const p = pn(String(r.data?.prog || "")), u = un2(String(r.data?.unit || ""));
+    if (r.kind === "app_new" || r.kind === "app_pre") {
+      const pre = r.kind === "app_pre";
+      to = pre ? admMails() : [...new Set([...unitMails(String(r.data?.unit || "")), ...admMails()])];
+      if (!pre && !unitMails(String(r.data?.unit || "")).length) to = [...new Set([...to, ...central])];
+      const rowsA: Array<[string, string]> = [["رقم الطلب", String(r.ref_id)], ["المتقدم", String(r.data?.name || "—")], ["البرنامج", p.ar], ["القسم", u.ar || "—"]];
+      const rowsE: Array<[string, string]> = [["Application", String(r.ref_id)], ["Applicant", String(r.data?.name || "—")], ["Programme", p.en], ["Department", u.en || "—"]];
+      t = pre ? { subject: `قبول مبدئي بانتظار القرار النهائي — ${r.ref_id} / Provisional Acceptance Awaiting Final Decision`, titleAr: "قبول مبدئي من القسم", titleEn: "Provisional Acceptance by the Department", dearAr: "إدارة القبول والتسجيل", dearEn: "Admission and Registration Office",
+          ar: "قبل القسم الأكاديمي الطلب التالي قبولاً مبدئياً، وهو الآن بانتظار مراجعة الملف والقرار النهائي من إدارة القبول والتسجيل:", extraAr: card(rowsA, "rtl"),
+          en: "The academic department has provisionally accepted the following application. It now awaits file review and the final decision by the Admission and Registration Office:", extraEn: card(rowsE, "ltr"),
+          btn: { url: adminUrl, ar: "فتح الطلب في بوابة الإدارة", en: "Open it in the admin portal" } }
+        : { subject: `طلب تسجيل جديد — ${p.ar} / New Application — ${p.en}`, titleAr: "طلب تسجيل جديد", titleEn: "New Application", dearAr: "رئاسة القسم وإدارة القبول والتسجيل", dearEn: "Head of Department and Admission Office",
+          ar: "وصل طلب تسجيل جديد، وهو الآن لدى القسم للمراجعة الأولية والقبول المبدئي:", extraAr: card(rowsA, "rtl"),
+          en: "A new application has arrived and is now with the department for initial review and provisional acceptance:", extraEn: card(rowsE, "ltr"),
+          btn: { url: adminUrl, ar: "مراجعة الطلب", en: "Review the application" } };
+    } else if (r.kind === "teach") {
+      const { data: f } = await admin.from("faculty").select("id,data").eq("id", String(r.ref_id)).maybeSingle();
+      const fd = (f?.data || {}) as Record<string, unknown>;
+      if (!f || fd.deleted || !EMAIL.test(String(fd.email || ""))) { await fin(r, "skipped", "no_email"); skipped++; continue; }
+      const { data: c } = await admin.from("v51_program_courses").select("data").eq("id", String(r.data?.course || "")).maybeSingle();
+      const cd = (c?.data || {}) as Record<string, unknown>;
+      const pid = (/^P\d+-(\d{4})-/.exec(String(r.data?.course || "")) || [, "1000"])[1] as string, pp = pn(pid);
+      const per = person(String(r.ref_id), fd);
+      to = [per.email];
+      t = { subject: `تكليف بتدريس مقرر — ${String(cd.name || "")} / Course Teaching Assignment`, titleAr: "تكليف بتدريس مقرر", titleEn: "Course Teaching Assignment", dearAr: dearA(per, "staff"), dearEn: dearE(per),
+        ar: "كُلِّفتم بتدريس المقرر التالي:", extraAr: card([["المقرر", String(cd.name || "—")], ["الرمز", String(cd.code || "—")], ["البرنامج", pp.ar], ["الساعات", String(cd.hrs || "—")]], "rtl") + P("تجدون المقرر وطلابه واختباراته في بوابة هيئة التدريس.", "rtl"),
+        en: "You have been assigned to teach the following course:", extraEn: card([["Course", String(cd.nameEn || cd.name || "—")], ["Code", String(cd.codeEn || cd.code || "—")], ["Programme", pp.en], ["Credit hours", String(cd.hrs || "—")]], "ltr") + P("You will find the course, its students and exams in the faculty portal.", "ltr"),
+        btn: { url: B.base + "?p=" + encodeURIComponent(per.id), ar: "الدخول إلى بوابة هيئة التدريس", en: "Sign in to the faculty portal" } };
+    } else if (r.kind === "daily") {
+      to = central;
+      const d = (r.data || {}) as Record<string, any>, n = (k: string) => String(d[k] ?? 0);
+      const lb = d.last_backup ? fmtDate(new Date(new Date(d.last_backup).getTime() + 3 * 3600e3).toISOString()) : "—";
+      const byP = (d.by_prog || []) as Array<{ prog: string; n: number }>;
+      const pA = byP.length ? byP.map((x) => `${pn(String(x.prog)).ar}: ${x.n}`).join(" · ") : "—", pE = byP.length ? byP.map((x) => `${pn(String(x.prog)).en}: ${x.n}`).join(" · ") : "—";
+      t = { subject: `التقرير اليومي — ${r.ref_id} / Daily Report — At-Tamhid`, titleAr: "التقرير اليومي للإدارة", titleEn: "Daily Administration Report", dearAr: "الإدارة المركزية", dearEn: "Central Administration",
+        ar: `ملخص آخر 24 ساعة حتى صباح ${r.ref_id}:`, extraAr: card([["طلبات تسجيل جديدة", n("apps_new")], ["الطلبات حسب البرنامج", pA], ["طلبات مفتوحة لم يُبتّ فيها", n("apps_open")], ["منها بقبول مبدئي ينتظر القرار النهائي", n("apps_pre")], ["طلاب جدد", n("students_new")], ["إجمالي الطلاب", n("students")], ["وثائق صادرة", n("certs_new")], ["طلبات وثائق قيد المراجعة", n("docreq_open")], ["تسليمات اختبارات جديدة", n("subs_new")], ["رسائل أُرسلت / تعذّر إرسالها / ارتدّت", `${n("mail_sent")} / ${n("mail_failed")} / ${n("mail_bounced")}`], ["آخر نسخة احتياطية (مكة)", lb]], "rtl"),
+        en: `Summary of the last 24 hours up to the morning of ${r.ref_id}:`, extraEn: card([["New applications", n("apps_new")], ["Applications by programme", pE], ["Open applications", n("apps_open")], ["Provisionally accepted, awaiting final decision", n("apps_pre")], ["New students", n("students_new")], ["Total students", n("students")], ["Documents issued", n("certs_new")], ["Document requests under review", n("docreq_open")], ["New exam submissions", n("subs_new")], ["Emails sent / failed / bounced", `${n("mail_sent")} / ${n("mail_failed")} / ${n("mail_bounced")}`], ["Last backup (Makkah time)", lb]], "ltr"),
+        btn: { url: adminUrl, ar: "فتح بوابة الإدارة", en: "Open the admin portal" } };
+    }
+    if (!t || !to.length) { await fin(r, "skipped", t ? "no_recipient" : "unknown"); skipped++; continue; }
+    let ok = true, lastId = 0, err = "";
+    for (const addr of to) { const s = await sendLogged("notify_" + r.kind, String(r.ref_id), addr, t); if (s.ok) lastId = s.id || lastId; else { ok = false; err = s.error || "send_failed"; } }
+    if (ok) { await fin(r, "sent", "", lastId); sent++; } else { await fin(r, "fail", err); failed++; }
   }
   return { sent, failed, skipped };
 }
