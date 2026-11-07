@@ -1,4 +1,4 @@
-// mail-hook (v108) — يستقبل حالة تسليم الرسائل من Resend (Webhook موقَّع بـ Svix) ويحدّث «سجل الإرسال»
+// mail-hook (v110) — يستقبل حالة تسليم الرسائل من Resend (Webhook موقَّع بـ Svix) ويحدّث «سجل الإرسال»
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
 const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
@@ -24,7 +24,6 @@ async function verify(req: Request, body: string) {
   const mac = b64(new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${id}.${ts}.${body}`))));
   return sig.split(" ").some((p) => { const [v, s] = p.split(","); return v === "v1" && !!s && same(s, mac); });
 }
-const RANK: Record<string, number> = { sent: 1, delayed: 2, delivered: 3, opened: 3, clicked: 3, bounced: 4, complained: 4, failed: 4 };
 const MAP: Record<string, string> = { "email.sent": "sent", "email.delivered": "delivered", "email.delivery_delayed": "delayed", "email.bounced": "bounced", "email.complained": "complained", "email.failed": "failed", "email.suppressed": "bounced" };
 
 Deno.serve(async (req) => {
@@ -36,11 +35,9 @@ Deno.serve(async (req) => {
   const st = MAP[String(ev.type || "")];
   const mid = String(ev.data?.email_id || "");
   if (!st || !mid) return res({ ok: true, ignored: ev.type || "" });
-  const { data: row } = await admin.from("v63_mail_log").select("id,delivery").eq("msg_id", mid).maybeSingle();
-  if (!row) return res({ ok: true, unknown: mid });
-  if ((RANK[row.delivery || ""] || 0) > RANK[st]) return res({ ok: true, kept: row.delivery });
   const b = (ev.data?.bounce || ev.data?.failed || {}) as Record<string, unknown>;
   const detail = (ev.type === "email.suppressed" ? "suppressed — " : "") + ([b.type, b.subType, b.message || b.reason].filter(Boolean).join(" — ").slice(0, 400)) || null;
-  await admin.from("v63_mail_log").update({ delivery: st, delivery_at: ev.created_at || new Date().toISOString(), delivery_detail: detail }).eq("id", row.id);
-  return res({ ok: true, id: row.id, delivery: st });
+  const { data: r, error } = await admin.rpc("v108_set_delivery", { mid, st, ts: ev.created_at || new Date().toISOString(), det: detail });
+  if (error) return res({ error: "db", detail: error.message }, 500);
+  return res({ ok: true, delivery: st, r });
 });
