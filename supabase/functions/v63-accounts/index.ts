@@ -234,7 +234,13 @@ Deno.serve(async (req) => {
     if (!me || me.role !== "admin") return json({ error: "forbidden" });
     return json(await rcUse(me.id, String(body.code || ""), !!body.keep));
   }
-  if (!me || me.role !== "admin") return json({ error: "forbidden" });
+  // v113: موظفو القبول والتسجيل (ومن له صلاحية الطلبات أو الطلاب أو الوثائق) يرسلون البريد الرسمي؛ لا يديرون الحسابات
+  let staff = false;
+  if (me && me.role === "staff" && ["mail", "mail_status", "mail_ready"].includes(action)) {
+    const { data: ok } = await admin.rpc("v113_uid_any", { uid: me.id, svcs: ["req", "v112a", "v77a", "st", "ce", "dr", "v64m"] });
+    staff = !!ok;
+  }
+  if (!me || (me.role !== "admin" && !staff)) return json({ error: "forbidden" });
   if (action === "rc_generate" || action === "rc_status") {
     if (me.mfa && me.aal !== "aal2") return json({ error: "mfa_required" });
     return json(action === "rc_generate" ? await rcGenerate(me.id) : await rcStatus(me.id));
@@ -280,13 +286,19 @@ Deno.serve(async (req) => {
     const payload = { to: b.to, subject: b.subject, html: b.html, text: b.text, cred_with: b.cred_with, cred_with_text: b.cred_with_text, cred_without: b.cred_without, cred_without_text: b.cred_without_text, from_name: b.from_name, reply_to: b.reply_to, attachments: b.attachments };
     // خطاب القبول/التعيين/إعادة التعيين يحمل دائماً كلمة مرور صالحة:
     // الأولى إن وُجدت، وإلا الحالية المحفوظة مشفّرة، وإلا يُعاد التعيين آلياً فتصدر كلمة أولى جديدة
-    let pw = await initPw(b.ref_id), cur = false;
-    if (!pw && b.ref_id && KIND(String(b.ref_id)) && ["admit", "appoint", "reset"].includes(String(b.type || ""))) {
+    // الموظف: كلمة المرور تُدرج فقط في خطاب قبول طالب، ولا يُعاد تعيين حساب قائم من بريده
+    let staffOk = !staff || (String(b.type || "") === "admit" && KIND(String(b.ref_id || "")) === "student");
+    if (staff && staffOk) {
+      const { data: srow } = await admin.from("students").select("data").eq("id", String(b.ref_id)).maybeSingle();
+      staffOk = String((srow?.data as Record<string, unknown> | null)?.email || "").trim().toLowerCase() === String(b.to).trim().toLowerCase();
+    }
+    let pw = staffOk ? await initPw(b.ref_id) : "", cur = false;
+    if (staffOk && !pw && b.ref_id && KIND(String(b.ref_id)) && ["admit", "appoint", "reset"].includes(String(b.type || ""))) {
       const ref = String(b.ref_id);
       const { data: ex } = await admin.from("v83_acc").select("user_id,init_enc,must_change").eq("ref_id", ref).maybeSingle();
       if (!ex) { await accAdmin("ensure", { items: [{ ref_id: ref }] }, me); pw = await initPw(ref); }
-      else if (ex.init_enc && !ex.must_change) { try { pw = await dec(ex.init_enc); cur = true; } catch { pw = ""; } }
-      if (!pw && ex) { const r = await accAdmin("reset", { ref_id: ref }, me) as { password?: string }; pw = r.password || ""; }
+      else if (ex.init_enc && !ex.must_change && !staff) { try { pw = await dec(ex.init_enc); cur = true; } catch { pw = ""; } }
+      if (!pw && ex && !staff) { const r = await accAdmin("reset", { ref_id: ref }, me) as { password?: string }; pw = r.password || ""; }
     }
     const { data: row } = await admin.from("v63_mail_log").insert({ type: b.type || null, ref_id: b.ref_id || null, to_addr: String(b.to), subject: String(b.subject || "").slice(0, 300), by_user: me.id, payload, attempts: 1 }).select("id").single();
     try {

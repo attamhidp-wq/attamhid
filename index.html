@@ -17183,8 +17183,8 @@ function unitPanel(u){var M=live(S.v51.members).filter(function(m){return m.unit
  return f}
 function matrix(){var cols=live(S.v51.units).filter(function(u){return u.type!=='central'});
  var h='<h3>'+L('مصفوفة إتاحة الخدمات','Service availability matrix')+'</h3><p class="mu">'+L('بجانب كل خدمة مفتاح سماح/منع لكل جهة. الخدمة المتاحة لجهة لا تظهر ولا تُستخدم إلا لها. عمود «الإداريون» هو الإعداد الافتراضي لأي جهة لم يُحدَّد لها خيار.','Each service has an allow/deny switch per unit. A service enabled for a unit is shown to and usable by that unit only. The “Administrators” column is the default for any unit without an explicit choice.')+'</p>';
- h+='<div class="tw v51mx"><table class="v51t"><tr><th>'+L('الخدمة (بوابة الإدارة)','Service (admin portal)')+'</th><th>'+L('الإدارة المركزية','Central admin')+'</th><th>'+L('الإداريون (افتراضي)','Administrators (default)')+'</th>'+cols.map(function(u){return '<th>'+E(en()?(u.nameEn||u.nameAr):u.nameAr)+'</th>'}).join('')+'</tr>'+
-  SVC_ADMIN.map(function(s){return '<tr><td>'+E(en()?s[2]:s[1])+'</td><td>✓</td><td>'+cb(s[0],'staff')+'</td>'+cols.map(function(u){return '<td>'+cb(s[0],u.id)+'</td>'}).join('')+'</tr>'}).join('')+'</table></div>';
+ h+='<div class="tw v51mx"><table class="v51t"><tr><th>'+L('الخدمة (بوابة الإدارة)','Service (admin portal)')+'</th><th>'+L('الإدارة المركزية','Central admin')+'</th><th>'+L('الإداريون (افتراضي)','Administrators (default)')+'</th>'+(V5.mx113?V5.mx113(cols):cols).map(function(u){return '<th>'+E(en()?(u.nameEn||u.nameAr):u.nameAr)+'</th>'}).join('')+'</tr>'+
+  SVC_ADMIN.map(function(s){return '<tr><td>'+E(en()?s[2]:s[1])+'</td><td>✓</td><td>'+cb(s[0],'staff')+'</td>'+(V5.mx113?V5.mx113(cols):cols).map(function(u){return '<td>'+cb(s[0],u.id)+'</td>'}).join('')+'</tr>'}).join('')+'</table></div>';
  h+='<div class="tw v51mx"><table class="v51t"><tr><th>'+L('الخدمة (بوابات الطلاب والهيئة)','Service (student & faculty portals)')+'</th><th>'+L('الطلاب','Students')+'</th><th>'+L('هيئة التدريس','Faculty')+'</th></tr>'+
   SVC_PORTAL.map(function(s){return '<tr><td>'+E(en()?s[2]:s[1])+'</td><td>'+(s[3]==='students'?cb(s[0],'students'):'—')+'</td><td>'+(s[3]==='faculty'?cb(s[0],'faculty'):'—')+'</td></tr>'}).join('')+'</table></div>';return h}
 function cb(svc,col){var sv=[].concat(SVC_ADMIN,SVC_PORTAL).find(function(x){return x[0]===svc})||[svc,svc,svc],cn=col==='staff'?L('الإداريون','Administrators'):col==='students'?L('الطلاب','Students'):col==='faculty'?L('هيئة التدريس','Faculty'):unitName(col,en());return '<input type="checkbox" data-k="'+E(svc+' '+col)+'" aria-label="'+E((en()?sv[2]:sv[1])+' — '+cn)+'" '+(perm(svc,col)?'checked':'')+' onchange="V51.h.perm(\''+svc+'\',\''+col+'\',this.checked)">'}
@@ -22020,10 +22020,11 @@ wrapTab('v51p',function(prev,args){var du=deptUser();if(!du)return prev.apply(th
 if(H.openP){var _op=H.openP;H.openP=function(pid){var du=deptUser();if(du){var p=V5.prog(+pid||pid);if(p&&V5.canProg112&&!V5.canProg112(p)){toast(L('هذا البرنامج يتبع قسماً آخر.','This programme belongs to another department.'));return}}return _op.apply(this,arguments)}}
 
 /* ---------- 2) صلاحيات افتراضية للأقسام وإدارة القبول (تُضبط مرة، وتبقى قابلة للتعديل) ---------- */
-var DEF={dept:['v69h','v112d','v51p','v112a'],adm:['v69h','v112a','v112d','v112i','req','v75r','v77a','st','v74p','v71p','dr']};
+var DEF={dept:['v69h','v112d','v51p','v112a'],adm:['v69h','v112a','v112d','v112i','req','v75r','v77a','st','v74p','v71p','dr'],admHead:['ce','v64m','v64c','v51d','v60sp','sh','v66d','v67n','v75n','v98g','cal']};
 function seedPerms(){if(!central())return;var P=S.v51.perms||(S.v51.perms={}),ch=0;
  units().forEach(function(u){var list=u.academic&&u.type==='department'?DEF.dept:u.id==='u-adm'?DEF.adm:null;if(!list)return;
   list.forEach(function(svc){var r=P[svc]||(P[svc]={});if(r[u.id]===undefined){r[u.id]=1;ch=1}})});
+ units().forEach(function(u){if(u.id!=='u-adm'||u.deleted)return;DEF.adm.concat(DEF.admHead).forEach(function(svc){var r=P[svc]||(P[svc]={});if(r['h:'+u.id]===undefined){r['h:'+u.id]=1;ch=1}})});
  if(ch){S.v51.permsU=NOW3();try{save()}catch(e){}}}
 GOH.post.push(function(){try{if(/^#\/admin/.test(location.hash||''))seedPerms()}catch(e){console.error('v113 perms',e)}});
 
@@ -22074,6 +22075,22 @@ H.seq113=function(f){if(typeof me==='undefined'||!me||me.r!=='student')return fa
  var q={id:'EQ-'+Date.now().toString(36).toUpperCase(),toPid:p.id,at:NOW3(),by:L('الطالب من بوابته','Student, from the portal'),self:1,src:src,items:cids.map(function(c){return {cid:c,st:'pending'}})};
  s.eq112=s.eq112||[];s.eq112.push(q);s.u=NOW3();save();toast(L('أُرسل طلب المعادلة إلى القسم.','Your equivalency request was sent to the department.'));go();return false};
 })();
+/* ---------- v113: رئيس الجهة — عمود خاص في مصفوفة الصلاحيات، ويأخذ صلاحياته منه كاملة ---------- */
+(function(){
+var mem=function(id){return V5.live(S.v51.members||[]).find(function(m){return m.id==id})};
+var isHeadM=function(m,u){if(!m)return false;var h=m.head;if(h===1||h===true||h==='1')return true;if(h===0||h===false||h==='0')return false;
+ return !!u&&u===m.unitId&&/^\s*(رئيس|عميد|مدير)/.test(String(m.title||(m.appt64&&m.appt64.title)||''))};
+V5.isHead113=isHeadM;
+var _perm=perm;
+perm=function(svc,col){col=String(col);if(col.indexOf('h:')===0){var r=(S.v51.perms||{})[svc];if(r&&r[col]!==undefined)return !!r[col];return _perm(svc,col.slice(2))}return _perm(svc,col)};
+V5.perm=perm;
+var _can=can;
+can=function(svc){if(typeof me!=='undefined'&&me&&me.r==='admin'&&me.unit){var u=unit(me.unit);if(!u||u.deleted)return false;if(isHeadM(mem(me.mid),me.unit))return perm(svc,'h:'+me.unit);return perm(svc,me.unit)}return _can(svc)};
+V5.can=can;
+V5.mx113=function(cols){var out=[];(cols||[]).forEach(function(u){out.push(u);var Hs=V5.live(S.v51.members||[]).filter(function(m){return m.active!==0&&isHeadM(m,u.id)});
+ if(Hs.length){var nm=Hs.map(function(m){return m.name}).join('، ');out.push({id:'h:'+u.id,nameAr:'رئيس الجهة: '+u.nameAr+' ('+nm+')',nameEn:'Head: '+(u.nameEn||u.nameAr)+' ('+nm+')'})}});return out};
+})();
+
 
 /* =====================================================================
    v65 — البرامج القصيرة: تسجيل يدوي فردي وجماعي (بالفلترة أو كل طلاب برنامج/مستوى أو Excel بقالب جاهز)،
@@ -25997,7 +26014,7 @@ setInterval(function(){try{if(S!==lastS||KEYS.some(function(k){var d=Object.getO
 <script>(function(){try{var im=new Image();im.onload=function(){if(im.naturalWidth&&im.naturalHeight)window.LGAR89=im.naturalWidth/im.naturalHeight};im.src=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}window.LGAR89=1600/431})();window.LOGOS=IMG108('logos-a2f6204d.webp');window.LOGOM=IMG108('logom-243bc940.webp');IMGH108('logos-a2f6204d.webp',function(v){window.LOGOS=v});IMGH108('logom-243bc940.webp',function(v){window.LOGOM=v});</script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v113';
+window.__BUILD__='v114';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}
