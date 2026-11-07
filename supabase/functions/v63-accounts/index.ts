@@ -61,10 +61,17 @@ type Att = { filename?: string; content?: string; content_type?: string; content
 type MailIn = { to?: string; subject?: string; html?: string; text?: string; cred_with?: string; cred_with_text?: string; pw?: string; cred_without?: string; cred_without_text?: string; from_name?: string; reply_to?: string; attachments?: Att[] };
 
 // v83: إن كانت لصاحب الرسالة كلمة مرور أولى سارية تُدرج من الخادم ({{PW}})، وإلا نص «بدون كلمة مرور»
-function compose(b: MailIn) {
+// كلمة المرور الحالية (اختارها صاحبها): تُحذف عبارتا «الأولى» و«يجب تغييرها»
+function asCurrent(t: string) {
+  return t.split("كلمة المرور الأولى").join("كلمة المرور").split("Initial password").join("Password")
+    .split("يجب تغيير كلمة المرور إلزامياً عند أول دخول.").join("").split("You must change the password at your first sign-in.").join("")
+    .split(" (غيّرها إلزامياً عند أول دخول)").join("").split(" (change it at first sign-in)").join("");
+}
+function compose(b: MailIn & { cur?: boolean }) {
   const pw = b.pw && b.cred_with ? b.pw : "";
-  const ch = pw ? String(b.cred_with).split("{{PW}}").join(pw) : String(b.cred_without || "");
-  const ct = pw ? String(b.cred_with_text || b.cred_without_text || "").split("{{PW}}").join(pw) : String(b.cred_without_text || "");
+  const fx = (t: string) => b.cur ? asCurrent(t) : t;
+  const ch = pw ? fx(String(b.cred_with)).split("{{PW}}").join(pw) : String(b.cred_without || "");
+  const ct = pw ? fx(String(b.cred_with_text || b.cred_without_text || "")).split("{{PW}}").join(pw) : String(b.cred_without_text || "");
   const html = String(b.html || "").split("[[CRED]]").join(ch);
   const text = String(b.text || "").split("[[CRED]]").join(ct);
   return { html, text };
@@ -78,7 +85,7 @@ async function initPw(ref?: string) {
   } catch { return ""; }
 }
 
-async function deliver(b: MailIn) {
+async function deliver(b: MailIn & { cur?: boolean }) {
   const { html, text } = compose(b);
   const name = String(b.from_name || "معهد التمهيد للدراسات الإسلامية واللغوية").replace(/["<>\r\n]/g, "").slice(0, 120);
   await transport().sendMail({
@@ -143,6 +150,8 @@ Deno.serve(async (req) => {
       st.reveal2 = { same: rv2.password === "NewPassw0rd99", current: rv2.current };
       const lg2 = await accLogin(ref, "NewPassw0rd99") as { ok?: boolean; must_change?: boolean };
       st.login2 = { ok: lg2.ok, must_change: lg2.must_change };
+      const c = compose({ cred_with: "كلمة المرور الأولى: {{PW}} يجب تغيير كلمة المرور إلزامياً عند أول دخول.", html: "[[CRED]]", pw: "NewPassw0rd99", cur: true });
+      st.mail_current = c.html;
       st.list = ((await accAdmin("list", {}, fake)) as { items?: unknown[] }).items?.length;
     } catch (e) { st.error = String((e as Error)?.message || e); }
     st.remove = await accAdmin("remove", { ref_id: ref }, fake);
@@ -197,14 +206,19 @@ Deno.serve(async (req) => {
     const b = body as MailIn & { type?: string; ref_id?: string };
     if (!b.to || !EMAIL.test(String(b.to))) return json({ error: "no_email" });
     const payload = { to: b.to, subject: b.subject, html: b.html, text: b.text, cred_with: b.cred_with, cred_with_text: b.cred_with_text, cred_without: b.cred_without, cred_without_text: b.cred_without_text, from_name: b.from_name, reply_to: b.reply_to, attachments: b.attachments };
-    let pw = await initPw(b.ref_id);
+    // خطاب القبول/التعيين/إعادة التعيين يحمل دائماً كلمة مرور صالحة:
+    // الأولى إن وُجدت، وإلا الحالية المحفوظة مشفّرة، وإلا يُعاد التعيين آلياً فتصدر كلمة أولى جديدة
+    let pw = await initPw(b.ref_id), cur = false;
     if (!pw && b.ref_id && KIND(String(b.ref_id)) && ["admit", "appoint", "reset"].includes(String(b.type || ""))) {
-      const { data: ex } = await admin.from("v83_acc").select("user_id").eq("ref_id", String(b.ref_id)).maybeSingle();
-      if (!ex) { await accAdmin("ensure", { items: [{ ref_id: String(b.ref_id) }] }, me); pw = await initPw(b.ref_id); }
+      const ref = String(b.ref_id);
+      const { data: ex } = await admin.from("v83_acc").select("user_id,init_enc,must_change").eq("ref_id", ref).maybeSingle();
+      if (!ex) { await accAdmin("ensure", { items: [{ ref_id: ref }] }, me); pw = await initPw(ref); }
+      else if (ex.init_enc && !ex.must_change) { try { pw = await dec(ex.init_enc); cur = true; } catch { pw = ""; } }
+      if (!pw && ex) { const r = await accAdmin("reset", { ref_id: ref }, me) as { password?: string }; pw = r.password || ""; }
     }
     const { data: row } = await admin.from("v63_mail_log").insert({ type: b.type || null, ref_id: b.ref_id || null, to_addr: String(b.to), subject: String(b.subject || "").slice(0, 300), by_user: me.id, payload, attempts: 1 }).select("id").single();
     try {
-      await deliver({ ...payload, pw });
+      await deliver({ ...payload, pw, cur });
       if (row) await admin.from("v63_mail_log").update({ status: "sent", sent_at: new Date().toISOString(), payload: null }).eq("id", row.id);
       if (pw) await alog("send", b.ref_id || null, me.email || "admin", String(b.to));
       return json({ ok: true, id: row?.id, password_included: !!pw });
