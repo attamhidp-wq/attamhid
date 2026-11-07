@@ -25997,7 +25997,7 @@ setInterval(function(){try{if(S!==lastS||KEYS.some(function(k){var d=Object.getO
 <script>(function(){try{var im=new Image();im.onload=function(){if(im.naturalWidth&&im.naturalHeight)window.LGAR89=im.naturalWidth/im.naturalHeight};im.src=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}window.LGAR89=1600/431})();window.LOGOS=IMG108('logos-a2f6204d.webp');window.LOGOM=IMG108('logom-243bc940.webp');IMGH108('logos-a2f6204d.webp',function(v){window.LOGOS=v});IMGH108('logom-243bc940.webp',function(v){window.LOGOM=v});</script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v112';
+window.__BUILD__='v113';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}
@@ -26033,7 +26033,7 @@ function bar(v){if(document.getElementById('upd84'))return;var d=document.create
  d.style.cssText='position:fixed;left:12px;right:12px;bottom:12px;z-index:99999;background:#1A3360;color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.25);font:600 15px/1.5 system-ui,sans-serif;display:flex;gap:12px;align-items:center;justify-content:space-between';
  d.innerHTML='<span>يتوفر تحديث جديد للموقع / A new version is available</span>';var b=document.createElement('button');b.textContent='تحديث الآن';b.style.cssText='background:#fff;color:#1A3360;border:0;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer';b.onclick=function(){go2(v)};d.appendChild(b);document.body.appendChild(d)}
 function check(first){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===window.__BUILD__)return;
- pend=j.v;var q=new URLSearchParams(location.search);if(first&&q.get('_b')!==j.v&&!busy()){go2(j.v);return}bar(j.v)},function(){})}catch(e){}}
+ pend=j.v;var q=new URLSearchParams(location.search);if(q.get('_b')===j.v){pend=null;return}if(first&&!busy()){go2(j.v);return}bar(j.v)},function(){})}catch(e){}}
 setTimeout(function(){check(true)},2500);setInterval(function(){check(false)},180000);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(pend&&!busy())go2(pend);else check(false)}});
 })();
