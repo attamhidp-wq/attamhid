@@ -1,4 +1,4 @@
-// v63-accounts (v113) — البريد الرسمي (Resend بنطاق المعهد + Gmail احتياطي)، الإشعارات، «نسيت كلمة المرور»، الحسابات
+// v63-accounts (v115) — البريد الرسمي (Resend بنطاق المعهد + Gmail احتياطي)، الإشعارات، «نسيت كلمة المرور»، الحسابات
 // العمليات: probe, selftest, mail_status, mail_ready, mail, mail_log, retry_due
 // v83 — الحسابات: list, ensure, reset, reveal, unlock, log, login, change, rename, remove, purge, rc_generate, rc_use, rc_status
 // بيانات Gmail: أسرار الدالة GMAIL_USER/GMAIL_APP_PASSWORD، أو الخزنة المشفّرة (vault: gmail_user, gmail_app_password)
@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
   const action = String(body.action || "");
   await loadCred(["mail_test", "mail_status", "mail_ready", "probe"].includes(action));
 
-  if (action === "probe") return json({ ok: true, v: "v113-accounts", mail: ON, provider: PROVIDER() });
+  if (action === "probe") return json({ ok: true, v: "v115-accounts", mail: ON, provider: PROVIDER() });
 
   // فحص ذاتي من الخادم: يرسل رسالة اختبار إلى بريد المعهد نفسه؛ محمي برمز في الخزنة
   if (action === "selftest") {
@@ -484,10 +484,12 @@ async function accAdmin(action: string, body: Record<string, unknown>, me: { id:
 }
 
 async function accLogin(ident: string, password: string) {
-  const ref = ident.replace(/\s+/g, "");
+  let ref = ident.replace(/\s+/g, "");
   if (!/^\d+$/.test(ref) || !password) return { error: "bad" };
   const cfg = await settings();
-  const { data: a } = await admin.from("v83_acc").select("*").eq("ref_id", ref).maybeSingle() as { data: Acc | null };
+  let { data: a } = await admin.from("v83_acc").select("*").eq("ref_id", ref).maybeSingle() as { data: Acc | null };
+  // v115: الدخول بالرقم الأكاديمي لقيد آخر (بكالوريوس مثلاً) يوصل إلى حساب الطالب نفسه
+  if (!a) { const { data: al } = await admin.rpc("v61_alias", { ident: ref }); if (al && /^\d+$/.test(String(al))) { const r2 = await admin.from("v83_acc").select("*").eq("ref_id", String(al)).maybeSingle(); if (r2.data) { a = r2.data as Acc; ref = String(al); } } }
   if (!a) return { error: "bad" };
   if (a.locked_until && Date.parse(a.locked_until) > Date.now()) return { error: "locked", until: a.locked_until };
   const h = await holder(ref, a.role);
@@ -629,9 +631,9 @@ async function render(t: Tpl) {
   const attachments: Att[] = B.logo ? [{ filename: "logo.png", content: B.logo, content_type: "image/png", content_id: "logo64" }] : [];
   return { html, text, attachments };
 }
-async function sendLogged(type: string, ref: string, to: string, t: Tpl, by: string | null = null) {
+async function sendLogged(type: string, ref: string, to: string, t: Tpl, by: string | null = null, extra: Att[] = []) {
   const { html, text, attachments } = await render(t);
-  const payload = { to, subject: t.subject, html, text, attachments };
+  const payload = { to, subject: t.subject, html, text, attachments: [...attachments, ...extra] };
   const { data: row } = await admin.from("v63_mail_log").insert({ type, ref_id: ref, to_addr: to, subject: t.subject.slice(0, 300), by_user: by, payload, attempts: 1 }).select("id").single();
   try {
     const { via, id } = await deliver(payload);
@@ -662,7 +664,7 @@ async function notifyRun() {
   const { data: q } = await admin.from("v108_notify").select("*").eq("status", "pending").lt("tries", 5).order("id").limit(300);
   if (!q || !q.length) return { sent: 0, failed: 0 };
   // v113: إشعارات الأقسام وإدارة القبول والمدرّسين والتقرير اليومي — تُعالَج منفصلة عن إشعارات الطلاب
-  const SK = ["app_new", "app_pre", "teach", "daily"];
+  const SK = ["app_new", "app_pre", "teach", "daily", "reg_pend", "risk", "alumni", "backup"];
   const sq = q.filter((r) => SK.includes(r.kind));
   const staffRes = sq.length ? await staffRun(sq) : null;
   q.splice(0, q.length, ...q.filter((r) => !SK.includes(r.kind)));
@@ -801,9 +803,55 @@ async function staffRun(q: Array<Record<string, any>>) {
         en: `Summary of the last 24 hours up to the morning of ${r.ref_id}:`, extraEn: card([["New applications", n("apps_new")], ["Applications by programme", pE], ["Open applications", n("apps_open")], ["Provisionally accepted, awaiting final decision", n("apps_pre")], ["New students", n("students_new")], ["Total students", n("students")], ["Documents issued", n("certs_new")], ["Document requests under review", n("docreq_open")], ["New exam submissions", n("subs_new")], ["Emails sent / failed / bounced", `${n("mail_sent")} / ${n("mail_failed")} / ${n("mail_bounced")}`], ["Last backup (Makkah time)", lb]], "ltr"),
         btn: { url: adminUrl, ar: "فتح بوابة الإدارة", en: "Open the admin portal" } };
     }
+    let extra: Att[] = [];
+    if (r.kind === "reg_pend" || r.kind === "risk" || r.kind === "alumni") {
+      const { data: srow } = await admin.from("students").select("id,data").eq("id", String(r.ref_id)).maybeSingle();
+      const sd = (srow?.data || {}) as Record<string, unknown>;
+      if (!srow || sd.deleted) { await fin(r, "skipped", "no_student"); skipped++; continue; }
+      const per = person(String(r.ref_id), sd);
+      const deptTo = unitMails(String(r.data?.unit || ""));
+      if (r.kind === "reg_pend") {
+        const eq = r.data?.what === "eq";
+        to = deptTo.length ? deptTo : central;
+        const rowsA: Array<[string, string]> = [["الطالب", per.name + " — " + per.id], ["البرنامج", p.ar], ["القسم", u.ar || "—"], [eq ? "نوع الطلب" : "اختيارات بانتظار الاعتماد", eq ? "معادلة مقررات" : String(r.data?.n || "")]];
+        const rowsE: Array<[string, string]> = [["Student", per.nameEn + " — " + per.id], ["Programme", p.en], ["Department", u.en || "—"], [eq ? "Request" : "Choices awaiting approval", eq ? "Course equivalency" : String(r.data?.n || "")]];
+        t = { subject: (eq ? "طلب معادلة مقررات" : "تسجيل مقررات بانتظار اعتماد القسم") + ` — ${per.id} / ` + (eq ? "Equivalency Request" : "Course Registration Awaiting Approval"), titleAr: eq ? "طلب معادلة مقررات من طالب" : "تسجيل مقررات بانتظار الاعتماد", titleEn: eq ? "Course Equivalency Request" : "Course Registration Awaiting Approval", dearAr: "رئاسة القسم", dearEn: "Head of Department",
+          ar: eq ? "قدّم الطالب التالي طلب معادلة مقررات من بوابته، وهو بانتظار مراجعة القسم:" : "سجّل الطالب التالي حزمة مستواه، واختار متطلبات عامة أو اختيارية تنتظر اعتماد القسم:", extraAr: card(rowsA, "rtl"),
+          en: eq ? "The following student submitted a course equivalency request from the portal; it awaits the department's review:" : "The following student registered their level package and chose general or elective courses that await the department's approval:", extraEn: card(rowsE, "ltr"),
+          btn: { url: adminUrl, ar: "المراجعة في بوابة الإدارة", en: "Review in the admin portal" } };
+      } else if (r.kind === "risk") {
+        const fin2 = r.data?.lvl === "final", g = String(r.data?.gpa ?? "");
+        to = [...new Set([...(EMAIL.test(per.email) ? [per.email] : []), ...deptTo])];
+        t = { subject: (fin2 ? "إنذار أكاديمي نهائي" : "إنذار أكاديمي") + " — " + p.ar + " / " + (fin2 ? "Final Academic Warning" : "Academic Warning"), titleAr: fin2 ? "إنذار أكاديمي نهائي" : "إنذار أكاديمي مبكر", titleEn: fin2 ? "Final Academic Warning" : "Early Academic Warning", dearAr: dearA(per, "student"), dearEn: dearE(per),
+          ar: `انخفض معدلكم التراكمي في ${p.ar} إلى ${g} من 5.00، وهو ${fin2 ? "دون الحد الأدنى للإنذار النهائي" : "دون الحد المطلوب"}. نرجو مراجعة المرشد الأكاديمي في ${u.ar || "القسم"} لوضع خطة لرفع المعدل. أُرسلت نسخة من هذه الرسالة إلى القسم.`,
+          en: `Your cumulative GPA in ${p.en} has dropped to ${g} out of 5.00, which is ${fin2 ? "below the final-warning threshold" : "below the required level"}. Please see your academic adviser in ${u.en || "the department"} to agree a plan to raise it. A copy of this message was sent to the department.`,
+          extraAr: card([["المعدل التراكمي", g + " / 5.00"], ["حد الإنذار", String(r.data?.warn ?? "2.00")], ["حد الإنذار النهائي", String(r.data?.final ?? "1.50")]], "rtl"),
+          btn: { url: B.base + "?p=" + encodeURIComponent(per.id), ar: "عرض سجلي الأكاديمي", en: "View my academic record" } };
+      } else {
+        if (!EMAIL.test(per.email)) { await fin(r, "skipped", "no_email"); skipped++; continue; }
+        to = [per.email];
+        t = { subject: String(r.data?.subj || "رسالة إلى خريجي المعهد"), titleAr: String(r.data?.subj || "رسالة إلى خريجي المعهد"), titleEn: "A Message to Our Graduates", dearAr: (per.f ? "الخريجة الكريمة " : "الخريج الكريم ") + per.name, dearEn: "Dear " + per.nameEn,
+          ar: String(r.data?.body || ""), en: "This message from the Institute to its graduates is in Arabic above.",
+          btn: { url: B.base + "?p=" + encodeURIComponent(per.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" } };
+      }
+    } else if (r.kind === "backup") {
+      to = central;
+      const { data: bj, error: be } = await admin.rpc("v115_backup_json");
+      if (be || !bj) { await fin(r, "fail", "backup: " + String(be?.message || "empty")); failed++; continue; }
+      const raw = new TextEncoder().encode(JSON.stringify(bj));
+      const gz = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer());
+      let bin = ""; for (let i = 0; i < gz.length; i += 0x8000) bin += String.fromCharCode(...gz.subarray(i, i + 0x8000));
+      extra = [{ filename: `attamhid-backup-${r.ref_id}.json.gz`, content: btoa(bin), content_type: "application/gzip" }];
+      const tables = Object.keys(((bj as Record<string, unknown>).tables || {}) as Record<string, unknown>).length;
+      const mb = (gz.length / 1048576).toFixed(2);
+      t = { subject: `النسخة الاحتياطية الأسبوعية — ${r.ref_id} / Weekly Backup — At-Tamhid`, titleAr: "النسخة الاحتياطية الأسبوعية", titleEn: "Weekly Backup", dearAr: "الإدارة المركزية", dearEn: "Central Administration",
+        ar: "مرفق بهذه الرسالة نسخة احتياطية كاملة من بيانات الموقع، احفظوها في مكان آمن خارج الخادم. الملف مضغوط (gzip) ويحوي بيانات الطلاب الشخصية، فلا تشاركوه. لا يتضمن كلمات المرور ولا سجلات الدخول.", extraAr: card([["التاريخ", String(r.ref_id)], ["عدد الجداول", String(tables)], ["حجم الملف", mb + " MB"]], "rtl"),
+        en: "Attached is a full backup of the website data. Keep it somewhere safe outside the server. The file is compressed (gzip) and contains students' personal data, so do not share it. It contains no passwords or sign-in records.", extraEn: card([["Date", String(r.ref_id)], ["Tables", String(tables)], ["File size", mb + " MB"]], "ltr"),
+        btn: { url: adminUrl, ar: "فتح بوابة الإدارة", en: "Open the admin portal" } };
+    }
     if (!t || !to.length) { await fin(r, "skipped", t ? "no_recipient" : "unknown"); skipped++; continue; }
     let ok = true, lastId = 0, err = "";
-    for (const addr of to) { const s = await sendLogged("notify_" + r.kind, String(r.ref_id), addr, t); if (s.ok) lastId = s.id || lastId; else { ok = false; err = s.error || "send_failed"; } }
+    for (const addr of to) { const s = await sendLogged("notify_" + r.kind, String(r.ref_id), addr, t, null, extra); if (s.ok) lastId = s.id || lastId; else { ok = false; err = s.error || "send_failed"; } }
     if (ok) { await fin(r, "sent", "", lastId); sent++; } else { await fin(r, "fail", err); failed++; }
   }
   return { sent, failed, skipped };

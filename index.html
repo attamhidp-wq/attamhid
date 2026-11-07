@@ -22020,7 +22020,7 @@ wrapTab('v51p',function(prev,args){var du=deptUser();if(!du)return prev.apply(th
 if(H.openP){var _op=H.openP;H.openP=function(pid){var du=deptUser();if(du){var p=V5.prog(+pid||pid);if(p&&V5.canProg112&&!V5.canProg112(p)){toast(L('هذا البرنامج يتبع قسماً آخر.','This programme belongs to another department.'));return}}return _op.apply(this,arguments)}}
 
 /* ---------- 2) صلاحيات افتراضية للأقسام وإدارة القبول (تُضبط مرة، وتبقى قابلة للتعديل) ---------- */
-var DEF={dept:['v69h','v112d','v51p','v112a'],adm:['v69h','v112a','v112d','v112i','req','v75r','v77a','st','v74p','v71p','dr'],admHead:['ce','v64m','v64c','v51d','v60sp','sh','v66d','v67n','v75n','v98g','cal']};
+var DEF={dept:['v69h','v112d','v51p','v112a'],adm:['v69h','v112a','v112d','v112i','req','v75r','v77a','st','v74p','v71p','dr','v115g'],admHead:['ce','v64m','v64c','v51d','v60sp','sh','v66d','v67n','v75n','v98g','cal']};
 function seedPerms(){if(!central())return;var P=S.v51.perms||(S.v51.perms={}),ch=0;
  units().forEach(function(u){var list=u.academic&&u.type==='department'?DEF.dept:u.id==='u-adm'?DEF.adm:null;if(!list)return;
   list.forEach(function(svc){var r=P[svc]||(P[svc]={});if(r[u.id]===undefined){r[u.id]=1;ch=1}})});
@@ -22090,6 +22090,171 @@ V5.can=can;
 V5.mx113=function(cols){var out=[];(cols||[]).forEach(function(u){out.push(u);var Hs=V5.live(S.v51.members||[]).filter(function(m){return m.active!==0&&isHeadM(m,u.id)});
  if(Hs.length){var nm=Hs.map(function(m){return m.name}).join('، ');out.push({id:'h:'+u.id,nameAr:'رئيس الجهة: '+u.nameAr+' ('+nm+')',nameEn:'Head: '+(u.nameEn||u.nameAr)+' ('+nm+')'})}});return out};
 })();
+/* =====================================================================
+   v115 — التسجيل الفصلي، الإنذار المبكر، سجل الخريجين، الرقم الأكاديمي لكل قيد
+   - حزمة المستوى تُسجَّل كاملة؛ المتطلبات العامة والاختيارية يختارها الطالب ويعتمدها القسم.
+   - لكل برنامج: فترة التسجيل، والحد الأدنى والأعلى للساعات في الفصل، والمدة الدنيا والمعتادة والقصوى للتخرج.
+   - خدمات الطالب الذاتية تُكتب على الخادم بعد التحقق (v115_self).
+   ===================================================================== */
+(function(){
+var e2=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var Qs=function(x){return String(x).replace(/\\/g,'\\\\').replace(/'/g,"\\'")};
+var H=V5.h,W=window,NOW5=function(){return new Date().toISOString()},TODAY5=function(){var d=new Date(Date.now()+3*3600e3);return d.toISOString().slice(0,10)};
+var isAdm=function(){return typeof me!=='undefined'&&me&&me.r==='admin'&&!V5.imp64};
+var central=function(){return isAdm()&&!me.unit};
+var canP=function(p){return central()||(V5.canProg112&&V5.canProg112(p))};
+var pnm=function(p){return p?L(p.name,(p.eng&&p.eng.nameEn)||p.name):'—'};
+var b2=function(t,oc,c){return '<button type="button" class="btn '+(c==null?'s':c)+'" onclick="'+oc+'">'+t+'</button>'};
+var isP73=function(p){return !!p&&(V5.pCourses(p)||[]).some(function(c){return /^P73-/.test(c.id)})};
+var termOpts=function(sel){var T=[];try{T=(V5.allTerms61&&V5.allTerms61())||[]}catch(e){}return T.filter(function(t){return t.n!==3}).map(function(t){var N={ar:t.id};try{N=V5.termNames61(t)}catch(e){}return '<option value="'+e2(t.id)+'"'+(t.id===sel?' selected':'')+'>'+e2(L(N.ar||t.id,N.en||t.id))+'</option>'}).join('')};
+var termNm=function(id){try{var t=V5.termById61(id);if(t){var N=V5.termNames61(t);return L(N.ar,N.en)}}catch(e){}return id||'—'};
+
+/* ---------- قواعد التسجيل لكل برنامج (افتراضات معقولة قابلة للتعديل) ---------- */
+function rules(p){var e=(p&&p.eng)||{},r=e.reg115||{},lv=Math.max(1,+e.levels||1),tot=+((e.grad||{}).hours)||(V5.pCourses(p)||[]).reduce(function(a,c){return a+(+c.hrs||0)},0)||lv*15,avg=tot/lv;
+ return {from:r.from||'',to:r.to||'',term:r.term||'',minH:r.minH!=null?+r.minH:Math.max(3,Math.round(avg*0.7)),maxH:r.maxH!=null?+r.maxH:Math.round(avg*1.3),
+  dMin:r.dMin!=null?+r.dMin:(lv>=6?lv-1:lv),dNorm:r.dNorm!=null?+r.dNorm:lv,dMax:r.dMax!=null?+r.dMax:lv+Math.ceil(lv/2),levels:lv,hours:tot}}
+V5.rules115=rules;
+var open=function(R){var d=TODAY5();return !!(R.from&&R.to&&d>=R.from&&d<=R.to)};
+/* حالة القيد ومستواه في برنامج */
+function enr(s,pid){if(!s)return null;if(s.prog==pid)return {pid:pid,status:s.status||'منتظم',lvl:+s.lvl||1,no:s.id,track:(s.track115||{})[pid]||'',primary:1};
+ var e=(s.en51||[]).find(function(x){return x.pid==pid&&!x.out});return e?{pid:pid,status:e.status||'منتظم',lvl:+e.lvl||1,no:e.no||'',track:e.track||(s.track115||{})[pid]||'',e:e}:null}
+V5.enr115=enr;
+var passed=function(s,cid){var g=(s.gr||{})[cid];return !!(g&&(g.ok===true||g.ok===1||g.eq))};
+var failed=function(s,cid){var g=(s.gr||{})[cid];return !!(g&&g.fin&&!(g.ok===true||g.ok===1)&&!g.eq)};
+function pkgOf(s,p,lvl,trk){return (V5.pCourses(p)||[]).filter(function(c){var t=c.typ73||'',tr=c.track73||'';if(t==='g'||t==='e')return false;if(tr&&tr!==trk)return false;if(passed(s,c.id))return false;var term=+c.term||1;return term===lvl||(term<lvl&&failed(s,c.id))})}
+function choicesOf(s,p){return (V5.pCourses(p)||[]).filter(function(c){return (c.typ73==='g'||c.typ73==='e')&&!passed(s,c.id)}).sort(function(a,b){return (+a.term||1)-(+b.term||1)||String(a.code).localeCompare(String(b.code))})}
+var tracksOf=function(p){var t={};(V5.pCourses(p)||[]).forEach(function(c){if(c.track73)t[c.track73]=1});return Object.keys(t)};
+var termsUsed=function(s,pid){var t={};(s.reg115||[]).forEach(function(x){if(x.pid==pid)t[x.term]=1});return Object.keys(t).length};
+var ERR={closed:['فترة التسجيل مغلقة.','Registration is closed.'],max:['تجاوزت الحد الأعلى للساعات في الفصل.','You exceeded the maximum hours per term.'],min:['الساعات أقل من الحد الأدنى للفصل.','Hours are below the term minimum.'],status:['التسجيل للطلاب المنتظمين فقط.','Registration is for regular students only.'],not_enrolled:['لست مقيداً في هذا البرنامج.','You are not enrolled in this programme.'],track:['اختر المسار أولاً.','Choose your track first.'],bad_course:['اختيار غير صالح.','Invalid choice.'],auth:['سجّل الدخول من جديد.','Please sign in again.']};
+var errMsg=function(r){var x=ERR[r&&r.error];return x?L(x[0],x[1])+(r.hrs!=null?' ('+r.hrs+')':''):L('تعذّر الحفظ، حاول مرة أخرى.','Could not save; please try again.')};
+/* استدعاء الخادم لخدمات الطالب، ثم تحديث السجل المحلي بما أعاده الخادم */
+async function self(op,p){if(typeof sb==='undefined'||!sb)return {error:'offline'};var r=await sb.rpc('v115_self',{op:op,p:p});if(r.error)return {error:r.error.message};var d=r.data||{};
+ if(d.ok&&d.data){var s=(S.students||[]).find(function(x){return x.id==me.id});if(s){Object.keys(d.data).forEach(function(k){s[k]=d.data[k]})}}return d}
+V5.self115=self;
+
+/* ---------- 1) واجهة البرنامج: «التسجيل الفصلي» ---------- */
+var TB=V5.p112tabs||{};
+var _sub2=V5.p112sub2;V5.p112sub2=function(p){var a=_sub2?_sub2(p):[];if(isP73(p))a.unshift(['reg115',L('التسجيل الفصلي ومدد الدراسة','Term registration & study duration')]);return a};
+TB.reg115=function(p){var R=rules(p),can=canP(p),Ss=V5.progStudents(p.id)||[],Cs=V5.pCourses(p)||[],cn=function(id){var c=Cs.find(function(x){return x.id==id})||{};return (c.code||id)+' — '+(c.name||'')};
+ var h='<p class="mu">'+L('في كل فصل تُسجَّل حزمة المستوى كاملة تلقائياً، ويختار الطالب من المتطلبات العامة والاختيارية ما يناسبه ضمن حدود الساعات، فيعتمد القسم اختياراته. الإضافة والحذف متاحان للطالب طوال فترة التسجيل.','Each term the level package is registered in full automatically; the student chooses general and elective courses within the hour limits, and the department approves the choices. Students can add and drop throughout the registration period.')+'</p>';
+ h+='<form class="v51g" onsubmit="return V51.h.r115(this,\''+Qs(p.id)+'\')"><h4 style="grid-column:1/-1">'+L('قواعد التسجيل ومدة الدراسة','Registration rules & study duration')+'</h4>'+
+  '<label>'+L('الفصل الدراسي','Term')+'<select name="term"'+(can?'':' disabled')+'><option value="">—</option>'+termOpts(R.term)+'</select></label>'+
+  '<label>'+L('بداية فترة التسجيل','Registration opens')+'<input type="date" name="from" value="'+e2(R.from)+'"'+(can?'':' disabled')+'></label>'+
+  '<label>'+L('نهاية فترة التسجيل (الإضافة والحذف)','Registration closes (add/drop)')+'<input type="date" name="to" value="'+e2(R.to)+'"'+(can?'':' disabled')+'></label>'+
+  '<label>'+L('الحد الأدنى للساعات في الفصل','Minimum hours per term')+'<input type="number" min="0" max="40" name="minH" value="'+R.minH+'"'+(can?'':' disabled')+'></label>'+
+  '<label>'+L('الحد الأعلى للساعات في الفصل','Maximum hours per term')+'<input type="number" min="1" max="40" name="maxH" value="'+R.maxH+'"'+(can?'':' disabled')+'></label>'+
+  '<label>'+L('أدنى مدة للتخرج (بالفصول)','Minimum duration (terms)')+'<input type="number" min="1" max="30" name="dMin" value="'+R.dMin+'"'+(can?'':' disabled')+'></label>'+
+  '<label>'+L('المدة المعتادة (بالفصول)','Normal duration (terms)')+'<input type="number" min="1" max="30" name="dNorm" value="'+R.dNorm+'"'+(can?'':' disabled')+'></label>'+
+  '<label>'+L('أعلى مدة للتخرج (بالفصول)','Maximum duration (terms)')+'<input type="number" min="1" max="40" name="dMax" value="'+R.dMax+'"'+(can?'':' disabled')+'></label>'+
+  (can?'<div style="grid-column:1/-1"><button class="btn">'+L('حفظ القواعد','Save rules')+'</button> <span class="tag '+(open(R)?'ok':'')+'">'+(open(R)?L('التسجيل مفتوح الآن','Registration is open now'):L('التسجيل مغلق الآن','Registration is closed now'))+'</span></div>':'')+'</form>';
+ var rows=[],pendN=0;Ss.forEach(function(s){var E=enr(s,p.id);if(!E)return;var x=(s.reg115||[]).filter(function(r){return r.pid==p.id&&(!R.term||r.term===R.term)}).slice(-1)[0],used=termsUsed(s,p.id);
+  var flag=used>R.dMax?'<span class="tag er">'+L('تجاوز أعلى مدة','Over max duration')+'</span>':used>R.dNorm?'<span class="tag wn">'+L('تجاوز المدة المعتادة','Over normal duration')+'</span>':'';
+  var gen=x?(x.gen||[]).map(function(it){pendN+=it.st==='pending'?1:0;return '<div>'+e2(cn(it.cid))+' <span class="tag '+(it.st==='ok'?'ok':it.st==='no'?'er':'wn')+'">'+(it.st==='ok'?L('معتمد','Approved'):it.st==='no'?L('مرفوض','Rejected'):L('بانتظار القسم','Pending'))+'</span>'+(it.st==='pending'&&can?' '+b2(L('اعتماد','Approve'),"V51.h.g115('"+Qs(s.id)+"','"+Qs(p.id)+"','"+Qs(x.term)+"','"+Qs(it.cid)+"','ok')",'')+' '+b2(L('رفض','Reject'),"V51.h.g115('"+Qs(s.id)+"','"+Qs(p.id)+"','"+Qs(x.term)+"','"+Qs(it.cid)+"','no')"):'')+'</div>'}).join(''):'';
+  rows.push('<tr><td dir="ltr">'+e2(E.no||s.id)+'</td><td>'+e2(s.name)+'</td><td>'+e2(E.status)+'</td><td>'+E.lvl+'</td><td>'+(x?(x.pkg||[]).length+' '+L('مقرراً','courses'):'<span class="mu">'+L('لم يسجل','Not registered')+'</span>')+'</td><td>'+(gen||'—')+'</td><td>'+(x?x.hrs:'—')+'</td><td>'+used+' / '+R.dNorm+' '+flag+'</td></tr>')});
+ h+='<h4>'+L('تسجيلات الفصل','Term registrations')+' '+(R.term?'— '+e2(termNm(R.term)):'')+(pendN?' <span class="tag wn">'+pendN+' '+L('بانتظار الاعتماد','pending')+'</span>':'')+'</h4>'+
+  T([L('الرقم','No.'),L('الطالب','Student'),L('الحالة','Status'),L('المستوى','Level'),L('الحزمة','Package'),L('الاختيارات','Choices'),L('الساعات','Hours'),L('الفصول المسجلة / المعتادة','Terms used / normal')],rows);
+ return h};
+H.r115=function(f,pid){var p=V5.prog(+pid||pid);if(!p||!canP(p))return false;var v=function(n){return String(f.elements[n].value||'').trim()},n=function(k){return Math.max(0,parseInt(v(k),10)||0)};
+ var r={term:v('term'),from:v('from'),to:v('to'),minH:n('minH'),maxH:n('maxH'),dMin:n('dMin'),dNorm:n('dNorm'),dMax:n('dMax')};
+ if(r.from&&r.to&&r.from>r.to){toast(L('نهاية الفترة قبل بدايتها.','The period ends before it starts.'));return false}
+ if(r.minH>r.maxH){toast(L('الحد الأدنى للساعات أكبر من الأعلى.','Minimum hours exceed the maximum.'));return false}
+ if(!(r.dMin<=r.dNorm&&r.dNorm<=r.dMax)){toast(L('يجب أن تكون المدد: الدنيا ≤ المعتادة ≤ القصوى.','Durations must be: minimum ≤ normal ≤ maximum.'));return false}
+ if((r.from||r.to)&&!r.term){toast(L('اختر الفصل الدراسي لفترة التسجيل.','Choose the term for the registration period.'));return false}
+ var e=p.eng=p.eng||{},old=JSON.stringify(e.reg115||{});e.reg115=r;p.u=NOW5();try{V5.aud(L('قواعد التسجيل الفصلي','Term registration rules'),String(p.id),old+' → '+JSON.stringify(r))}catch(x){}save();toast(L('حُفظت القواعد.','Rules saved.'));go();return false};
+H.g115=function(sid,pid,term,cid,res){var p=V5.prog(+pid||pid),s=(S.students||[]).find(function(x){return x.id==sid});if(!p||!s||!canP(p))return;
+ var x=(s.reg115||[]).find(function(r){return r.pid==pid&&r.term===term});if(!x)return;var it=(x.gen||[]).find(function(g){return g.cid===cid});if(!it||it.st!=='pending')return;
+ var note='';if(res==='no'){note=prompt(L('سبب الرفض (يظهر للطالب):','Reason (shown to the student):'),'');if(note==null)return}
+ it.st=res;it.by=(typeof who==='function'?who():'');it.at=NOW5();if(note)it.note=String(note).slice(0,300);
+ if(res==='ok'){s.reg=s.reg||[];if(s.reg.indexOf(cid)<0)s.reg.push(cid)}
+ s.u=NOW5();try{V5.aud(res==='ok'?L('اعتماد مقرر اختياري/عام','Choice approved'):L('رفض مقرر اختياري/عام','Choice rejected'),s.id,pnm(p)+' · '+cid)}catch(e){}save();go()};
+
+/* ---------- 2) بوابة الطالب: التسجيل الفصلي + بيانات الخريج + أرقام القيود ---------- */
+var _vs115=V.student;
+V.student=function(){var h=_vs115.apply(this,arguments);try{if(typeof me==='undefined'||!me||me.r!=='student'||(typeof taking!=='undefined'&&taking))return h;var s=(S.students||[]).find(function(x){return x.id==me.id});if(!s)return h;
+ var out='';
+ var pids=[s.prog].concat((s.en51||[]).filter(function(e){return !e.out}).map(function(e){return e.pid})).filter(function(x,i,a){return x&&a.indexOf(x)===i});
+ /* أرقام القيود */
+ var nos=pids.map(function(pid){var E=enr(s,pid),p=V5.prog(+pid||pid);return E&&p?'<tr><td>'+e2(pnm(p))+'</td><td dir="ltr"><b>'+e2(E.no||'—')+'</b></td><td>'+e2(E.status)+'</td></tr>':''}).join('');
+ if(pids.length>1)out+='<h3>'+L('أرقامي الأكاديمية','My academic numbers')+'</h3><div class="box"><p class="mu">'+L('لكل برنامج رقم أكاديمي يظهر في وثائقه. يمكنك الدخول إلى البوابة بأي منها بكلمة المرور نفسها.','Each programme has its own academic number, shown on its documents. You can sign in with any of them using the same password.')+'</p>'+T([L('البرنامج','Programme'),L('الرقم الأكاديمي','Academic no.'),L('الحالة','Status')],[nos])+'</div>';
+ /* التسجيل الفصلي */
+ pids.forEach(function(pid){var p=V5.prog(+pid||pid);if(!p||!isP73(p))return;var E=enr(s,pid);if(!E)return;var R=rules(p),op=open(R)&&E.status==='منتظم';
+  var x=(s.reg115||[]).filter(function(r){return r.pid==pid&&r.term===R.term}).slice(-1)[0],used=termsUsed(s,pid);
+  var tr=tracksOf(p),trk=E.track||(x&&x.track)||'';
+  var pkg=pkgOf(s,p,E.lvl,trk),ch=choicesOf(s,p),sel={};(x&&x.gen||[]).forEach(function(g){sel[g.cid]=g});
+  var pk=pkg.reduce(function(a,c){return a+(+c.hrs||0)},0);
+  var stl=function(g){return !g?'':' <span class="tag '+(g.st==='ok'?'ok':g.st==='no'?'er':'wn')+'">'+(g.st==='ok'?L('معتمد','Approved'):g.st==='no'?L('مرفوض','Rejected'):L('بانتظار القسم','Awaiting department'))+'</span>'+(g.note?' <small class="mu">'+e2(g.note)+'</small>':'')};
+  var b='<h3>'+L('التسجيل الفصلي','Term registration')+' — '+e2(pnm(p))+'</h3><div class="box">';
+  b+='<p class="mu">'+(R.term?L('الفصل: ','Term: ')+e2(termNm(R.term))+' · ':'')+(R.from?L('فترة التسجيل والإضافة والحذف: ','Registration, add & drop: ')+'<bdi dir="ltr">'+e2(R.from)+' → '+e2(R.to)+'</bdi>':L('لم تُحدَّد فترة التسجيل بعد.','The registration period has not been set yet.'))+'</p>';
+  b+='<p>'+L('الساعات المسموحة في الفصل: ','Allowed hours per term: ')+'<b>'+R.minH+' – '+R.maxH+'</b> · '+L('مدة الدراسة: ','Study duration: ')+L('الفصل ','term ')+'<b>'+(used||1)+'</b> '+L('من ','of ')+R.dNorm+' '+L('(الأدنى ','(minimum ')+R.dMin+L('، الأعلى ',', maximum ')+R.dMax+')'+(used>R.dMax?' <span class="tag er">'+L('تجاوزت أعلى مدة','Over the maximum')+'</span>':'')+'</p>';
+  if(!op){b+=x?'':'<p class="mu">'+(E.status!=='منتظم'?L('التسجيل للطلاب المنتظمين فقط.','Registration is for regular students only.'):L('التسجيل غير متاح الآن.','Registration is not available now.'))+'</p>'}
+  b+='<form onsubmit="return V51.h.sr115(this,\''+Qs(pid)+'\')" style="display:block">';
+  if(tr.length&&!E.track&&!(x&&x.track))b+='<label>'+L('المسار','Track')+' <select name="track" required onchange="V51.h.srt115(this)"><option value="">—</option>'+tr.map(function(t){return '<option'+(t===trk?' selected':'')+'>'+e2(t)+'</option>'}).join('')+'</select></label>';
+  b+='<h4>'+L('حزمة المستوى ','Level package ')+E.lvl+' <small class="mu">('+pk+' '+L('ساعة، تُسجَّل كاملة','hours, registered in full')+')</small></h4>'+(pkg.length?'<ul>'+pkg.map(function(c){return '<li>'+e2((c.code||'')+' — '+c.name)+' <small class="mu">('+(+c.hrs||0)+L(' س',' h')+')</small>'+((+c.term||1)<E.lvl?' <span class="tag wn">'+L('إعادة','Repeat')+'</span>':'')+'</li>'}).join('')+'</ul>':'<p class="mu">'+(tr.length&&!trk?L('اختر المسار لتظهر الحزمة.','Choose the track to see the package.'):L('لا مقررات إلزامية متبقية في هذا المستوى.','No compulsory courses remain at this level.'))+'</p>');
+  if(ch.length)b+='<h4>'+L('المتطلبات العامة والاختيارية (يعتمدها القسم)','General & elective courses (approved by the department)')+'</h4><div class="c115">'+ch.map(function(c){var g=sel[c.id];return '<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="gen" value="'+e2(c.id)+'" data-h="'+(+c.hrs||0)+'"'+(g?' checked':'')+(op?'':' disabled')+' onchange="V51.h.srh115(this.form,'+pk+','+R.minH+','+R.maxH+')"> '+e2((c.code||'')+' — '+c.name)+' <small class="mu">('+(+c.hrs||0)+L(' س',' h')+(c.typ73==='e'?' · '+L('اختياري','elective'):' · '+L('متطلب عام','general'))+')</small>'+stl(g)+'</label>'}).join('')+'</div>';
+  b+='<p>'+L('مجموع الساعات: ','Total hours: ')+'<b class="h115">'+((x&&x.hrs)||pk)+'</b> <span class="m115 mu"></span></p>';
+  if(op)b+='<button class="btn">'+(x?L('حفظ التعديل (إضافة/حذف)','Save changes (add/drop)'):L('تسجيل الفصل','Register for the term'))+'</button>';
+  b+='</form>'+(x?'<p class="mu">'+L('آخر تحديث: ','Last update: ')+'<bdi dir="ltr">'+e2(String(x.upd||x.at||'').slice(0,16).replace('T',' '))+'</bdi></p>':'')+'</div>';
+  out+=b});
+ /* بيانات الخريج */
+ var grad=pids.some(function(pid){var E=enr(s,pid);return E&&E.status==='متخرج'});
+ if(grad){var a=s.alum115||{};out+='<h3>'+L('بيانات الخريج','Graduate details')+'</h3><div class="box"><p class="mu">'+L('أبقِ بياناتك محدّثة ليتواصل معك المعهد بالفرص والأخبار. يمكنك طلب وثائقك من «طلبات الوثائق» في هذه البوابة.','Keep your details up to date so the Institute can reach you with news and opportunities. You can request your documents from “Document requests” in this portal.')+'</p>'+
+  '<form class="v51g" onsubmit="return V51.h.al115(this)"><label>'+L('الوظيفة الحالية','Current job')+'<input name="job" maxlength="120" value="'+e2(a.job||'')+'"></label><label>'+L('جهة العمل','Employer')+'<input name="employer" maxlength="160" value="'+e2(a.employer||'')+'"></label><label>'+L('الدراسة الحالية أو اللاحقة','Further study')+'<input name="study" maxlength="200" value="'+e2(a.study||'')+'"></label><label>'+L('بلد الإقامة','Country of residence')+'<input name="country" maxlength="80" value="'+e2(a.country||'')+'"></label><label style="grid-column:1/-1">'+L('ملاحظات','Notes')+'<input name="note" maxlength="500" value="'+e2(a.note||'')+'"></label><div><button class="btn">'+L('حفظ','Save')+'</button>'+(a.at?' <small class="mu">'+L('آخر تحديث: ','Updated: ')+e2(String(a.at).slice(0,10))+'</small>':'')+'</div></form></div>'}
+ if(!out)return h;
+ var i=h.lastIndexOf('<h3>'+L('طلب معادلة مقررات','Course equivalency request')+'</h3>');if(i<0)i=h.lastIndexOf('<h3>'+L('قيودي الأكاديمية','My academic enrolments')+'</h3>');
+ if(i<0)return h+out;var j=h.indexOf('</div>',h.indexOf('<div class="box">',i));if(j<0)return h+out;
+ /* بعد صندوق المعادلة (قد يحوي جدولاً) — نضع المحتوى قبل أول عنوان h3 تالٍ */
+ var k=h.indexOf('<h3>',j);return k<0?h+out:h.slice(0,k)+out+h.slice(k)}catch(e){console.error('v115 student',e);return h}};
+H.srh115=function(f,pk,mn,mx){var t=pk;[].slice.call(f.querySelectorAll('input[name=gen]:checked')).forEach(function(i){t+=+i.dataset.h||0});var b=f.querySelector('.h115'),m=f.querySelector('.m115');if(b)b.textContent=t;if(m){m.textContent=t>mx?L('(أعلى من الحد المسموح)','(above the allowed maximum)'):t<mn?L('(أقل من الحد الأدنى)','(below the minimum)'):'';m.className='m115 '+(t>mx||t<mn?'tag wn':'mu')}};
+H.srt115=function(sel){var s=(S.students||[]).find(function(x){return x.id==me.id});if(!s)return;s.__trk115=sel.value};
+var busy=0;
+H.sr115=function(f,pid){if(busy)return false;var gen=[].slice.call(f.querySelectorAll('input[name=gen]:checked')).map(function(i){return i.value}),t=f.elements.track?f.elements.track.value:'';busy=1;
+ self('reg',{pid:String(pid),gen:gen,track:t}).then(function(r){busy=0;if(r&&r.ok){toast(L('سُجِّل الفصل. اختياراتك بانتظار اعتماد القسم.','Term registered. Your choices await the department\'s approval.'));go()}else toast(errMsg(r))},function(){busy=0;toast(errMsg(null))});return false};
+H.al115=function(f){var v=function(n){return String(f.elements[n].value||'').trim()};self('alum',{job:v('job'),employer:v('employer'),study:v('study'),country:v('country'),note:v('note')}).then(function(r){toast(r&&r.ok?L('حُفظت بياناتك.','Your details were saved.'):errMsg(r));if(r&&r.ok)go()});return false};
+/* طلب المعادلة من البوابة يُرسل إلى الخادم مباشرة (كان يُحفظ محلياً فقط) */
+H.seq113=function(f){if(typeof me==='undefined'||!me||me.r!=='student')return false;var p=V5.prog(+f.pid.value||f.pid.value);if(!p)return false;
+ var cids=[].slice.call(f.cids.selectedOptions||[]).map(function(o){return o.value}),src=String(f.src.value||'').trim().slice(0,500);
+ if(!cids.length||!src){toast(L('اختر المقررات واكتب ما درسته سابقاً.','Choose the courses and describe what you studied before.'));return false}
+ self('eq',{toPid:String(p.id),cids:cids,src:src}).then(function(r){if(r&&r.ok){toast(L('أُرسل طلب المعادلة إلى القسم.','Your equivalency request was sent to the department.'));go()}else toast(errMsg(r))});return false};
+
+/* ---------- 3) الرقم الأكاديمي لكل قيد ---------- */
+function termFor(e){try{var t=V5.curTerm61&&V5.curTerm61(e.from||TODAY5());return t||null}catch(x){return null}}
+function usedNos(){var u={};(S.students||[]).forEach(function(s){u[s.id]=1;(s.en51||[]).forEach(function(e){if(e.no)u[e.no]=1})});return u}
+function ensureNos(){if(!central())return;var ch=0,U=usedNos();(S.students||[]).forEach(function(s){if(s.deleted)return;(s.en51||[]).forEach(function(e){if(e.no||e.out)return;var t=termFor(e);if(!t||!V5.nextId61)return;var n,guard=0;do{n=V5.nextId61(t)}while(U[n]&&guard++<50);if(!n||U[n])return;U[n]=1;e.no=n;s.u=NOW5();ch=1;try{V5.aud(L('رقم أكاديمي لقيد برنامج','Academic number for a programme enrolment'),s.id,e.pid+' → '+n)}catch(x){}})});
+ if(ch){try{V5.setTouch&&V5.setTouch('cal61')}catch(x){}try{save()}catch(x){}}}
+V5.ensureNos115=ensureNos;
+GOH.post.push(function(){try{if(/^#\/admin/.test(location.hash||''))ensureNos()}catch(e){console.error('v115 nos',e)}});
+/* الوثائق: رقم القيد يحلّ محل الرقم الأساسي في نصوص وثائق ذلك البرنامج */
+var _ch115=W.certHTML;
+if(typeof _ch115==='function')W.certHTML=function(c){var h=_ch115.apply(this,arguments);try{if(!c||!c.sid||!c.prog||typeof h!=='string')return h;var s=(S.students||[]).find(function(x){return x.id==c.sid});if(!s||s.prog==c.prog)return h;
+ var e=(s.en51||[]).find(function(x){return x.pid==c.prog&&x.no});if(!e)return h;var id=String(s.id);if(h.indexOf(id)<0)return h;
+ var doc=new DOMParser().parseFromString('<body>'+h+'</body>','text/html'),w=doc.createTreeWalker(doc.body,NodeFilter.SHOW_TEXT),n,ch=0;while((n=w.nextNode())){if(n.nodeValue.indexOf(id)>-1){n.nodeValue=n.nodeValue.split(id).join(e.no);ch=1}}
+ return ch?doc.body.innerHTML:h}catch(x){return h}};
+
+/* ---------- 4) سجل الخريجين ---------- */
+function grads(){var out=[];(S.students||[]).forEach(function(s){if(s.deleted)return;var pids=[s.prog].concat((s.en51||[]).map(function(e){return e.pid}));pids.filter(function(x,i,a){return x&&a.indexOf(x)===i}).forEach(function(pid){var E=enr(s,pid);if(!E||E.status!=='متخرج')return;
+ var c=(S.certs||[]).filter(function(x){return x.sid==s.id&&!x.revoked&&/^(dgrad|ggrad)$/.test(x.type)&&(x.prog==pid||(x.type==='dgrad'&&pid==1000))}).slice(-1)[0],g=(c&&c.g52)||{};
+ out.push({s:s,pid:pid,no:E.no||s.id,year:String(g.gd||(c&&(c.gdate||c.date))||s.gradDate||'').slice(0,4),a:s.alum115||{}})})});return out}
+V5.grads115=grads;
+function tabAlumni(){var U5=V5.__g115||{},G=grads(),P={};G.forEach(function(x){P[x.pid]=1});
+ var F=G.filter(function(x){return (!U5.pid||x.pid==U5.pid)&&(!U5.y||x.year===U5.y)});
+ var years=[...new Set(G.map(function(x){return x.year}).filter(Boolean))].sort().reverse();
+ var h='<h3>'+L('سجل الخريجين','Alumni register')+'</h3><p class="mu">'+L('خريجو كل برنامج بقيده المستقل. يحدّث الخريج بياناته من بوابته، وتصله رسائل المعهد بالبريد، ويطلب وثائقه من «طلبات الوثائق».','Graduates of each programme, by their own enrolment. Graduates update their details from the portal, receive the Institute\'s messages by email, and request documents from “Document requests”.')+'</p>';
+ h+='<div class="g112">'+[[G.length,L('خريج','Graduates')],[Object.keys(P).length,L('برنامج','Programmes')],[G.filter(function(x){return x.a.job}).length,L('حدّثوا بيانات العمل','Updated work details')],[G.filter(function(x){return x.s.email}).length,L('لهم بريد','Have email')]].map(function(k){return '<div class="k112"><b>'+k[0]+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>';
+ h+='<div class="v51g"><label>'+L('البرنامج','Programme')+'<select onchange="V51.h.gf115(\'pid\',this.value)"><option value="">'+L('الكل','All')+'</option>'+Object.keys(P).map(function(pid){return '<option value="'+e2(pid)+'"'+(String(U5.pid||'')===pid?' selected':'')+'>'+e2(pnm(V5.prog(+pid||pid)))+'</option>'}).join('')+'</select></label><label>'+L('سنة التخرج','Graduation year')+'<select onchange="V51.h.gf115(\'y\',this.value)"><option value="">'+L('الكل','All')+'</option>'+years.map(function(y){return '<option'+(U5.y===y?' selected':'')+'>'+e2(y)+'</option>'}).join('')+'</select></label><div>'+b2(L('تنزيل CSV','Download CSV'),'V51.h.gx115()','s')+'</div></div>';
+ h+='<form onsubmit="return V51.h.gm115(this)">'+T(['<input type="checkbox" checked onchange="[].slice.call(this.closest(\'form\').querySelectorAll(\'input[name=sid]\')).forEach(function(i){i.checked=this.checked},this)" aria-label="'+L('تحديد الكل','Select all')+'">',L('الرقم','No.'),L('الخريج','Graduate'),L('البرنامج','Programme'),L('السنة','Year'),L('البريد','Email'),L('العمل','Work'),L('الدراسة','Study'),L('البلد','Country')],F.map(function(x){return '<tr><td><input type="checkbox" name="sid" value="'+e2(x.s.id)+'" checked'+(x.s.email?'':' disabled')+'></td><td dir="ltr">'+e2(x.no)+'</td><td>'+e2(x.s.name)+'</td><td>'+e2(pnm(V5.prog(+x.pid||x.pid)))+'</td><td>'+e2(x.year||'—')+'</td><td dir="ltr"><small>'+e2(x.s.email||'—')+'</small></td><td>'+e2([x.a.job,x.a.employer].filter(Boolean).join(' — ')||'—')+'</td><td>'+e2(x.a.study||'—')+'</td><td>'+e2(x.a.country||'—')+'</td></tr>'}))+
+  '<h4>'+L('رسالة إلى الخريجين المحددين','Message to the selected graduates')+'</h4><div class="v51g"><label style="grid-column:1/-1">'+L('العنوان','Subject')+'<input name="subj" required maxlength="200"></label><label style="grid-column:1/-1">'+L('نص الرسالة','Message')+'<textarea name="body" required rows="5" maxlength="4000"></textarea></label><div><button class="btn">'+L('إرسال بالبريد الرسمي','Send by official email')+'</button></div></div></form>';
+ return h}
+H.gf115=function(k,v){V5.__g115=V5.__g115||{};V5.__g115[k]=v;go()};
+H.gx115=function(){var G=grads(),rows=[['no','name','programme','year','email','phone','job','employer','study','country']].concat(G.map(function(x){return [x.no,x.s.name,pnm(V5.prog(+x.pid||x.pid)),x.year,x.s.email||'',x.s.phone||'',x.a.job||'',x.a.employer||'',x.a.study||'',x.a.country||'']}));
+ var csv='﻿'+rows.map(function(r){return r.map(function(c){c=String(c==null?'':c);return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(',')}).join('\n');var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='alumni-'+TODAY5()+'.csv';document.body.appendChild(a);a.click();a.remove()};
+H.gm115=function(f){var ids=[...new Set([].slice.call(f.querySelectorAll('input[name=sid]:checked')).map(function(i){return i.value}))],subj=String(f.subj.value||'').trim(),body=String(f.body.value||'').trim();
+ if(!ids.length||!subj||!body){toast(L('حدّد الخريجين واكتب الرسالة.','Select graduates and write the message.'));return false}
+ if(!confirm(L('إرسال الرسالة إلى ','Send the message to ')+ids.length+L(' خريج؟',' graduates?')))return false;
+ if(typeof sb==='undefined'||!sb){toast(L('لا يوجد اتصال بالخادم.','No server connection.'));return false}
+ sb.rpc('v115_alumni_msg',{ids:ids,subj:subj,body:body}).then(function(r){if(r.error)toast(L('تعذّر الإرسال: ','Could not send: ')+r.error.message);else{toast(L('جُدولت الرسالة إلى ','Message queued to ')+r.data+L(' خريج، وتصلهم خلال دقائق.',' graduates; it will arrive within minutes.'));try{V5.aud(L('رسالة إلى الخريجين','Message to graduates'),'',subj+' · '+r.data)}catch(e){}f.reset()}});return false};
+try{V51TABS.push(['v115g','سجل الخريجين','Alumni Register',tabAlumni]);TABLBL['سجل الخريجين']='v115g';TABLBL['Alumni Register']='v115g';SVC_ADMIN.push(['v115g','سجل الخريجين','Alumni register'])}catch(e){console.error('v115 tab',e)}
+})();
+
 
 
 /* =====================================================================
@@ -23167,7 +23332,7 @@ H.dr69=function(on){drawer(!!on)};W.V5gs=function(){V5.gsOpen69&&V5.gsOpen69()};
 var SECT=[
  ['home','الرئيسية','Overview','home',['v69h','v112i','dash']],
  ['aca','الشؤون الأكاديمية','Academic Affairs','book',['v112d','v51p','pr','v73p','v65p','cr','cal','tf','v93s','v64a','ex','v65b','v77b','v67b','v77g','v67g','apv','v60sp','sh','v66d']],
- ['adm','القبول والتسجيل','Admissions & Registration','users',['v112a','req','v75r','v77a','st','v74p','v71p']],
+ ['adm','القبول والتسجيل','Admissions & Registration','users',['v112a','req','v75r','v77a','st','v74p','v115g','v71p']],
  ['doc','الوثائق','Documents','doc',['ce','dr','v98g','v51d','v64c','v51s','v64q','v67n','v75n']],
  ['com','التواصل والمحتوى','Communication & Content','chat',['v64m','fb','v77h','nw','lb','pt']],
  ['set','الإعدادات','Settings','cog',['v51i','id','hm','v51o','v63a','v52t','au','v74h','v74d','v108b','sx','v51b','v64p']]];
@@ -23181,7 +23346,7 @@ var HUB=[
  ['hGrade','الدرجات والمزامنة','Grades & Sync',['v67g','apv']],
  ['hSp','البرامج القصيرة والدورات','Short Programmes & Courses',['v60sp','sh','v66d']],
  ['hAdm','القبول ومراجعة الطلبات','Admissions & Applications',['v112a','req','v75r','v77a']],
- ['hStu','الطلاب والأفراد','Students & People',['st','v74p']],
+ ['hStu','الطلاب والخريجون','Students & Alumni',['st','v74p','v115g']],
  ['hDoc','الشهادات والوثائق الصادرة','Issued Documents',['ce','dr','v98g']],
  ['hDes','تصميم الوثائق والبطاقات','Document & Card Design',['v51d','v64c','v51s','v64q']],
  ['hNum','أرقام الوثائق','Document Numbers',['v67n','v75n']],
@@ -26014,7 +26179,7 @@ setInterval(function(){try{if(S!==lastS||KEYS.some(function(k){var d=Object.getO
 <script>(function(){try{var im=new Image();im.onload=function(){if(im.naturalWidth&&im.naturalHeight)window.LGAR89=im.naturalWidth/im.naturalHeight};im.src=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}window.LGAR89=1600/431})();window.LOGOS=IMG108('logos-a2f6204d.webp');window.LOGOM=IMG108('logom-243bc940.webp');IMGH108('logos-a2f6204d.webp',function(v){window.LOGOS=v});IMGH108('logom-243bc940.webp',function(v){window.LOGOM=v});</script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v114';
+window.__BUILD__='v115';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}
