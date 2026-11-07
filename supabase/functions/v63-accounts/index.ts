@@ -1,4 +1,4 @@
-// v63-accounts — الجزء الخاص بالبريد الرسمي (إرسال عبر Gmail SMTP)
+// v63-accounts (v105: Resend بنطاق المعهد + Gmail احتياطي) — الجزء الخاص بالبريد الرسمي (إرسال عبر Gmail SMTP)
 // العمليات: probe, selftest, mail_status, mail_ready, mail, mail_log, retry_due
 // v83 — الحسابات: list, ensure, reset, reveal, unlock, log, login, change, rename, remove, purge, rc_generate, rc_use, rc_status
 // بيانات Gmail: أسرار الدالة GMAIL_USER/GMAIL_APP_PASSWORD، أو الخزنة المشفّرة (vault: gmail_user, gmail_app_password)
@@ -23,18 +23,26 @@ let GUSER = (Deno.env.get("GMAIL_USER") || "").trim();
 let GPASS = (Deno.env.get("GMAIL_APP_PASSWORD") || "").replace(/\s+/g, "");
 let ON = !!(GUSER && GPASS);
 let TOKEN = "";
+// v105: مزوّد الإرسال — Resend بنطاق المعهد إن ضُبط مفتاحه وعنوانه، وإلا Gmail. الإعدادات تُقرأ من الخزنة كل دقيقة.
+let RESEND = "", MFROM = "", CRED_AT = 0;
 async function loadCred() {
-  if (ON && TOKEN) return;
+  if (Date.now() - CRED_AT < 60_000 && TOKEN) return;
   try {
     const { data } = await admin.rpc("v82_mail_cred");
-    const c = (data || {}) as { user?: string; pass?: string; token?: string };
+    const c = (data || {}) as { user?: string; pass?: string; token?: string; resend?: string; from?: string };
     TOKEN = String(c.token || "");
-    if (ON) return;
-    GUSER = String(c.user || "").trim();
-    GPASS = String(c.pass || "").replace(/\s+/g, "");
-    ON = !!(GUSER && GPASS);
-  } catch { /* يبقى غير مفعّل */ }
+    RESEND = String(c.resend || "").trim();
+    MFROM = String(c.from || "").trim().toLowerCase();
+    if (!(Deno.env.get("GMAIL_USER") && Deno.env.get("GMAIL_APP_PASSWORD"))) {
+      const u = String(c.user || "").trim(), p = String(c.pass || "").replace(/\s+/g, "");
+      if (u !== GUSER || p !== GPASS) tx = null;
+      GUSER = u; GPASS = p;
+    }
+    ON = !!((GUSER && GPASS) || (RESEND && MFROM));
+    CRED_AT = Date.now();
+  } catch { /* يبقى على الإعداد السابق */ }
 }
+const PROVIDER = () => (RESEND && MFROM) ? "resend" : "gmail";
 
 function jwtClaims(tok: string): Record<string, unknown> {
   try { const p = tok.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"); return JSON.parse(atob(p + "===".slice((p.length + 3) % 4))); } catch { return {}; }
@@ -86,9 +94,29 @@ async function initPw(ref?: string) {
   } catch { return ""; }
 }
 
+async function viaResend(b: MailIn, html: string, text: string, name: string) {
+  const reply = b.reply_to && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.reply_to) ? b.reply_to : (GUSER || undefined);
+  const r = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${RESEND}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from: `${name} <${MFROM}>`, to: [String(b.to)], subject: String(b.subject || "").slice(0, 300),
+      html: html || undefined, text: text || undefined, reply_to: reply,
+      attachments: (b.attachments || []).filter((a) => a && a.content).slice(0, 10).map((a) => ({
+        filename: String(a.filename || "file").slice(0, 120), content: String(a.content),
+        content_type: a.content_type || undefined, content_id: a.content_id || undefined,
+      })),
+    }),
+  });
+  if (!r.ok) throw new Error("resend " + r.status + ": " + (await r.text()).slice(0, 300));
+}
 async function deliver(b: MailIn & { cur?: boolean }) {
   const { html, text } = compose(b);
   const name = String(b.from_name || "معهد التمهيد للدراسات الإسلامية واللغوية").replace(/["<>\r\n]/g, "").slice(0, 120);
+  if (RESEND && MFROM) {
+    try { await viaResend(b, html, text, name); return "resend"; }
+    catch (e) { if (!(GUSER && GPASS)) throw e; console.warn("resend failed → gmail", String(e)); }
+  }
   await transport().sendMail({
     from: { name, address: GUSER },
     to: String(b.to),
@@ -104,6 +132,7 @@ async function deliver(b: MailIn & { cur?: boolean }) {
       cid: a.content_id || undefined,
     })),
   });
+  return "gmail";
 }
 
 const EMAIL = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
@@ -115,14 +144,15 @@ Deno.serve(async (req) => {
   const action = String(body.action || "");
   await loadCred();
 
-  if (action === "probe") return json({ ok: true, v: "v83.3-accounts", mail: ON });
+  if (action === "probe") return json({ ok: true, v: "v105-accounts", mail: ON, provider: PROVIDER() });
 
   // فحص ذاتي من الخادم: يرسل رسالة اختبار إلى بريد المعهد نفسه؛ محمي برمز في الخزنة
   if (action === "selftest") {
     if (!TOKEN || String(body.token || "") !== TOKEN) return json({ error: "forbidden" });
     if (!ON) return json({ error: "mail_off" });
     try {
-      await deliver({ to: GUSER, subject: "اختبار البريد الرسمي — معهد التمهيد / Mail test — At-Tamhid", text: "هذه رسالة اختبار آلية من نظام معهد التمهيد للتحقق من عمل البريد الرسمي. لا يلزم الرد.\n\nThis is an automatic test message from the At-Tamhid system to verify official email. No reply needed." });
+      const to = String(body.to || "").trim() || GUSER;
+      await deliver({ to, subject: "اختبار البريد الرسمي — معهد التمهيد / Mail test — At-Tamhid", text: "هذه رسالة اختبار آلية من نظام معهد التمهيد للتحقق من عمل البريد الرسمي. لا يلزم الرد.\n\nThis is an automatic test message from the At-Tamhid system to verify official email. No reply needed." });
       await admin.from("v63_mail_log").insert({ type: "selftest", to_addr: GUSER, subject: "selftest", status: "sent", sent_at: new Date().toISOString(), attempts: 1 });
       return json({ ok: true, sent_to: GUSER });
     } catch (e) {
@@ -185,13 +215,24 @@ Deno.serve(async (req) => {
     if (me.mfa && me.aal !== "aal2") return json({ error: "mfa_required" });
     return json(await accAdmin(action, body, me));
   }
-  const known = ["mail_status", "mail_ready", "mail", "mail_log", "retry_due"];
+  const known = ["mail_status", "mail_ready", "mail", "mail_log", "retry_due", "mail_test"];
   if (!known.includes(action)) return json({ error: "fn_unavailable" });
 
-  if (action === "mail_status") return json({ ok: true, on: ON, from: GUSER || null, provider: "gmail" });
+  if (action === "mail_status") return json({ ok: true, on: ON, from: PROVIDER() === "resend" ? MFROM : (GUSER || null), provider: PROVIDER() });
+  if (action === "mail_test") {
+    if (!ON) return json({ error: "mail_off" });
+    const to = String(body.to || GUSER || "");
+    if (!EMAIL.test(to)) return json({ error: "no_email" });
+    try {
+      const via = await deliver({ to, subject: "اختبار البريد الرسمي — معهد التمهيد / Official email test — At-Tamhid", text: "هذه رسالة اختبار من بوابة الإدارة المركزية للتحقق من عمل البريد الرسمي بنطاق المعهد. لا يلزم الرد.\n\nThis is a test message from the central administration to verify the Institute's official email. No reply needed." });
+      await admin.from("v63_mail_log").insert({ type: "test", to_addr: to, subject: "mail_test " + via, status: "sent", sent_at: new Date().toISOString(), attempts: 1, by_user: me.id });
+      return json({ ok: true, to, provider: via, from: via === "resend" ? MFROM : GUSER });
+    } catch (e) { return json({ error: "send_failed", detail: String((e as Error)?.message || e).slice(0, 400) }); }
+  }
 
   if (action === "mail_ready") {
-    return json({ ok: true, key: ON, fromOk: ON, from: GUSER || "", domain: "gmail.com", domainStatus: ON ? "verified" : "unknown", cron: false, webhook: false, provider: "gmail" });
+    const pr = PROVIDER(), fr = pr === "resend" ? MFROM : GUSER;
+    return json({ ok: true, key: ON, fromOk: ON, from: fr || "", domain: String(fr || "").split("@")[1] || "", domainStatus: ON ? "verified" : "unknown", cron: false, webhook: false, provider: pr });
   }
 
   if (action === "mail_log") {
