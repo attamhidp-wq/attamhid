@@ -22222,7 +22222,7 @@ function usedNos(){var u={};(S.students||[]).forEach(function(s){u[s.id]=1;(s.en
 function ensureNos(){if(!central())return;var ch=0,U=usedNos();(S.students||[]).forEach(function(s){if(s.deleted)return;(s.en51||[]).forEach(function(e){if(e.no||e.out)return;var t=termFor(e);if(!t||!V5.nextId61)return;var n,guard=0;do{n=V5.nextId61(t)}while(U[n]&&guard++<50);if(!n||U[n])return;U[n]=1;e.no=n;s.u=NOW5();ch=1;try{V5.aud(L('رقم أكاديمي لقيد برنامج','Academic number for a programme enrolment'),s.id,e.pid+' → '+n)}catch(x){}})});
  if(ch){try{V5.setTouch&&V5.setTouch('cal61')}catch(x){}try{save()}catch(x){}}}
 V5.ensureNos115=ensureNos;
-GOH.post.push(function(){try{if(/^#\/admin/.test(location.hash||''))ensureNos()}catch(e){console.error('v115 nos',e)}});
+GOH.post.push(function(){try{if(/^#\/admin/.test(location.hash||''))V5.ensureNos115()}catch(e){console.error('v115 nos',e)}});
 /* الوثائق: رقم القيد يحلّ محل الرقم الأساسي في نصوص وثائق ذلك البرنامج */
 var _ch115=W.certHTML;
 if(typeof _ch115==='function')W.certHTML=function(c){var h=_ch115.apply(this,arguments);try{if(!c||!c.sid||!c.prog||typeof h!=='string')return h;var s=(S.students||[]).find(function(x){return x.id==c.sid});if(!s||s.prog==c.prog)return h;
@@ -22254,6 +22254,56 @@ H.gm115=function(f){var ids=[...new Set([].slice.call(f.querySelectorAll('input[
  sb.rpc('v115_alumni_msg',{ids:ids,subj:subj,body:body}).then(function(r){if(r.error)toast(L('تعذّر الإرسال: ','Could not send: ')+r.error.message);else{toast(L('جُدولت الرسالة إلى ','Message queued to ')+r.data+L(' خريج، وتصلهم خلال دقائق.',' graduates; it will arrive within minutes.'));try{V5.aud(L('رسالة إلى الخريجين','Message to graduates'),'',subj+' · '+r.data)}catch(e){}f.reset()}});return false};
 try{V51TABS.push(['v115g','سجل الخريجين','Alumni Register',tabAlumni]);TABLBL['سجل الخريجين']='v115g';TABLBL['Alumni Register']='v115g';SVC_ADMIN.push(['v115g','سجل الخريجين','Alumni register'])}catch(e){console.error('v115 tab',e)}
 })();
+
+/* =====================================================================
+   v116 — لكل مرحلة دراسية سجلٌّ مستقل: رقم أكاديمي جديد، وحساب جديد، وملف جديد
+   - الالتحاق ببرنامج جديد (لخريج أو لطالب قائم) يُنشئ سجلاً جديداً برقم جديد، تُنقل إليه البيانات الشخصية فقط.
+   - لا يظهر في السجل الجديد شيء من الماضي: لا درجات ولا وثائق ولا حالة.
+   - يصدر للسجل الجديد خطاب قبوله، وتُنشأ له حسابه على الخادم.
+   - القيود الإضافية القديمة (en51) تُحوَّل مرة واحدة إلى سجلات مستقلة.
+   ===================================================================== */
+(function(){
+var H=V5.h,W=window,NOW6=function(){return new Date().toISOString()},TODAY6=function(){return new Date(Date.now()+3*3600e3).toISOString().slice(0,10)};
+var central=function(){return typeof me!=='undefined'&&me&&me.r==='admin'&&!me.unit&&!V5.imp64};
+var PERSONAL=['name','nameEn','email','phone','nat','natEn','dob','pob','pid','docType','sex','photo','img','addr','addrEn','city','country','guardian','guardianPhone','exlang','mother','father'];
+function termOf(d){try{return V5.curTerm61&&V5.curTerm61(d||TODAY6())}catch(e){return null}}
+function freeId(want,t){var used={};(S.students||[]).forEach(function(s){used[String(s.id)]=1});if(want&&!used[String(want)])return String(want);
+ if(!t||!V5.nextId61)return '';var n,g=0;do{n=V5.nextId61(t)}while(used[n]&&g++<60);return used[n]?'':n}
+/* إنشاء سجل جديد لبرنامج: البيانات الشخصية فقط */
+function newRecord(old,pid,o){o=o||{};var p=V5.prog(+pid||pid);if(!old||!p)return null;var t=termOf(o.from),id=freeId(o.no,t);if(!id)return null;
+ var s={id:id,prog:p.id,status:'منتظم',lvl:1,reg:[],sp:[],gr:{},admTerm:t?t.id:'',from116:{id:old.id,prog:old.prog,at:NOW6()},u:NOW6()};
+ PERSONAL.forEach(function(k){if(old[k]!=null&&old[k]!=='')s[k]=old[k]});
+ s.en51=[{pid:p.id,from:o.from||TODAY6(),admTerm:o.admTerm||(V5.curTermName?V5.curTermName():'')}];
+ S.students.push(s);
+ /* خطاب القبول للسجل الجديد */
+ try{if(!S.certs.some(function(c){return c.type==='acc'&&c.sid==s.id&&c.prog==p.id&&!c.revoked})&&typeof baseDoc==='function'){var q=V5.qMode;V5.qMode=0;try{baseDoc('acc',s,p,{from:p.from||'',adm_mode:'انتظام',adm_term:s.en51[0].admTerm||'',text:''})}finally{V5.qMode=q}}}catch(e){console.error('v116 acc',e)}
+ try{V5.aud(L('سجل جديد لمرحلة دراسية جديدة','New record for a new study stage'),s.id,(p.name||p.id)+' — '+L('من السجل ','from record ')+old.id)}catch(e){}
+ return s}
+V5.newRecord116=newRecord;
+/* إنشاء الحسابات على الخادم للسجلات الجديدة (بعد وصولها إلى الخادم) */
+function accounts(ids){if(!ids.length||!V5.fn63)return;setTimeout(function(){V5.fn63({action:'ensure',days:(V5.cfg63?V5.cfg63().initDays:14),items:ids.map(function(i){return {ref_id:i}})}).then(function(r){try{V5.refresh63&&V5.refresh63()}catch(e){}console.info('v116 accounts',r)}).catch(function(e){console.warn('v116 accounts',e)})},9000)}
+/* «تسجيل طالب في البرنامج»: سجل جديد بدل قيد داخل السجل القديم */
+H.enrol=function(f){var p=V5.prog(+V5.ui.pid||V5.ui.pid),sid=String((f.elements.sid||{}).value||''),s=(S.students||[]).find(function(x){return x.id==sid});if(!s||!p)return false;
+ var dup=(S.students||[]).find(function(x){return !x.deleted&&x.prog==p.id&&x.from116&&x.from116.id==s.id});
+ if(dup){toast(L('لهذا الطالب سجل في هذا البرنامج: ','This student already has a record in this programme: ')+dup.id);return false}
+ if(!confirm(L('سيُنشأ للطالب سجل جديد برقم أكاديمي جديد وحساب جديد في «'+p.name+'»، ولا يُنقل إليه إلا بياناته الشخصية. متابعة؟','A new record with a new academic number and a new account will be created for the student in «'+(p.eng&&p.eng.nameEn||p.name)+'»; only personal data is copied. Continue?')))return false;
+ var n=newRecord(s,p.id,{});if(!n){toast(L('تعذّر توليد رقم أكاديمي جديد.','Could not generate a new academic number.'));return false}
+ save();accounts([n.id]);toast(L('أُنشئ السجل الجديد برقم ','New record created with number ')+n.id+L('، وصدر خطاب قبوله.','; its acceptance letter was issued.'));go();return false};
+/* تحويل القيود الإضافية القديمة إلى سجلات مستقلة (مرة واحدة، من الإدارة المركزية) */
+function migrate(){if(!central()||!S.students)return;var made=[];
+ S.students.slice().forEach(function(s){if(s.deleted||!s.en51)return;var keep=[];s.en51.forEach(function(e){
+  if(!e||e.out||e.pid==s.prog){keep.push(e);return}
+  var exists=(S.students||[]).find(function(x){return !x.deleted&&x.prog==e.pid&&x.from116&&x.from116.id==s.id});
+  if(exists){return}
+  var n=newRecord(s,e.pid,{no:e.no,from:e.from,admTerm:e.admTerm});if(n){made.push(n.id)}else keep.push(e)});
+  if(keep.length!==s.en51.length){s.en51=keep;s.u=NOW6()}});
+ if(made.length){save();accounts(made);toast(L('أُنشئت سجلات مستقلة جديدة: ','New separate records created: ')+made.join('، '))}}
+V5.migrate116=migrate;
+GOH.post.push(function(){try{if(/^#\/admin/.test(location.hash||'')&&V5.banksReady81!==false)migrate()}catch(e){console.error('v116 migrate',e)}});
+/* لم تعد أرقام القيود الإضافية تُولَّد (لكل مرحلة سجلها) */
+V5.ensureNos115=function(){};
+})();
+
 
 
 
@@ -26226,7 +26276,7 @@ setInterval(function(){try{if(S!==lastS||anyVisible())hide();persist()}catch(e){
 <script>(function(){try{var im=new Image();im.onload=function(){if(im.naturalWidth&&im.naturalHeight)window.LGAR89=im.naturalWidth/im.naturalHeight};im.src=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}window.LGAR89=1600/431})();window.LOGOS=IMG108('logos-a2f6204d.webp');window.LOGOM=IMG108('logom-243bc940.webp');IMGH108('logos-a2f6204d.webp',function(v){window.LOGOS=v});IMGH108('logom-243bc940.webp',function(v){window.LOGOM=v});</script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v116';
+window.__BUILD__='v117';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}
