@@ -22408,6 +22408,322 @@ document.addEventListener('change',function(ev){var inp=ev.target;if(!inp||inp.t
 })();
 
 /* =====================================================================
+   v120 — (1) الإدارة المالية: وسائل الدفع (إضافة وتعديل وحذف وترتيب وتفعيل)
+          (2) الموقع بثلاث لغات: العربية والإنجليزية والبنغالية
+          (3) صفحة رئيسية جديدة كاملة
+   ===================================================================== */
+(function(){
+var H=V5.h,W=window;
+var e0=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var Qs=function(x){return String(x).replace(/\\/g,'\\\\').replace(/'/g,"\\'")};
+var central=function(){return typeof me!=='undefined'&&me&&me.r==='admin'&&!me.unit&&!V5.imp64};
+var NOW=function(){return new Date().toISOString()};
+var touch=function(k){try{V5.setTouch?V5.setTouch(k):setTouch(k)}catch(e){}};
+var aud=function(a,t,d){try{V5.aud(a,t,d)}catch(e){}};
+
+/* ================= (2) اللغة البنغالية ================= */
+var LB='';try{LB=localStorage.getItem('tl3')==='bn'?'bn':''}catch(e){}
+if(LB&&LG!=='en'){LB='';try{localStorage.removeItem('tl3')}catch(e){}}
+W.LB=LB;V5.LB=LB;
+/* L3: نص بثلاث لغات؛ البنغالية إن وُجدت، وإلا يُترك للمعجم */
+W.L3=V5.L3=function(a,e,b){if(W.LB==='bn'&&b)return b;return L(a,e)};
+var _sl=W.setLang;
+W.setLang=function(l){if(l==='bn'){try{localStorage.setItem('tl3','bn')}catch(e){}W.LB='bn';return _sl.call(this,'en')}
+ try{localStorage.removeItem('tl3')}catch(e){}W.LB='';return _sl.call(this,l)};
+try{setLang=W.setLang}catch(e){}
+var LANGS=[['ar','العربية','عربي'],['en','English','EN'],['bn','বাংলা','বাংলা']];
+var curL=function(){return W.LB==='bn'?'bn':(LG==='en'?'en':'ar')};
+/* مبدّل اللغات الثلاث بدل زر اللغتين */
+function l3menu(compact){var c=curL();return '<span class="l3" role="group" aria-label="Language / ভাষা / اللغة" data-noi18n>'+LANGS.map(function(x){return '<button type="button" lang="'+x[0]+'" data-l3="'+x[0]+'" aria-pressed="'+(c===x[0])+'"'+(c===x[0]?' class="on"':'')+' onclick="setLang(\''+x[0]+'\')">'+(compact?x[2]:x[1])+'</button>'}).join('')+'</span>'}
+V5.l3menu=l3menu;
+function swapLang(){document.querySelectorAll('[onclick*="setLang("]:not([data-l3])').forEach(function(el){if(el.closest('.l3')||(el.parentElement&&el.parentElement.id==='nav'&&!el.closest('.h69')))return;var inDr=!!el.closest('.pn,.dr69,[class*="drawer"]');var s=document.createElement('span');s.innerHTML=l3menu(!inDr);var m=s.firstChild;if(inDr)m.classList.add('l3w');el.replaceWith(m)})}
+/* المعجم البنغالي: يُحمَّل عند اختيار البنغالية فقط */
+var BN=null,MISSB={},missT=0;
+function cust(){return (S.v51&&S.v51.i18nBn)||{}}
+var norm=function(s){return String(s).replace(/\s+/g,' ').trim()};
+var BNRX=/[ঀ-৿]/,ARX=/[؀-ۿ]/,LAT=/[A-Za-z]{2,}/;
+function bnLook(k){var c=cust();return c[k]||BN[k]||null}
+function bnOf(s,d){if(!BN)return null;d=d||0;var k=norm(s);if(!k)return null;var r=bnLook(k);if(r)return r;if(d>4||!LAT.test(k))return null;
+ var m=/^(.*?)([\s:.,;!?…*·—–\-]+)$/.exec(k);if(m&&m[1]&&LAT.test(m[1])){var r1=bnOf(m[1],d+1);if(r1)return r1+m[2]}
+ var lead=/^([\s\d.\-–—•·:()#№+\/]+)(.+)$/.exec(k);if(lead&&LAT.test(lead[2])){var r0=bnOf(lead[2],d+1);if(r0)return lead[1]+r0}
+ var parts=k.split(/(\s[·—–|•→←\/]\s|:\s+|\s\(|\)\s?|;\s+|\n)/);if(parts.length>1){var hit=0,miss=0;var out=parts.map(function(p,i){if(i%2)return p;var t=p.trim();if(!t||!LAT.test(t))return p;var x=bnOf(t,d+1);if(x){hit++;return p.replace(t,x)}miss++;return p});if(hit&&!miss)return out.join('');if(hit&&d===0)return out.join('')}
+ return null}
+V5.bnOf=bnOf;
+function noteMiss(s){s=norm(s);if(s.length<2||s.length>260||!LAT.test(s))return;if(/^[\w.+-]+@|https?:|^[A-Z0-9 .:\/()+\-–—#]+$/.test(s))return;var X=S.v51=S.v51||{},M=X.i18nMissBn=X.i18nMissBn||{};if(!M[s]&&Object.keys(M).length>1500)return;var w=(location.hash||'#/');M[s]=M[s]||{n:0,w:w};M[s].n++;clearTimeout(missT);missT=setTimeout(function(){try{save0?save0():save()}catch(e){}},4000)}
+var SKIP='script,style,textarea,code,pre,.cert,.cert2,.tmw,#pvw,#lpv,[data-noi18n],.g5,.cw,.v51-raw,[contenteditable="true"],svg';
+var DONE=new WeakMap();
+function bnNode(t){var p=t.parentElement;if(!p||p.closest(SKIP))return;var v=t.nodeValue;if(DONE.get(t)===v)return;var s=v.trim();if(!s||BNRX.test(s)||ARX.test(s)||!LAT.test(s)){DONE.set(t,v);return}
+ var r=bnOf(s);if(r){var nv=v.replace(s,r);DONE.set(t,nv);t.nodeValue=nv}else{DONE.set(t,v);noteMiss(s)}}
+function bnAttr(el){['placeholder','title','aria-label','alt'].forEach(function(a){var v=el.getAttribute&&el.getAttribute(a);if(!v||BNRX.test(v)||ARX.test(v)||!LAT.test(v))return;var r=bnOf(v);if(r)el.setAttribute(a,r)});
+ if(el.tagName==='INPUT'&&/^(button|submit|reset)$/.test(el.type)&&el.value&&!BNRX.test(el.value)){var r2=bnOf(el.value);if(r2)el.value=r2}}
+function bnPass(root){if(W.LB!=='bn'||!BN||!root)return;if(root.nodeType===3){bnNode(root);return}if(root.nodeType!==1&&root.nodeType!==9&&root.nodeType!==11)return;if(root.nodeType===1&&root.closest&&root.closest(SKIP))return;
+ var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n,A=[];while(n=w.nextNode())A.push(n);A.forEach(bnNode);
+ if(root.querySelectorAll){if(root.nodeType===1)bnAttr(root);root.querySelectorAll('[placeholder],[title],[aria-label],[alt],input[type=button],input[type=submit]').forEach(function(el){if(!el.closest(SKIP))bnAttr(el)})}
+ if(root===document.body||root===document){var dt=bnOf(document.title);if(dt)document.title=dt}}
+V5.bnPass=bnPass;
+function bnBoot(){if(W.LB!=='bn')return;document.documentElement.classList.add('bn120');document.body.setAttribute('lang','bn');
+ if(!document.getElementById('bnfont')){var l=document.createElement('link');l.id='bnfont';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap';document.head.appendChild(l)}
+ var sc=document.createElement('script');sc.src='i18n-bn.js?v='+(W.__BUILD__||'');sc.onload=function(){BN=W.BN120||{};bnPass(document.body);document.querySelectorAll('.thmt').forEach(function(e){var r=bnLook(norm(e.textContent));if(r)e.textContent=r})};sc.onerror=function(){console.warn('bn dict missing')};document.head.appendChild(sc);
+ new MutationObserver(function(ms){if(!BN)return;ms.forEach(function(m){if(m.type==='characterData'){bnNode(m.target);return}m.addedNodes.forEach(function(nd){bnPass(nd)})})}).observe(document.body,{childList:true,subtree:true,characterData:true});
+ ['alert','confirm','prompt'].forEach(function(n){var o=W[n];if(typeof o!=='function')return;W[n]=function(m){var a=Array.prototype.slice.call(arguments);if(typeof m==='string'&&BN){var x=m.split('\n').map(function(l){return bnOf(l)||l}).join('\n');a[0]=x}return o.apply(W,a)}})}
+if(W.LB==='bn'){if(document.body)bnBoot();else document.addEventListener('DOMContentLoaded',bnBoot)}
+function ensureL3(){var ac=document.querySelector('.h69-ac');if(ac&&!ac.querySelector('.l3')){var s=document.createElement('span');s.className='h69-hide-m';s.style.display='inline-flex';s.innerHTML=l3menu(1);var th=ac.querySelector('.thm');th?ac.insertBefore(s,th):ac.appendChild(s)}}
+GOH.post.push(function(){try{swapLang();ensureL3();setTimeout(ensureL3,60);if(W.LB==='bn'){document.body.setAttribute('lang','bn');if(BN){bnPass(document.body);document.querySelectorAll('.thmt').forEach(function(e){var r=bnLook(norm(e.textContent));if(r)e.textContent=r})}}}catch(e){console.warn('l3',e)}});
+setTimeout(swapLang,400);
+
+/* إدارة الترجمة البنغالية */
+try{if(SET_KEYS.indexOf('i18nBn')<0)SET_KEYS.push('i18nBn')}catch(e){}
+var UB=V5.__ub120||(V5.__ub120={q:''});
+function tabBn(){var X=S.v51,C=X.i18nBn=X.i18nBn||{},M=X.i18nMissBn||{},q=(UB.q||'').trim().toLowerCase();var Hm=S.home||{};
+ var ml=Object.keys(M).filter(function(k){return !C[k]&&!(BN&&BN[k])}).filter(function(k){return !q||k.toLowerCase().indexOf(q)>-1}).sort(function(a,b){return M[b].n-M[a].n});
+ var h='<h3>'+L('اللغة البنغالية','Bengali language')+'</h3><p class="mu">'+L('الموقع متاح بثلاث لغات: العربية والإنجليزية والبنغالية. للبنغالية معجم مدمج يغطي نصوص الموقع كلها، وهنا تضيف أو تصحح المقابل البنغالي لأي نص إنجليزي (أسماء البرامج والأخبار وغيرها)، فيُعتمد فوراً. النصوص التي ظهرت بلا مقابل أثناء التصفح بالبنغالية تُجمع هنا تلقائياً.','The site is available in three languages: Arabic, English and Bengali. Bengali has a built-in dictionary covering all site texts; here you add or correct the Bengali counterpart of any English text (programme names, news and more), and it applies at once. Texts that appeared without a counterpart while browsing in Bengali are collected here automatically.')+'</p>';
+ h+='<details class="v51box" open><summary><b>'+L('نصوص الصفحة الرئيسية بالبنغالية','Home page texts in Bengali')+'</b></summary><form class="v51g" onsubmit="return V51.h.bnHome(this)">'+[['hero','النبذة أعلى الصفحة','Hero text'],['about','عن المعهد','About'],['vision','الرؤية','Vision'],['mission','الرسالة','Mission'],['goals','الأهداف','Goals'],['ann','الإعلان','Announcement']].map(function(k){return '<label style="grid-column:1/-1">'+L(k[1],k[2])+' — বাংলা<textarea name="'+k[0]+'" rows="3" lang="bn" dir="ltr">'+e0(Hm[k[0]+'Bn']||'')+'</textarea><small class="mu" dir="ltr">'+e0(String(Hm[k[0]+'En']||'').slice(0,160))+'</small></label>'}).join('')+'<div style="grid-column:1/-1"><button class="btn">'+L('حفظ','Save')+'</button></div></form></details>';
+ h+='<form class="v51inl" onsubmit="V51.__ub120.q=this.q.value;go();return false"><input name="q" value="'+e0(UB.q||'')+'" placeholder="'+L('بحث','Search')+'"><button class="btn s">'+L('بحث','Search')+'</button></form>';
+ h+='<h4>'+L('نصوص بلا مقابل بنغالي','Texts without a Bengali counterpart')+' ('+ml.length+')</h4>'+(ml.length?'<form onsubmit="return V51.h.bnSave(this)">'+T([L('النص الإنجليزي','English text'),L('ظهر في','Seen in'),'বাংলা',''],ml.slice(0,150).map(function(k,i){return '<tr><td dir="ltr"><input type="hidden" name="k_'+i+'" value="'+e0(k)+'">'+e0(k)+'</td><td dir="ltr"><small>'+e0(M[k].w)+'</small></td><td><input name="v_'+i+'" lang="bn" dir="ltr"></td><td><button type="button" class="btn s" onclick="V51.h.bnIgn(\''+Qs(k)+'\')">'+L('تجاهل','Ignore')+'</button></td></tr>'}))+'<p><button class="btn">'+L('حفظ المقابلات','Save counterparts')+'</button></p></form>':'<p class="mu">'+L('لا نصوص ناقصة.','No missing texts.')+'</p>');
+ var CK=Object.keys(C).filter(function(k){return !q||k.toLowerCase().indexOf(q)>-1||String(C[k]).indexOf(q)>-1});
+ h+='<h4>'+L('المقابلات المضافة من الإدارة','Counterparts added by the administration')+' ('+CK.length+')</h4>'+(CK.length?T([L('النص الإنجليزي','English text'),'বাংলা',''],CK.slice(0,300).map(function(k){return '<tr><td dir="ltr">'+e0(k)+'</td><td lang="bn">'+e0(C[k])+'</td><td><button type="button" class="btn s d" onclick="V51.h.bnDel(\''+Qs(k)+'\')">'+L('حذف','Delete')+'</button></td></tr>'})):'');
+ h+='<form class="v51g" onsubmit="return V51.h.bnAdd(this)"><h4 style="grid-column:1/-1">'+L('إضافة مقابل بنغالي','Add a Bengali counterpart')+'</h4><label>'+L('النص الإنجليزي كما يظهر','English text as shown')+'<input name="en" dir="ltr" required></label><label>বাংলা<input name="bn" lang="bn" dir="ltr" required></label><div style="grid-column:1/-1"><button class="btn">'+L('إضافة','Add')+'</button></div></form>';
+ return h}
+var bnTouch=function(){touch('i18nBn');save()};
+H.bnSave=function(f){if(!central())return false;var C=S.v51.i18nBn=S.v51.i18nBn||{},n=0;[].slice.call(f.elements).forEach(function(el){var m=/^k_(\d+)$/.exec(el.name||'');if(!m)return;var v=String((f.elements['v_'+m[1]]||{}).value||'').trim();if(!v)return;C[norm(el.value)]=v;delete (S.v51.i18nMissBn||{})[el.value];n++});bnTouch();aud(L('إضافة مقابلات بنغالية','Bengali counterparts added'),'i18nBn',String(n));toast(L('حُفظ: ','Saved: ')+n);go();return false};
+H.bnAdd=function(f){if(!central())return false;var C=S.v51.i18nBn=S.v51.i18nBn||{};C[norm(f.en.value)]=String(f.bn.value).trim();bnTouch();toast(L('أُضيف.','Added.'));go();return false};
+H.bnDel=function(k){if(!central())return;delete S.v51.i18nBn[k];bnTouch();go()};
+H.bnIgn=function(k){delete (S.v51.i18nMissBn||{})[k];save();go()};
+H.bnHome=function(f){if(!central())return false;var Hm=S.home=S.home||{};['hero','about','vision','mission','goals','ann'].forEach(function(k){Hm[k+'Bn']=String((f.elements[k]||{}).value||'').trim()});try{typeof saveHome==='function'?saveHome():null}catch(e){}try{touch('home')}catch(e){}save();aud(L('تعديل نصوص الرئيسية بالبنغالية','Bengali home texts edited'),'home','');toast(L('حُفظت.','Saved.'));return false};
+
+/* ================= (1) الإدارة المالية: وسائل الدفع ================= */
+var KIND=[['bkash','bKash','محفظة بي كاش','bKash mobile wallet','বিকাশ'],['nagad','Nagad','محفظة نَقَد','Nagad mobile wallet','নগদ'],['rocket','Rocket','محفظة روكيت','Rocket mobile wallet','রকেট'],['upay','Upay','محفظة يوپاي','Upay mobile wallet','উপায়'],
+ ['bank_local','Bank','تحويل بنكي محلي','Local bank transfer','স্থানীয় ব্যাংক ট্রান্সফার'],['bank_intl','SWIFT','تحويل بنكي دولي','International bank transfer (SWIFT)','আন্তর্জাতিক ব্যাংক ট্রান্সফার (SWIFT)'],['islamic_bank','Islamic bank','مصرف إسلامي','Islamic bank','ইসলামী ব্যাংক'],
+ ['card','Card','بطاقة بنكية','Bank card','ব্যাংক কার্ড'],['paypal','PayPal','باي بال','PayPal','পেপাল'],['wise','Wise','وايز','Wise','ওয়াইজ'],['wu','Western Union','ويسترن يونيون','Western Union','ওয়েস্টার্ন ইউনিয়ন'],['mg','MoneyGram','موني غرام','MoneyGram','মানিগ্রাম'],
+ ['cash','Cash','نقداً لدى إدارة المعهد','Cash at the Institute office','ইনস্টিটিউট অফিসে নগদ'],['other','Other','وسيلة أخرى','Other method','অন্যান্য পদ্ধতি']];
+var KN={};KIND.forEach(function(k){KN[k[0]]=k});
+var USE=[['both','الدفع والتبرع','Payments and donations','পেমেন্ট ও দান'],['pay','دفع الرسوم فقط','Fee payments only','শুধু ফি পরিশোধ'],['donate','التبرع فقط','Donations only','শুধু দান']];
+function pcfg(){return V5.pay71cfg?V5.pay71cfg():((S.v51=S.v51||{}).pay71=S.v51.pay71||{})}
+function guessKind(s){s=String(s).toLowerCase();return /bkash|بيكاش|بكاش/.test(s)?'bkash':/nagad|نقد|نَقَد/.test(s)?'nagad':/rocket|روكيت/.test(s)?'rocket':/upay/.test(s)?'upay':/swift|iban/.test(s)?'bank_intl':/bank|بنك|مصرف/.test(s)?'bank_local':/paypal/.test(s)?'paypal':'other'}
+function list(){var c=pcfg();if(!Array.isArray(c.pm120)){var src=c.m77==null?'رقم بيكاش (bKash) للدفع | bKash payment number | 01822510180':String(c.m77||'');
+  c.pm120=src.split(/\n+/).map(function(l,i){var a=l.split('|').map(function(x){return x.trim()});if(a.length<2)return null;if(a.length===2)a=[a[0],a[0],a[1]];var k=guessKind(l);return {id:'pm'+Date.now().toString(36)+i,kind:k,ar:a[0],en:a[1]||a[0],bn:k==='bkash'?'বিকাশ পেমেন্ট নম্বর':'',num:a[2]||'',holder:'',type:'',use:'both',on:1}}).filter(function(x){return x&&x.num})}
+ return c.pm120}
+V5.pm120=list;
+/* بديل «meth77»: يقرأ من القائمة المنظمة؛ ctx = 'pay' أو 'donate' */
+V5.pm120view=function(ctx){return list().filter(function(m){return +m.on&&(!ctx||m.use==='both'||!m.use||m.use===ctx)})};
+function syncM77(){var c=pcfg();c.m77=list().filter(function(m){return +m.on}).map(function(m){return [m.ar,m.en,m.num].join(' | ')}).join('\n')}
+var FU=V5.__fu120||(V5.__fu120={ed:''});
+function kindSel(v){return '<select name="kind">'+KIND.map(function(k){return '<option value="'+k[0]+'"'+(k[0]===v?' selected':'')+'>'+e0(L3(k[2],k[3],k[4]))+'</option>'}).join('')+'</select>'}
+function useSel(v){return '<select name="use">'+USE.map(function(k){return '<option value="'+k[0]+'"'+(k[0]===(v||'both')?' selected':'')+'>'+e0(L3(k[1],k[2],k[3]))+'</option>'}).join('')+'</select>'}
+function form(m){m=m||{};var isNew=!m.id;return '<form class="v51g pm120f" onsubmit="return V51.h.pm120save(this)"><input type="hidden" name="id" value="'+e0(m.id||'')+'"><h4 style="grid-column:1/-1">'+(isNew?L('إضافة وسيلة دفع','Add a payment method'):L('تعديل وسيلة الدفع','Edit payment method'))+'</h4>'+
+ '<label>'+L('نوع الوسيلة','Method type')+kindSel(m.kind||'bkash')+'</label><label>'+L('تُعرض في','Shown in')+useSel(m.use)+'</label>'+
+ '<label>'+L('الاسم بالعربية','Name in Arabic')+'<input name="ar" required value="'+e0(m.ar||'')+'" dir="rtl"></label><label>'+L('الاسم بالإنجليزية','Name in English')+'<input name="en" required dir="ltr" value="'+e0(m.en||'')+'"></label><label>'+L('الاسم بالبنغالية','Name in Bengali')+'<input name="bn" required lang="bn" dir="ltr" value="'+e0(m.bn||'')+'"></label>'+
+ '<label>'+L('الرقم أو الحساب','Number or account')+'<input name="num" required dir="ltr" value="'+e0(m.num||'')+'" maxlength="120"></label><label>'+L('اسم صاحب الحساب (اختياري)','Account holder (optional)')+'<input name="holder" dir="auto" value="'+e0(m.holder||'')+'" maxlength="120"></label>'+
+ '<label>'+L('نوع الحساب (اختياري)','Account type (optional)')+'<select name="type">'+[['',L('—','—')],['personal',L('شخصي','Personal')],['agent',L('وكيل','Agent')],['merchant',L('تاجر','Merchant')],['current',L('حساب جارٍ','Current account')],['savings',L('حساب توفير','Savings account')]].map(function(o){return '<option value="'+o[0]+'"'+(o[0]===(m.type||'')?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></label>'+
+ '<label style="grid-column:1/-1">'+L('تعليمات أو ملاحظة (اختياري)','Instructions or note (optional)')+'<input name="note" dir="auto" value="'+e0(m.note||'')+'" maxlength="400" placeholder="'+L('مثال: اكتب رقم الطالب في خانة المرجع','Example: write the student number in the reference field')+'"></label>'+
+ '<label class="v51ck" style="grid-column:1/-1"><input type="checkbox" name="on" value="1"'+(m.on===0?'':' checked')+'> '+L('مفعّلة وتظهر للناس','Active and shown to the public')+'</label>'+
+ '<div style="grid-column:1/-1"><button class="btn">'+L('حفظ','Save')+'</button> '+(isNew?'':'<button type="button" class="btn s" onclick="V51.__fu120.ed=\'\';go()">'+L('إلغاء','Cancel')+'</button>')+'</div></form>'}
+function tabFin(){if(!central())return '<div class="msg er">'+L('الإدارة المالية للإدارة المركزية فقط.','Finance is for the central administration only.')+'</div>';var A=list(),c=pcfg(),ed=FU.ed&&A.find(function(m){return m.id===FU.ed});
+ var paid=0,pend=0,don=0,cur=c.cur||'BDT';(S.students||[]).forEach(function(s){(Array.isArray(s.pay71)?s.pay71:[]).forEach(function(r){if(r.st==='paid')paid+=+r.amount||0;else if(r.st==='req'||r.st==='notified')pend+=+r.amount||0})});(S.certs||[]).forEach(function(x){if(x.type==='rcpt71'&&!x.revoked&&x.pay&&x.pay.kind==='donation')don+=+x.pay.amount||0});
+ var fm=function(n){return (+n||0).toLocaleString('en-US')+' '+cur};
+ var h='<h3>'+L('الإدارة المالية','Finance')+'</h3><div class="g112">'+[[fm(paid),L('رسوم محصّلة ومعتمدة','Fees collected and approved')],[fm(pend),L('رسوم مطلوبة لم تُعتمد بعد','Fees requested, not yet approved')],[fm(don),L('تبرعات بإيصالات','Donations with receipts')],[A.filter(function(m){return +m.on}).length,L('وسائل دفع مفعّلة','Active payment methods')]].map(function(k){return '<div class="k112"><b dir="ltr">'+k[0]+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>';
+ h+='<div class="box"><h4>'+L('وسائل الدفع','Payment methods')+'</h4><p class="mu">'+L('هذه الوسائل تظهر للطالب في «ادفع الآن» وللمتبرع في «تبرع لوقف المعهد». أضف ما شئت، وعدّل الرقم أو الاسم، واحذف القديم أو الخطأ، ورتّبها بالأسهم، وأوقف أي وسيلة مؤقتاً دون حذفها.','These methods are shown to students in “Pay now” and to donors in “Donate to the endowment”. Add any method, edit its number or name, delete old or wrong ones, reorder them with the arrows, and pause any method without deleting it.')+'</p>'+
+  (A.length?T([L('الترتيب','Order'),L('الوسيلة','Method'),L('الرقم أو الحساب','Number or account'),L('تُعرض في','Shown in'),L('الحالة','Status'),''],A.map(function(m,i){var u=USE.find(function(x){return x[0]===(m.use||'both')})||USE[0];
+   return '<tr><td><button type="button" class="btn s" aria-label="'+L('أعلى','Up')+'" onclick="V51.h.pm120mv(\''+m.id+'\',-1)"'+(i?'':' disabled')+'>▲</button> <button type="button" class="btn s" aria-label="'+L('أسفل','Down')+'" onclick="V51.h.pm120mv(\''+m.id+'\',1)"'+(i<A.length-1?'':' disabled')+'>▼</button></td><td><b>'+e0(L3(m.ar,m.en,m.bn))+'</b><br><small class="mu">'+e0(L3((KN[m.kind]||KN.other)[2],(KN[m.kind]||KN.other)[3],(KN[m.kind]||KN.other)[4]))+(m.holder?' · '+e0(m.holder):'')+'</small></td><td dir="ltr"><b>'+e0(m.num)+'</b></td><td>'+e0(L3(u[1],u[2],u[3]))+'</td><td>'+(+m.on?'<span class="tag ok">'+L('مفعّلة','Active')+'</span>':'<span class="tag">'+L('موقوفة','Paused')+'</span>')+'</td><td>'+
+    '<button type="button" class="btn s" onclick="V51.__fu120.ed=\''+m.id+'\';go()">'+L('تعديل','Edit')+'</button> <button type="button" class="btn s" onclick="V51.h.pm120tg(\''+m.id+'\')">'+(+m.on?L('إيقاف','Pause'):L('تفعيل','Activate'))+'</button> <button type="button" class="btn s d" onclick="V51.h.pm120del(\''+m.id+'\')">'+L('حذف','Delete')+'</button></td></tr>'})):'<p class="msg er">'+L('لا وسائل دفع. أضف وسيلة واحدة على الأقل.','No payment methods. Add at least one.')+'</p>')+
+  (ed?form(ed):form(null))+'</div>';
+ h+='<div class="box"><h4>'+L('معاينة كما يراها الطالب والمتبرع','Preview as students and donors see it')+'</h4>'+(V5.payMethods73?V5.payMethods73():'')+'</div>';
+ h+='<p>'+L('طلبات الدفع والاعتماد والإيصالات ورسوم البرامج في: ','Payment requests, approval, receipts and programme fees are in: ')+'<button type="button" class="btn s" onclick="tab=\'v71p\';go()">'+L('المدفوعات والإيصالات','Payments & Receipts')+'</button></p>';
+ return h}
+var finSave=function(why,d){syncM77();touch('pay71');aud(why,'pay71',d||'');save();go()};
+H.pm120save=function(f){if(!central())return false;var A=list(),v={kind:f.kind.value,use:f.use.value,ar:f.ar.value.trim(),en:f.en.value.trim(),bn:f.bn.value.trim(),num:f.num.value.trim(),holder:f.holder.value.trim(),type:f.type.value,note:f.note.value.trim(),on:f.on.checked?1:0};
+ if(!v.ar||!v.en||!v.bn||!v.num){toast(L('أكمل الاسم بالعربية والإنجليزية والبنغالية، والرقم.','Complete the Arabic, English and Bengali names, and the number.'));return false}
+ var id=f.id.value,m=id&&A.find(function(x){return x.id===id});if(m){var old=JSON.stringify(m);Object.assign(m,v,{u:NOW()});FU.ed='';finSave(L('تعديل وسيلة دفع','Payment method edited'),old+' → '+JSON.stringify(m))}
+ else{v.id='pm'+Date.now().toString(36);v.at=NOW();A.push(v);finSave(L('إضافة وسيلة دفع','Payment method added'),JSON.stringify(v))}toast(L('حُفظت وسيلة الدفع.','Payment method saved.'));return false};
+H.pm120del=function(id){if(!central())return;var A=list(),m=A.find(function(x){return x.id===id});if(!m)return;if(!confirm(L('حذف وسيلة الدفع «'+m.ar+'» ('+m.num+') نهائياً؟','Delete the payment method “'+m.en+'” ('+m.num+') permanently?')))return;A.splice(A.indexOf(m),1);if(FU.ed===id)FU.ed='';finSave(L('حذف وسيلة دفع','Payment method deleted'),JSON.stringify(m));toast(L('حُذفت.','Deleted.'))};
+H.pm120tg=function(id){if(!central())return;var m=list().find(function(x){return x.id===id});if(!m)return;m.on=+m.on?0:1;finSave(m.on?L('تفعيل وسيلة دفع','Payment method activated'):L('إيقاف وسيلة دفع','Payment method paused'),m.num)};
+H.pm120mv=function(id,d){if(!central())return;var A=list(),i=A.findIndex(function(x){return x.id===id}),j=i+d;if(i<0||j<0||j>=A.length)return;var t=A[i];A[i]=A[j];A[j]=t;finSave(L('ترتيب وسائل الدفع','Payment methods reordered'),'')};
+V5.tabFin120=tabFin;V5.tabBn120=tabBn;
+try{V51TABS.push(['v120f','الإدارة المالية ووسائل الدفع','Finance & Payment Methods',tabFin]);TABLBL['الإدارة المالية ووسائل الدفع']='v120f';TABLBL['Finance & Payment Methods']='v120f';SVC_ADMIN.push(['v120f','الإدارة المالية ووسائل الدفع','Finance & Payment Methods']);
+ V51TABS.push(['v120b','اللغة البنغالية','Bengali Language',tabBn]);TABLBL['اللغة البنغالية']='v120b';TABLBL['Bengali Language']='v120b';SVC_ADMIN.push(['v120b','اللغة البنغالية','Bengali Language'])}catch(e){console.error('v120 tabs',e)}
+
+/* ================= (3) الصفحة الرئيسية الجديدة ================= */
+var I9={cap:'<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/>',book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M8 7h8M8 11h6"/>',shield:'<path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>',doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+ globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/>',screen:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ heart:'<path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 0 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z"/>',check:'<path d="M20 6L9 17l-5-5"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',layers:'<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/>',hand:'<path d="M7 11V6a2 2 0 0 1 4 0v5M11 10V4a2 2 0 0 1 4 0v6M15 10V6a2 2 0 0 1 4 0v8a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.5L3 13a2 2 0 0 1 3.4-2L7 12"/>'};
+var ic=function(k){return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(I9[k]||I9.doc)+'</svg>'};
+var ST=V5.__st120||(V5.__st120={d:null,t:0});
+function loadStats(){if(ST.t&&Date.now()-ST.t<300000)return;ST.t=Date.now();try{if(typeof sb!=='undefined'&&sb&&sb.rpc)sb.rpc('v120_stats').then(function(r){if(r&&r.data){ST.d=r.data;var el=document.getElementById('st120');if(el)el.outerHTML=statsHTML()}})}catch(e){}}
+function localStats(){var P=(S.programs||[]).filter(function(p){return !p.cancelled&&!p.deleted});var nc=0;P.forEach(function(p){nc+=(Array.isArray(p.courses)?p.courses.length:0)});return {programs:P.length,courses:nc,certs:(S.certs||[]).filter(function(c){return !c.revoked}).length,depts:depts().length}}
+function statsHTML(){var d=localStats(),R=ST.d||{};['programs','courses','certs','depts'].forEach(function(k){if(+R[k]>0)d[k]=+R[k]});var it=[[d.programs,L('برنامجاً تعليمياً ودورة','programmes and courses'),'layers'],[d.courses,L('مقرراً دراسياً','academic courses'),'book'],[d.depts||depts().length,L('أقسام أكاديمية','academic departments'),'cap'],[d.certs,L('وثيقة صادرة قابلة للتحقق','issued, verifiable documents'),'shield']].filter(function(x){return +x[0]>0});
+ return '<section class="st120" id="st120" aria-label="'+L('المعهد بالأرقام','The Institute in numbers')+'">'+it.map(function(x){return '<div><span class="i">'+ic(x[2])+'</span><b dir="ltr">'+(+x[0]).toLocaleString('en-US')+'</b><span>'+x[1]+'</span></div>'}).join('')+'</section>'}
+function depts(){return ((S.v51&&S.v51.units)||[]).filter(function(u){return u&&!u.deleted&&u.type==='department'&&u.id!=='u-adm'&&(u.academic==null||+u.academic)}).sort(function(a,b){return (+a.ord||9)-(+b.ord||9)})}
+var progs=function(){return (S.programs||[]).filter(function(p){return !p.cancelled&&!p.deleted})};
+var pn=function(p){return L(p.name||'',(p.eng&&p.eng.nameEn)||p.nameEn||p.name||'')};
+var pd=function(p){return L(p.desc||'',(p.eng&&p.eng.descEn)||p.descEn||p.desc||'')};
+var unitOf=function(p){return (p.eng&&p.eng.unitId)||p.dept112||''};
+var KL={diploma:['دبلوم','Diploma'],program:['برنامج أكاديمي','Academic programme'],short:['برنامج قصير','Short programme'],course:['دورة تدريبية','Training course'],workshop:['ورشة عمل','Workshop']};
+var kl=function(p){var k=KL[p.kind]||KL.program;return L(k[0],k[1])};
+var today=function(){return new Date(Date.now()+3*3600e3).toISOString().slice(0,10)};
+function upcoming(){var o=[],d=today();try{var c=V5.cal61&&V5.cal61();((c&&c.years)||[]).forEach(function(y){(y.terms||[]).forEach(function(t){(t.events||[]).forEach(function(e){if(e&&e.start&&(e.end||e.start)>=d&&/reg|study|exam|results|admit|holiday/.test(e.cat||''))o.push(e)})})})}catch(x){}return o.sort(function(a,b){return a.start<b.start?-1:1}).slice(0,4)}
+var HL3=function(k){var Hm=S.home||{};return L3(Hm[k]||'',Hm[k+'En']||Hm[k]||'',Hm[k+'Bn']||'')};
+function home120(){loadStats();var Hm=S.home||{},I=(S.v51&&S.v51.inst)||{},P=progs(),D=depts(),reg=I.regNo||'028412/2025';
+ var main=P.filter(function(p){return p.kind!=='short'&&p.kind!=='course'&&p.kind!=='workshop'}),short=P.filter(function(p){return p.kind==='short'||p.kind==='course'||p.kind==='workshop'}).sort(function(a,b){return String(b.from||'').localeCompare(String(a.from||''))});
+ var nm=L(I.nameAr||'معهد التمهيد للدراسات الإسلامية واللغوية',I.nameEn||'At-Tamhid Institute for Islamic and Linguistic Studies');
+ var h='<div class="hero h120"><div class="hx"><div class="hl"><div class="kick">'+L('مؤسسة تعليمية مرخّصة ومسجّلة رسمياً','A licensed, officially registered institution')+'</div><h1>'+e0(nm)+'</h1><p class="lead">'+e0(HL3('hero'))+'</p>'+
+  '<div class="cta"><a class="btn g" href="#/register">'+L('قدّم طلب الالتحاق','Apply for admission')+'</a><a class="btn o" href="#/programs">'+L('استكشف البرامج','Explore programmes')+'</a></div>'+
+  '<ul class="trust"><li>'+ic('shield')+'<span>'+L('ترخيص حكومي رقم ','Government licence No. ')+'<bdi dir="ltr">'+e0(reg)+'</bdi></span></li><li>'+ic('globe')+'<span>'+L('حضورياً وعن بُعد','On campus and online')+'</span></li><li>'+ic('doc')+'<span>'+L('وثائق رسمية قابلة للتحقق','Official, verifiable documents')+'</span></li></ul></div>'+
+  '<aside class="hc" aria-label="'+L('روابط سريعة','Quick links')+'"><h2>'+L('ابدأ من هنا','Start here')+'</h2>'+
+  [['#/register','cap',L('طلب التسجيل','Application'),L('قدّم طلبك في دقائق','Apply in minutes')],['#/review','search',L('متابعة الطلب','Track your application'),L('حالة الطلب وخطاب القبول','Status and acceptance letter')],['#/login','screen',L('دخول البوابات','Portal sign-in'),L('الطلاب والمدرّسون والإدارة','Students, faculty and staff')],['#/verify','shield',L('التحقق من وثيقة','Verify a document'),L('برقم الوثيقة أو رمزها','By document number or code')]].map(function(x){return '<a href="'+x[0]+'"><span class="i">'+ic(x[1])+'</span><span><b>'+x[2]+'</b><small>'+x[3]+'</small></span><span class="ar" aria-hidden="true">'+ic('arrow')+'</span></a>'}).join('')+'</aside></div></div>';
+ var ann=HL3('ann');if(ann)h+='<div class="an120" role="note"><b>'+L('إعلان','Announcement')+'</b><span>'+e0(ann)+'</span></div>';
+ h+=statsHTML();
+ /* البرامج */
+ h+='<section class="s120"><div class="hd"><div><span class="ey">'+L('البرامج الأكاديمية','Academic programmes')+'</span><h2>'+L('مسارات تعليمية بمناهج واضحة وإشراف متخصص','Learning paths with clear curricula and expert supervision')+'</h2></div><a class="more" href="#/programs">'+L('كل البرامج','All programmes')+' '+ic('arrow')+'</a></div><div class="pg120">'+
+  main.slice(0,6).map(function(p){var u=D.find(function(x){return x.id===unitOf(p)});var lv=+((p.eng&&p.eng.levels)||(p.levels&&p.levels.length)||0);
+   return '<article class="pc120"><div class="tp"><span class="tag">'+e0(kl(p))+'</span>'+(u?'<span class="u">'+e0(L(u.nameAr,u.nameEn||u.nameAr))+'</span>':'')+'</div><h3>'+e0(pn(p))+'</h3><p>'+e0(String(pd(p)).slice(0,220))+'</p><ul class="mt">'+(p.hours?'<li>'+ic('clock')+'<span><bdi dir="ltr">'+e0(p.hours)+'</bdi> '+L('ساعة معتمدة','credit hours')+'</span></li>':'')+(lv?'<li>'+ic('layers')+'<span><bdi dir="ltr">'+lv+'</bdi> '+L('مستويات','levels')+'</span></li>':'')+'</ul><div class="ac"><a class="btn s" href="#/register">'+L('قدّم الآن','Apply now')+'</a><a class="lk" href="#/programs">'+L('التفاصيل','Details')+'</a></div></article>'}).join('')+'</div>';
+ if(short.length)h+='<h3 class="sub">'+L('برامج قصيرة ودورات وورش عمل','Short programmes, courses and workshops')+'</h3><div class="sh120">'+short.slice(0,6).map(function(p){return '<a class="it" href="#/programs"><span class="dt"><bdi dir="ltr">'+e0(String(p.from||'').slice(5).replace('-','/'))+'</bdi><small dir="ltr">'+e0(String(p.from||'').slice(0,4))+'</small></span><span class="tx"><b>'+e0(pn(p))+'</b><small>'+e0(kl(p))+(p.hours?' · <bdi dir="ltr">'+e0(p.hours)+'</bdi> '+L('ساعات','hours'):'')+'</small></span></a>'}).join('')+'</div>';
+ h+='</section>';
+ /* الأقسام */
+ if(D.length)h+='<section class="s120 alt"><div class="hd"><div><span class="ey">'+L('الأقسام الأكاديمية','Academic departments')+'</span><h2>'+L('أقسام متخصصة تقود البرامج وتشرف عليها','Specialised departments that lead and supervise the programmes')+'</h2></div></div><div class="dp120">'+D.map(function(u,i){var n=P.filter(function(p){return unitOf(p)===u.id}).length;return '<div class="d"><span class="n" dir="ltr">'+String(i+1).padStart(2,'0')+'</span><h3>'+e0(L(u.nameAr,u.nameEn||u.nameAr))+'</h3><small>'+(n?'<bdi dir="ltr">'+n+'</bdi> '+(n===1?L('برنامج','programme'):L('برامج','programmes')):L('برامج قيد الإعداد','Programmes in preparation'))+'</small></div>'}).join('')+'</div></section>';
+ /* لماذا المعهد */
+ var WHY=[['book',L('منهج أصيل','Authentic curriculum'),L('على الكتاب والسنة بفهم سلف الأمة، مع عناية خاصة بالعربية وعلومها.','Grounded in the Qur’an and Sunnah as understood by the early generations, with special care for Arabic and its sciences.')],
+  ['users',L('أساتذة متخصصون','Specialist teachers'),L('نخبة من الأساتذة والدكاترة يدرّسون ويشرفون على المخرجات.','A select group of professors and doctors teach and supervise outcomes.')],
+  ['globe',L('حضورياً وعن بُعد','On campus and online'),L('برامج حضورية وأخرى عن بُعد تتيح العلم للمتعلمين حيث كانوا.','In-person and online programmes bring learning to students wherever they are.')],
+  ['shield',L('وثائق موثّقة','Verifiable documents'),L('لكل شهادة وسجل أكاديمي رقم فريد ورمز تحقق يتحقق منه أي أحد.','Every certificate and transcript has a unique number and a code anyone can verify.')],
+  ['screen',L('بوابات إلكترونية متكاملة','Integrated e-portals'),L('بوابات للطلاب والمدرّسين والإدارة: التسجيل والدرجات والجداول والوثائق.','Portals for students, faculty and staff: registration, grades, timetables and documents.')],
+  ['cal',L('تقويم أكاديمي منضبط','A disciplined academic calendar'),L('مواعيد معلنة للتسجيل والاختبارات والنتائج، مع تذكيرات بالبريد.','Published dates for registration, exams and results, with email reminders.')]];
+ h+='<section class="s120"><div class="hd"><div><span class="ey">'+L('لماذا معهد التمهيد','Why At-Tamhid')+'</span><h2>'+L('تعليم رصين، وإدارة منظّمة، ووثائق يُعتمد عليها','Sound teaching, organised administration and documents you can rely on')+'</h2></div></div><div class="wy120">'+WHY.map(function(x){return '<div><span class="i">'+ic(x[0])+'</span><h3>'+x[1]+'</h3><p>'+x[2]+'</p></div>'}).join('')+'</div></section>';
+ /* خطوات الالتحاق */
+ var STP=[[L('اختر البرنامج','Choose a programme'),L('اطّلع على البرامج وشروطها ومواعيدها.','Review the programmes, their requirements and dates.')],[L('قدّم الطلب','Submit your application'),L('املأ نموذج التسجيل وأرسل مستنداتك بالبريد.','Fill in the application form and send your documents by email.')],[L('تابع طلبك','Follow your application'),L('برقم الطلب والرمز السري، حتى قرار القبول.','With your application number and secret code, until the decision.')],[L('ابدأ الدراسة','Start studying'),L('يصلك خطاب القبول ورقمك الأكاديمي وبيانات دخول بوابتك.','You receive your acceptance letter, academic number and portal sign-in.')]];
+ h+='<section class="s120 alt"><div class="hd"><div><span class="ey">'+L('الالتحاق','Admission')+'</span><h2>'+L('أربع خطوات من الطلب إلى أول محاضرة','Four steps from application to your first class')+'</h2></div><a class="more" href="#/register">'+L('قدّم الآن','Apply now')+' '+ic('arrow')+'</a></div><ol class="sp120">'+STP.map(function(x,i){return '<li><span class="n" dir="ltr">'+(i+1)+'</span><h3>'+x[0]+'</h3><p>'+x[1]+'</p></li>'}).join('')+'</ol></section>';
+ /* التقويم + الأخبار */
+ var UP=upcoming(),NW=(S.news||[]).filter(function(n){return n&&!n.deleted}).sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''))}).slice(0,3);
+ var CATN={reg:L('التسجيل','Registration'),study:L('الدراسة','Classes'),exam:L('الاختبارات','Exams'),results:L('النتائج','Results'),admit:L('القبول','Admission'),holiday:L('إجازة','Holiday')};
+ if(UP.length||NW.length){h+='<section class="s120"><div class="cn120">';
+  if(UP.length)h+='<div class="cl"><div class="hd"><div><span class="ey">'+L('التقويم الأكاديمي','Academic calendar')+'</span><h2>'+L('مواعيد قادمة','Upcoming dates')+'</h2></div></div><ul class="ev120">'+UP.map(function(e){return '<li><span class="dt"><bdi dir="ltr">'+e0(e.start)+'</bdi>'+(e.end&&e.end!==e.start?'<small dir="ltr">→ '+e0(e.end)+'</small>':'')+'</span><span><b>'+e0(L(e.ar||'',e.en||e.ar||''))+'</b><small>'+e0(CATN[e.cat]||'')+'</small></span></li>'}).join('')+'</ul></div>';
+  if(NW.length)h+='<div class="cl"><div class="hd"><div><span class="ey">'+L('الأخبار والفعاليات','News & events')+'</span><h2>'+L('من أخبار المعهد','Institute news')+'</h2></div><a class="more" href="#/news">'+L('كل الأخبار','All news')+' '+ic('arrow')+'</a></div><div class="nw120">'+NW.map(function(n){return '<a href="#/news"><small dir="ltr">'+e0(n.date||'')+'</small><b>'+e0(L(n.title||'',n.titleEn||n.title||''))+'</b><span>'+e0(String(L(n.body||'',n.bodyEn||n.body||'')).slice(0,140))+'</span></a>'}).join('')+'</div></div>';
+  h+='</div></section>'}
+ /* الرؤية والرسالة والأهداف */
+ h+='<section class="s120 alt"><div class="hd"><div><span class="ey">'+L('عن المعهد','About the Institute')+'</span><h2>'+e0(nm)+'</h2></div></div><p class="ab120">'+e0(HL3('about'))+'</p><div class="vm120">'+[['vision',L('الرؤية','Vision')],['mission',L('الرسالة','Mission')],['goals',L('الأهداف','Goals')]].map(function(k){var t=HL3(k[0]);if(!t)return '';var lines=String(t).split(/\n+/).map(function(x){return x.replace(/^[.\s•\-]+/,'').trim()}).filter(Boolean);return '<div><h3>'+k[1]+'</h3>'+(lines.length>1?'<ul>'+lines.map(function(x){return '<li>'+ic('check')+'<span>'+e0(x)+'</span></li>'}).join('')+'</ul>':'<p>'+e0(t)+'</p>')+'</div>'}).join('')+'</div></section>';
+ /* البوابات */
+ h+='<section class="s120" id="portals"><div class="hd"><div><span class="ey">'+L('البوابات','Portals')+'</span><h2>'+L('كل خدمات المعهد في مكان واحد','All Institute services in one place')+'</h2></div></div><div class="pt120">'+[['#/register','cap',L('بوابة طلبات التسجيل','Application portal'),L('قدّم طلب الالتحاق ببرامج المعهد.','Apply to the Institute’s programmes.')],['#/review','search',L('مراجعة الطلب','Application review'),L('حالة طلبك وخطاب القبول، وتعديل الطلب إن أُعيد إليك.','Your application status and acceptance letter, and edits if it is returned to you.')],['#/login','screen',L('بوابة الدخول','Sign-in portal'),L('دخول موحّد للطلاب والمدرّسين والإدارة.','One sign-in for students, faculty and staff.')],['#/verify','shield',L('التحقق من الوثائق','Document verification'),L('تحقّق من أي شهادة أو سجل أكاديمي صادر من المعهد.','Verify any certificate or transcript issued by the Institute.')],['#/partners','hand',L('بوابة الشراكات','Partnerships portal'),L('طلبات التعاون والاتفاقيات من الجهات والمؤسسات.','Cooperation and agreement requests from organisations.')],['#/library','book',L('المكتبة','Library'),L('مراجع وكتب ومواد علمية.','References, books and study materials.')]].map(function(x){return '<a href="'+x[0]+'"><span class="i">'+ic(x[1])+'</span><h3>'+x[2]+'</h3><p>'+x[3]+'</p><span class="go">'+L('افتح','Open')+' '+ic('arrow')+'</span></a>'}).join('')+'</div></section>';
+ /* الوقف */
+ var pc=pcfg();if(+pc.donate!==0)h+='<section class="dn120" id="dn71"><div><span class="i">'+ic('heart')+'</span><div><h2>'+L('وقف معهد التمهيد','At-Tamhid Institute Endowment')+'</h2><p>'+L('أسهم في منح دراسية للطلاب والطالبات المتميزين، وفي المساعدات الخيرية والإنسانية في المجتمع. صدقة جارية ينتفع بها طلاب العلم.','Contribute to scholarships for outstanding students and to charitable and humanitarian aid in the community: an ongoing charity that benefits students of knowledge.')+'</p></div></div><button type="button" class="btn g" onclick="V51.h.donate71()">'+L('تبرع لوقف المعهد','Donate to the endowment')+'</button></section>';
+ /* أسئلة شائعة */
+ var FQ=[[L('كيف أقدّم طلب الالتحاق؟','How do I apply?'),L('من «بوابة طلبات التسجيل» تملأ النموذج، فيصلك رقم الطلب ورمز سري تتابع بهما طلبك من «مراجعة الطلب».','Fill in the form in the application portal. You receive an application number and a secret code to follow your application under “Application review”.')],
+  [L('هل الدراسة حضورية أم عن بُعد؟','Is study on campus or online?'),L('يقدّم المعهد برامج حضورية وأخرى عن بُعد، ويُذكر نمط كل برنامج في صفحته.','The Institute offers both on-campus and online programmes; each programme page states its mode.')],
+  [L('كيف أتحقق من شهادة صادرة من المعهد؟','How can I verify a certificate issued by the Institute?'),L('من صفحة «التحقق من الوثيقة» بإدخال رقم الوثيقة أو رمز التحقق المطبوع عليها.','On the “Verify document” page, enter the document number or the verification code printed on it.')],
+  [L('كيف أدفع الرسوم أو أتبرع؟','How do I pay fees or donate?'),L('يظهر للطالب زر «ادفع الآن» في بوابته عند طلب الرسوم، ويظهر للجميع زر «تبرع لوقف المعهد» مع وسائل الدفع المعتمدة.','Students see a “Pay now” button in their portal when fees are requested; everyone can use “Donate to the endowment” with the approved payment methods.')]];
+ h+='<section class="s120"><div class="fq120"><div class="hd"><div><span class="ey">'+L('أسئلة شائعة','FAQ')+'</span><h2>'+L('إجابات سريعة','Quick answers')+'</h2></div></div>'+FQ.map(function(x,i){return '<details'+(i?'':' open')+'><summary>'+x[0]+'</summary><p>'+x[1]+'</p></details>'}).join('')+'</div>'+
+  '<div class="ct120"><h2>'+L('تواصل معنا','Contact us')+'</h2><p>'+L('فريق القبول والتسجيل يجيب عن أسئلتك.','The admissions team will answer your questions.')+'</p>'+(Hm.p1?'<a href="https://wa.me/'+e0(String(Hm.p1).replace(/[^\d]/g,''))+'" target="_blank" rel="noopener">'+ic('phone')+'<bdi dir="ltr">'+e0(Hm.p1)+'</bdi></a>':'')+(Hm.p2?'<a href="tel:'+e0(String(Hm.p2).replace(/[^\d+]/g,''))+'">'+ic('phone')+'<bdi dir="ltr">'+e0(Hm.p2)+'</bdi></a>':'')+(Hm.em?'<a href="mailto:'+e0(Hm.em)+'">'+ic('mail')+'<bdi dir="ltr">'+e0(Hm.em)+'</bdi></a>':'')+'</div></section>';
+ return h}
+V5.home120=home120;
+try{V['']=home120}catch(e){console.error('v120 home',e)}
+
+/* ربط وسائل الدفع المنظمة بنافذتي الدفع والتبرع، بثلاث لغات */
+V5.payMethods120=function(ctx){var c=pcfg(),M=V5.pm120view(ctx);return '<div class="pm73 pm77">'+M.map(function(m){var k=KN[m.kind]||KN.other;return '<div class="pm120r"><span class="b">'+e0(k[1])+'</span><span class="t"><span>'+e0(L3(m.ar,m.en,m.bn))+(m.holder?' · <small>'+e0(m.holder)+'</small>':'')+'</span><b dir="ltr" class="pm77n">'+e0(m.num)+'</b>'+(m.note?'<small class="mu">'+e0(m.note)+'</small>':'')+'</span><button type="button" class="btn s" onclick="try{navigator.clipboard.writeText(\''+Qs(m.num)+'\');toast(L(\'نُسخ الرقم.\',\'Number copied.\'))}catch(e){}">'+L('نسخ','Copy')+'</button></div>'}).join('')+
+ (String(c.acctAr||'').trim()?'<p class="pm73a">'+e0(L(c.acctAr,c.acctEn||c.acctAr)).replace(/\n/g,'<br>')+'</p>':'')+'</div>'};
+})();
+(function(){var css=`
+.l3{display:inline-flex;align-items:center;gap:2px;padding:2px;border:1px solid var(--bd);border-radius:999px;background:var(--sf);vertical-align:middle}
+.l3 button{border:0;background:transparent;color:var(--tx);font:inherit;font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;cursor:pointer;line-height:1.2;min-height:30px}
+.l3 button:hover{background:rgba(20,40,75,.08)}.l3 button.on{background:var(--pr);color:#fff}
+.l3 button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.h69-ac .l3 button{padding:4px 8px;font-size:12.5px;min-height:28px}
+.l3.l3w{display:flex;width:100%;justify-content:space-between;margin:6px 0}.l3.l3w button{flex:1}
+html.bn120 body,html.bn120 body *:not(svg):not(svg *):not(code):not(.cert):not(.cert *):not(.cert2):not(.cert2 *){font-family:'Hind Siliguri','Noto Sans Bengali','Segoe UI',system-ui,sans-serif!important}
+html.bn120 body{line-height:1.7}
+/* الصفحة الرئيسية v120 */
+#app>.hero.h120{padding:0!important;display:block!important;overflow:hidden}
+.h120 .hx{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:40px;align-items:center;padding:clamp(28px,5vw,64px) clamp(20px,4vw,56px)}
+.h120 .hl{display:grid;gap:16px;align-content:center}
+.h120 h1{font-size:clamp(30px,4.2vw,52px)!important;line-height:1.2!important;margin:0!important;color:#fff!important;text-wrap:balance}
+.h120 .lead{font-size:clamp(16px,1.4vw,19px);line-height:1.85;color:#D8E0EC;max-width:60ch;margin:0}
+.h120 .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px}
+.h120 .trust{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:10px 22px;color:#C9D3E2;font-size:14px}
+.h120 .trust li{display:flex;align-items:center;gap:8px}.h120 .trust svg{width:18px;height:18px;color:#fff;opacity:.85}
+.h120 .hc{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:18px;display:grid;gap:8px;backdrop-filter:blur(6px)}
+.h120 .hc h2{color:#fff!important;font-size:15px!important;letter-spacing:.02em;margin:2px 6px 6px!important;opacity:.85;font-weight:600}
+.h120 .hc a{display:grid;grid-template-columns:40px 1fr 20px;align-items:center;gap:12px;padding:12px;border-radius:12px;background:rgba(255,255,255,.95);color:#14284B!important;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.h120 .hc a:hover,.h120 .hc a:focus-visible{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.h120 .hc a .i{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:#EEF1F5;color:#14284B}
+.h120 .hc a b{display:block;font-size:15px}.h120 .hc a small{display:block;color:#5A6880;font-size:12.5px}
+.h120 .hc a .ar svg{width:18px;height:18px;opacity:.5}
+[dir=rtl] .h120 .hc a .ar svg,[dir=rtl] .s120 .more svg,[dir=rtl] .pt120 .go svg{transform:scaleX(-1)}
+.an120{display:flex;gap:14px;align-items:flex-start;margin:22px 0 0;padding:14px 18px;border:1px solid var(--bd);border-inline-start:4px solid var(--ac);border-radius:12px;background:var(--sf);line-height:1.8}
+.an120 b{white-space:nowrap;color:var(--pr)}
+.st120{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:26px 0 0;border:1px solid var(--bd);border-radius:16px;background:var(--sf);overflow:hidden}
+.st120>div{display:grid;gap:4px;justify-items:start;padding:22px 24px;border-inline-start:1px solid var(--bd)}.st120>div:first-child{border-inline-start:0}
+.st120 .i{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:rgba(20,40,75,.07);color:var(--pr)}
+.st120 b{font-size:clamp(26px,3vw,36px);line-height:1.1;color:var(--pr);font-family:var(--hd77),inherit}.st120 span:last-child{color:var(--mu);font-size:14px}
+.s120{margin:64px 0 0}.s120.alt{background:linear-gradient(180deg,rgba(20,40,75,.035),rgba(20,40,75,0));border-radius:24px;padding:36px clamp(16px,3vw,36px);margin-inline:calc(-1*clamp(0px,1vw,12px))}
+.s120 .hd>div{display:grid;gap:2px}.s120 .ey{justify-self:start}
+.s120 .hd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.s120 .ey{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--ac);text-transform:uppercase;margin-bottom:6px}
+.s120 h2{font-size:clamp(22px,2.4vw,30px)!important;line-height:1.35!important;margin:0!important;color:var(--pr)!important;max-width:34ch;text-wrap:balance}
+.s120 .more{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--ac);text-decoration:none}.s120 .more svg{width:18px;height:18px}
+.s120 h3.sub{font-size:18px!important;margin:34px 0 14px!important;color:var(--pr)}
+.pg120{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px}
+.pc120{display:flex;flex-direction:column;gap:10px;padding:24px;border:1px solid var(--bd);border-radius:16px;background:var(--sf);box-shadow:0 1px 2px rgba(20,40,75,.05);transition:box-shadow .2s,transform .2s,border-color .2s;position:relative;overflow:hidden}
+.pc120::before{content:'';position:absolute;inset-inline:0;top:0;height:3px;background:linear-gradient(90deg,var(--nv77b,#14284B),var(--sv77b,#9AA6AE))}
+.pc120:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(20,40,75,.12);border-color:var(--sv77b,#9AA6AE)}
+.pc120 .tp{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}.pc120 .tp .u{font-size:12.5px;color:var(--mu)}
+.pc120 h3{font-size:19px!important;line-height:1.45!important;margin:2px 0 0!important;color:var(--pr)!important}
+.pc120 p{margin:0;color:var(--mu);line-height:1.75;font-size:14.5px;flex:1}
+.pc120 .mt{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;color:var(--tx)}.pc120 .mt li{display:flex;align-items:center;gap:6px}.pc120 .mt svg{width:16px;height:16px;color:var(--ac)}
+.pc120 .ac{display:flex;align-items:center;gap:14px;margin-top:6px}.pc120 .lk{font-weight:600;color:var(--ac)}
+.sh120{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.sh120 .it{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;padding:12px;border:1px solid var(--bd);border-radius:12px;background:var(--sf);text-decoration:none;color:var(--tx)}
+.sh120 .it:hover{border-color:var(--sv77b,#9AA6AE)}
+.sh120 .dt{display:grid;justify-items:center;padding:8px 4px;border-radius:10px;background:var(--pr);color:#fff;font-weight:700;font-size:17px;line-height:1.1}.sh120 .dt small{font-size:11px;opacity:.75;font-weight:500}
+.sh120 .tx b{display:block;font-size:14.5px;line-height:1.5}.sh120 .tx small{color:var(--mu);font-size:12.5px}
+.dp120{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.dp120 .d{padding:22px;border-radius:16px;background:var(--sf);border:1px solid var(--bd);display:grid;gap:8px;align-content:start}
+.dp120 .n{font-size:13px;font-weight:700;color:var(--ac);letter-spacing:.08em}.dp120 h3{font-size:17.5px!important;line-height:1.5!important;margin:0!important;color:var(--pr)!important}.dp120 small{color:var(--mu)}
+.wy120{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 32px}
+.wy120>div{display:grid;gap:8px;align-content:start}.wy120 .i{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(20,40,75,.10),rgba(154,166,182,.20));color:var(--pr)}
+.wy120 h3{font-size:18px!important;margin:4px 0 0!important;color:var(--pr)!important}.wy120 p{margin:0;color:var(--mu);line-height:1.75}
+.sp120{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;counter-reset:s}
+.sp120 li{position:relative;padding:22px;border-radius:16px;background:var(--sf);border:1px solid var(--bd);display:grid;gap:8px;align-content:start}
+.sp120 .n{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--pr);color:#fff;font-weight:700}
+.sp120 h3{font-size:17px!important;margin:4px 0 0!important;color:var(--pr)!important}.sp120 p{margin:0;color:var(--mu);line-height:1.7;font-size:14.5px}
+.cn120{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:40px}
+.ev120{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ev120 li{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--bd);border-radius:12px;background:var(--sf)}
+.ev120 .dt{font-weight:700;color:var(--pr);display:grid}.ev120 .dt small{font-weight:500;color:var(--mu);font-size:12px}.ev120 b{display:block}.ev120 small{color:var(--mu)}
+.nw120{display:grid;gap:10px}.nw120 a{display:grid;gap:4px;padding:16px;border:1px solid var(--bd);border-radius:12px;background:var(--sf);text-decoration:none;color:var(--tx)}.nw120 a:hover{border-color:var(--sv77b,#9AA6AE)}.nw120 small{color:var(--mu)}.nw120 span{color:var(--mu);font-size:14px;line-height:1.7}
+.ab120{font-size:17px;line-height:2;max-width:85ch;margin:0 0 26px;color:var(--tx)}
+.vm120{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.vm120>div{padding:24px;border-radius:16px;background:var(--sf);border:1px solid var(--bd);border-top:3px solid var(--pr)}
+.vm120 h3{font-size:19px!important;margin:0 0 10px!important;color:var(--pr)!important}.vm120 p{margin:0;line-height:1.9;color:var(--tx)}
+.vm120 ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}.vm120 li{display:grid;grid-template-columns:20px 1fr;gap:8px;line-height:1.75}.vm120 li svg{width:18px;height:18px;color:var(--ac);margin-top:4px}
+.pt120{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.pt120 a{display:grid;gap:8px;align-content:start;padding:22px;border:1px solid var(--bd);border-radius:16px;background:var(--sf);text-decoration:none;color:var(--tx);transition:transform .15s,box-shadow .15s,border-color .15s}
+.pt120 a:hover,.pt120 a:focus-visible{transform:translateY(-2px);box-shadow:0 12px 26px rgba(20,40,75,.10);border-color:var(--sv77b,#9AA6AE)}
+.pt120 .i{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(20,40,75,.07);color:var(--pr)}
+.pt120 h3{font-size:17.5px!important;margin:2px 0 0!important;color:var(--pr)!important}.pt120 p{margin:0;color:var(--mu);line-height:1.7;font-size:14.5px}.pt120 .go{display:inline-flex;gap:6px;align-items:center;font-weight:700;color:var(--ac);font-size:14px}.pt120 .go svg{width:16px;height:16px}
+.dn120{margin:64px 0 0;display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;padding:clamp(24px,4vw,40px);border-radius:20px;background:linear-gradient(135deg,var(--nv77,#14284B),#21406f);color:#fff}
+.dn120>div{display:flex;gap:18px;align-items:flex-start;flex:1;min-width:260px}.dn120 .i{flex:none;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.12);color:#fff}
+.dn120 h2{color:#fff!important;margin:0 0 6px!important;font-size:clamp(20px,2.2vw,26px)!important}.dn120 p{margin:0;color:#D6DEEA;line-height:1.85;max-width:62ch}
+.s120 .fq120{display:grid;gap:10px}.s120:has(.fq120){display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:32px;align-items:start}
+.fq120 details{border:1px solid var(--bd);border-radius:12px;background:var(--sf);padding:0 18px}
+.fq120 summary{cursor:pointer;padding:16px 0;font-weight:700;color:var(--pr);list-style:none;display:flex;justify-content:space-between;gap:12px}.fq120 summary::after{content:'+';font-size:20px;line-height:1;color:var(--ac)}.fq120 details[open] summary::after{content:'–'}
+.fq120 summary::-webkit-details-marker{display:none}.fq120 details p{margin:0 0 16px;color:var(--mu);line-height:1.85}
+.ct120{padding:24px;border-radius:16px;background:var(--sf);border:1px solid var(--bd);display:grid;gap:10px;position:sticky;top:90px}
+.ct120 h2{font-size:21px!important;margin:0!important;color:var(--pr)!important}.ct120 p{margin:0 0 4px;color:var(--mu)}
+.ct120 a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);text-decoration:none;color:var(--tx);font-weight:600}.ct120 a:hover{border-color:var(--ac)}.ct120 svg{width:18px;height:18px;color:var(--ac)}
+@media(max-width:980px){.h120 .hx{grid-template-columns:1fr}.wy120,.pt120,.vm120{grid-template-columns:repeat(2,minmax(0,1fr))}.sp120{grid-template-columns:repeat(2,minmax(0,1fr))}.s120:has(.fq120){grid-template-columns:1fr}.ct120{position:static}}
+@media(max-width:640px){.st120{grid-template-columns:repeat(2,minmax(0,1fr))}.st120>div:nth-child(3){border-inline-start:0}.st120>div:nth-child(n+3){border-top:1px solid var(--bd)}.st120>div{padding:16px}
+ .wy120,.pt120,.vm120,.sp120{grid-template-columns:1fr}.s120{margin-top:44px}.ev120 li{grid-template-columns:1fr}.pg120,.sh120{grid-template-columns:1fr}}
+/* وسائل الدفع */
+.pm120r{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--sf);margin:0 0 8px}
+.pm120r .b{font-weight:700;font-size:12.5px;padding:6px 10px;border-radius:8px;background:var(--pr);color:#fff;white-space:nowrap}
+.pm120r .t{display:grid;gap:2px}.pm120r .pm77n{font-size:18px;letter-spacing:.03em}
+/* تحسينات المظهر الداخلي */
+#app .box{border-radius:14px}#app .tabs button{border-radius:10px}
+#app table{border-collapse:separate;border-spacing:0}#app table th{background:rgba(20,40,75,.05);font-weight:700}
+#app table tr:hover td{background:rgba(20,40,75,.025)}
+#app .btn{border-radius:10px;transition:background .15s,box-shadow .15s,transform .1s}#app .btn:active{transform:translateY(1px)}
+#app input:focus-visible,#app select:focus-visible,#app textarea:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+#app .k112{border-radius:14px}
+`;var s=document.createElement('style');s.id='v120css';s.textContent=css;document.head.appendChild(s)})();
+
+/* =====================================================================
    v118 — الجدول الأسبوعي للمستوى الأول (الدبلوم العام، مسائي)، والتحليلات حسب البرنامج والقسم،
           وملف الاعتماد الأكاديمي لكل برنامج
    ===================================================================== */
@@ -23643,7 +23959,7 @@ function header(){var nav=document.getElementById('nav');if(!nav||nav.querySelec
  var ln=document.createElement('div');ln.className='h69-ln';links.forEach(function(a){ln.appendChild(a)});w.appendChild(ln);
  var ac=document.createElement('div');ac.className='h69-ac';
  var sb=document.createElement('button');sb.type='button';sb.className='h69-ic';sb.setAttribute('aria-label',T('البحث','Search'));sb.title=T('البحث (Ctrl+K)','Search (Ctrl+K)');sb.innerHTML=ic('search');sb.onclick=function(){V5.gsOpen69&&V5.gsOpen69()};ac.appendChild(sb);
- if(lang){lang.classList.add('h69-hide-m');lang.innerHTML=ic('globe',20)+'<span>'+(en()?'العربية':'English')+'</span>';lang.setAttribute('lang',en()?'ar':'en');ac.appendChild(lang)}
+ if(lang&&V5.l3menu){var l3s=document.createElement('span');l3s.className='h69-hide-m';l3s.style.display='inline-flex';l3s.innerHTML=V5.l3menu(1);ac.appendChild(l3s)}else if(lang){lang.classList.add('h69-hide-m');lang.innerHTML=ic('globe',20)+'<span>'+(en()?'العربية':'English')+'</span>';lang.setAttribute('lang',en()?'ar':'en');ac.appendChild(lang)}
  if(theme){theme.classList.add('h69-hide-m');ac.appendChild(theme)}
  if(loggedIn&&dh&&k!==dh.slice(2)){var d=document.createElement('a');d.href=dh;d.className='h69-in h69-hide-m';d.innerHTML=ic('grid',20)+'<span>'+T('لوحتي','My dashboard')+'</span>';ac.appendChild(d)}
  if(logout){logout.classList.add('h69-hide-m');logout.innerHTML=ic('out',20)+'<span>'+T('خروج','Sign out')+'</span>';ac.appendChild(logout)}
@@ -23664,7 +23980,7 @@ function drawer(on){var d=document.getElementById('dr69');if(!d){d=document.crea
  o+='<div class="sep"></div>';
  if(hd.dash)o+='<a href="'+hd.dash+'" onclick="V51.h.dr69(0)">'+ic('grid')+'<span>'+T('لوحتي','My dashboard')+'</span></a>';
  if(!hd.loggedIn)o+='<a href="#/portals" onclick="V51.h.dr69(0)">'+ic('user')+'<span>'+T('الدخول','Sign in')+'</span></a>';
- o+='<button type="button" class="it" onclick="setLang(\''+(en()?'ar':'en')+'\')" lang="'+(en()?'ar':'en')+'">'+ic('globe')+'<span>'+(en()?'العربية':'English')+'</span></button>';
+ if(V5.l3menu)o+=V5.l3menu(0).replace('class="l3"','class="l3 l3w"');else o+='<button type="button" class="it" onclick="setLang(\''+(en()?'ar':'en')+'\')" lang="'+(en()?'ar':'en')+'">'+ic('globe')+'<span>'+(en()?'العربية':'English')+'</span></button>';
  o+='<button type="button" class="it" onclick="toggleTheme();V51.h.dr69(0)">'+ic('spark')+'<span>'+(typeof curTheme==='function'&&curTheme()==='dark'?T('الوضع الفاتح','Light mode'):T('الوضع الداكن','Dark mode'))+'</span></button>';
  if(hd.loggedIn)o+='<button type="button" class="it" onclick="V51.h.dr69(0);sbOut();me=null;location.hash=\'#/\'">'+ic('out')+'<span>'+T('خروج','Sign out')+'</span></button>';
  d.innerHTML=o+'</div>';d.setAttribute('aria-label',T('القائمة الرئيسية','Main menu'));d.classList.add('on');var b=document.querySelector('.h69-mn');if(b)b.setAttribute('aria-expanded','true');var f=d.querySelector('.pn button,.pn a');f&&f.focus()}
@@ -23674,10 +23990,11 @@ H.dr69=function(on){drawer(!!on)};W.V5gs=function(){V5.gsOpen69&&V5.gsOpen69()};
 var SECT=[
  ['home','الرئيسية','Overview','home',['v69h','v112i','dash']],
  ['aca','الشؤون الأكاديمية','Academic Affairs','book',['v112d','v51p','pr','v73p','v65p','cr','cal','tf','v93s','v64a','ex','v65b','v77b','v67b','v77g','v67g','apv','v60sp','sh','v66d']],
- ['adm','القبول والتسجيل','Admissions & Registration','users',['v112a','req','v75r','v77a','st','v119c','v74p','v115g','v71p']],
+ ['adm','القبول والتسجيل','Admissions & Registration','users',['v112a','req','v75r','v77a','st','v119c','v74p','v115g']],
+ ['fin','الإدارة المالية','Finance','doc',['v120f','v71p']],
  ['doc','الوثائق','Documents','doc',['ce','dr','v98g','v51d','v64c','v51s','v64q','v67n','v75n']],
  ['com','التواصل والمحتوى','Communication & Content','chat',['v64m','fb','v77h','nw','lb','pt']],
- ['set','الإعدادات','Settings','cog',['v51i','id','hm','v51o','v63a','v52t','au','v74h','v74d','v108b','sx','v51b','v64p']]];
+ ['set','الإعدادات','Settings','cog',['v51i','id','hm','v51o','v63a','v52t','v120b','au','v74h','v74d','v108b','sx','v51b','v64p']]];
 /* v113: واجهات مجمَّعة — بند واحد في القائمة، وصفحاته تظهر تبويباتٍ فرعية أعلى المحتوى */
 var HUB=[
  ['hAn','لوحة القيادة والتحليلات','Dashboard & Analytics',['v112i','dash']],
@@ -23689,11 +24006,13 @@ var HUB=[
  ['hSp','البرامج القصيرة والدورات','Short Programmes & Courses',['v60sp','sh','v66d']],
  ['hAdm','القبول ومراجعة الطلبات','Admissions & Applications',['v112a','req','v75r','v77a']],
  ['hStu','الطلاب والخريجون','Students & Alumni',['st','v119c','v74p','v115g']],
+ ['hFin','الإدارة المالية ووسائل الدفع','Finance & Payment Methods',['v120f','v71p']],
  ['hDoc','الشهادات والوثائق الصادرة','Issued Documents',['ce','dr','v98g']],
  ['hDes','تصميم الوثائق والبطاقات','Document & Card Design',['v51d','v64c','v51s','v64q']],
  ['hNum','أرقام الوثائق','Document Numbers',['v67n','v75n']],
  ['hWeb','الموقع والمحتوى','Website & Content',['v77h','nw','lb','pt']],
  ['hId','الهوية والرئيسية','Identity & Home Page',['v51i','id','hm']],
+ ['hLang','اللغات والترجمة','Languages & Translation',['v52t','v120b']],
  ['hAcc','الهيكل الإداري والحسابات','Structure & Accounts',['v51o','v63a']],
  ['hLog','السجلات وسلامة النظام','Logs & System Health',['au','v74h','v74d']],
  ['hBk','النسخ الاحتياطي والبيانات','Backup & Data',['v108b','sx','v51b','v64p']]];
@@ -24633,13 +24952,13 @@ var GRP=[['دولياً','Internationally',['bank_intl','islamic_bank','card','p
 var LT=function(x){return String(x).replace(/[A-Za-z][A-Za-z0-9 .\/()-]*[A-Za-z0-9)]|[A-Za-z]/g,function(m){return '<bdi lang="en" dir="ltr">'+m+'</bdi>'})};
 /* v77: طرق الدفع المعروضة تُدار من الإدارة المركزية (سطر لكل طريقة: الاسم بالعربية | الاسم بالإنجليزية | الرقم أو الحساب). الافتراضي: بيكاش */
 var M77D='رقم بيكاش (bKash) للدفع | bKash payment number | 01822510180';
-function meth77(){var c=cfg();if(c.m77==null)c.m77=M77D;return String(c.m77||'').split(/\n+/).map(function(l){var a=l.split('|').map(function(x){return x.trim()});if(a.length<2)return null;if(a.length===2)a=[a[0],a[0],a[1]];return {ar:a[0],en:a[1]||a[0],num:a[2]||''}}).filter(function(x){return x&&x.ar&&x.num})}
+function meth77(){if(V5.pm120view)return V5.pm120view().map(function(m){return {ar:m.ar,en:m.en,bn:m.bn,num:m.num}});var c=cfg();if(c.m77==null)c.m77=M77D;return String(c.m77||'').split(/\n+/).map(function(l){var a=l.split('|').map(function(x){return x.trim()});if(a.length<2)return null;if(a.length===2)a=[a[0],a[0],a[1]];return {ar:a[0],en:a[1]||a[0],num:a[2]||''}}).filter(function(x){return x&&x.ar&&x.num})}
 V5.meth77=meth77;
-function methodsHTML(){var c=cfg(),M=meth77();return '<div class="pm73 pm77">'+M.map(function(m){return '<p class="pm77r"><span>'+e0(L(m.ar,m.en))+': </span><b dir="ltr" class="pm77n">'+e0(m.num)+'</b></p>'}).join('')+
+function methodsHTML(ctx){if(V5.payMethods120)return V5.payMethods120(ctx);var c=cfg(),M=meth77();return '<div class="pm73 pm77">'+M.map(function(m){return '<p class="pm77r"><span>'+e0(L(m.ar,m.en))+': </span><b dir="ltr" class="pm77n">'+e0(m.num)+'</b></p>'}).join('')+
  (String(c.acctAr||'').trim()?'<p class="pm73a">'+e0(L(c.acctAr,c.acctEn||c.acctAr)).replace(/\n/g,'<br>')+'</p>':'')+'</div>'}
 V5.payMethods73=methodsHTML;
 function contactHTML(kind){var c=cfg(),d=waDigits(),msg=kind==='donate'?L('السلام عليكم، أرغب في التبرع لوقف معهد التمهيد.','Peace be upon you. I would like to donate to the At-Tamhid Institute endowment.'):L('السلام عليكم، أرغب في دفع رسوم البرنامج.','Peace be upon you. I would like to pay the program fees.');
- return methodsHTML()+'<div class="pc71" role="group" aria-label="'+e0(L('وسائل التواصل','Contact options'))+'"><p class="mu">'+L('إذا واجهتك أي مشكلة يرجى التواصل عبر واتساب أو البريد الرسمي:','If you face any problem, please contact us via WhatsApp or the official email:')+'</p>'+
+ return methodsHTML(kind==='donate'?'donate':'pay')+'<div class="pc71" role="group" aria-label="'+e0(L('وسائل التواصل','Contact options'))+'"><p class="mu">'+L('إذا واجهتك أي مشكلة يرجى التواصل عبر واتساب أو البريد الرسمي:','If you face any problem, please contact us via WhatsApp or the official email:')+'</p>'+
   '<p class="pc71r"><span>'+L('واتساب: ','WhatsApp: ')+'<b dir="ltr">'+e0(c.wa)+'</b></span>'+(d?' <a class="btn s" href="https://wa.me/'+d+'?text='+encodeURIComponent(msg)+'" target="_blank" rel="noopener">'+L('مراسلة عبر واتساب','Message on WhatsApp')+'</a>':'')+'</p>'+
   '<p class="pc71r"><span>'+L('البريد: ','Email: ')+'<b dir="ltr">'+e0(c.em)+'</b></span> <a class="btn s" href="mailto:'+e0(c.em)+'?subject='+encodeURIComponent(kind==='donate'?L('التبرع لوقف المعهد','Donation to the Institute endowment'):L('دفع رسوم البرنامج','Program fee payment'))+'">'+L('مراسلة بالبريد','Send an email')+'</a></p></div>'}
 V5.payContact71=contactHTML;
@@ -26568,7 +26887,7 @@ setInterval(function(){try{if(S!==lastS||anyVisible())hide();persist()}catch(e){
 <script>(function(){try{var im=new Image();im.onload=function(){if(im.naturalWidth&&im.naturalHeight)window.LGAR89=im.naturalWidth/im.naturalHeight};im.src=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}window.LGAR89=1600/431})();window.LOGOS=IMG108('logos-a2f6204d.webp');window.LOGOM=IMG108('logom-243bc940.webp');IMGH108('logos-a2f6204d.webp',function(v){window.LOGOS=v});IMGH108('logom-243bc940.webp',function(v){window.LOGOM=v});</script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v119';
+window.__BUILD__='v120';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}
