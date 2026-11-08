@@ -115,7 +115,7 @@ async function viaResend(b: MailIn, html: string, text: string, name: string) {
 type Sent = { via: string; id: string };
 async function deliver(b: MailIn & { cur?: boolean }): Promise<Sent> {
   const { html, text } = compose(b);
-  const name = String(b.from_name || "معهد التمهيد للدراسات الإسلامية واللغوية").replace(/["<>\r\n]/g, "").slice(0, 120);
+  const name = String(b.from_name || "معهد التمهيد").replace(/["<>\r\n]/g, "").slice(0, 120);
   if (RESEND && MFROM) {
     try { const id = await viaResend(b, html, text, name); LAST_RESEND_ERR = ""; return { via: "resend", id }; }
     catch (e) { LAST_RESEND_ERR = String((e as Error)?.message || e).slice(0, 300); if (!(GUSER && GPASS)) throw e; console.warn("resend failed → gmail", LAST_RESEND_ERR); }
@@ -172,7 +172,7 @@ Deno.serve(async (req) => {
     if (!ON) return json({ error: "mail_off" });
     try {
       const to = String(body.to || "").trim() || GUSER;
-      await deliver({ to, subject: "اختبار البريد الرسمي — معهد التمهيد / Mail test — At-Tamhid", text: "هذه رسالة اختبار آلية من نظام معهد التمهيد للتحقق من عمل البريد الرسمي. لا يلزم الرد.\n\nThis is an automatic test message from the At-Tamhid system to verify official email. No reply needed." });
+      await deliver({ to, subject: "اختبار البريد الرسمي — معهد التمهيد / Mail test — At Tamhid", text: "هذه رسالة اختبار آلية من نظام معهد التمهيد للتحقق من عمل البريد الرسمي. لا يلزم الرد.\n\nThis is an automatic test message from the At Tamhid system to verify official email. No reply needed." });
       await admin.from("v63_mail_log").insert({ type: "selftest", to_addr: GUSER, subject: "selftest", status: "sent", sent_at: new Date().toISOString(), attempts: 1 });
       return json({ ok: true, sent_to: GUSER });
     } catch (e) {
@@ -259,7 +259,7 @@ Deno.serve(async (req) => {
     const to = String(body.to || GUSER || "");
     if (!EMAIL.test(to)) return json({ error: "no_email" });
     try {
-      const { via, id: mid } = await deliver({ to, subject: "اختبار البريد الرسمي — معهد التمهيد / Official email test — At-Tamhid", text: "هذه رسالة اختبار من بوابة الإدارة المركزية للتحقق من عمل البريد الرسمي بنطاق المعهد. لا يلزم الرد.\n\nThis is a test message from the central administration to verify the Institute's official email. No reply needed." });
+      const { via, id: mid } = await deliver({ to, subject: "اختبار البريد الرسمي — معهد التمهيد / Official email test — At Tamhid", text: "هذه رسالة اختبار من بوابة الإدارة المركزية للتحقق من عمل البريد الرسمي بنطاق المعهد. لا يلزم الرد.\n\nThis is a test message from the central administration to verify the Institute's official email. No reply needed." });
       await admin.from("v63_mail_log").insert({ type: "test", to_addr: to, msg_id: mid || null, subject: "mail_test " + via, error: via === "resend" ? null : (LAST_RESEND_ERR || null), status: "sent", sent_at: new Date().toISOString(), attempts: 1, by_user: me.id });
       return json({ ok: true, to, provider: via, from: via === "resend" ? MFROM : GUSER, resend_error: via === "resend" ? undefined : (LAST_RESEND_ERR || (RESEND ? "" : "no_key")) });
     } catch (e) { return json({ error: "send_failed", detail: String((e as Error)?.message || e).slice(0, 400) }); }
@@ -594,8 +594,8 @@ async function brand(): Promise<Brand> {
   const lg = g("mailLogo108");
   const logo = typeof lg === "string" ? lg : String((lg as Record<string, string> | null)?.png || "");
   BRAND = {
-    nameAr: inst.nameAr || "معهد التمهيد للدراسات الإسلامية واللغوية",
-    nameEn: inst.nameEn || "At-Tamhid Institute for Islamic and Linguistic Studies",
+    nameAr: inst.nameAr || "معهد التمهيد",
+    nameEn: inst.nameEn || "At Tamhid Institute",
     base, logo: /^[A-Za-z0-9+/=]{100,}$/.test(logo) ? logo : "",
     contact: [inst.addrAr, h.p1, h.p2, h.em].filter(Boolean).map((x) => esc(x)).join(" · "),
   };
@@ -609,7 +609,7 @@ async function render(t: Tpl) {
   const B = await brand();
   const btn = t.btn ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 16px"><tr><td align="center"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:${NV};border-radius:8px"><a href="${esc(t.btn.url)}" target="_blank" style="display:inline-block;padding:12px 24px;color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;font-family:Tahoma,Arial,sans-serif"><span dir="rtl">${esc(t.btn.ar)}</span><br><span dir="ltr" style="font-size:14px;font-weight:600">${esc(t.btn.en)}</span></a></td></tr></table></td></tr></table>` : "";
   const note = (t.noteAr || t.noteEn) ? `<p class="tx mu" dir="rtl" style="margin:0 0 4px;font-size:12.5px;line-height:1.5;color:#4a5a70;text-align:right">${esc(t.noteAr || "")}</p><p class="tx mu" dir="ltr" style="margin:0;font-size:12.5px;line-height:1.5;color:#4a5a70;text-align:left">${esc(t.noteEn || "")}</p>` : "";
-  const logo = B.logo ? `<td width="110" valign="middle"><img src="cid:logo64" alt="شعار معهد التمهيد / At-Tamhid Institute logo" width="96" style="display:block;width:96px;height:auto;background:#fff;border-radius:6px;padding:4px"></td>` : "";
+  const logo = B.logo ? `<td width="110" valign="middle"><img src="cid:logo64" alt="شعار معهد التمهيد / At Tamhid Institute logo" width="96" style="display:block;width:96px;height:auto;background:#fff;border-radius:6px;padding:4px"></td>` : "";
   const html = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>${esc(t.subject)}</title>` +
     `<style>@media (max-width:620px){.wrap{width:100%!important}.pad{padding:18px 16px!important}}@media (prefers-color-scheme:dark){.bg{background:#0B1322!important}.card{background:#141F33!important}.tx{color:#E6EBF2!important}.mu{color:#B9C3D0!important}.box{background:#1C2A42!important;border-color:#2C3E5C!important}.ft{background:#0F1828!important}}</style></head>` +
     `<body style="margin:0;padding:0;background:${BG}" class="bg"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BG}" class="bg"><tr><td align="center" style="padding:20px 8px">` +
@@ -623,7 +623,7 @@ async function render(t: Tpl) {
     `<hr style="border:none;border-top:1px solid #D5DCE4;margin:16px 0">` +
     `<p class="tx" dir="ltr" style="margin:0 0 12px;font-size:16px;font-weight:700;text-align:left">${esc(t.dearEn)},</p>${P(t.en, "ltr")}${t.extraEn || ""}` +
     `</td></tr><tr><td class="ft" style="background:#F6F8FA;padding:16px 22px;border-radius:0 0 10px 10px;border-top:1px solid #E1E6EC">${note}` +
-    `<p class="tx mu" dir="rtl" style="margin:8px 0 0;font-size:12.5px;line-height:1.5;color:#4a5a70;text-align:right">هذه رسالة آلية من معهد التمهيد، فلا تردّ عليها.</p><p class="tx mu" dir="ltr" style="margin:0;font-size:12.5px;line-height:1.5;color:#4a5a70;text-align:left">This is an automated message from At-Tamhid Institute; please do not reply.</p>` +
+    `<p class="tx mu" dir="rtl" style="margin:8px 0 0;font-size:12.5px;line-height:1.5;color:#4a5a70;text-align:right">هذه رسالة آلية من معهد التمهيد، فلا تردّ عليها.</p><p class="tx mu" dir="ltr" style="margin:0;font-size:12.5px;line-height:1.5;color:#4a5a70;text-align:left">This is an automated message from At Tamhid Institute; please do not reply.</p>` +
     (B.contact ? `<p class="mu" style="margin:10px 0 0;font-size:12.5px;line-height:1.5;color:#4a5a70;text-align:center">${B.contact}</p>` : "") +
     `</td></tr></table></td></tr></table></body></html>`;
   const strip = (h: string) => h.replace(/<br>/g, "\n").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
@@ -704,7 +704,7 @@ async function notifyRun() {
     if (r0.kind === "grade") {
       const rowsH = (lang: "ar" | "en") => rows.map((r) => { const c = cName(String(r.data?.course || "")); const gl = String(r.data?.gl || ""); return `<tr><td class="tx" style="padding:7px 10px;border-bottom:1px solid #E1E6EC;text-align:${lang === "ar" ? "right" : "left"}" dir="${lang === "ar" ? "rtl" : "ltr"}">${esc(c.code ? c.code + " — " : "")}${esc(lang === "ar" ? c.ar : c.en)}</td><td class="tx" style="padding:7px 10px;border-bottom:1px solid #E1E6EC;text-align:center;font-weight:700" dir="ltr">${esc(r.data?.score ?? "")}</td>${lang === "ar" ? `<td class="tx" style="padding:7px 10px;border-bottom:1px solid #E1E6EC;text-align:center">${esc(gl)}</td>` : ""}</tr>`; }).join("");
       const tbl = (lang: "ar" | "en") => `<table role="presentation" class="box" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:4px 0 14px;background:${BG};border:1px solid #D5DCE4;border-radius:8px" dir="${lang === "ar" ? "rtl" : "ltr"}"><tr><th class="tx" style="padding:8px 10px;text-align:${lang === "ar" ? "right" : "left"};font-size:14px">${lang === "ar" ? "المقرر" : "Course"}</th><th class="tx" style="padding:8px 10px;font-size:14px">${lang === "ar" ? "الدرجة" : "Score"}</th>${lang === "ar" ? `<th class="tx" style="padding:8px 10px;font-size:14px">التقدير</th>` : ""}</tr>${rowsH(lang)}</table>`;
-      t = { subject: "رصد درجات جديدة — معهد التمهيد / New Grades Posted — At-Tamhid", titleAr: "رُصدت لكم درجات جديدة", titleEn: "New Grades Posted", dearAr: dearA(p, "student"), dearEn: dearE(p),
+      t = { subject: "رصد درجات جديدة — معهد التمهيد / New Grades Posted — At Tamhid", titleAr: "رُصدت لكم درجات جديدة", titleEn: "New Grades Posted", dearAr: dearA(p, "student"), dearEn: dearE(p),
         ar: `رُصدت في سجلكم الأكاديمي ${rows.length === 1 ? "درجة جديدة" : rows.length + " درجات جديدة"}، وهذه تفاصيلها:`, extraAr: tbl("ar") + P("يمكنكم الاطلاع على سجلكم كاملاً ومعدلكم في البوابة.", "rtl"),
         en: `${rows.length === 1 ? "A new grade has" : rows.length + " new grades have"} been posted to your academic record:`, extraEn: tbl("en") + P("You can view your full record and GPA in the portal.", "ltr"),
         btn: { url: portal(p.id), ar: "عرض درجاتي في البوابة", en: "View my grades in the portal" } };
@@ -712,7 +712,7 @@ async function notifyRun() {
       const n = NW.get(String(r0.data?.news || ""));
       if (!n) { await done(ids, false, 0, "news_gone", true); skipped++; continue; }
       const title = String(n.title || ""), body = String(n.body || "").slice(0, 1500);
-      t = { subject: "إعلان جديد — معهد التمهيد / New Announcement — At-Tamhid: " + title.slice(0, 120), titleAr: "إعلان جديد من المعهد", titleEn: "New Announcement", dearAr: dearA(p, "student"), dearEn: dearE(p),
+      t = { subject: "إعلان جديد — معهد التمهيد / New Announcement — At Tamhid: " + title.slice(0, 120), titleAr: "إعلان جديد من المعهد", titleEn: "New Announcement", dearAr: dearA(p, "student"), dearEn: dearE(p),
         ar: "نشر المعهد إعلاناً جديداً:", extraAr: `<div class="box" dir="rtl" style="background:${BG};border:1px solid #D5DCE4;border-radius:8px;padding:12px 14px;margin:0 0 14px;text-align:right"><p class="tx" style="margin:0 0 6px;font-size:17px;font-weight:700">${esc(title)}</p>${n.ev ? `<p class="tx mu" style="margin:0 0 6px;font-size:14px;color:#4a5a70">الموعد: <b dir="ltr">${esc(fmtDate(String(n.ev)))}</b></p>` : ""}${P(body, "rtl")}</div>`,
         en: "The Institute has published a new announcement (in Arabic above). Details are on the website.",
         btn: { url: B.base + "#/news", ar: "قراءة الإعلان في الموقع", en: "Read it on the website" } };
@@ -721,7 +721,7 @@ async function notifyRun() {
       if (!e) { await done(ids, false, 0, "exam_gone", true); skipped++; continue; }
       const c = cName(String(e.courseId || "")), when = fmtDate(String(e.date || "")), mins = Number(e.min) || 0;
       const box = (lang: "ar" | "en") => `<div class="box" dir="${lang === "ar" ? "rtl" : "ltr"}" style="background:${BG};border:1px solid #D5DCE4;border-radius:8px;padding:12px 14px;margin:0 0 14px;text-align:${lang === "ar" ? "right" : "left"}"><p class="tx" style="margin:0 0 6px;font-size:16px;font-weight:700">${esc(lang === "ar" ? String(e.title || c.ar) : String(e.titleEn || "Exam: " + c.en))}</p><p class="tx" style="margin:0;font-size:15px">${lang === "ar" ? "الموعد (بتوقيت مكة المكرمة): " : "Time (Makkah time, UTC+3): "}<b dir="ltr">${esc(when)}</b>${mins ? (lang === "ar" ? " · المدة: " + mins + " دقيقة" : " · Duration: " + mins + " min") : ""}</p></div>`;
-      t = { subject: "تذكير بموعد اختبار — معهد التمهيد / Exam Reminder — At-Tamhid", titleAr: "تذكير بموعد الاختبار", titleEn: "Exam Reminder", dearAr: dearA(p, "student"), dearEn: dearE(p),
+      t = { subject: "تذكير بموعد اختبار — معهد التمهيد / Exam Reminder — At Tamhid", titleAr: "تذكير بموعد الاختبار", titleEn: "Exam Reminder", dearAr: dearA(p, "student"), dearEn: dearE(p),
         ar: "نذكّركم بموعد الاختبار القادم:", extraAr: box("ar") + P("يُفتح الاختبار في البوابة عند موعده. تأكدوا من اتصالكم بالإنترنت قبل البدء.", "rtl"),
         en: "This is a reminder of your upcoming exam:", extraEn: box("en") + P("The exam opens in the portal at its scheduled time. Please check your internet connection before you start.", "ltr"),
         btn: { url: portal(p.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" } };
@@ -798,7 +798,7 @@ async function staffRun(q: Array<Record<string, any>>) {
       const lb = d.last_backup ? fmtDate(new Date(new Date(d.last_backup).getTime() + 3 * 3600e3).toISOString()) : "—";
       const byP = (d.by_prog || []) as Array<{ prog: string; n: number }>;
       const pA = byP.length ? byP.map((x) => `${pn(String(x.prog)).ar}: ${x.n}`).join(" · ") : "—", pE = byP.length ? byP.map((x) => `${pn(String(x.prog)).en}: ${x.n}`).join(" · ") : "—";
-      t = { subject: `التقرير اليومي — ${r.ref_id} / Daily Report — At-Tamhid`, titleAr: "التقرير اليومي للإدارة", titleEn: "Daily Administration Report", dearAr: "الإدارة المركزية", dearEn: "Central Administration",
+      t = { subject: `التقرير اليومي — ${r.ref_id} / Daily Report — At Tamhid`, titleAr: "التقرير اليومي للإدارة", titleEn: "Daily Administration Report", dearAr: "الإدارة المركزية", dearEn: "Central Administration",
         ar: `ملخص آخر 24 ساعة حتى صباح ${r.ref_id}:`, extraAr: card([["طلبات تسجيل جديدة", n("apps_new")], ["الطلبات حسب البرنامج", pA], ["طلبات مفتوحة لم يُبتّ فيها", n("apps_open")], ["منها بقبول مبدئي ينتظر القرار النهائي", n("apps_pre")], ["طلاب جدد", n("students_new")], ["إجمالي الطلاب", n("students")], ["وثائق صادرة", n("certs_new")], ["طلبات وثائق قيد المراجعة", n("docreq_open")], ["تسليمات اختبارات جديدة", n("subs_new")], ["رسائل أُرسلت / تعذّر إرسالها / ارتدّت", `${n("mail_sent")} / ${n("mail_failed")} / ${n("mail_bounced")}`], ["آخر نسخة احتياطية (مكة)", lb]], "rtl"),
         en: `Summary of the last 24 hours up to the morning of ${r.ref_id}:`, extraEn: card([["New applications", n("apps_new")], ["Applications by programme", pE], ["Open applications", n("apps_open")], ["Provisionally accepted, awaiting final decision", n("apps_pre")], ["New students", n("students_new")], ["Total students", n("students")], ["Documents issued", n("certs_new")], ["Document requests under review", n("docreq_open")], ["New exam submissions", n("subs_new")], ["Emails sent / failed / bounced", `${n("mail_sent")} / ${n("mail_failed")} / ${n("mail_bounced")}`], ["Last backup (Makkah time)", lb]], "ltr"),
         btn: { url: adminUrl, ar: "فتح بوابة الإدارة", en: "Open the admin portal" } };
@@ -856,7 +856,7 @@ async function staffRun(q: Array<Record<string, any>>) {
       extra = [{ filename: `attamhid-backup-${r.ref_id}.json.gz`, content: btoa(bin), content_type: "application/gzip" }];
       const tables = Object.keys(((bj as Record<string, unknown>).tables || {}) as Record<string, unknown>).length;
       const mb = (gz.length / 1048576).toFixed(2);
-      t = { subject: `النسخة الاحتياطية الأسبوعية — ${r.ref_id} / Weekly Backup — At-Tamhid`, titleAr: "النسخة الاحتياطية الأسبوعية", titleEn: "Weekly Backup", dearAr: "الإدارة المركزية", dearEn: "Central Administration",
+      t = { subject: `النسخة الاحتياطية الأسبوعية — ${r.ref_id} / Weekly Backup — At Tamhid`, titleAr: "النسخة الاحتياطية الأسبوعية", titleEn: "Weekly Backup", dearAr: "الإدارة المركزية", dearEn: "Central Administration",
         ar: "مرفق بهذه الرسالة نسخة احتياطية كاملة من بيانات الموقع، احفظوها في مكان آمن خارج الخادم. الملف مضغوط (gzip) ويحوي بيانات الطلاب الشخصية، فلا تشاركوه. لا يتضمن كلمات المرور ولا سجلات الدخول.", extraAr: card([["التاريخ", String(r.ref_id)], ["عدد الجداول", String(tables)], ["حجم الملف", mb + " MB"]], "rtl"),
         en: "Attached is a full backup of the website data. Keep it somewhere safe outside the server. The file is compressed (gzip) and contains students' personal data, so do not share it. It contains no passwords or sign-in records.", extraEn: card([["Date", String(r.ref_id)], ["Tables", String(tables)], ["File size", mb + " MB"]], "ltr"),
         btn: { url: adminUrl, ar: "فتح بوابة الإدارة", en: "Open the admin portal" } };
@@ -892,7 +892,7 @@ async function forgot(ident: string) {
   const B = await brand();
   const url = B.base + "#/reset/" + tok;
   await sendLogged("forgot", ref, p.email, {
-    subject: "إعادة تعيين كلمة المرور — معهد التمهيد / Reset Your Password — At-Tamhid",
+    subject: "إعادة تعيين كلمة المرور — معهد التمهيد / Reset Your Password — At Tamhid",
     titleAr: "إعادة تعيين كلمة المرور", titleEn: "Reset Your Password", dearAr: dearA(p, a.role === "student" ? "student" : "staff"), dearEn: dearE(p),
     ar: `طُلبت إعادة تعيين كلمة المرور لحسابكم ذي الرقم ${ref}. اضغطوا الزر أدناه لاختيار كلمة مرور جديدة. الرابط صالح 30 دقيقة ولمرة واحدة فقط.`,
     en: `A password reset was requested for your account number ${ref}. Press the button to choose a new password. The link is valid for 30 minutes and can be used once.`,
@@ -928,7 +928,7 @@ async function resetPw(token: string, password: string) {
     if (EMAIL.test(p.email)) {
       const B = await brand();
       await sendLogged("pw_changed", r.ref_id, p.email, {
-        subject: "تم تغيير كلمة المرور — معهد التمهيد / Password Changed — At-Tamhid", titleAr: "تم تغيير كلمة المرور", titleEn: "Your Password Was Changed",
+        subject: "تم تغيير كلمة المرور — معهد التمهيد / Password Changed — At Tamhid", titleAr: "تم تغيير كلمة المرور", titleEn: "Your Password Was Changed",
         dearAr: dearA(p, a?.role === "student" ? "student" : "staff"), dearEn: dearE(p),
         ar: `تغيّرت كلمة المرور لحسابكم ذي الرقم ${r.ref_id} الآن. إن لم تكونوا أنتم من غيّرها فتواصلوا فوراً مع قسم القبول والتسجيل.`,
         en: `The password for your account number ${r.ref_id} has just been changed. If this was not you, contact the Admission & Registration Department immediately.`,
