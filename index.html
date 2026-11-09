@@ -19109,16 +19109,29 @@ V.sp=function(){var id=location.hash.split('/')[2]||'',P=progOf(id);
  else h+='<div class="msg">'+L('هذا البرنامج لطلاب المعهد فقط — سجّل الدخول إلى بوابة الطالب ثم افتح الرابط.','This program is for institute students only — sign in to the student portal, then open the link.')+'</div>';
  return h+'</section>'};
 function confirmMail(to,P,name,nameEn){try{if(to)notify(to,'تأكيد التسجيل — '+P.nameAr+' / Registration confirmed — '+P.nameEn,['تم تسجيل '+name+' في برنامج «'+P.nameAr+'» ('+fmtD(P)+').','Registration of '+nameEn+' in “'+P.nameEn+'” is confirmed ('+fmtD(P)+').'])}catch(e){}}
-async function rpcReg(pid,data){if(typeof sb==='undefined'||!sb||(typeof me!=='undefined'&&me&&me.r==='admin'))return null;try{var r=await sb.rpc('v60_sp_register',{p_program:pid,p_data:data});if(r.error)return {err:r.error.message};return {id:r.data}}catch(e){return {err:String(e&&e.message||e)}}}
+var REGERR={program_required:['البرنامج غير محدد','Program not specified'],program_unavailable:['البرنامج غير متاح','Program not available'],self_reg_closed:['التسجيل الذاتي غير متاح لهذا البرنامج','Self-registration is not available for this program'],students_only:['هذا البرنامج لطلاب المعهد فقط — سجّل الدخول إلى بوابة الطالب','This program is for Institute students only — sign in to the student portal'],fields_required:['كل الحقول إلزامية','All fields are required'],email_exists:['هذا البريد مسجّل مسبقاً في البرنامج','This email is already registered in the program'],program_full:['اكتمل العدد','The program is full'],try_later:['ضغط تسجيل كبير الآن، حاول بعد دقائق','Too many registrations right now; try again in a few minutes']};
+function regErr(m){m=String(m||'');for(var k in REGERR)if(m.indexOf(k)>-1)return L(REGERR[k][0],REGERR[k][1]);return L('تعذّر التسجيل، تحقق من الاتصال وحاول مجدداً','Registration failed; check your connection and try again')}
+/* v122: التسجيل الذاتي يُحفظ مباشرة على الخادم في جدول التسجيلات نفسه الذي تقرؤه بوابة الإدارة */
+async function rpcReg(pid,data){if(typeof me!=='undefined'&&me&&me.r==='admin')return null;if(typeof sb==='undefined'||!sb)return {err:'offline'};try{var r=await sb.rpc('v60_sp_register',{p_program:pid,p_data:data});if(r.error)return {err:r.error.message};return {id:r.data}}catch(e){return {err:String(e&&e.message||e)}}}
+function addLocal(o){var X=D();if(!X)return;if(!X.spr.some(function(r){return r.id===o.id})){o.at=o.at||NOW();X.spr.push(o)}}
 H6.sp60self=async function(pid){var P=progOf(pid),why=openReg(P);if(why){toast(why);return}var s=(S.students||[]).find(function(x){return x.id==me.id})||{};
- var rr=await rpcReg(pid,{});if(rr&&rr.err){toast(rr.err);return}
- if(!live(D().spr).some(function(r){return r.pid===pid&&r.sid==me.id}))addReg({id:rr&&rr.id,pid:pid,sid:me.id,src:'self',by:me.id});save();confirmMail(s.email,P,s.name,s.nameEn||s.name);V5._spDone=pid;go()};
+ var rr=await rpcReg(pid,{});if(rr&&rr.err){toast(regErr(rr.err));return}
+ if(!live(D().spr).some(function(r){return r.pid===pid&&r.sid==me.id})){if(rr)addLocal({id:rr.id,pid:pid,sid:me.id,src:'self',by:me.id});else{addReg({pid:pid,sid:me.id,src:'self',by:me.id});save()}}confirmMail(s.email,P,s.name,s.nameEn||s.name);V5._spDone=pid;go()};
 H6.sp60pub=async function(f){var v=fv(f),P=progOf(v.pid),why=openReg(P);if(why){toast(why);return false}
  if(!v.nameAr||!v.nameEn||!C6.sexOf(v.sex)||!/^\S+@\S+\.\S+$/.test(v.email)||!v.phone){toast(L('كل الحقول إلزامية','All fields are required'));return false}
  if(live(D().spr).some(function(r){return r.pid===v.pid&&r.v&&String(r.v.email).toLowerCase()===v.email.toLowerCase()})){toast(L('هذا البريد مسجّل مسبقاً في البرنامج','This email is already registered'));return false}
- var data={nameAr:v.nameAr,nameEn:v.nameEn,sex:v.sex,email:v.email,phone:v.phone},rr=await rpcReg(v.pid,data);if(rr&&rr.err){toast(rr.err);return false}
- addReg({pid:v.pid,src:'self',by:'visitor',v:data});save();confirmMail(v.email,P,v.nameAr,v.nameEn);V5._spDone=v.pid;go();return false};
+ var btn=f.querySelector('button');if(btn){if(btn.disabled)return false;btn.disabled=true}
+ var data={nameAr:v.nameAr,nameEn:v.nameEn,sex:v.sex,email:v.email,phone:v.phone},rr=await rpcReg(v.pid,data);if(btn)btn.disabled=false;if(rr&&rr.err){toast(regErr(rr.err));return false}
+ if(rr)addLocal({id:rr.id,pid:v.pid,src:'self',by:'visitor',v:data});else{addReg({pid:v.pid,src:'self',by:'visitor',v:data});save()}confirmMail(v.email,P,v.nameAr,v.nameEn);V5._spDone=v.pid;go();return false};
 
+/* v122: بوابة الإدارة تسحب تسجيلات النموذج الذاتي فور وصولها (كل 30 ثانية أثناء فتح اللوحة) */
+var _spPullAt=0;async function spRegsPull(){if(typeof sb==='undefined'||!sb||typeof me==='undefined'||!me||me.r!=='admin')return;var X=D();if(!X)return;_spPullAt=Date.now();
+ try{var r=await sb.from('v60_sp_registrations').select('id,data,updated_at').order('updated_at',{ascending:false}).limit(1000);if(r.error||!r.data)return;var ch=0;
+  r.data.forEach(function(row){var d=row.data||{},l=X.spr.find(function(o){return String(o.id)===row.id});if(!l){X.spr.push(d);ch++}else if((row.updated_at||'')>(l.u||l.at||'')&&JSON.stringify(l)!==JSON.stringify(d)){Object.keys(l).forEach(function(k){delete l[k]});Object.assign(l,d);ch++}});
+  if(ch){try{save0()}catch(e){save()}var ae=document.activeElement;if(/^#\/admin/.test(location.hash)&&!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)))go()}}catch(e){console.warn('sp regs pull',e)}}
+V5.spRegsPull=spRegsPull;
+try{GOH.post.push(function(){if(typeof me!=='undefined'&&me&&me.r==='admin'&&/^#\/admin/.test(location.hash)&&Date.now()-_spPullAt>30000)spRegsPull()})}catch(e){}
+setInterval(function(){if(document.visibilityState==='visible'&&typeof me!=='undefined'&&me&&me.r==='admin'&&/^#\/admin/.test(location.hash)&&Date.now()-_spPullAt>30000)spRegsPull()},30000);
 /* ---------- بوابة الطالب: برامجي القصيرة وشهاداتها ---------- */
 function portalBox(){var X=D(),sid=me.id,mine=live(X.spr).filter(function(r){return r.sid==sid}),open=live(X.sp).filter(function(P){return !openReg(P)&&!mine.some(function(r){return r.pid===P.id})}),certs=S.certs.filter(function(c){return isSP(c)&&c.sid==sid&&!c.revoked});
  var seen=(X.spSeen=X.spSeen||{})[sid]||'',nw=certs.filter(function(c){return (c.at||c.date||'')>seen}).length;
@@ -26918,7 +26931,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v121';
+window.__BUILD__='v122';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}
