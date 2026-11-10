@@ -25,7 +25,9 @@ def fetch():
     d = dp[0]['data'] if dp else {}
     dip = {'id': '1000', 'name': d.get('name'), 'nameEn': d.get('nameEn'), 'plan': d.get('plan'), 'planEn': d.get('planEn'), 'fee': d.get('fee'), 'hours': d.get('hours'),
            'courses': [{'code': c.get('code'), 'name': c.get('name'), 'nameEn': c.get('nameEn'), 'term': c.get('term'), 'hrs': c.get('hrs', c.get('hours')), 'type': c.get('type')} for c in (d.get('courses') or []) if not c.get('deleted')]}
-    data = {'sp': sp, 'dip': dip}
+    nw = get('news?select=id,data')
+    news = [r['data'] for r in nw if r.get('data') and str(r['data'].get('deleted', '')) not in ('1', 'true', 'True') and str(r['data'].get('hidden', '')) not in ('1', 'true')]
+    data = {'sp': sp, 'dip': dip, 'news': news}
     json.dump(data, open(SNAP, 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
     return data
 
@@ -76,7 +78,7 @@ def page(path, title, desc, body, ld, en_title=''):
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">'
         '<style>%s</style><script type="application/ld+json">%s</script></head><body>'
         '<header><div class="w"><a href="/" aria-label="معهد التمهيد"><img src="/img/logo-a8d46018.webp" alt="معهد التمهيد — At Tamhid Institute" width="163" height="44"></a>'
-        '<nav><a href="/">الرئيسية</a><a href="/programs/">البرامج</a><a href="/#/register">التقديم</a><a href="/#/verify">التحقق من وثيقة</a></nav></div></header>'
+        '<nav><a href="/">الرئيسية</a><a href="/programs/">البرامج</a><a href="/news/">الأخبار</a><a href="/#/register">التقديم</a><a href="/#/verify">التحقق من وثيقة</a></nav></div></header>'
         '<main class="w">%s</main><footer><div class="w">© %d معهد التمهيد — At Tamhid Institute (ATI) · <a href="/">attamhid.com</a></div></footer></body></html>') % (
         E(title), E(desc), E(url), E(title), E(desc), E(url), SITE, CSS, json.dumps(ld, ensure_ascii=False).replace('</', '<\\/'), body, datetime.date.today().year)
 
@@ -165,23 +167,45 @@ def index_page(D, SP, now):
     ld = {'@context': 'https://schema.org', '@type': 'ItemList', 'itemListElement': [{'@type': 'ListItem', 'position': i + 1, 'url': SITE + u} for i, u in enumerate(['/programs/diploma.html'] + ['/programs/%s.html' % P['id'] for P in up + past])]}
     return path, page(path, 'البرامج والدورات | معهد التمهيد — At Tamhid Institute', 'برامج معهد التمهيد: الدبلوم العام في اللغة العربية لغير الناطقين بها، وبرامج قصيرة ودورات وورش عمل.', body, ld)
 
+def news_pages(N):
+    out = []; N = sorted(N, key=lambda n: str(n.get('date') or ''), reverse=True)
+    for n in N:
+        nid = re.sub(r'[^A-Za-z0-9_-]', '', str(n.get('id') or ''))
+        if not nid: continue
+        path = '/news/%s.html' % nid; t = n.get('title') or 'خبر'; body = str(n.get('body') or '')
+        d = dt(n.get('date')); desc = re.sub(r'\s+', ' ', body)[:155]
+        paras = ''.join('<p>%s</p>' % E(x) for x in re.split(r'\n+', body) if x.strip())
+        en = ('<section class="card en" lang="en"><h2>%s</h2>%s</section>' % (E(n.get('titleEn')), ''.join('<p>%s</p>' % E(x) for x in re.split(r'\n+', str(n.get('bodyEn') or '')) if x.strip()))) if n.get('titleEn') else ''
+        img = n.get('img') if str(n.get('img') or '').startswith('http') else ''
+        bd = '<p class="mu"><a href="/news/">الأخبار</a> › %s</p><article class="card"><span class="tag">%s</span> <span class="mu">%s</span><h1>%s</h1>%s%s<a class="btn s" href="/#/news">كل الأخبار على الموقع</a></article>%s' % (E(t[:60]), E(n.get('type') or 'خبر'), E(dAr(d)), E(t), ('<img src="%s" alt="" style="max-width:100%%;border-radius:10px">' % E(img)) if img else '', paras, en)
+        ld = {'@context': 'https://schema.org', '@type': 'NewsArticle', 'headline': t[:110], 'datePublished': str(n.get('date') or '')[:10], 'inLanguage': 'ar', 'publisher': ORG, 'author': ORG, 'mainEntityOfPage': SITE + path, 'description': desc}
+        if img: ld['image'] = [img]
+        out.append((path, page(path, t + ' | أخبار معهد التمهيد', desc, bd, ld), n))
+    items = ''.join('<a class="it card" href="/news/%s.html"><span class="tag">%s</span><h3>%s</h3><span class="mu">%s</span></a>' % (E(re.sub(r'[^A-Za-z0-9_-]', '', str(n.get('id')))), E(n.get('type') or 'خبر'), E(n.get('title')), E(dAr(dt(n.get('date'))))) for n in N)
+    idx = ('/news/', page('/news/', 'أخبار معهد التمهيد — At Tamhid Institute', 'آخر أخبار معهد التمهيد وإعلاناته وفعالياته.', '<h1>أخبار معهد التمهيد</h1><div class="list">%s</div>' % (items or '<p class="mu">لا أخبار بعد.</p>'), {'@context': 'https://schema.org', '@type': 'CollectionPage', 'name': 'أخبار معهد التمهيد', 'url': SITE + '/news/'}), None)
+    return [idx] + out
+
 def main():
     data = fetch() if '--fetch' in sys.argv else json.load(open(SNAP, encoding='utf-8'))
     now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) + datetime.timedelta(hours=3)
     SP = [dict(r['data'], id=r['id']) for r in data.get('sp', []) if r.get('data')]
     out = os.path.join(R, 'programs'); os.makedirs(out, exist_ok=True)
     pages = [index_page(data['dip'], SP, now), dip_page(data['dip'])] + [sp_page(P, now) for P in SP]
+    NP = news_pages(data.get('news') or [])
+    os.makedirs(os.path.join(R, 'news'), exist_ok=True)
+    pages = pages + [(a, b) for a, b, c in NP]
     keep = set()
     for path, h in pages:
         fn = os.path.join(R, path.strip('/'), 'index.html') if path.endswith('/') else os.path.join(R, path.strip('/'))
         keep.add(os.path.abspath(fn)); old = open(fn, encoding='utf-8').read() if os.path.exists(fn) else None
         if old != h: open(fn, 'w', encoding='utf-8').write(h)
-    for f in os.listdir(out):
-        p = os.path.abspath(os.path.join(out, f))
-        if f.endswith('.html') and p not in keep: os.remove(p)
+    for dd in (out, os.path.join(R, 'news')):
+        for f in os.listdir(dd):
+            p = os.path.abspath(os.path.join(dd, f))
+            if f.endswith('.html') and p not in keep: os.remove(p)
     today = datetime.date.today().isoformat()
     lm = lambda P: str(P.get('u') or P.get('at') or today)[:10]
-    urls = [(SITE + '/', today, '1.0'), (SITE + '/programs/', today, '0.9'), (SITE + '/programs/diploma.html', today, '0.9')] + [(SITE + '/programs/%s.html' % P['id'], lm(P), '0.7') for P in SP]
+    urls = [(SITE + '/', today, '1.0'), (SITE + '/programs/', today, '0.9'), (SITE + '/programs/diploma.html', today, '0.9')] + [(SITE + '/programs/%s.html' % P['id'], lm(P), '0.7') for P in SP] + [(SITE + a, str((c or {}).get('date') or today)[:10] if c else today, '0.6') for a, b, c in NP]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>\n' % (E(u), d, p) for u, d, p in urls) + '</urlset>\n'
     open(os.path.join(R, 'sitemap.xml'), 'w', encoding='utf-8').write(sm)
     open(os.path.join(R, 'robots.txt'), 'w', encoding='utf-8').write('User-agent: *\nAllow: /\nDisallow: /tools/\nDisallow: /supabase/\nDisallow: /src/\n\nSitemap: %s/sitemap.xml\n' % SITE)
