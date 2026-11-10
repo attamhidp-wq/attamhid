@@ -3,6 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#14284B">
+<link rel="apple-touch-icon" href="img/app-apple-180-v132.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="معهد التمهيد">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>معهد التمهيد</title>
 <style id="boot71">html.b71 body>*{visibility:hidden!important}html.b71,html.b71 body{background:#F6F8FA}html.b71[data-theme="dark"],html.b71[data-theme="dark"] body{background:#0B1322}
 /* v129: شاشة الإقلاع بشعار المعهد المتحرك بدل الدوّارة */
@@ -27061,7 +27068,31 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v132';
+window.__BUILD__='v133';
+/* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
+(function(){var W=window,N=navigator,D=document;
+var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
+if('serviceWorker' in N&&(location.protocol==='https:'||location.hostname==='localhost')){var reg=function(){setTimeout(function(){N.serviceWorker.register('sw.js').catch(function(e){console.warn('sw',e)})},2500)};if(D.readyState==='complete')reg();else W.addEventListener('load',reg)}
+var dp=null,KEY='pwa132';
+var standalone=function(){try{return (W.matchMedia&&W.matchMedia('(display-mode: standalone)').matches)||N.standalone===true}catch(e){return false}};
+var ios=/iphone|ipad|ipod/i.test(N.userAgent)||(N.platform==='MacIntel'&&N.maxTouchPoints>1);
+var safari=ios&&!/crios|fxios|edgios/i.test(N.userAgent);
+var later=function(){try{var t=+localStorage.getItem(KEY)||0;return Date.now()<t}catch(e){return false}};
+var snooze=function(d){try{localStorage.setItem(KEY,String(Date.now()+d*864e5))}catch(e){}};
+function hide(){var b=D.getElementById('pwa132');if(b)b.remove()}
+function show(){if(standalone()||later()||D.getElementById('pwa132')||!D.body)return;if(!dp&&!safari)return;if(/^#\/admin/.test(location.hash||''))return;
+ var b=D.createElement('div');b.id='pwa132';b.setAttribute('role','dialog');b.setAttribute('aria-label',T('تثبيت التطبيق','Install the app','অ্যাপ ইনস্টল করুন'));
+ b.innerHTML='<img src="img/app-192-v132.png" alt="" width="44" height="44"><div class="t"><b>'+T('ثبّت تطبيق معهد التمهيد','Install the At Tamhid Institute app','আত তামহীদ ইনস্টিটিউট অ্যাপ ইনস্টল করুন')+'</b><small>'+(dp?T('يفتح بسرعة من شاشتك الرئيسية ويعمل بملء الشاشة.','Opens quickly from your home screen, full screen.','হোম স্ক্রিন থেকে দ্রুত খোলে, পূর্ণ পর্দায় চলে।'):T('في Safari: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية».','In Safari: tap Share, then “Add to Home Screen”.','Safari-তে: শেয়ার বোতাম চাপুন, তারপর “Add to Home Screen”।'))+'</small></div>'+
+  (dp?'<button type="button" class="btn" data-a="i">'+T('تثبيت','Install','ইনস্টল')+'</button>':'')+'<button type="button" class="btn s" data-a="x">'+T('لاحقاً','Later','পরে')+'</button>';
+ b.addEventListener('click',function(e){var a=e.target.closest('[data-a]');if(!a)return;if(a.dataset.a==='x'){snooze(14);hide();return}
+  if(dp){var p=dp;dp=null;p.prompt();(p.userChoice||Promise.resolve({})).then(function(c){if(c&&c.outcome==='accepted')snooze(3650);else snooze(14);hide()})}});
+ D.body.appendChild(b)}
+W.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;setTimeout(show,4000)});
+W.addEventListener('appinstalled',function(){snooze(3650);hide()});
+if(safari)setTimeout(show,8000);
+W.pwaInstall132=function(){if(dp){var p=dp;dp=null;p.prompt();return true}return false};
+var st=D.createElement('style');st.textContent='#pwa132{position:fixed;z-index:9000;inset-inline:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));margin:0 auto;max-width:520px;display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sf,#fff);color:var(--tx,#14284B);border:1px solid var(--bd,#d9dee7);border-radius:14px;box-shadow:0 10px 30px rgba(10,20,40,.18);animation:pw132 .35s ease-out}#pwa132 img{border-radius:10px;flex:none}#pwa132 .t{flex:1;min-width:0;display:grid;gap:2px}#pwa132 .t small{opacity:.8;line-height:1.5}#pwa132 .btn{flex:none}@keyframes pw132{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}@media (prefers-reduced-motion:reduce){#pwa132{animation:none}}@media print{#pwa132{display:none}}';(D.head||D.documentElement).appendChild(st);
+})();
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}

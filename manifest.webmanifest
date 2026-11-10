@@ -1,0 +1,24 @@
+{
+  "id": "./",
+  "name": "معهد التمهيد — At Tamhid Institute",
+  "short_name": "معهد التمهيد",
+  "description": "بوابة معهد التمهيد: البرامج والتسجيل وبوابات الطلاب وهيئة التدريس والإدارة والتحقق من الوثائق.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F6F8FA",
+  "theme_color": "#14284B",
+  "categories": ["education"],
+  "icons": [
+    {"src": "img/app-192-v132.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "img/app-512-v132.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "img/app-mask-512-v132.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "بوابتي", "short_name": "بوابتي", "url": "./#/portals", "icons": [{"src": "img/app-192-v132.png", "sizes": "192x192"}]},
+    {"name": "البرامج", "short_name": "البرامج", "url": "./#/programs", "icons": [{"src": "img/app-192-v132.png", "sizes": "192x192"}]},
+    {"name": "التحقق من وثيقة", "short_name": "التحقق", "url": "./#/verify", "icons": [{"src": "img/app-192-v132.png", "sizes": "192x192"}]}
+  ]
+}
