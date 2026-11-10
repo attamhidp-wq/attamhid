@@ -155,7 +155,7 @@
 {
 "id": "SP-mw7fxy76vcq3",
 "data": {
-"u": "2026-11-10T21:36:31.086Z",
+"u": "2026-11-10T23:27:43.995Z",
 "at": "2026-11-08T06:18:06.306Z",
 "by": "admin",
 "id": "SP-mw7fxy76vcq3",
@@ -175,12 +175,16 @@
 "regTo": "2026-11-13T18:41",
 "start": "2026-11-12T19:30",
 "tzOff": -180,
-"annUpd": "2026-11-10T21:36:31.086Z",
+"annUpd": "2026-11-10T23:27:43.974Z",
 "minAtt": "",
 "nameAr": "المعنى والاستدلال: قراءة في منوال عبد القاهر الجرجاني في ضوء نظرية المناسبة",
 "nameEn": "Meaning and Reasoning: A Reading of Abd al-Qahir al-Jurjani's Methodology in Light of the Theory of Relevance",
 "autoIss": 1,
 "confirm": 0,
+"meet136": {
+"at": "2026-11-10T23:27:34.082Z",
+"id": "cmv643ggu69v485ec4e4g6r94c"
+},
 "passPct": 60,
 "regFrom": "2026-11-08T15:41",
 "selfReg": 1,
@@ -192,6 +196,7 @@
 "sessions": "",
 "trainerAr": "د. خالد محمد بهجات الحاج علي",
 "trainerEn": "Dr. Khaled Mohammad Bahjat Al-Haj Ali",
+"urlOld138": "https://meet.google.com/oqa-dqkm-kro",
 "trainerSex": "m",
 "showTrainer": 0,
 "trainerTitleAr": "المدرب",
