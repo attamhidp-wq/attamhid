@@ -524,7 +524,7 @@ window.hydrate108=function(){if(P)return P;var fs={};window.__IH108.forEach(func
  P=Promise.all(Object.keys(fs).map(function(f){return fetch(B+f,{cache:'force-cache'}).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){return new Promise(function(ok){var fr=new FileReader();fr.onload=function(){ok(fr.result)};fr.onerror=function(){ok(null)};fr.readAsDataURL(b)})}).then(function(d){if(!d||!/^data:image\//.test(d))return;window.__IHD108[f]=d;window.__IH108.forEach(function(x){if(x[0]===f)try{x[1](d)}catch(e){}})}).catch(function(){})})).then(function(){window.__IH108ok=1});return P};
 })();
 </script>
-<script charset="utf-8" src="js/s02-d5e26c800f.js"></script>
+<script charset="utf-8" src="js/s02-c273247197.js"></script>
 <script charset="utf-8" src="js/s03-d5ebbe5668.js"></script>
 <style>
 /* ===== قوالب رسمية: السجل الأكاديمي + شهادة التعريف (A4) ===== */
@@ -661,8 +661,8 @@ window.hydrate108=function(){if(P)return P;var fs={};window.__IH108.forEach(func
 <script charset="utf-8" src="js/s06-7ac843c3e5.js"></script>
 <script charset="utf-8" src="js/s07-ec8e9cb6a4.js"></script>
 <script charset="utf-8" src="js/s08-d42dd3cb97.js"></script>
-<script id="g47" charset="utf-8" src="js/g47-0a534f8acf.js"></script>
-<script charset="utf-8" src="js/s10-9ee3a0af90.js"></script>
+<script id="g47" charset="utf-8" src="js/g47-40bcab8524.js"></script>
+<script charset="utf-8" src="js/s10-c444dbcfab.js"></script>
 
 <style id="v5css">
 /* ===== v5: الوضع الداكن/الفاتح بهوية المعهد ===== */
@@ -695,8 +695,8 @@ html:root[data-theme="dark"] .btn:not(.s):not(.w):not(.o):not(.g):not(.d){backgr
 html:root[data-theme="dark"] .nav a.on{background:#2a4a8d;color:#fff}
 html:root[data-theme="dark"] .hero h1{color:#fff}
 </style>
-<script id="v5js" charset="utf-8" src="js/v5js-ecbb40cbee.js"></script>
-<script id="v5i18n" charset="utf-8" src="js/v5i18n-531f0c6466.js"></script>
+<script id="v5js" charset="utf-8" src="js/v5js-e0054e5bba.js"></script>
+<script id="v5i18n" charset="utf-8" src="js/v5i18n-00e54eb930.js"></script>
 <style id="v6css">
 /* ===== v6: معاينة حية + إصلاحات الاستجابة ===== */
 .gpv{margin-top:14px;border:1px solid var(--bd);border-radius:12px;background:var(--bg2);padding:10px;position:relative}
@@ -746,16 +746,16 @@ const inner=`<div style="font:700 21px Amiri,serif;color:var(--a)">بسم الل
 cell('الجنسية',esc(c.nat||'—'))+cell('رقم الهوية / الجواز',bd(c.pid||'—'))+cell('الرقم الأكاديمي',bd(c.sid||'—'))+cell('المعدل التراكمي',bd(c.gpa)+' من '+bd('5.00'))+cell('الفصل المتخرج به',esc(c.gterm))+cell('العام المتخرج به',esc(c.gyear))+`</div>`+
 `<p style="font-size:18px;line-height:1.6;margin:2px 0">${w('قد أتمّ','قد أتمّت','قد أتمّ/ت')} جميع متطلبات برنامج <b>${esc((P(c.prog)||P(DIP)||{}).name||'')}</b> ${w('وتخرّج','وتخرّجت','وتخرّج/ت')} فيه بتاريخ ${bd(c.gdate)}.</p>`+
 `<p style="font-size:20px;line-height:1.6;margin:2px 0;color:var(--a)"><b>${GRAD_DUR}</b></p>`+
-`<p style="font-size:15px;line-height:1.5;margin:2px 0">صدرت بموجب قرار مجلس المعهد رقم ${bd(c.boardNo)}، وجلسة إدارة المعهد رقم ${bd(c.sessNo)}. نسأل الله ل${w('ه','ها','ه/ا')} التوفيق والسداد.</p>`;
+`<p style="font-size:15px;line-height:1.5;margin:2px 0">صدرت بموجب قرار مجلس الشؤون التعليمية رقم ${bd(c.boardNo)}، وجلسة إدارة المعهد رقم ${bd(c.sessNo)}. نسأل الله ل${w('ه','ها','ه/ا')} التوفيق والسداد.</p>`;
 let h=frame(c.rec,'وثيقة تخرج','',`<div class="one" style="display:block">${inner}</div>`,c.date,'dgrad',false);
 if(c.revoked)h=h.replace('<div class="sb"','<div class="rvk">ملغاة</div><div class="sb"');return h};
 const _g=certHTML;certHTML=function(c){if(c&&c.type==='dgrad'){const h=gradHTML(c);try{return applyTheme(h,c)}catch(e){return h}}return _g.apply(this,arguments)};
 }catch(e){console.error('grad landscape',e)}})();
 </script>
-<script charset="utf-8" src="js/s15-c9cc7c2970.js"></script>
-<script id="gd12" charset="utf-8" src="js/gd12-8e109e9e98.js"></script>
+<script charset="utf-8" src="js/s15-ea2b62dbac.js"></script>
+<script id="gd12" charset="utf-8" src="js/gd12-b3c1a45231.js"></script>
 
-<script id="gd13" charset="utf-8" src="js/gd13-64413bde38.js"></script>
+<script id="gd13" charset="utf-8" src="js/gd13-b6db369e3f.js"></script>
 <script id="acal" charset="utf-8" src="js/acal-1e232f8fe4.js"></script>
 <script id="blk" charset="utf-8" src="js/blk-4b8d27100b.js"></script>
 <script id="qbank" charset="utf-8" src="js/qbank-6a47afda31.js"></script>
@@ -938,7 +938,7 @@ window.exSub=w;try{exSub=w}catch(e){}
 }catch(e){console.error('v47 ar-labels',e)}})();
 
 </script>
-<script id="v48" charset="utf-8" src="js/v48-c03a140327.js"></script>
+<script id="v48" charset="utf-8" src="js/v48-bca8d80443.js"></script>
 
 <script id="v49">
 /* ===== v49: عزل لغوي صارم — وضع AR: تسميات إنجليزية دخيلة تُستبدل بعربية كاملة (عرض فقط، لا مساس بالبيانات) ===== */
@@ -2126,7 +2126,7 @@ footer#ft>.ftc{padding-top:26px}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .fx77{background:#121E37}}
 @media print{.ub77,.fx77{display:none!important}}
 </style>
-<script id="v51" charset="utf-8" src="js/v51-875c85e1a2.js"></script>
+<script id="v51" charset="utf-8" src="js/v51-9981219d45.js"></script>
 <script charset="utf-8" src="js/s31-6db8e24ec4.js"></script>
 <style>/* v86: مكانة الشعار في شهادة التخرج */.g8-lg{height:80px!important;max-width:160px!important;margin:6px auto 2px!important}.sp6-lg{left:461px!important}.sp6-lg{top:18px!important}.cert3 .mn{position:relative}.cert3 .mlg92{position:absolute;top:14px;left:50%;transform:translateX(-50%);height:66px;width:auto;object-fit:contain;z-index:2}.cert3 .mn{padding-top:84px!important}.cert3 .sb .lg{display:none!important}.l59-hc{left:317px!important;width:160px!important}.l59-lg{max-width:150px!important;max-height:76px!important}.sp6-lg img{max-height:60px!important;max-width:118px!important}.sp6-wm{left:391px!important}.g9-sth,.g9-sr{grid-template-columns:14% 1.2fr 1.2fr 1.2fr 1fr 1fr!important}.g9-sth>div:nth-child(2) b,.g9-sth>div:nth-child(3) b,.g9-sth>div:nth-child(4) b{font-size:11.5px!important}.g8-wml{opacity:.06!important}</style>
 <script>(function(){try{var im=new Image();im.onload=function(){if(im.naturalWidth&&im.naturalHeight)window.LGAR89=im.naturalWidth/im.naturalHeight};im.src=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}window.LGAR89=1600/431})();window.LOGOS=IMG108('logos-a2f6204d.webp');window.LOGOM=IMG108('logom-243bc940.webp');IMGH108('logos-a2f6204d.webp',function(v){window.LOGOS=v});IMGH108('logom-243bc940.webp',function(v){window.LOGOM=v});</script>
@@ -2153,17 +2153,17 @@ footer#ft>.ftc{padding-top:26px}
  try{delete X.p73}catch(e){}
  X.p123=1;try{save()}catch(e){}}catch(e){console.warn('v123',e)}})();
 </script>
-<script charset="utf-8" src="js/s32-d91ff05e5c.js"></script>
+<script charset="utf-8" src="js/s32-830f847159.js"></script>
 <script>
 /* v121 — اعتماد الاسم الرسمي «معهد التمهيد» في النسخ المحلية المحفوظة (مرة واحدة) */
-(function(){try{if(typeof S==='undefined'||!S)return;var X=S.v51=S.v51||{};if(X.n125)return;
-var R=[[/معهد\s*التمهيد\s*(<br\s*\/?>|\n)?\s*للدراسات\s+الإسلامية\s+واللغوية/g,'معهد التمهيد'],[/At[-\s]Tamhid\s+Institute\s+for\s+Islamic\s+and\s+Linguistic\s+Studies/gi,'At Tamhid Institute'],[/AT[-\s]TAMHID\s+INSTITUTE\s+FOR\s+ISLAMIC\s+AND\s+LINGUISTIC\s+STUDIES/g,'AT TAMHID INSTITUTE'],[/আত[-\s]?তামহীদ\s+ইসলামিক\s+ও\s+ভাষাতাত্ত্বিক\s+অধ্যয়ন\s+ইনস্টিটিউট/g,'আত তামহীদ ইনস্টিটিউট'],[/مجلس\s+(?:إدارة\s+)?المعهد\s+للشؤون\s+التعليمية/g,'مجلس الشؤون التعليمية'],[/Institute\s+(?:Board|Council)\s+for\s+Educational\s+Affairs/g,'Board of Educational Affairs'],[/At-Tamhid/g,'At Tamhid'],[/AT-TAMHID/g,'AT TAMHID']];
+(function(){try{if(typeof S==='undefined'||!S)return;var X=S.v51=S.v51||{};if(X.n126)return;
+var R=[[/معهد\s*التمهيد\s*(<br\s*\/?>|\n)?\s*للدراسات\s+الإسلامية\s+واللغوية/g,'معهد التمهيد'],[/At[-\s]Tamhid\s+Institute\s+for\s+Islamic\s+and\s+Linguistic\s+Studies/gi,'At Tamhid Institute'],[/AT[-\s]TAMHID\s+INSTITUTE\s+FOR\s+ISLAMIC\s+AND\s+LINGUISTIC\s+STUDIES/g,'AT TAMHID INSTITUTE'],[/আত[-\s]?তামহীদ\s+ইসলামিক\s+ও\s+ভাষাতাত্ত্বিক\s+অধ্যয়ন\s+ইনস্টিটিউট/g,'আত তামহীদ ইনস্টিটিউট'],[/مجلس\s+(?:إدارة\s+)?المعهد\s+للشؤون\s+التعليمية/g,'مجلس الشؤون التعليمية'],[/Institute\s+(?:Board|Council)\s+for\s+Educational\s+Affairs/g,'Board of Educational Affairs'],[/مجلس\s+إدارة\s+المعهد|مجلس\s+المعهد(?!\s+ل)/g,'مجلس الشؤون التعليمية'],[/\bthe\s+Institute\s+Board\b/g,'the Board of Educational Affairs'],[/\bInstitute\s+Board\b/g,'Board of Educational Affairs'],[/At-Tamhid/g,'At Tamhid'],[/AT-TAMHID/g,'AT TAMHID']];
 var n=0,seen=new Set();function fx(v){if(typeof v!=='string'||v.length>200000||v.slice(0,5)==='data:')return v;var o=v;R.forEach(function(r){v=v.replace(r[0],r[1])});if(v!==o)n++;return v}
 function walk(o,d){if(!o||typeof o!=='object'||d>12||seen.has(o))return;seen.add(o);for(var k in o){if(!Object.prototype.hasOwnProperty.call(o,k))continue;var v=o[k];if(typeof v==='string')o[k]=fx(v);else if(v&&typeof v==='object')walk(v,d+1)}}
-walk(S,0);X.n121=1;X.n125=1;try{save()}catch(e){}if(n)console.info('v121 rename',n)}catch(e){console.warn('v121 rename',e)}})();
+walk(S,0);X.n121=1;X.n126=1;try{save()}catch(e){}if(n)console.info('v121 rename',n)}catch(e){console.warn('v121 rename',e)}})();
 try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A valid graduation certificate has already been issued','الصورة ✓':'Photo ✓','+ صورة':'+ Photo','معاينة — غير معتمدة':'Preview — not approved'})}catch(e){}
 </script>
-<script charset="utf-8" src="js/s33-8d32b99407.js"></script>
+<script charset="utf-8" src="js/s33-6de21632b8.js"></script>
 <script charset="utf-8" src="js/s34-708d3cc398.js"></script>
 <script>
 /* v100: شريط «جارٍ تحميل أحدث البيانات» أثناء التحميل الخلفي بعد الدخول */

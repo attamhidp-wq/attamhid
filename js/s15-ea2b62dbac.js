@@ -67,7 +67,7 @@ row('مدة البرنامج: 80 ساعة معتمدة - 4 فصول دراسية
 row('موزعة على عامين بواقع فصلين دراسيين في كل عام','Distributed over two years, two semesters per year','sm')+
 row(`بمعدل تراكمي ( ${bd(c.gpa)} من 5.00 ) وتقدير عام ${g[0]}`,`With a Cumulative GPA of ( ${esc(c.gpa)} / 5.00 ), ${g[1]}`)+
 row(`في الفصل الدراسي ${sem[0]} للعام الدراسي ${bd(ay)}م`,`In the ${sem[1]} Semester, Academic Year ( ${esc(ay)} )`)+
-row(`تم منح الدرجة بقرار مجلس إدارة المعهد رقم ( ${bd(c.boardNo)} ) في جلسته رقم ( ${bd(c.sessNo)} ) — تاريخ التخرج: ${bd(hg)} هـ الموافق ${bd(D(gd))} م`,`Approved by the Institute Board, Decision No. ( ${esc(c.boardNo)} ), Session No. ( ${esc(c.sessNo)} ) — Graduation Date: ${esc(D(gd))} AD (${esc(hg)} AH)`)+
+row(`تم منح الدرجة بقرار مجلس الشؤون التعليمية رقم ( ${bd(c.boardNo)} ) في جلسته رقم ( ${bd(c.sessNo)} ) — تاريخ التخرج: ${bd(hg)} هـ الموافق ${bd(D(gd))} م`,`Approved by the Board of Educational Affairs, Decision No. ( ${esc(c.boardNo)} ), Session No. ( ${esc(c.sessNo)} ) — Graduation Date: ${esc(D(gd))} AD (${esc(hg)} AH)`)+
 row(`حُرّرت في ${bd(hi)} هـ الموافق ${bd(D(c.date))} م`,`Issue Date: ${esc(D(c.date))} AD (${esc(hi)} AH)`,'sm');
 let h=`<div class="gd8">${c.revoked?'<div class="g-rvk8">ملغاة</div>':''}<div class="g-fr"></div>${GB}<div class="g-fr2"></div>${COS}${RG}<img class="g-wm" src="${window.LOGOM||LOGOG||LOGO}" alt="">
 <div class="g-bs">بسم الله الرحمن الرحيم</div>

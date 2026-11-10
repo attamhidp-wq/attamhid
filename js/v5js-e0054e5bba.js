@@ -67,12 +67,12 @@ window.gradBox=function(){
  const L=S.students.filter(s=>+s.prog===DIP),ok=[],no=[];L.forEach(s=>{const r=gradElig(s);(r.ok?ok:no).push([s,r])});
  return `<div class="box" style="margin-bottom:16px"><h3>إصدار وثيقة التخرج — الدبلوم العام</h3><p class="mu">وثيقة مستقلة تصدر بالعربية فقط، ولا تصدر إلا لطالب مسجَّل رسمياً في الدبلوم العام أكمل متطلبات البرنامج واعتُمدت حالة تخرجه (متخرج). تُسحب بيانات الطالب والمعدل التراكمي والفصل والعام وتاريخ التخرج آلياً من سجله، ويُدخل الحقلان أدناه يدوياً فقط.</p>
  <form onsubmit="return issueGrad(this)"><label>الطالب (المؤهَّلون للتخرج فقط)<select name="sid" required><option value="">— اختر الطالب —</option>${ok.map(([s])=>`<option value="${E(s.id)}">${E(s.name)} (${E(s.id)})</option>`).join('')}</select></label>
- <label>رقم قرار مجلس المعهد<input name="boardNo" required></label><label>رقم جلسة إدارة المعهد<input name="sessNo" required></label>
+ <label>رقم قرار مجلس الشؤون التعليمية<input name="boardNo" required></label><label>رقم جلسة إدارة المعهد<input name="sessNo" required></label>
  <button class="btn">اعتماد وإصدار وثيقة التخرج</button></form>
  ${no.length?`<details style="margin-top:10px"><summary>طلاب الدبلوم غير المؤهَّلين حالياً (${no.length})</summary>${no.map(([s,r])=>`<div class="mu" style="padding:3px 0"><bdi>${E(LG==='en'&&s.nameEn?s.nameEn:s.name)}</bdi> (${E(s.id)}) — <span>${E(r.why)}</span></div>`).join('')}</details>`:''}</div>`};
 window.issueGrad=function(f){const v=fv(f),s=S.students.find(x=>x.id==v.sid),r=gradElig(s);
  if(!r.ok){toast('لا يمكن إصدار وثيقة التخرج: '+r.why);return false}
- if(!String(v.boardNo||'').trim()||!String(v.sessNo||'').trim()){toast('أدخل رقم قرار مجلس المعهد ورقم جلسة إدارة المعهد');return false}
+ if(!String(v.boardNo||'').trim()||!String(v.sessNo||'').trim()){toast('أدخل رقم قرار مجلس الشؤون التعليمية ورقم جلسة إدارة المعهد');return false}
  const d=gradData(s),rec=v51Serial(0,'dgrad');
  S.certs.push({type:'dgrad',lang:'ar',rec,sid:s.id,name:s.name,nat:s.nat||'',pid:s.pid||'',prog:DIP,gpa:d.gpa,gterm:d.gterm,gyear:d.gyear,gdate:d.gdate,boardNo:String(v.boardNo).trim(),sessNo:String(v.sessNo).trim(),date:today()});
  save();flash=`صدرت وثيقة التخرج برقم السجل <b>${rec}</b>`;go();return false};
@@ -81,7 +81,7 @@ const gradHTML=c=>{const st=S.students.find(x=>x.id==c.sid)||{},gv=String(st.gen
  `<table class="kv"><tr><th>الجنسية</th><td>${E(c.nat||'—')}</td></tr><tr><th>رقم الهوية / الجواز</th><td>${bd(c.pid||'—')}</td></tr><tr><th>رقم السجل الأكاديمي</th><td>${bd(c.sid||'—')}</td></tr><tr><th>البرنامج</th><td>${E((P(c.prog)||P(DIP)||{}).name||'')}</td></tr><tr><th>المعدل التراكمي</th><td>${bd(c.gpa)} من ${bd('5.00')}</td></tr><tr><th>الفصل المتخرج به</th><td>${E(c.gterm)}</td></tr><tr><th>العام المتخرج به</th><td>${E(c.gyear)}</td></tr><tr><th>تاريخ التخرج</th><td>${bd(c.gdate)}</td></tr></table>`+
  `<p>${w('قد أتمّ','قد أتمّت','قد أتمّ/ت')} جميع متطلبات البرنامج الأكاديمية ${w('وتخرّج','وتخرّجت','وتخرّج/ت')} فيه، وذلك بعد اعتماد حالة التخرج رسمياً من إدارة المعهد.</p>`+
  `<p><b>${GRAD_DUR}</b></p>`+
- `<p>صدرت هذه الوثيقة بموجب قرار مجلس المعهد رقم ${bd(c.boardNo)}، وجلسة إدارة المعهد رقم ${bd(c.sessNo)}.</p>`+
+ `<p>صدرت هذه الوثيقة بموجب قرار مجلس الشؤون التعليمية رقم ${bd(c.boardNo)}، وجلسة إدارة المعهد رقم ${bd(c.sessNo)}.</p>`+
  `<p>نسأل الله ل${w('ه','ها','ه/ا')} التوفيق والسداد، وتفضلوا بقبول فائق التحية والتقدير،،،</p>`;
  let h=window.frame4(c.rec,'وثيقة تخرج','',inner,c.date,'dgrad');
  if(c.revoked)h=h.replace(/<div class="tmp bl">/g,'<div class="tmp bl"><div class="rvk">ملغاة</div>').replace(/>سارية</g,'>ملغاة<');

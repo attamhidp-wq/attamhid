@@ -97,7 +97,7 @@ row('مدة البرنامج: 80 ساعة معتمدة - 4 فصول دراسية
 row('موزعة على عامين بواقع فصلين دراسيين في كل عام','Distributed over two years, two semesters per year')+
 row(`بمعدل تراكمي ( ${bd(c.gpa)} من 5.00 ) وتقدير عام ${g[0]}`,`With a Cumulative GPA of ( ${esc(c.gpa)} / 5.00 ), ${g[1]}`)+
 row(`في الفصل الدراسي ${sem[0]} للعام الدراسي ${bd(ay)}م`,`In the ${sem[1]} Semester, Academic Year ( ${esc(ay)} )`)+
-row(`تم منح الدرجة بقرار مجلس إدارة المعهد رقم ( ${bd(c.boardNo)} ) في جلسته رقم ( ${bd(c.sessNo)} ) — تاريخ التخرج: ${bd(hg)} هـ الموافق ${bd(D(gd))} م`,`Approved by the Institute Board, Decision No. ( ${esc(c.boardNo)} ), Session No. ( ${esc(c.sessNo)} ) — Graduation Date: ${esc(D(gd))} AD (${esc(hg)} AH)`);
+row(`تم منح الدرجة بقرار مجلس الشؤون التعليمية رقم ( ${bd(c.boardNo)} ) في جلسته رقم ( ${bd(c.sessNo)} ) — تاريخ التخرج: ${bd(hg)} هـ الموافق ${bd(D(gd))} م`,`Approved by the Board of Educational Affairs, Decision No. ( ${esc(c.boardNo)} ), Session No. ( ${esc(c.sessNo)} ) — Graduation Date: ${esc(D(gd))} AD (${esc(hg)} AH)`);
 return `<div class="gd12">${c.revoked?'<div class="g-rvk">ملغاة</div>':''}${SVG}<img class="g-wm" src="${window.LOGOM||LG}" alt=""><div class="g-ln"></div><div class="g-ln2"></div><svg class="g-svg" viewBox="0 0 1123 794" style="pointer-events:none">${CRN}</svg>${DIV}<div class="g-mt">${MT12.repeat(10)}</div>
 <div class="g-bs">بسم الله الرحمن الرحيم</div>
 <div class="g-hd"><div class="g-ar"><b>معهد التمهيد</b><span>مجلس الشؤون التعليمية</span><span>عمادة القبول والتسجيل</span></div><img src="${LG}" alt=""><div class="g-en"><b>At Tamhid Institute</b><span>Board of Educational Affairs</span><span>Deanship of Admission &amp; Registration</span></div></div>

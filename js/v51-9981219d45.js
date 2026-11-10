@@ -26,7 +26,7 @@ var DEF_TERMS=[
  {k:'inst_full',lbl:['اسم المؤسسة الكامل','Full institution name'],ar0:['معهد التمهيد'],en0:['At Tamhid Institute','At Tamhid Institute for Islamic and Language Studies'],bind:['inst','nameAr','nameEn']},
  {k:'inst_short',lbl:['الاسم المختصر','Short name'],ar0:['معهد التمهيد'],en0:['At Tamhid Institute'],bind:['inst','shortAr','shortEn']},
  {k:'board',lbl:['الجهة التعليمية العليا (ترويسة الوثائق)','Supreme educational body (document header)'],ar0:['مجلس الشؤون التعليمية'],en0:['Board of Educational Affairs'],bind:['unit','u-board']},
- {k:'decision',lbl:['جهة إصدار قرار المنح','Awarding decision authority'],ar0:['مجلس إدارة المعهد'],en0:['the Institute Board'],bind:['inst','decAr','decEn']},
+ {k:'decision',lbl:['جهة إصدار قرار المنح','Awarding decision authority'],ar0:['مجلس الشؤون التعليمية'],en0:['the Board of Educational Affairs'],bind:['inst','decAr','decEn']},
  {k:'admission',lbl:['جهة القبول والتسجيل (ترويسة الوثائق)','Admission & registration body (document header)'],ar0:['قسم القبول والتسجيل'],en0:['Admission & Registration Department'],bind:['unit','u-adm']},
  {k:'regno',lbl:['رقم السجل / الترخيص','Registration / licence number'],ar0:['028412/2025'],en0:[],bind:['inst','regNo','regNo']},
  {k:'city',lbl:['المدينة (اختياري)','City (optional)'],ar0:['مدينة دكا - بنغلاديش'],en0:['Dhaka, Bangladesh'],bind:['inst','cityAr','cityEn']},
@@ -41,7 +41,7 @@ var DEGREES0=[['deg-gd','دبلوم عام','General Diploma'],['deg-cert','شه
 function seedState(){
  var X=S.v51||(S.v51={});var ch=false;var set=function(k,v){if(X[k]===undefined){X[k]=v;ch=true}};
  set('ver',1);set('imgs',{});set('instHist',[]);set('bin',[]);set('autoLog',[]);set('reserved',[]);set('sync',{});
- set('inst',{nameAr:'معهد التمهيد',nameEn:'At Tamhid Institute',shortAr:'معهد التمهيد',shortEn:'At Tamhid Institute',kindAr:'معهد',kindEn:'Institute',decAr:'مجلس إدارة المعهد',decEn:'the Institute Board',regNo:'028412/2025',cityAr:'',cityEn:'',addrAr:'دكا - بنغلاديش',addrEn:'Dhaka, Bangladesh',u:NOW()});
+ set('inst',{nameAr:'معهد التمهيد',nameEn:'At Tamhid Institute',shortAr:'معهد التمهيد',shortEn:'At Tamhid Institute',kindAr:'معهد',kindEn:'Institute',decAr:'مجلس الشؤون التعليمية',decEn:'the Board of Educational Affairs',regNo:'028412/2025',cityAr:'',cityEn:'',addrAr:'دكا - بنغلاديش',addrEn:'Dhaka, Bangladesh',u:NOW()});
  set('terms',{});set('custom',[]);
  set('degrees',DEGREES0.map(function(d,i){return{id:d[0],ar:d[1],en:d[2],ord:i,u:NOW()}}));
  set('units',[
@@ -123,7 +123,7 @@ function identityPairs0(){var out=[],ch=[];DEF_TERMS.forEach(function(t){['ar','
   if(!from[0]||!to||to===from[0])return;from.forEach(function(f){if(f&&f!==to){out.push([f,to,t.stem?(lg==='en'?'se':'sa'):'']);ch.push(f)}})})});
  out.slice().forEach(function(p){if(/[a-z]/.test(p[0])&&!p[2]){out.push([p[0].toUpperCase(),p[1].toUpperCase(),'']);if(/^At Tamhid/.test(p[0]))out.push([p[0].toUpperCase().replace('AT TAMHID','AT TAMHID'),p[1].toUpperCase(),''])}});
  live(S.v51.custom).forEach(function(c){if(c.from&&c.to!=null&&c.from!==c.to){out.push([c.from,c.to,'']);ch.push(c.from)}});
- /* حماية: العبارة الأطول غير المعدّلة لا تُمس باستبدال عبارة أقصر منها (مثل «مجلس إدارة المعهد» داخل «مجلس الشؤون التعليمية») */
+ /* حماية: العبارة الأطول غير المعدّلة لا تُمس باستبدال عبارة أقصر منها (مثل «مجلس الشؤون التعليمية» داخل «مجلس الشؤون التعليمية») */
  DEF_TERMS.forEach(function(t){if(t.stem)return;[].concat(t.ar0,t.en0).forEach(function(A){if(!A||ch.indexOf(A)>-1)return;if(out.some(function(p){return !p[2]&&p[0]!==A&&A.indexOf(p[0])>-1}))out.push([A,A,'lock'])})});
  return out}
 V5.identityPairs=identityPairs;
@@ -259,10 +259,10 @@ function genGrad(c){var p=prog(c.prog)||{name:'—',eng:{}},e=p.eng||{},s=S.stud
  var F=/أنثى|female/i.test(s.sex||s.gender||''),std=F?'الطالبة':'الطالب',hn=F?'ها':'ه',tx=c.text?'<p>'+E(c.text)+'</p>':'';
  var A='<p>يشهد معهد التمهيد بأن '+std+'</p><div class="nm4">'+E(c.name)+'</div>'+
   kvT([['الرقم الأكاديمي',bdi(c.sid)],['الجنسية',E(c.nat||s.nat||'')],['رقم الهوية / الجواز',c.pid||s.pid?bdi(c.pid||s.pid):''],['البرنامج',E(p.name)],['الدرجة العلمية',E(dg.ar)],['الجهة التابع لها البرنامج',col&&col.type!=='central'?E(col.nameAr):''],['مدة البرنامج',E(LVW(e.levels||1)+' · '+YW(e.years||1))],['الساعات المعتمدة المجتازة',E(c.hours)],['المعدل التراكمي',c.gpa!=null&&c.gpa!==''?bdi((+c.gpa).toFixed(2))+' من 5.00':''],['التقدير العام',E(c.grade)],['تاريخ التخرج',c.gdate?bdi(c.gdate):'']])+
-  '<p>قد أتمّ'+(F?'ت':'')+' جميع متطلبات التخرج في البرنامج المذكور، ومُنح'+(F?'ت':'')+' '+E(dg.ar?('درجة '+dg.ar):'هذه الوثيقة')+(c.decNo?' بقرار مجلس إدارة المعهد رقم ( '+bdi(c.decNo)+' )'+(c.decDate?' وتاريخ '+bdi(c.decDate):''):'')+'.</p>'+tx+'<p>وقد أُعطيت ل'+hn+' هذه الوثيقة إثباتاً لذلك، والله ولي التوفيق.</p>';
+  '<p>قد أتمّ'+(F?'ت':'')+' جميع متطلبات التخرج في البرنامج المذكور، ومُنح'+(F?'ت':'')+' '+E(dg.ar?('درجة '+dg.ar):'هذه الوثيقة')+(c.decNo?' بقرار مجلس الشؤون التعليمية رقم ( '+bdi(c.decNo)+' )'+(c.decDate?' وتاريخ '+bdi(c.decDate):''):'')+'.</p>'+tx+'<p>وقد أُعطيت ل'+hn+' هذه الوثيقة إثباتاً لذلك، والله ولي التوفيق.</p>';
  var En=bi?'<div class="enb"><p>At Tamhid Institute hereby certifies that</p><div class="nm4" dir="ltr">'+E(c.nameEn||s.nameEn)+'</div>'+
   kvT([['Student ID',bdi(c.sid)],['Program',E(e.nameEn||c.progEn||p.name)],['Degree',E(dg.en)],['Credit hours earned',E(c.hours)],['Cumulative GPA',c.gpa!=null&&c.gpa!==''?bdi((+c.gpa).toFixed(2))+' / 5.00':''],['General grade',E(GLE(c.gpa))],['Graduation date',c.gdate?bdi(c.gdate):'']])+
-  '<p>has completed all graduation requirements of the above program and has been awarded '+E(dg.en?('the '+dg.en):'this certificate')+(c.decNo?' by decision of the Institute Board No. ('+E(c.decNo)+')'+(c.decDate?' dated '+E(c.decDate):''):'')+'.</p></div>':'';
+  '<p>has completed all graduation requirements of the above program and has been awarded '+E(dg.en?('the '+dg.en):'this certificate')+(c.decNo?' by decision of the Board of Educational Affairs No. ('+E(c.decNo)+')'+(c.decDate?' dated '+E(c.decDate):''):'')+'.</p></div>':'';
  return d14(W.frame4(c.rec,'وثيقة تخرج',bi?'Graduation Certificate':'',A+En,c.date,'grad',bi),c)}
 function genTr(c){var p=prog(c.prog)||{name:'—',eng:{}},e=p.eng||{},a=c.acad||{},s0=S.students.find(function(x){return x.id==c.sid})||{},s={id:c.sid,name:c.name,nat:c.nat||s0.nat,reg:a.reg||s0.reg||[],gr:a.gr||s0.gr||{},status:a.status||s0.status,lvl:a.lvl||1};
  var dg=degree(e.degree)||{ar:''},col=unit(e.unitId),LV=+e.levels||1,lvName=function(n){return (e.lvlWord||'المستوى')+' '+n};
@@ -1064,7 +1064,7 @@ function gen52(c,ctx){var g=c.g52||build52(c),C=Object.assign({},COL0,(S.v51.ins
   row('بمعدل تراكمي '+NB('( '+BD(g.gpa||'—')+' من 5.00 )')+' — '+E(g.gw[0]),'with a cumulative GPA of '+NB(E(g.gpa||'—')+' out of 5.00')+' ('+E(g.gw[1])+')')+
   row('والتقدير العام: <b>'+E(g.grAr)+'</b>'+(g.hAr?' '+E(g.hAr):''),'General grade: <b>'+E(g.grEn)+'</b>'+(g.hEn?', '+E(g.hEn):''))+
   (g.sem||g.gy?row((g.sem?'في الفصل الدراسي '+SEMA[g.sem]+' من ':'في ')+'العام الدراسي '+(g.hy?NB(BD(g.hy)+'هـ')+' ':'')+NB('('+BD(g.gy)+'م)'),(g.sem?'in the '+SEME[g.sem]+' Semester of ':'in ')+'the Academic Year '+(g.hy?NB(E(g.hy)+'\u00a0AH')+' ':'')+NB('('+E(g.gy)+'\u00a0AD)')):'')+
-  (g.dec?row('بموجب قرار مجلس إدارة المعهد رقم '+NB('('+BD(g.dec)+')')+(g.ses?' في الجلسة رقم '+NB('('+BD(g.ses)+')'):'')+(g.decDate?' بتاريخ '+NB(BD(gdm(g.decDate))+'م'):''),'by Decision No. '+NB('('+E(g.dec)+')')+' of the Institute Board'+(g.ses?', Session No. '+NB('('+E(g.ses)+')'):'')+(g.decDate?', dated '+NB(E(gdm(g.decDate))+'\u00a0AD'):'')):'')+
+  (g.dec?row('بموجب قرار مجلس الشؤون التعليمية رقم '+NB('('+BD(g.dec)+')')+(g.ses?' في الجلسة رقم '+NB('('+BD(g.ses)+')'):'')+(g.decDate?' بتاريخ '+NB(BD(gdm(g.decDate))+'م'):''),'by Decision No. '+NB('('+E(g.dec)+')')+' of the Board of Educational Affairs'+(g.ses?', Session No. '+NB('('+E(g.ses)+')'):'')+(g.decDate?', dated '+NB(E(gdm(g.decDate))+'\u00a0AD'):'')):'')+
   row('تاريخ التخرج: '+dateAr(g.hg,gdm(g.gd)),'Graduation date: '+dateEn(g.hg,gdm(g.gd)));
  body=renderRows();
  var HW=330,HK=0.82,hz=H.map(function(h){var l1=h.id==='h-inst',a=fitPx(h.ar||'','Amiri',HW,l1?20:18,11),e=fitPx(h.en||'',FE,HW,l1?20*HK:18*HK,9);return {l1:l1,a:a,e:e}}),
@@ -1441,7 +1441,7 @@ function gen53(c,ctx,opt){opt=opt||{};var g=live53(c),G=geo53(),F=opt.font?Objec
  row('بمعدل تراكمي '+NB('( '+BD(g.gpa||'—')+' من 5.00 )')+' — '+E(g.gw[0]),'with a cumulative GPA of '+NB(E(g.gpa||'—')+' out of 5.00')+' ('+E(g.gw[1])+')');
  row('والتقدير العام: <b>'+E(g.grAr)+'</b>'+(g.hAr?' '+E(g.hAr):''),'General grade: <b>'+E(g.grEn)+'</b>'+(g.hEn?', '+E(g.hEn):''));
  if(g.sem||g.gy)row((g.sem?'في الفصل الدراسي '+SEMA[g.sem]+' من ':'في ')+'العام الدراسي '+(g.hy?NB(BD(g.hy)+'هـ')+' ':'')+NB('('+BD(g.gy)+'م)'),(g.sem?'in the '+SEME[g.sem]+' Semester of ':'in ')+'the Academic Year '+(g.hy?NB(E(g.hy)+'\u00a0AH')+' ':'')+NB('('+E(g.gy)+'\u00a0AD)'));
- if(g.dec)row('بموجب قرار مجلس إدارة المعهد رقم '+NB('('+BD(g.dec)+')')+(g.ses?' في الجلسة رقم '+NB('('+BD(g.ses)+')'):'')+(g.decDate?' بتاريخ '+NB(BD(gdm(g.decDate))+'م'):''),'by Decision No. '+NB('('+E(g.dec)+')')+' of the Institute Board'+(g.ses?', Session No. '+NB('('+E(g.ses)+')'):'')+(g.decDate?', dated '+NB(E(gdm(g.decDate))+'\u00a0AD'):''));
+ if(g.dec)row('بموجب قرار مجلس الشؤون التعليمية رقم '+NB('('+BD(g.dec)+')')+(g.ses?' في الجلسة رقم '+NB('('+BD(g.ses)+')'):'')+(g.decDate?' بتاريخ '+NB(BD(gdm(g.decDate))+'م'):''),'by Decision No. '+NB('('+E(g.dec)+')')+' of the Board of Educational Affairs'+(g.ses?', Session No. '+NB('('+E(g.ses)+')'):'')+(g.decDate?', dated '+NB(E(gdm(g.decDate))+'\u00a0AD'):''));
  row('تاريخ التخرج: '+dateAr(g.hg,gdm(g.gd)),'Graduation date: '+dateEn(g.hg,gdm(g.gd)));
  /* تخطيط المتن: قياس، ثم تقسيم إلى سطرين عند الحاجة، ثم تصغير متناسب إن تجاوز الارتفاع */
  var lay=function(sc){var a=AB*sc,e=EB*sc,L=Math.round(Math.max(a,e)*1.5*10)/10,na=NA*Math.min(1,sc*1.05),ne=NE*Math.min(1,sc*1.05),NL=Math.round(Math.max(na,ne)*1.45),tot=0,out=[];
@@ -1496,10 +1496,10 @@ function req53(c){var m=[],chk=function(k,v,ar,en){if(v==null||String(v).trim()=
  if(!FR(c.type))chk('name',c.name,'الاسم','Name');
  if(is52(c)){var g=live53(c);chk('nameEn',g.nameEn,'الاسم بالإنجليزية','Name in English');chk('nat',g.nat,'الجنسية','Nationality');
   if(g.natEn&&/[\u0600-\u06FF]/.test(g.natEn))m.push(['natEn','الجنسية بالإنجليزية','Nationality in English']);else chk('natEn',g.natEn,'الجنسية بالإنجليزية','Nationality in English');
-  chk('pid',g.pid,'رقم الهوية / الجواز','ID / passport No.');if(!/ذكر|أنثى|male|female|^[mf]$/i.test(g.sx||''))m.push(['sex','الجنس','Gender']);chk('gpa',g.gpa,'المعدل التراكمي','Cumulative GPA');chk('boardNo',g.dec,'رقم قرار مجلس الإدارة','Board decision No.');chk('sessNo',g.ses,'رقم الجلسة','Session No.')}
+  chk('pid',g.pid,'رقم الهوية / الجواز','ID / passport No.');if(!/ذكر|أنثى|male|female|^[mf]$/i.test(g.sx||''))m.push(['sex','الجنس','Gender']);chk('gpa',g.gpa,'المعدل التراكمي','Cumulative GPA');chk('boardNo',g.dec,'رقم قرار مجلس الشؤون التعليمية','Board decision No.');chk('sessNo',g.ses,'رقم الجلسة','Session No.')}
  return m}
 V5.req53=req53;
-var EDF53=[['sex','الجنس (تُصاغ الشهادة تلقائياً للطالب أو الطالبة)','Gender (the certificate wording adapts automatically)','select'],['natEn','الجنسية بالإنجليزية','Nationality in English','dir="ltr"'],['gdate','تاريخ التخرج (ميلادي)','Graduation date (Gregorian)','type="date"'],['gterm','الفصل الدراسي للتخرج','Graduation semester',''],['gyear','العام الدراسي للتخرج (مثال: 1448 / 1449 هـ (2026 / 2027 م))','Graduation academic year (e.g. 1448 / 1449 هـ (2026 / 2027 م))',''],['boardNo','رقم قرار مجلس الإدارة','Board decision No.','dir="ltr"'],['sessNo','رقم الجلسة','Session No.','dir="ltr"'],['decDate','تاريخ القرار','Decision date','type="date"'],['hg','تاريخ التخرج الهجري (تصحيح يدوي، اتركه فارغاً للحساب الآلي)','Hijri graduation date (manual correction; leave empty for automatic)','dir="ltr"'],['hi','تاريخ الإصدار الهجري (تصحيح يدوي)','Hijri issue date (manual correction)','dir="ltr"']];
+var EDF53=[['sex','الجنس (تُصاغ الشهادة تلقائياً للطالب أو الطالبة)','Gender (the certificate wording adapts automatically)','select'],['natEn','الجنسية بالإنجليزية','Nationality in English','dir="ltr"'],['gdate','تاريخ التخرج (ميلادي)','Graduation date (Gregorian)','type="date"'],['gterm','الفصل الدراسي للتخرج','Graduation semester',''],['gyear','العام الدراسي للتخرج (مثال: 1448 / 1449 هـ (2026 / 2027 م))','Graduation academic year (e.g. 1448 / 1449 هـ (2026 / 2027 م))',''],['boardNo','رقم قرار مجلس الشؤون التعليمية','Board decision No.','dir="ltr"'],['sessNo','رقم الجلسة','Session No.','dir="ltr"'],['decDate','تاريخ القرار','Decision date','type="date"'],['hg','تاريخ التخرج الهجري (تصحيح يدوي، اتركه فارغاً للحساب الآلي)','Hijri graduation date (manual correction; leave empty for automatic)','dir="ltr"'],['hi','تاريخ الإصدار الهجري (تصحيح يدوي)','Hijri issue date (manual correction)','dir="ltr"']];
 W.cfForm=function(){var h=_cfE.apply(this,arguments);try{if(cf&&cf.t==='ed'){var c=S.certs.find(function(x){return x.rec==cf.rec});if(c){var miss=req53(c),mk=miss.map(function(x){return x[0]}),g=is52(c)?live53(c):{};
   var val={sex:/أنثى|female|^f$/i.test(g.sx||'')?'أنثى':/ذكر|male|^m$/i.test(g.sx||'')?'ذكر':'',natEn:g.natEn&&!/[\u0600-\u06FF]/.test(g.natEn)?g.natEn:'',gdate:c.gdate||g.gd||'',gterm:c.gterm||'',gyear:c.gyear||'',boardNo:c.boardNo||c.decNo||g.dec||'',sessNo:c.sessNo||c.sesNo||g.ses||'',decDate:c.decDate||g.decDate||'',hg:c.hg||'',hi:c.hi||''};
   var ex=is52(c)?EDF53.map(function(f){var need=mk.indexOf(f[0])>-1;return '<label'+(need?' class="v53need"':'')+'>'+L(f[1],f[2])+(need?' <b class="tag er">'+L('مطلوب','Required')+'</b>':'')+(f[3]==='select'?'<select name="'+f[0]+'"'+(need?' required':'')+'><option value="">—</option><option value="ذكر"'+(val.sex==='ذكر'?' selected':'')+'>'+L('ذكر','Male')+'</option><option value="أنثى"'+(val.sex==='أنثى'?' selected':'')+'>'+L('أنثى','Female')+'</option></select>':'<input name="'+f[0]+'" '+f[3]+' value="'+E(val[f[0]]||'')+'"'+(need?' required':'')+'>')+'</label>'}).join(''):'';
@@ -1622,11 +1622,11 @@ function gen54(c,ctx,opt){opt=opt||{};var g=live53(c),G=geo53(),F=opt.font?Objec
  var leadA=TT('يشهد معهد التمهيد بأن '+std+':'),leadE=TT('At Tamhid Institute hereby certifies that the student:');
  var arP='الجنسية: '+(g.nat||'—')+'، '+idA+': ⟨'+nb(g.pid)+'⟩، الرقم الأكاديمي: ⟨'+nb(c.sid)+'⟩، '+(g.colAr?'الكلية: '+g.colAr+'، ':'')+'قد '+mn+' **'+g.certAr+'**'+(DU?'، ومدة البرنامج ⟨'+DU+'⟩ ساعة معتمدة':'')+'، بمعدل تراكمي (⟨'+nb(g.gpa||'—')+'⟩ من ⟨5.00⟩) '+g.gw[0]+'، والتقدير العام: **'+g.grAr+'**'+(g.hAr?' '+g.hAr:'')+
   (g.sem||g.gy?'، '+(g.sem?'في الفصل الدراسي '+SEMA[g.sem]+' من ':'في ')+'العام الدراسي '+(g.hy?'⟨'+g.hy+'⟩هـ ':'')+'(⟨'+g.gy+'⟩م)':'')+
-  (g.dec?'، بموجب قرار مجلس إدارة المعهد رقم (⟨'+nb(g.dec)+'⟩)'+(g.ses?' في الجلسة رقم (⟨'+g.ses+'⟩)':'')+(g.decDate?' بتاريخ ⟨'+gdm(g.decDate)+'⟩م':''):'')+
+  (g.dec?'، بموجب قرار مجلس الشؤون التعليمية رقم (⟨'+nb(g.dec)+'⟩)'+(g.ses?' في الجلسة رقم (⟨'+g.ses+'⟩)':'')+(g.decDate?' بتاريخ ⟨'+gdm(g.decDate)+'⟩م':''):'')+
   '، وتاريخ التخرج: ⟨'+g.hg+'⟩هـ الموافق ⟨'+gdm(g.gd)+'⟩م.';
  var enP='Nationality: '+(g.natEn||'—')+', '+idE+': '+nb(g.pid)+', Student ID: '+nb(c.sid)+', '+(g.colAr?'College: '+(g.colEn||g.colAr)+', ':'')+'has been awarded **'+g.certEn+'**'+(DU?', with a programme duration of '+DU+' credit hours':'')+', with a cumulative GPA of '+nb(g.gpa||'—')+' out of 5.00 ('+g.gw[1]+'), General grade: **'+g.grEn+'**'+(g.hEn?', '+g.hEn:'')+
   (g.sem||g.gy?', '+(g.sem?'in the '+SEME[g.sem]+' Semester of ':'in ')+'the Academic Year '+(g.hy?g.hy+'~AH ':'')+'('+g.gy+'~AD)':'')+
-  (g.dec?', by Decision No. ('+nb(g.dec)+') of the Institute Board'+(g.ses?', Session No. ('+g.ses+')':'')+(g.decDate?', dated '+gdm(g.decDate)+'~AD':''):'')+
+  (g.dec?', by Decision No. ('+nb(g.dec)+') of the Board of Educational Affairs'+(g.ses?', Session No. ('+g.ses+')':'')+(g.decDate?', dated '+gdm(g.decDate)+'~AD':''):'')+
   '. Graduation date: '+g.hg+'~AH, corresponding to '+gdm(g.gd)+'~AD.';
  arP=TT(arP);enP=TT(enP);
  /* --- تخطيط المتن مع الحفاظ على سلّم الأحجام (تصغير محدود عند الضرورة فقط) --- */
@@ -1753,7 +1753,7 @@ function gen55(c,ctx,opt){opt=opt||{};var g=live53(c),C=Object.assign({},COL55,(
  row('بتقدير عام ('+E(g.grAr)+')'+(g.hAr?' '+E(g.hAr):''),'with a Grade of '+E(g.grEn)+(g.hEn?' – '+E(g.hEn.replace(/^with\s+/i,'')):''));
  row('ومعدل تراكمي ( '+ind(g.gpa||'—')+' من '+ind('5.00')+' ) ( '+E(g.gw[0])+' )','and GPA ('+E(g.gpa||'—')+' / 5.00) ('+E(g.gw[1])+')');
  if(g.sem||g.gy)row((g.sem?'في الفصل الدراسي '+SEMA[g.sem]+' ':'')+'من العام الدراسي '+(g.hy?ind(g.hy)+'هـ ('+ind(g.gy)+'م)':ind(g.gy)+'م'),(g.sem?'in the '+SEME[g.sem]+' Semester of ':'in ')+'the Academic Year '+(g.hy?E(g.hy)+' AH ('+E(g.gy)+' AD)':E(g.gy)+' AD'));
- if(g.dec)row(E(TT('بموجب قرار مجلس إدارة المعهد رقم'))+' ( '+ind(g.dec)+' )'+(g.ses?' في الجلسة رقم ( '+ind(g.ses)+' )':''),E(TT('by Institute Board Decision No.'))+' ('+E(g.dec)+')'+(g.ses?', Session No. ('+E(g.ses)+')':''));
+ if(g.dec)row(E(TT('بموجب قرار مجلس الشؤون التعليمية رقم'))+' ( '+ind(g.dec)+' )'+(g.ses?' في الجلسة رقم ( '+ind(g.ses)+' )':''),E(TT('by Board of Educational Affairs Decision No.'))+' ('+E(g.dec)+')'+(g.ses?', Session No. ('+E(g.ses)+')':''));
  row('بتاريخ '+ind(g.hg)+'هـ الموافق '+ind(gdm(g.gd))+'م','on '+E(g.hg)+' AH, corresponding to '+E(gdm(g.gd))+' AD');
  /* توزيع رأسي في منطقة المتن نفسها كما في المرجع */
  var y0=196,y1=520,n=R.length,lead2=18,hts=R.map(function(r){return r.k==='lead'?lead2+16:r.k==='nm'?30:16}),tot=hts.reduce(function(a,b){return a+b},0),gp=(y1-y0-tot)/(n-1),y=y0;
@@ -2103,7 +2103,7 @@ function miss55(c){var m=[],add=function(k,ar,en,where){m.push({k:k,ar:ar,en:en,
  if(O.deptOn&&(EMPTY55(O.deptAr)||EMPTY55(O.deptEn)))add('dept','القسم (عربي وإنجليزي) — من صفحة البرنامج','Department (Arabic & English) — program page','prog');
  if(EMPTY55(g.gpa))add('gpa','المعدل التراكمي','Cumulative GPA');
  if(EMPTY55(g.grAr)||EMPTY55(g.grEn))add('grade','التقدير العام','General grade');
- if(EMPTY55(g.dec))add('boardNo','رقم قرار مجلس الإدارة','Board decision No.');
+ if(EMPTY55(g.dec))add('boardNo','رقم قرار مجلس الشؤون التعليمية','Board decision No.');
  if(EMPTY55(g.ses))add('sessNo','رقم الجلسة','Session No.');
  if(EMPTY55(g.gd)||EMPTY55(g.hg))add('gdate','تاريخ التخرج (هجري وميلادي)','Graduation date (Hijri & Gregorian)');
  if(EMPTY55(g.hi)||EMPTY55(g.di))add('hi','تاريخ الإصدار','Issue date');
@@ -2200,7 +2200,7 @@ function mig61(){var X=S.v51;if(!X||X.mig61||!X.positions)return 0;var n=0;
  X.mig61=NOW();if(n){try{aud(L('اعتماد الاسم الرسمي لرئيس المعهد باللغتين','Official bilingual name of the Chairman applied'),'mig61',PRES61.ar+' / '+PRES61.en)}catch(x){}}return 1}
 V5.mig61=mig61;
 var run61=function(){try{if(S&&S.v51&&S.v51.positions&&S.v51.mig58&&mig61()){save0();try{go()}catch(e){}}}catch(e){console.error('v61 mig',e)}};setTimeout(run61,200);setTimeout(run61,2100);
-var SEAL59=IMG108('seal59-v121a.webp');try{window.__SEAL59=SEAL59}catch(e){}IMGH108('seal59-v121a.webp',function(v){SEAL59=v;try{window.__SEAL59=v}catch(e){}});
+var SEAL59=IMG108('seal59-v126a.webp');try{window.__SEAL59=SEAL59}catch(e){}IMGH108('seal59-v126a.webp',function(v){SEAL59=v;try{window.__SEAL59=v}catch(e){}});
 /* =====================================================================
    v59 — الوثائق الرسمية للطالب (خطاب القبول، خطاب التوصية، شهادة التعريف) بتصميم واحد معتمد:
    ثنائية اللغة (عربي/إنجليزي)، ألوان شهادة التخرج وخطوطها، توقيع رئيس المعهد وختمه الرسمي،
@@ -2276,7 +2276,7 @@ function cal61T(s,k){try{var t=k==='adm'?(V5.admTerm61&&V5.admTerm61(s)):null;if
 /* v77: بيانات إفادة المستحق المالي من الرسوم المقررة والمنح (آلياً وفورياً) */
 function fin59(c,D){var st=D.st||{},P=prog(c.prog||st.prog)||prog(DIP)||{},T=null;try{T=V5.curTerm61&&V5.curTerm61()}catch(x){}var tid=c.term||(T&&T.id)||'',N={ar:'',en:''};try{var tt=V5.termById61&&V5.termById61(tid);if(tt)N=V5.termNames61(tt)}catch(x){}
  var d=V5.due72?V5.due72(st,P,tid):{base:6000,pct:0,due:6000,cur:'BDT'},f=function(n){return V5.fmt72?V5.fmt72(n,d.cur):n+' '+d.cur};
- var due=c.amt?String(c.amt):f(d.due);return {tAr:N.ar||term59(c.term||''),tEn:N.en||'',base:f(d.base),pct:+d.pct||0,due:due}}
+ var due=c.amt?String(c.amt):f(d.due);return {tAr:N.ar||term59(c.term||''),tEn:N.en||'',base:f(d.base),pct:+d.pct||0,due:due,off:(+d.pct>0&&!c.amt)?f(Math.round((d.base-d.due)*100)/100):'',kAr:+d.pct>=100?'منحة كاملة':(+d.pct>0?'منحة جزئية':''),kEn:+d.pct>=100?'Full scholarship':(+d.pct>0?'Partial scholarship':'')}}
 function rows59(c,D){if(c.type==='appt'){var A=D.A,TY={perm:['دائم','Permanent'],contract:['متعاقد','Contract'],part:['جزئي','Part-time'],visit:['زائر','Visiting']}[A.type]||[A.type||'',''],un=D.k==='staff'?(typeof unitName==='function'?unitName(D.o.unitId):''):(A.dept||''),unE=D.k==='staff'?(typeof unitName==='function'?unitName(D.o.unitId,true):''):(A.deptEn||en59(A.dept||'')),dd=function(x){return x?dmy(x)+' م':''};
   return [['الاسم',D.name,D.nameEn,'Name'],['الجنسية',D.nat,D.natEn,'Nationality'],['رقم الهوية',D.pid,'','ID No.'],['المؤهل',A.qual||'',A.qualEn||en59(A.qual||''),'Qualification'],['التخصص',A.spec||'',A.specEn||en59(A.spec||''),'Specialization'],
    [D.k==='faculty'?'الرتبة العلمية':'المسمى الوظيفي',D.k==='faculty'?(A.rank||''):(A.title||D.o.title||''),D.k==='faculty'?(A.rankEn||en59(A.rank||'')):(A.titleEn||en59(A.title||D.o.title||'')),D.k==='faculty'?'Academic Rank':'Job Title'],
@@ -2289,7 +2289,7 @@ function rows59(c,D){if(c.type==='appt'){var A=D.A,TY={perm:['دائم','Permane
  else if(t==='rec'&&c.tzk){var G2=(V5.grad98&&V5.grad98(D.st))||{};R.push(['فصل القبول',G2.atAr,G2.atEn,'Admission Semester'],['فصل التخرج',G2.gtAr,G2.gtEn,'Graduation Semester'],['تاريخ التخرج',G2.gd?dmy(G2.gd)+' م':'',G2.gd?dmy(G2.gd):'','Graduation Date'],['المعدل التراكمي',G2.gpa?G2.gpa+' / 5.00':'','','Cumulative GPA'],['التقدير',G2.grAr?(G2.grAr+(G2.hAr?' '+G2.hAr:'')):'',G2.grEn?(G2.grEn+(G2.hEn?' '+G2.hEn:'')):'','Grade'],['رقم شهادة التخرج',G2.c&&G2.c.rec||'','','Graduation Certificate No.'])}
  else if(t==='rec'){var gr=String(c.grade||'');R.push(['مدة الانتساب',(c.from||c.to)?dmy(c.from||'')+' — '+dmy(c.to||''):'','','Period'],['المعدل التراكمي',c.gpa?c.gpa+' / 5.00':'','','Cumulative GPA'],['التقدير',gr,en59(gr),'Grade'],['المؤهل السابق',c.prev,en59(c.prev),'Previous Qualification'])}
  else if(t==='skill77'){var SK=skill59(D.sid),th=SK.reduce(function(x,y){return x+(+y.h||0)},0);R.push(['عدد البرامج والدورات',String(SK.length),'','Programs & Courses'],['إجمالي الساعات التدريبية',th+' ساعة',th+' hours','Total Training Hours'])}
- else if(t==='fin'){var F=fin59(c,D);R.push(['الفصل الدراسي',F.tAr,F.tEn,'Semester'],['الرسوم المقررة',F.base,'','Set Fee'],['المنحة الدراسية',F.pct?F.pct+'%':'','','Scholarship'],['المبلغ المستحق',F.due,'','Amount Due'])}
+ else if(t==='fin'){var F=fin59(c,D);R.push(['الفصل الدراسي',F.tAr,F.tEn,'Semester'],['الرسوم المقررة',F.base,'','Set Fee'],['المنحة الدراسية',F.pct?(F.kAr+' — '+F.pct+'%'):'',F.pct?(F.kEn+' — '+F.pct+'%'):'','Scholarship'],['مبلغ الإعفاء',F.off||'','','Waived Amount'],['المبلغ المستحق',F.due,'','Amount Due'])}
  else if(V5.grad98&&V5.grad98(D.st)){var G3=V5.grad98(D.st);R.push(['فصل القبول',G3.atAr,G3.atEn,'Admission Semester'],['فصل التخرج',G3.gtAr,G3.gtEn,'Graduation Semester'],['تاريخ التخرج',G3.gd?dmy(G3.gd)+' م':'',G3.gd?dmy(G3.gd):'','Graduation Date'],['حالة الطالب',D.w('متخرج','متخرجة','متخرج/ة'),'Graduated','Status'])}
  else{var s=D.st,T61c=cal61T(s,'cur'),stt=String(s.status||'منتظم');R.push(['الفصل الدراسي',T61c.ar||'',T61c.en||'','Current Semester'],['حالة الطالب',stt,en59(stt),'Status'])}
  return R.filter(function(r){return String(r[1]||'').trim()})}
@@ -6186,9 +6186,9 @@ var HL3=function(k){var Hm=S.home||{};return L3(Hm[k]||'',Hm[k+'En']||Hm[k]||'',
 function home120(){var Hm=S.home||{},I=(S.v51&&S.v51.inst)||{},P=progs(),D=depts(),reg=I.regNo||'028412/2025';
  var main=P.filter(function(p){return p.kind!=='short'&&p.kind!=='course'&&p.kind!=='workshop'}),short=P.filter(function(p){return p.kind==='short'||p.kind==='course'||p.kind==='workshop'}).sort(function(a,b){return String(b.from||'').localeCompare(String(a.from||''))});
  var nm=L(I.nameAr||'معهد التمهيد',I.nameEn||'At Tamhid Institute');
- var h='<div class="hero h120"><div class="hx"><div class="hl"><div class="kick">'+L('مؤسسة تعليمية مرخّصة ومسجّلة رسمياً','A licensed, officially registered institution')+'</div><h1>'+e0(nm)+'</h1><p class="lead">'+e0(HL3('hero'))+'</p>'+
+ var h='<div class="hero h120"><div class="hx"><div class="hl"><div class="kick">'+L('مؤسسة تعليمية رائدة','A leading educational institution')+'</div><h1>'+e0(nm)+'</h1><p class="lead">'+e0(HL3('hero'))+'</p>'+
   '<div class="cta"><a class="btn g" href="#/register">'+L('قدّم طلب الالتحاق','Apply for admission')+'</a><a class="btn o" href="#/programs">'+L('استكشف البرامج','Explore programmes')+'</a></div>'+
-  '<ul class="trust"><li>'+ic('shield')+'<span>'+L('ترخيص حكومي رقم ','Government licence No. ')+'<bdi dir="ltr">'+e0(reg)+'</bdi></span></li><li>'+ic('globe')+'<span>'+L('حضورياً وعن بُعد','On campus and online')+'</span></li><li>'+ic('users')+'<span>'+L('أساتذة متخصصون','Specialist teachers')+'</span></li></ul></div>'+
+  '<ul class="trust"><li>'+ic('globe')+'<span>'+L('حضورياً وعن بُعد','On campus and online')+'</span></li><li>'+ic('users')+'<span>'+L('أساتذة متخصصون','Specialist teachers')+'</span></li></ul></div>'+
   '<aside class="hc" aria-label="'+L('روابط سريعة','Quick links')+'"><h2>'+L('ابدأ من هنا','Start here')+'</h2>'+
   [['#/register','cap',L('طلب التسجيل','Application'),L('قدّم طلبك في دقائق','Apply in minutes')],['#/review','search',L('متابعة الطلب','Track your application'),L('حالة الطلب وخطاب القبول','Status and acceptance letter')],['#/login','screen',L('دخول البوابات','Portal sign-in'),L('الطلاب والمدرّسون والإدارة','Students, faculty and staff')],['#/verify','shield',L('التحقق من وثيقة','Verify a document'),L('خدمة للجهات والمؤسسات','A service for institutions and employers')]].map(function(x){return '<a href="'+x[0]+'"><span class="i">'+ic(x[1])+'</span><span><b>'+x[2]+'</b><small>'+x[3]+'</small></span><span class="ar" aria-hidden="true">'+ic('arrow')+'</span></a>'}).join('')+'</aside></div></div>';
  var ann=HL3('ann');if(ann)h+='<div class="an120" role="note"><b>'+L('مستجدات المعهد','Latest from the Institute')+'</b><span>'+e0(ann)+'</span></div>';
@@ -7070,9 +7070,10 @@ H.sp67test=function(btn){var f=btn.closest('form'),u=f&&f.url?f.url.value:'',r=l
 /* الحفظ: الرابط إلزامي للحضور عن بعد أو المدمج، والمكان إلزامي للحضوري أو المدمج */
 try{var _sv=H.sp60save;H.sp60save=function(f){var v=fv(f),m=MODES[v.mode]?v.mode:'onsite',u=String(v.url||'').trim(),pl=String(v.place||'').trim(),o=f.querySelector('.sp67lk');
  var err=function(t){if(o)o.innerHTML='<span class="tag er">'+e7(t)+'</span>';toast(t);return false};
- if((m==='remote'||m==='hybrid')&&!u)return err(L('رابط المحاضرة إلزامي للحضور عن بعد أو المدمج؛ لا يُحفظ البرنامج دونه.','The lecture link is required for online or hybrid attendance; the program cannot be saved without it.'));
+ /* v126: برنامج سبق انعقاده يُضاف لتوثيقه وإصدار شهاداته دون اشتراط الرابط أو المكان */var past126=!!(v.end&&new Date(v.end).getTime()<Date.now());
+ if(!past126&&(m==='remote'||m==='hybrid')&&!u)return err(L('رابط المحاضرة إلزامي للحضور عن بعد أو المدمج؛ لا يُحفظ البرنامج دونه.','The lecture link is required for online or hybrid attendance; the program cannot be saved without it.'));
  if(u){var r=linkInfo(u);if(!r.ok)return err(r.msg)}
- if((m==='onsite'||m==='hybrid')&&!pl)return err(L('مكان الانعقاد إلزامي للحضور الحضوري أو المدمج.','The venue is required for in-person or hybrid attendance.'));
+ if(!past126&&(m==='onsite'||m==='hybrid')&&!pl)return err(L('مكان الانعقاد إلزامي للحضور الحضوري أو المدمج.','The venue is required for in-person or hybrid attendance.'));
  var r0=_sv.apply(this,arguments);setTimeout(function(){mt=0;try{if(migrate())save()}catch(e){}},500);return r0}}catch(e){}
 
 /* ---------- الإعدادات ---------- */
@@ -7945,7 +7946,7 @@ var SKIP='script,style,textarea,input,code,pre,.tmw,.g5,.gpvw,.lpv,.fit69,.cert,
 /* ---------- قاموس إضافي معتمد ---------- */
 var EN69={'بوابة دخول موحدة لجميع المستخدمين.':'A unified sign-in portal for all users.','غير مفعل':'Inactive','غير مفعّل':'Inactive','مفعّل':'Active','أقل من 10':'Fewer than 10','مسودة':'Draft',
  'بانتظار إدخال الدرجات':'Awaiting grade entry','شهادة حضور':'Certificate of Attendance','شهادة مشاركة (برنامج قصير)':'Certificate of Participation (short program)','شهادة اجتياز (برنامج قصير)':'Certificate of Completion (short program)',
- 'مجلس إدارة المعهد':'the Institute Board','مدينة دكا - بنغلاديش':'Dhaka, Bangladesh','دكا - بنغلاديش':'Dhaka, Bangladesh','معهد':'Institute','وثيقة التخرج':'Graduation Document','وثائق التخرج':'Graduation Documents','وثائق تخرج':'Graduation documents','شهادات تخرج':'Graduation certificates',
+ 'مجلس الشؤون التعليمية':'the Board of Educational Affairs','مدينة دكا - بنغلاديش':'Dhaka, Bangladesh','دكا - بنغلاديش':'Dhaka, Bangladesh','معهد':'Institute','وثيقة التخرج':'Graduation Document','وثائق التخرج':'Graduation Documents','وثائق تخرج':'Graduation documents','شهادات تخرج':'Graduation certificates',
  'طالب تجريبي':'Demo Student','لوحة البداية':'Dashboard','اختصارات':'Shortcuts','التنبيهات':'Alerts','الأقسام':'Sections','المزيد':'More','عرض الكل':'Show all','عرض مختصر':'Show fewer','السابق':'Previous','التالي':'Next',
  'منتظم':'Regular','مؤجل':'Deferred','متخرج':'Graduated','منسحب':'Withdrawn','موقوف':'Suspended','قيد المراجعة':'Under review','مقبول':'Accepted','مرفوض':'Rejected','قائمة الانتظار':'Waiting list',
  'ذكر':'Male','أنثى':'Female','نعم':'Yes','لا':'No','الكل':'All','حفظ':'Save','إلغاء':'Cancel','تعديل':'Edit','حذف':'Delete','إغلاق':'Close','فتح':'Open','معاينة':'Preview','تنزيل':'Download','رفع صورة':'Upload image',
@@ -9863,21 +9864,21 @@ var H=V5.h,W=window;
 var e7=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var central=function(){return typeof me!=='undefined'&&me&&me.r==='admin'&&!me.unit&&!V5.imp64};
 var IC={glb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',lic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>',doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>',web:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>',book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5a2 2 0 012-2h6v18H6a2 2 0 01-2-2zM20 5a2 2 0 00-2-2h-6v18h6a2 2 0 002-2z"/></svg>'};
-var DEF=[{ic:'lic',tAr:'ترخيص حكومي رسمي',tEn:'Officially licensed',sAr:'مسجّل لدى حكومة بنغلاديش برقم {reg}',sEn:'Registered with the Government of Bangladesh, No. {reg}'},
+var DEF=[{ic:'lic',tAr:'برامج نوعية',tEn:'Quality programmes',sAr:'في التأهيل والتدريب العلمي واللغوي',sEn:'In scholarly and language education and training'},
  {ic:'book',tAr:'منهج أصيل',tEn:'Authentic curriculum',sAr:'على الكتاب والسنة بفهم سلف الأمة، مع العناية بالعربية وعلومها',sEn:'Grounded in the Qur’an and Sunnah as understood by the early generations, with mastery of Arabic'},
  {ic:'web',tAr:'منظومة تعليمية متكاملة',tEn:'An integrated educational system',sAr:'للطلاب وهيئة التدريس والإدارة، من القبول حتى التخرج',sEn:'For students, faculty and administration, from admission to graduation'},
  {ic:'glb',tAr:'تعليم حضوري وعن بُعد',tEn:'On campus and online',sAr:'برامج أكاديمية ودورات بإشراف أساتذة متخصصين',sEn:'Academic programmes and courses under specialist teachers'}];
-function cfg(){var X=S.v51=S.v51||{};X.look77=X.look77||{};var c=X.look77;if(!Array.isArray(c.facts)||c.facts.length!==4)c.facts=JSON.parse(JSON.stringify(DEF));if(!c.f121){c.f121=1;c.facts=c.facts.map(function(f,i){return (f.ic==='doc'||f.ic==='web')?JSON.parse(JSON.stringify(DEF[i])):f});try{V5.setTouch&&V5.setTouch('look77')}catch(e){}}if(c.ub==null)c.ub=1;if(c.fx==null)c.fx=1;return c}
+function cfg(){var X=S.v51=S.v51||{};X.look77=X.look77||{};var c=X.look77;if(!Array.isArray(c.facts)||c.facts.length!==4)c.facts=JSON.parse(JSON.stringify(DEF));if(!c.f121){c.f121=1;c.facts=c.facts.map(function(f,i){return (f.ic==='doc'||f.ic==='web')?JSON.parse(JSON.stringify(DEF[i])):f});try{V5.setTouch&&V5.setTouch('look77')}catch(e){}}if(!c.f126){c.f126=1;c.facts=c.facts.map(function(f,i){return (f&&(f.ic==='lic'||/ترخيص|مسجّل لدى/.test((f.tAr||'')+(f.sAr||''))))?JSON.parse(JSON.stringify(DEF[0])):f});try{V5.setTouch&&V5.setTouch('look77')}catch(e){}}if(c.ub==null)c.ub=1;if(c.fx==null)c.fx=1;return c}
 try{if(SET_KEYS.indexOf('look77')<0)SET_KEYS.push('look77')}catch(e){}
 var reg=function(){return ((S.v51&&S.v51.inst)||{}).regNo||'028412/2025'};
 var fill=function(t){return String(t||'').replace(/\{reg\}/g,reg())};
 function ub(){var c=cfg(),old=document.getElementById('ub77');if(!+c.ub){if(old)old.remove();return}var Hm=S.home||{},I=(S.v51&&S.v51.inst)||{};
- var h='<div class="in"><div class="l"><b>'+e7(L(I.nameAr||'معهد التمهيد',I.nameEn||'At Tamhid Institute'))+'</b><i></i><span>'+L('ترخيص رقم ','Licence No. ')+'<bdi dir="ltr">'+e7(reg())+'</bdi></span></div><div class="r">'+(Hm.p1?'<span>'+L('واتساب: ','WhatsApp: ')+'<bdi dir="ltr">'+e7(Hm.p1)+'</bdi></span>':'')+(Hm.em?'<span>'+L('البريد: ','Email: ')+'<bdi dir="ltr">'+e7(Hm.em)+'</bdi></span>':'')+'</div></div>';
+ var h='<div class="in"><div class="l"><b>'+e7(L(I.nameAr||'معهد التمهيد',I.nameEn||'At Tamhid Institute'))+'</b></div><div class="r">'+(Hm.p1?'<span>'+L('واتساب: ','WhatsApp: ')+'<bdi dir="ltr">'+e7(Hm.p1)+'</bdi></span>':'')+(Hm.em?'<span>'+L('البريد: ','Email: ')+'<bdi dir="ltr">'+e7(Hm.em)+'</bdi></span>':'')+'</div></div>';
  if(old){if(old.dataset.h!==h){old.innerHTML=h;old.dataset.h=h}return}var hd=document.querySelector('body>header');if(!hd)return;var d=document.createElement('div');d.id='ub77';d.className='ub77';d.setAttribute('role','complementary');d.setAttribute('aria-label',L('معلومات المؤسسة','Institution information'));d.innerHTML=h;d.dataset.h=h;hd.parentNode.insertBefore(d,hd)}
 function fx(){var c=cfg(),hero=document.querySelector('#app>.hero');if(!hero||!+c.fx||document.getElementById('fx77'))return;var d=document.createElement('div');d.id='fx77';d.className='fx77';d.setAttribute('role','list');
  d.innerHTML=c.facts.map(function(f){return '<div class="f" role="listitem"><span class="ic" aria-hidden="true">'+(IC[f.ic]||IC.doc)+'</span><span class="t">'+e7(L(fill(f.tAr),fill(f.tEn)||fill(f.tAr)))+'</span><span class="s">'+e7(L(fill(f.sAr),fill(f.sEn)||fill(f.sAr)))+'</span></div>'}).join('');hero.insertAdjacentElement('afterend',d)}
 function ft(){var f=document.getElementById('ft');if(!f||f.querySelector('.ft77'))return;var I=(S.v51&&S.v51.inst)||{},y=new Date().getFullYear();var d=document.createElement('div');d.className='ft77';
- d.innerHTML='<span class="seal"><span aria-hidden="true"></span>'+e7(L(I.nameAr||'معهد التمهيد',I.nameEn||'At Tamhid Institute'))+'</span><span>© <bdi dir="ltr">'+y+'</bdi> '+L('جميع الحقوق محفوظة','All rights reserved')+' · '+L('ترخيص رقم ','Licence No. ')+'<bdi dir="ltr">'+e7(reg())+'</bdi></span>';f.appendChild(d)}
+ d.innerHTML='<span class="seal"><span aria-hidden="true"></span>'+e7(L(I.nameAr||'معهد التمهيد',I.nameEn||'At Tamhid Institute'))+'</span><span>© <bdi dir="ltr">'+y+'</bdi> '+L('جميع الحقوق محفوظة','All rights reserved')+'</span>';f.appendChild(d)}
 function post(){try{ub();fx();ft()}catch(e){}}
 try{GOH.post.push(post)}catch(e){}setTimeout(post,300);
 /* الإدارة: «واجهة الموقع الرسمية» */

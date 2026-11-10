@@ -30,7 +30,7 @@ const V49={
 "الرقم الأكاديمي":"Academic number","الحالة:":"Status:",
 "أدخل اسم المناسبة في كل صف":"Enter the occasion name in every row","أدخل درجة من 0 إلى 100":"Enter a grade from 0 to 100",
 "أدخل رابط Zoom أو Teams يبدأ بـ https://":"Enter a Zoom or Teams link starting with https://","أدخل رقم القرار ورقم الجلسة":"Enter the decision number and the session number",
-"أدخل رقم قرار مجلس المعهد ورقم جلسة إدارة المعهد":"Enter the Institute Council decision number and the Institute management session number",
+"أدخل رقم قرار مجلس الشؤون التعليمية ورقم جلسة إدارة المعهد":"Enter the Board of Educational Affairs decision number and the Institute management session number",
 "أدخل ساعات المقرر الجديد":"Enter the hours of the new course","أدخل نص السؤال":"Enter the question text","أكمل الخيارات الأربعة":"Complete the four options",
 "أُرسل طلب التسجيل إلى الإدارة للمراجعة":"The registration request has been sent to the administration for review","أُرسل طلب تسجيل الحزمة كاملة إلى الإدارة":"The full-bundle registration request has been sent to the administration",
 "أُضيف البرنامج.":"Program added.","أُضيفت المادة.":"Item added.","أُعيد احتساب المعدل الفصلي والتراكمي والنسب والتقديرات":"Term and cumulative GPA, percentages and grades have been recalculated",
