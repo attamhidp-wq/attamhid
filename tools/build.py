@@ -13,7 +13,7 @@ def minify(body, h):
     if os.path.exists(cp):
         return open(cp, encoding='utf-8').read()
     try:
-        r = subprocess.run(['node', UG, '-c', '-m', '--keep-fnames', '--comments', 'false'], input=body.encode('utf-8'), capture_output=True, timeout=600)
+        r = subprocess.run(['node', UG, '-c', 'merge_vars=false', '-m', '--keep-fnames', '--comments', 'false'], input=body.encode('utf-8'), capture_output=True, timeout=600)
         if r.returncode != 0 or not r.stdout:
             print('minify failed', h, r.stderr.decode()[:300]); return body
         out = r.stdout.decode('utf-8')
@@ -23,6 +23,7 @@ def minify(body, h):
         print('minify error', e); return body
 src = open(os.path.join(R, 'src/index.html'), encoding='utf-8').read()
 MIN = 3000
+MINV = 'm2:merge_vars=false;'
 LAZY = {'jsqr'}  # تُحمَّل عند الحاجة فقط
 files = []
 n = [0]
@@ -33,7 +34,8 @@ def repl(m):
     n[0] += 1
     idm = re.search(r'\bid="([^"]+)"', attrs)
     name = (idm.group(1) if idm else 's%02d' % n[0])
-    h = hashlib.sha256(body.encode()).hexdigest()[:10]
+    # MINV: يتغيّر مع تغيّر إعدادات الضغط حتى لا يبقى في ذاكرة المتصفح ملف قديم بالاسم نفسه
+    h = hashlib.sha256((MINV + body).encode()).hexdigest()[:10]
     fn = 'js/%s-%s.js' % (re.sub(r'[^A-Za-z0-9_-]', '', name), h)
     with open(os.path.join(R, fn), 'w', encoding='utf-8', newline='') as f:
         f.write(minify(body, h) if '--no-min' not in sys.argv else body)
