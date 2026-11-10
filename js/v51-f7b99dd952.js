@@ -167,7 +167,7 @@ V5.DOC_TYPES=DOC_TYPES;
 var posById=function(id){return (S.v51.positions||[]).find(function(p){return p.id==id})};
 var sealById=function(id){return (S.v51.seals||[]).find(function(p){return p.id==id})};
 V5.posById=posById;V5.sealById=sealById;
-function profileOf(type){var P=S.v51.profiles||{};return P[type]||P._default||{pos:['pos-gm'],seals:['seal-main']}}
+function profileOf(type){var P=S.v51.profiles||{};return P[type]||P._default||{pos:['pos-president'],seals:['seal-pres']}}
 function occNow(p,date){date=date||TODAY();var O=(p.occ||[]).filter(function(o){return !o.deleted&&(!o.from||o.from<=date)&&(!o.to||o.to>=date)});return O[O.length-1]||null}
 V5.profileOf=profileOf;V5.occNow=occNow;
 function resolveSigners(type,date){var pr=profileOf(type),out=[];
@@ -2691,7 +2691,7 @@ function spInfo(P){var K=kindOf(P);return '<div class="sp6-card"><div class="k">
  '<p>'+L('الموعد','Date')+': <bdi dir="ltr">'+esc6(fmtD(P))+'</bdi> · '+L('الساعات','Hours')+': '+esc6(P.hours)+(P.trainerAr?' · '+L('المدرب','Trainer')+': '+esc6(L(P.trainerAr,P.trainerEn||P.trainerAr)):'')+(P.place?' · '+esc6(P.place):'')+'</p></div>'}
 function okBox60(){return '<div class="msg ok" style="font-size:1.05em;padding:16px"><b style="font-size:1.15em">✓ '+L('تم تسجيلك بنجاح','You have been registered successfully')+'</b><br>'+L('سُجّلت بياناتك في البرنامج. تتواصل معك إدارة المعهد عبر بريدك المسجَّل، وتصلك الشهادة بالبريد بعد انتهاء البرنامج.','Your details have been recorded. The Institute will contact you at your registered email, and your certificate will be emailed after the programme ends.')+'</div>'}
 V.sp=function(){var id=location.hash.split('/')[2]||'',P=progOf(id);
- if(!P){if(typeof sb!=='undefined'&&sb&&!V5._spFetch){V5._spFetch=1;sb.from('v60_short_programs').select('id,data').eq('id',id).then(function(r){if(r.data&&r.data[0]){var X=D();if(X&&!progOf(id))X.sp.push(r.data[0].data);go()}})}return '<section class="box"><p>'+L('جارٍ تحميل البرنامج…','Loading program…')+'</p></section>'}
+ if(!P){if(typeof sb!=='undefined'&&sb&&!V5._spFetch){V5._spFetch=1;sb.from('v60_short_programs').select('id,data').eq('id',id).then(function(r){if(r.data&&r.data[0]){var X=D();if(X&&!progOf(id))X.sp.push(r.data[0].data);go()}})}return '<section class="box sk129" aria-label="'+L('جارٍ تحميل البرنامج…','Loading program…')+'"><i style="width:55%;height:22px"></i><i style="width:85%"></i><i style="width:70%"></i><i style="width:40%;height:34px;margin-top:16px"></i></section>'}
  var why=openReg(P),stu=typeof me!=='undefined'&&me&&me.r==='student',mine=stu&&live(D().spr).find(function(r){return r.pid===id&&r.sid==me.id});
  var h='<section class="box sp6-reg">'+spInfo(P);
  if(V5._spDone===id)h+=okBox60();
@@ -5965,8 +5965,8 @@ function card(s){var p=V5.prog(+s.prog||s.prog),g=gpaOf(s),Ln=linked(s);
  h+='<h4>'+L('طلبات الوثائق والتسجيل','Document & registration requests')+' ('+D.length+')</h4>'+(D.length?T([L('الطلب','Request'),L('النوع','Type'),L('الحالة','Status'),L('التاريخ','Date')],D.map(function(d){return '<tr><td dir="ltr">'+e2(d.id)+'</td><td>'+e2(d.type)+'</td><td>'+e2(d.status||'')+'</td><td><bdi dir="ltr">'+e2(String(d.date||'').slice(0,10))+'</bdi></td></tr>'})):'<p class="mu">'+L('لا طلبات.','None.')+'</p>');
  var Q=(s.eq112||[]),RG=(s.reg115||[]);if(Q.length||RG.length)h+='<h4>'+L('المعادلات والتسجيل الفصلي','Equivalencies & term registration')+'</h4><p>'+L('طلبات معادلة: ','Equivalency requests: ')+Q.length+' · '+L('تسجيلات فصلية: ','Term registrations: ')+RG.length+'</p>';
  var A=(S.audit||[]).filter(function(a){return a&&(a.target==s.id||a.tgt==s.id||String(a.detail||'').indexOf(String(s.id))>-1)}).slice(-40).reverse();
- h+='<h4>'+L('المراسلات بالبريد','Email correspondence')+'</h4><div id="c119m"><p class="mu">'+L('جارٍ التحميل…','Loading…')+'</p></div>';
- h+='<h4>'+L('سجل التغييرات على الخادم','Server change history')+'</h4><div id="c119h"><p class="mu">'+L('جارٍ التحميل…','Loading…')+'</p></div>';
+ h+='<h4>'+L('المراسلات بالبريد','Email correspondence')+'</h4><div id="c119m"><div class="sk129" aria-label="'+L('جارٍ التحميل…','Loading…')+'"><i style="width:80%"></i><i style="width:60%"></i><i style="width:70%"></i></div></div>';
+ h+='<h4>'+L('سجل التغييرات على الخادم','Server change history')+'</h4><div id="c119h"><div class="sk129" aria-label="'+L('جارٍ التحميل…','Loading…')+'"><i style="width:80%"></i><i style="width:60%"></i><i style="width:70%"></i></div></div>';
  h+='<h4>'+L('سجل العمليات في بوابة الإدارة','Admin portal activity')+' ('+A.length+')</h4>'+(A.length?T([L('الوقت','Time'),L('العملية','Action'),L('بواسطة','By'),L('التفاصيل','Details')],A.map(function(a){return '<tr><td><bdi dir="ltr">'+e2(String(a.t||a.at||'').slice(0,16).replace('T',' '))+'</bdi></td><td>'+e2(a.action||a.act||'')+'</td><td>'+e2(a.by||a.user||'')+'</td><td><small>'+e2(String(a.detail||'').slice(0,160))+'</small></td></tr>'})):'<p class="mu">'+L('لا عمليات مسجلة.','No recorded activity.')+'</p>');
  return h}
 function loadSrv(id){if(typeof sb==='undefined'||!sb)return;sb.rpc('v119_person',{sid:String(id)}).then(function(r){var m=document.getElementById('c119m'),hh=document.getElementById('c119h');if(r.error){var t='<p class="mu">'+e2(r.error.message)+'</p>';if(m)m.innerHTML=t;if(hh)hh.innerHTML=t;return}var d=r.data||{};
@@ -8624,7 +8624,7 @@ function dmy(d){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(d||''));return m?m[
 V5.receipt71=receiptHTML;
 var _ch=W.certHTML;W.certHTML=function(c){if(c&&c.type==='rcpt71'){try{return receiptHTML(c)}catch(e){console.error('rcpt71',e)}}return _ch.apply(this,arguments)};
 try{var _dt=DOC_TYPES;DOC_TYPES=function(){var o=_dt.apply(this,arguments);if(!o.some(function(x){return x[0]==='rcpt71'}))o.push(['rcpt71','إيصال الدفع والتبرع','Payment & donation receipt']);return o};V5.DOC_TYPES=DOC_TYPES}catch(e){}
-function ensureProfile(){try{var P=S.v51.profiles=S.v51.profiles||{};if(!P.rcpt71){var a=P.acc||P._default||{pos:['pos-gm'],seals:['seal-main']};P.rcpt71=JSON.parse(JSON.stringify(a));try{V5.setTouch&&V5.setTouch('profiles')}catch(e){}}}catch(e){}}
+function ensureProfile(){try{var P=S.v51.profiles=S.v51.profiles||{};if(!P.rcpt71){var a=P.acc||P._default||{pos:['pos-president'],seals:['seal-pres']};P.rcpt71=JSON.parse(JSON.stringify(a));try{V5.setTouch&&V5.setTouch('profiles')}catch(e){}}}catch(e){}}
 
 /* إصدار الإيصال (رقم رسمي من 11 خانة) */
 function issue(o){ensureProfile();var c={type:'rcpt71',rec:V5.newRec67?V5.newRec67('rcpt71'):v51Serial(0,'rcpt71'),name:o.name||'',nameEn:o.nameEn||'',sid:o.sid||'',date:o.date||day(NOW()),at:NOW(),by:who(),lang:'bi',pay:o.pay};
@@ -9918,7 +9918,7 @@ function mig77p(){var X=S.v51;if(!X||!X.positions||X.mig77p)return 0;var P=presP
  P.deleted=0;try{touch(P)}catch(e){}
  /* كل نوع وثيقة كان يوقّعه «المدير العام» يوقّعه رئيس المعهد */
  var PR=X.profiles=X.profiles||{};Object.keys(PR).forEach(function(k){var p=PR[k];if(p&&Array.isArray(p.pos)){var n=p.pos.map(function(x){return x==='pos-gm'?'pos-president':x}).filter(function(x,i,a){return a.indexOf(x)===i});if(JSON.stringify(n)!==JSON.stringify(p.pos)){p.pos=n;log.push('prof:'+k)}}});
- if(!PR._default)PR._default={pos:['pos-president'],seals:['seal-main']};
+ if(!PR._default)PR._default={pos:['pos-president'],seals:['seal-pres']};
  try{setTouch('profiles')}catch(e){}
  /* منصب المدير العام وشاغله: يُحذفان من القوائم (يبقى السجل التاريخي للتحقق من الوثائق القديمة) */
  X.positions.forEach(function(p){(p.occ||[]).forEach(function(o){if(!o.deleted&&GMRX.test(String(o.name||'')+' '+String(o.nameEn||''))){o.deleted=1;o.to=o.to||TODAY7();log.push('occ:'+p.id);try{touch(p)}catch(e){}}});
