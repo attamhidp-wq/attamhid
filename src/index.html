@@ -16575,7 +16575,7 @@ V5.DOC_TYPES=DOC_TYPES;
 var posById=function(id){return (S.v51.positions||[]).find(function(p){return p.id==id})};
 var sealById=function(id){return (S.v51.seals||[]).find(function(p){return p.id==id})};
 V5.posById=posById;V5.sealById=sealById;
-function profileOf(type){var P=S.v51.profiles||{};return P[type]||P._default||{pos:['pos-gm'],seals:['seal-main']}}
+function profileOf(type){var P=S.v51.profiles||{};return P[type]||P._default||{pos:['pos-president'],seals:['seal-pres']}}
 function occNow(p,date){date=date||TODAY();var O=(p.occ||[]).filter(function(o){return !o.deleted&&(!o.from||o.from<=date)&&(!o.to||o.to>=date)});return O[O.length-1]||null}
 V5.profileOf=profileOf;V5.occNow=occNow;
 function resolveSigners(type,date){var pr=profileOf(type),out=[];
@@ -25032,7 +25032,7 @@ function dmy(d){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(d||''));return m?m[
 V5.receipt71=receiptHTML;
 var _ch=W.certHTML;W.certHTML=function(c){if(c&&c.type==='rcpt71'){try{return receiptHTML(c)}catch(e){console.error('rcpt71',e)}}return _ch.apply(this,arguments)};
 try{var _dt=DOC_TYPES;DOC_TYPES=function(){var o=_dt.apply(this,arguments);if(!o.some(function(x){return x[0]==='rcpt71'}))o.push(['rcpt71','إيصال الدفع والتبرع','Payment & donation receipt']);return o};V5.DOC_TYPES=DOC_TYPES}catch(e){}
-function ensureProfile(){try{var P=S.v51.profiles=S.v51.profiles||{};if(!P.rcpt71){var a=P.acc||P._default||{pos:['pos-gm'],seals:['seal-main']};P.rcpt71=JSON.parse(JSON.stringify(a));try{V5.setTouch&&V5.setTouch('profiles')}catch(e){}}}catch(e){}}
+function ensureProfile(){try{var P=S.v51.profiles=S.v51.profiles||{};if(!P.rcpt71){var a=P.acc||P._default||{pos:['pos-president'],seals:['seal-pres']};P.rcpt71=JSON.parse(JSON.stringify(a));try{V5.setTouch&&V5.setTouch('profiles')}catch(e){}}}catch(e){}}
 
 /* إصدار الإيصال (رقم رسمي من 11 خانة) */
 function issue(o){ensureProfile();var c={type:'rcpt71',rec:V5.newRec67?V5.newRec67('rcpt71'):v51Serial(0,'rcpt71'),name:o.name||'',nameEn:o.nameEn||'',sid:o.sid||'',date:o.date||day(NOW()),at:NOW(),by:who(),lang:'bi',pay:o.pay};
@@ -26326,7 +26326,7 @@ function mig77p(){var X=S.v51;if(!X||!X.positions||X.mig77p)return 0;var P=presP
  P.deleted=0;try{touch(P)}catch(e){}
  /* كل نوع وثيقة كان يوقّعه «المدير العام» يوقّعه رئيس المعهد */
  var PR=X.profiles=X.profiles||{};Object.keys(PR).forEach(function(k){var p=PR[k];if(p&&Array.isArray(p.pos)){var n=p.pos.map(function(x){return x==='pos-gm'?'pos-president':x}).filter(function(x,i,a){return a.indexOf(x)===i});if(JSON.stringify(n)!==JSON.stringify(p.pos)){p.pos=n;log.push('prof:'+k)}}});
- if(!PR._default)PR._default={pos:['pos-president'],seals:['seal-main']};
+ if(!PR._default)PR._default={pos:['pos-president'],seals:['seal-pres']};
  try{setTouch('profiles')}catch(e){}
  /* منصب المدير العام وشاغله: يُحذفان من القوائم (يبقى السجل التاريخي للتحقق من الوثائق القديمة) */
  X.positions.forEach(function(p){(p.occ||[]).forEach(function(o){if(!o.deleted&&GMRX.test(String(o.name||'')+' '+String(o.nameEn||''))){o.deleted=1;o.to=o.to||TODAY7();log.push('occ:'+p.id);try{touch(p)}catch(e){}}});
@@ -26672,7 +26672,9 @@ function ens(){try{var P=S.programs;if(!Array.isArray(P))return;var v=X();v.old6
  if(!Object.prototype.hasOwnProperty.call(P,'find'))Object.defineProperty(P,'find',{value:function(f,t){var r=Array.prototype.find.call(this,f,t);return r!==undefined?r:Array.prototype.find.call((S.v51&&S.v51.old60)||[],f,t)},enumerable:false,configurable:true,writable:true})}catch(e){console.warn('v125 ens',e)}}
 V5.ens125=ens;ens();try{GOH.pre.push(ens)}catch(e){}
 /* v127: ختم رئيس المعهد المعتمد يُطبَّق على سجل الختم نفسه الذي تقرؤه كل الوثائق */
-function seal127(){try{var v=X(),SL=(v.seals||[]).find(function(x){return x&&x.id==='seal-pres'});if(SL&&SL.img!=='img/seal59-v126a.webp'){SL.img='img/seal59-v126a.webp';SL.u=new Date().toISOString();try{save0()}catch(e){}}}catch(e){}}
+function seal127(){try{var v=X(),SL=(v.seals||[]).find(function(x){return x&&x.id==='seal-pres'});if(SL&&SL.img!=='img/seal59-v126a.webp'){SL.img='img/seal59-v126a.webp';SL.u=new Date().toISOString();try{save0()}catch(e){}}
+ /* v128: لا ختم في الوثائق غير ختم رئيس المعهد */var ch=0,M=(v.seals||[]).find(function(x){return x&&x.id==='seal-main'});if(M&&(!M.deleted||M.active)){M.deleted=1;M.active=0;ch=1}
+ var PR=v.profiles||{};Object.keys(PR).forEach(function(k){var q=PR[k];if(q&&Array.isArray(q.seals)&&q.seals.some(function(z){return z!=='seal-pres'})){q.seals=['seal-pres'];ch=1}});if(ch){try{save0()}catch(e){}}}catch(e){}}
 seal127();try{GOH.pre.push(seal127)}catch(e){}
 var done=0;async function pull(){if(done||typeof sb==='undefined'||!sb)return;done=1;try{var r=await sb.from('v60_short_programs').select('id,data');if(r.error||!r.data)return;var v=X(),ch=0;
  r.data.forEach(function(row){var d=row.data||{};if(!d.id)d.id=row.id;var l=v.sp.find(function(o){return String(o.id)===String(row.id)});if(!l){v.sp.push(d);ch++}else if((d.u||'')>(l.u||l.at||'')&&!(typeof me!=='undefined'&&me&&me.r==='admin')){Object.keys(l).forEach(function(k){delete l[k]});Object.assign(l,d);ch++}});
@@ -26746,7 +26748,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v127';
+window.__BUILD__='v128';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}

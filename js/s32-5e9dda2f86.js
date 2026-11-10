@@ -14,6 +14,11 @@ function ens(){try{var P=S.programs;if(!Array.isArray(P))return;var v=X();v.old6
  if(mv.length){mv.forEach(function(p){var i=v.old60.findIndex(function(o){return String(o.id)===String(p.id)});if(i<0)v.old60.push(p);else v.old60[i]=p});S.programs=P=P.filter(function(p){return mv.indexOf(p)<0})}
  if(!Object.prototype.hasOwnProperty.call(P,'find'))Object.defineProperty(P,'find',{value:function(f,t){var r=Array.prototype.find.call(this,f,t);return r!==undefined?r:Array.prototype.find.call((S.v51&&S.v51.old60)||[],f,t)},enumerable:false,configurable:true,writable:true})}catch(e){console.warn('v125 ens',e)}}
 V5.ens125=ens;ens();try{GOH.pre.push(ens)}catch(e){}
+/* v127: ختم رئيس المعهد المعتمد يُطبَّق على سجل الختم نفسه الذي تقرؤه كل الوثائق */
+function seal127(){try{var v=X(),SL=(v.seals||[]).find(function(x){return x&&x.id==='seal-pres'});if(SL&&SL.img!=='img/seal59-v126a.webp'){SL.img='img/seal59-v126a.webp';SL.u=new Date().toISOString();try{save0()}catch(e){}}
+ /* v128: لا ختم في الوثائق غير ختم رئيس المعهد */var ch=0,M=(v.seals||[]).find(function(x){return x&&x.id==='seal-main'});if(M&&(!M.deleted||M.active)){M.deleted=1;M.active=0;ch=1}
+ var PR=v.profiles||{};Object.keys(PR).forEach(function(k){var q=PR[k];if(q&&Array.isArray(q.seals)&&q.seals.some(function(z){return z!=='seal-pres'})){q.seals=['seal-pres'];ch=1}});if(ch){try{save0()}catch(e){}}}catch(e){}}
+seal127();try{GOH.pre.push(seal127)}catch(e){}
 var done=0;async function pull(){if(done||typeof sb==='undefined'||!sb)return;done=1;try{var r=await sb.from('v60_short_programs').select('id,data');if(r.error||!r.data)return;var v=X(),ch=0;
  r.data.forEach(function(row){var d=row.data||{};if(!d.id)d.id=row.id;var l=v.sp.find(function(o){return String(o.id)===String(row.id)});if(!l){v.sp.push(d);ch++}else if((d.u||'')>(l.u||l.at||'')&&!(typeof me!=='undefined'&&me&&me.r==='admin')){Object.keys(l).forEach(function(k){delete l[k]});Object.assign(l,d);ch++}});
  ens();if(ch){try{save0()}catch(e){}var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(k===''||k==='programs')go()}}catch(e){console.warn('sp pub',e)}}
