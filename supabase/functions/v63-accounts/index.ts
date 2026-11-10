@@ -488,7 +488,7 @@ async function accLogin(ident: string, password: string) {
   if (!/^\d+$/.test(ref) || !password) return { error: "bad" };
   const cfg = await settings();
   let { data: a } = await admin.from("v83_acc").select("*").eq("ref_id", ref).maybeSingle() as { data: Acc | null };
-  // v115: الدخول بالرقم الأكاديمي لقيد آخر (بكالوريوس مثلاً) يوصل إلى حساب الطالب نفسه
+  // v115: الدخول بالرقم الأكاديمي لقيد آخر (برنامج سابق مثلاً) يوصل إلى حساب الطالب نفسه
   if (!a) { const { data: al } = await admin.rpc("v61_alias", { ident: ref }); if (al && /^\d+$/.test(String(al))) { const r2 = await admin.from("v83_acc").select("*").eq("ref_id", String(al)).maybeSingle(); if (r2.data) { a = r2.data as Acc; ref = String(al); } } }
   if (!a) return { error: "bad" };
   if (a.locked_until && Date.parse(a.locked_until) > Date.now()) return { error: "locked", until: a.locked_until };
