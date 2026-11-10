@@ -18986,7 +18986,9 @@ function tabSP(){var X=D();if(!X)return '';
   return '<tr><td><b>'+esc6(L(P.nameAr,P.nameEn))+'</b><br><small class="mu">'+esc6(L(K.ar,K.en))+'</small></td><td dir="ltr">'+esc6(fmtD(P))+'</td><td>'+esc6(P.hours)+'</td><td>'+CTN(P.ctype)+'</td><td>'+rg.length+(P.max?' / '+P.max:'')+'</td><td>'+ic+'</td><td>'+(done?(+P.confirm&&!P.confirmedAt?'<span class="tag">'+L('بانتظار الاعتماد','Awaiting approval')+'</span>':'<span class="tag ok">'+L('منتهٍ','Ended')+'</span>'):'<span class="tag">'+L('قادم/جارٍ','Upcoming/ongoing')+'</span>')+'</td><td>'+
    bt(L('الإعلان / Announcement','Announcement'),"V51.h.ann67('"+P.id+"')",'').replace('<button','<button data-pri="1"')+' '+bt(L('المسجلون','Registrants'),"V51.h.sp60go('regs','"+P.id+"')").replace('<button','<button data-pri="2"')+' '+bt(L('الشهادات','Certificates'),"V51.h.sp69jump('"+P.id+"','cert')").replace('<button','<button data-pri="3"')+' '+bt(L('تعديل','Edit'),"V51.h.sp60go('edit','"+P.id+"')")+' '+bt(L('الحضور','Attendance'),"V51.h.sp69jump('"+P.id+"','att')")+' '+bt(L('الاستيراد','Import'),"V51.h.sp69jump('"+P.id+"','imp')")+' '+bt(L('رابط التسجيل','Registration link'),"V51.h.sp60link('"+P.id+"')")+' '+bt(L('معاينة الشهادة','Preview certificate'),"V51.h.sp60pv('"+P.id+"')")+' '+bt(L('شهادة شكر المدرب','Trainer appreciation certificate'),"V51.h.thx70open('"+P.id+"')")+(+P.confirm&&done&&!P.confirmedAt?' '+bt(L('اعتماد الإصدار','Approve issuance'),"V51.h.sp60ok('"+P.id+"')",'')+'':'')+' '+bt(L('حذف','Delete'),"V51.h.sp60del('"+P.id+"')")+'</td></tr>'});
  return hd+bl+'<p class="mu">'+L('تصدر الشهادات فوراً وتلقائياً عند انتهاء وقت البرنامج لكل المسجلين المستوفين للشروط، دون أي تدخل. ولا تصدر أي شهادة فيها حقل فارغ بأي لغة.','Certificates are issued instantly and automatically when a program ends, for every eligible registrant, with no human action. No certificate is issued with an empty field in either language.')+'</p>'+
-  T([L('البرنامج','Program'),L('الموعد','Date & time'),L('الساعات','Hours'),L('نوع الشهادة','Certificate'),L('المسجلون','Registrants'),L('الصادرة','Issued'),L('الحالة','Status'),''],rows)}
+  T([L('البرنامج','Program'),L('الموعد','Date & time'),L('الساعات','Hours'),L('نوع الشهادة','Certificate'),L('المسجلون','Registrants'),L('الصادرة','Issued'),L('الحالة','Status'),''],rows)+old124()}
+function old124(){var a=(S.programs||[]).filter(function(p){return p&&!p.deleted&&(p.kind==='short'||p.kind==='course'||p.kind==='workshop')}).sort(function(x,y){return String(y.from||'').localeCompare(String(x.from||''))});if(!a.length)return '';
+ return '<h4 style="margin-top:22px">'+L('برامج قصيرة سابقة','Earlier short programmes')+'</h4><p class="mu">'+L('أُضيفت هذه البرامج من تبويب «البرامج» قبل إنشاء هذا القسم، وشهاداتها الصادرة محفوظة. تُدار من تبويب «البرامج»، وتظهر للزوار في الصفحة الرئيسية وصفحة البرامج.','These programmes were added from the “Programmes” tab before this section existed; their issued certificates are kept. They are managed from the “Programmes” tab and appear to visitors on the home page and the programmes page.')+'</p>'+T([L('البرنامج','Program'),L('التاريخ','Date'),L('الساعات','Hours'),L('المشرف','Supervisor'),''],a.map(function(p){return '<tr><td>'+esc6(L(p.name,p.nameEn||p.name))+'</td><td><bdi dir="ltr">'+esc6(p.from||'')+'</bdi></td><td>'+esc6(p.hours||'')+'</td><td>'+esc6(p.teacher||'')+'</td><td><button class="btn sec" onclick="tab=\'pr\';go()">'+L('إدارته','Manage')+'</button></td></tr>'}))}
 var live=function(a){return (a||[]).filter(function(x){return x&&!x.deleted})};
 function formSP(P){P=P||{};var X=D(),ks=X.spCfg.kinds||C6.KINDS0;var ex=(S.exams||[]).map(function(e){return [e.id,e.title||e.name||e.id]});
  var dl=function(n,v,a){return inp(n,dtl(v),'type="datetime-local" '+(a||''))};
@@ -22603,7 +22605,8 @@ function home120(){var Hm=S.home||{},I=(S.v51&&S.v51.inst)||{},P=progs(),D=depts
  h+='<section class="s120"><div class="hd"><div><span class="ey">'+L('البرامج الأكاديمية','Academic programmes')+'</span><h2>'+L('مسارات تعليمية بمناهج واضحة وإشراف متخصص','Learning paths with clear curricula and expert supervision')+'</h2></div><a class="more" href="#/programs">'+L('كل البرامج','All programmes')+' '+ic('arrow')+'</a></div><div class="pg120">'+
   main.slice(0,6).map(function(p){var u=D.find(function(x){return x.id===unitOf(p)});var lv=+((p.eng&&p.eng.levels)||(p.levels&&p.levels.length)||0);
    return '<article class="pc120"><div class="tp"><span class="tag">'+e0(kl(p))+'</span>'+(u?'<span class="u">'+e0(L(u.nameAr,u.nameEn||u.nameAr))+'</span>':'')+'</div><h3>'+e0(pn(p))+'</h3><p>'+e0(String(pd(p)).slice(0,220))+'</p><ul class="mt">'+(p.hours?'<li>'+ic('clock')+'<span><bdi dir="ltr">'+e0(p.hours)+'</bdi> '+L('ساعة معتمدة','credit hours')+'</span></li>':'')+(lv?'<li>'+ic('layers')+'<span><bdi dir="ltr">'+lv+'</bdi> '+L('مستويات','levels')+'</span></li>':'')+'</ul><div class="ac"><a class="btn s" href="#/register">'+L('قدّم الآن','Apply now')+'</a><a class="lk" href="#/programs">'+L('التفاصيل','Details')+'</a></div></article>'}).join('')+'</div>';
- if(short.length)h+='<h3 class="sub">'+L('برامج قصيرة ودورات وورش عمل','Short programmes, courses and workshops')+'</h3><div class="sh120">'+short.slice(0,6).map(function(p){return '<a class="it" href="#/programs"><span class="dt"><bdi dir="ltr">'+e0(String(p.from||'').slice(5).replace('-','/'))+'</bdi><small dir="ltr">'+e0(String(p.from||'').slice(0,4))+'</small></span><span class="tx"><b>'+e0(pn(p))+'</b><small>'+e0(kl(p))+(p.hours?' · <bdi dir="ltr">'+e0(p.hours)+'</bdi> '+L('ساعات','hours'):'')+'</small></span></a>'}).join('')+'</div>';
+ var sh123=short.map(function(p){return {d:String(p.from||''),n:pn(p),k:kl(p),h:p.hours,href:'#/programs'}}).concat(V5.spPub123?V5.spPub123():[]).sort(function(a,b){return b.d.localeCompare(a.d)});
+ if(sh123.length)h+='<h3 class="sub">'+L('برامج قصيرة ودورات وورش عمل','Short programmes, courses and workshops')+'</h3><div class="sh120">'+sh123.slice(0,9).map(function(p){return '<a class="it" href="'+p.href+'"><span class="dt"><bdi dir="ltr">'+e0(p.d.slice(5,10).replace('-','/'))+'</bdi><small dir="ltr">'+e0(p.d.slice(0,4))+'</small></span><span class="tx"><b>'+e0(p.n)+'</b><small>'+e0(p.k)+(p.h?' · <bdi dir="ltr">'+e0(p.h)+'</bdi> '+L('ساعات','hours'):'')+(p.open?' · <b style="color:var(--ac,#9a7b2f)">'+L('التسجيل مفتوح','Registration open')+'</b>':'')+'</small></span></a>'}).join('')+'</div>';
  h+='</section>';
  /* الأقسام */
  if(D.length)h+='<section class="s120 alt"><div class="hd"><div><span class="ey">'+L('الأقسام الأكاديمية','Academic departments')+'</span><h2>'+L('أقسام متخصصة تقود البرامج وتشرف عليها','Specialised departments that lead and supervise the programmes')+'</h2></div></div><div class="dp120">'+D.map(function(u,i){var n=P.filter(function(p){return unitOf(p)===u.id}).length;return '<div class="d"><span class="n" dir="ltr">'+String(i+1).padStart(2,'0')+'</span><h3>'+e0(L(u.nameAr,u.nameEn||u.nameAr))+'</h3><small>'+(n?'<bdi dir="ltr">'+n+'</bdi> '+(n===1?L('برنامج','programme'):L('برامج','programmes')):L('برامج قيد الإعداد','Programmes in preparation'))+'</small></div>'}).join('')+'</div></section>';
@@ -24016,7 +24019,7 @@ H.dr69=function(on){drawer(!!on)};W.V5gs=function(){V5.gsOpen69&&V5.gsOpen69()};
 /* ---------- لوحة الإدارة: أقسام القائمة الجانبية ---------- */
 var SECT=[
  ['home','الرئيسية','Overview','home',['v69h','v112i','dash']],
- ['aca','الشؤون الأكاديمية','Academic Affairs','book',['v112d','v51p','v65p','cr','cal','tf','v93s','v64a','ex','v65b','v67b','v77g','v67g','apv','v60sp','sh','v66d']],
+ ['aca','الشؤون الأكاديمية','Academic Affairs','book',['v112d','v51p','pr','v65p','cr','cal','tf','v93s','v64a','ex','v65b','v67b','v77g','v67g','apv','v60sp','sh','v66d']],
  ['adm','القبول والتسجيل','Admissions & Registration','users',['v112a','req','v75r','v77a','st','v119c','v74p','v115g']],
  ['fin','الإدارة المالية','Finance','doc',['v120f','v71p']],
  ['doc','الوثائق','Documents','doc',['ce','dr','v98g','v51d','v64c','v51s','v64q','v67n','v75n']],
@@ -24025,7 +24028,7 @@ var SECT=[
 /* v113: واجهات مجمَّعة — بند واحد في القائمة، وصفحاته تظهر تبويباتٍ فرعية أعلى المحتوى */
 var HUB=[
  ['hAn','لوحة القيادة والتحليلات','Dashboard & Analytics',['v112i','dash']],
- ['hDept','الأقسام والبرامج الأكاديمية','Departments & Programmes',['v112d','v51p']],
+ ['hDept','الأقسام والبرامج الأكاديمية','Departments & Programmes',['v112d','v51p','pr']],
  ['hPlan','الخطة والمقررات والتقويم','Plan, Courses & Calendar',['v65p','cr','cal']],
  ['hStaff','هيئة التدريس والإدارة','Faculty & Staff',['tf','v93s','v64a']],
  ['hExam','الاختبارات وبنوك الأسئلة','Exams & Question Banks',['ex','v65b','v67b','v77g']],
@@ -26650,6 +26653,26 @@ setInterval(function(){try{if(S!==lastS||anyVisible())hide();persist()}catch(e){
  X.p123=1;try{save()}catch(e){}}catch(e){console.warn('v123',e)}})();
 </script>
 <script>
+/* v124 — البرامج القصيرة والدورات وورش العمل (النظام الجديد) تظهر للزوار في الصفحة الرئيسية وصفحة البرامج، مع رابط التسجيل */
+(function(){
+var e0=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var V5=window.V51,L=function(a,b){try{return V5.L?V5.L(a,b):a}catch(e){return a}};var K0=[{id:'lec',ar:'محاضرة',en:'Lecture'},{id:'ws',ar:'ورشة عمل',en:'Workshop'},{id:'crs',ar:'دورة تدريبية',en:'Training course'},{id:'sem',ar:'ندوة',en:'Seminar'},{id:'frm',ar:'ملتقى',en:'Forum'},{id:'prg',ar:'برنامج',en:'Programme'}];
+function X(){var v=S.v51=S.v51||{};v.sp=v.sp||[];return v}
+function kind(P){var ks=(X().spCfg&&X().spCfg.kinds)||K0,k=ks.find(function(x){return x.id===P.kind})||K0.find(function(x){return x.id===P.kind})||K0[5];var en=String(k.en||'');return L(k.ar,en.charAt(0).toUpperCase()+en.slice(1))}
+function regOpen(P){if(+P.selfReg===0)return false;var n=Date.now(),off=(P.tzOff==null?-180:+P.tzOff)*60000,t=function(x){return x?Date.parse(x+':00Z')+off:null},a=t(P.regFrom),b=t(P.regTo)||t(P.end||P.start);return (!a||n>=a)&&(!b||n<=b)}
+function list(){return X().sp.filter(function(P){return P&&!P.deleted&&P.nameAr&&+P.hidden!==1}).map(function(P){return {d:String(P.start||''),n:L(P.nameAr,P.nameEn||P.nameAr),k:kind(P),h:P.hours,href:'#/sp/'+encodeURIComponent(P.id),open:regOpen(P),P:P}})}
+V5.spPub123=list;
+var done=0;async function pull(){if(done||typeof sb==='undefined'||!sb)return;done=1;try{var r=await sb.from('v60_short_programs').select('id,data');if(r.error||!r.data)return;var v=X(),ch=0;
+ r.data.forEach(function(row){var d=row.data||{};if(!d.id)d.id=row.id;var l=v.sp.find(function(o){return String(o.id)===String(row.id)});if(!l){v.sp.push(d);ch++}else if((d.u||'')>(l.u||l.at||'')&&!(typeof me!=='undefined'&&me&&me.r==='admin')){Object.keys(l).forEach(function(k){delete l[k]});Object.assign(l,d);ch++}});
+ if(ch){try{save0()}catch(e){}var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(k===''||k==='programs')go()}}catch(e){console.warn('sp pub',e)}}
+try{GOH.post.push(function(){var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(k===''||k==='programs'||k==='student')pull()})}catch(e){}
+setTimeout(pull,1500);
+/* صفحة البرامج: قسم للبرامج القصيرة الجديدة */
+try{var _vp=V.programs;V.programs=function(){var h=_vp.apply(this,arguments),a=list().sort(function(a,b){return b.d.localeCompare(a.d)});if(!a.length)return h;
+ return h+'<h2 style="margin-top:28px">'+L('البرامج القصيرة والدورات وورش العمل','Short programmes, courses and workshops')+'</h2><div class="grid">'+a.map(function(p){var P=p.P;return '<div class="box"><h3>'+e0(p.n)+'</h3><span class="tag">'+e0(p.k)+'</span><p class="mu"><bdi dir="ltr">'+e0(String(P.start||'').replace('T',' '))+'</bdi>'+(P.hours?' · <bdi dir="ltr">'+e0(P.hours)+'</bdi> '+L('ساعات','hours'):'')+((P.trainerAr||P.trainerEn)?' · '+e0(L(P.trainerAr||P.trainerEn,P.trainerEn||P.trainerAr)):'')+'</p><a class="btn" style="display:inline-block;text-decoration:none" href="'+p.href+'">'+(p.open?L('سجّل الآن','Register now'):L('التفاصيل','Details'))+'</a></div>'}).join('')+'</div>'}}catch(e){console.warn('v124 programs',e)}
+})();
+</script>
+<script>
 /* v121 — اعتماد الاسم الرسمي «معهد التمهيد» في النسخ المحلية المحفوظة (مرة واحدة) */
 (function(){try{if(typeof S==='undefined'||!S)return;var X=S.v51=S.v51||{};if(X.n121)return;
 var R=[[/معهد\s*التمهيد\s*(<br\s*\/?>|\n)?\s*للدراسات\s+الإسلامية\s+واللغوية/g,'معهد التمهيد'],[/At[-\s]Tamhid\s+Institute\s+for\s+Islamic\s+and\s+Linguistic\s+Studies/gi,'At Tamhid Institute'],[/AT[-\s]TAMHID\s+INSTITUTE\s+FOR\s+ISLAMIC\s+AND\s+LINGUISTIC\s+STUDIES/g,'AT TAMHID INSTITUTE'],[/আত[-\s]?তামহীদ\s+ইসলামিক\s+ও\s+ভাষাতাত্ত্বিক\s+অধ্যয়ন\s+ইনস্টিটিউট/g,'আত তামহীদ ইনস্টিটিউট'],[/At-Tamhid/g,'At Tamhid'],[/AT-TAMHID/g,'AT TAMHID']];
@@ -26660,7 +26683,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v123';
+window.__BUILD__='v124';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}
