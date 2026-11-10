@@ -26632,6 +26632,8 @@ setInterval(function(){try{if(S!==lastS||anyVisible())hide();persist()}catch(e){
 <script>(function(){try{var im=new Image();im.onload=function(){if(im.naturalWidth&&im.naturalHeight)window.LGAR89=im.naturalWidth/im.naturalHeight};im.src=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}window.LGAR89=1600/431})();window.LOGOS=IMG108('logos-a2f6204d.webp');window.LOGOM=IMG108('logom-243bc940.webp');IMGH108('logos-a2f6204d.webp',function(v){window.LOGOS=v});IMGH108('logom-243bc940.webp',function(v){window.LOGOM=v});</script>
 <style id="v121doc">/* v121 — لمسات رسمية على الوثائق (مظهر فقط، دون تغيير المقاسات أو المواضع) */
 .g8-vf,.l59-vb{display:none!important}
+/* v127: ترويسة الشهادة الإنجليزية تُقرأ من اليسار دائماً (كان الرمز & ينتقل إلى أول السطر) */
+.g8-he,.g8-he>div{direction:ltr;unicode-bidi:isolate}
 .g5.g8 .g8-edge{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='74' height='74' viewBox='0 0 74 74'%3E%3Cg transform='rotate%280 37 37%29' fill='none' stroke='%2314284B' stroke-linecap='round'%3E%3Cpath d='M4 70V14Q4 4 14 4h56' stroke-width='1.3' stroke-opacity='.7'/%3E%3Cpath d='M10 64V20Q10 10 20 10h44' stroke='%239AA6AE' stroke-width='.9'/%3E%3Cpath d='M16 46V26q0-10 10-10h20' stroke-width='.8' stroke-opacity='.55'/%3E%3Crect x='21' y='21' width='7' height='7' transform='rotate%2845 24.5 24.5%29' fill='%2314284B' fill-opacity='.6' stroke='none'/%3E%3Ccircle cx='50' cy='16' r='1.6' fill='%239AA6AE' stroke='none'/%3E%3Ccircle cx='16' cy='50' r='1.6' fill='%239AA6AE' stroke='none'/%3E%3C/g%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='74' height='74' viewBox='0 0 74 74'%3E%3Cg transform='rotate%2890 37 37%29' fill='none' stroke='%2314284B' stroke-linecap='round'%3E%3Cpath d='M4 70V14Q4 4 14 4h56' stroke-width='1.3' stroke-opacity='.7'/%3E%3Cpath d='M10 64V20Q10 10 20 10h44' stroke='%239AA6AE' stroke-width='.9'/%3E%3Cpath d='M16 46V26q0-10 10-10h20' stroke-width='.8' stroke-opacity='.55'/%3E%3Crect x='21' y='21' width='7' height='7' transform='rotate%2845 24.5 24.5%29' fill='%2314284B' fill-opacity='.6' stroke='none'/%3E%3Ccircle cx='50' cy='16' r='1.6' fill='%239AA6AE' stroke='none'/%3E%3Ccircle cx='16' cy='50' r='1.6' fill='%239AA6AE' stroke='none'/%3E%3C/g%3E%3C/svg%3E");background-repeat:no-repeat;background-position:22px 22px,calc(100% - 22px) 22px;background-size:74px 74px}
 .g8-hc .ti{position:relative;white-space:nowrap;letter-spacing:.3px}
 .g8-hc .ti::before,.g8-hc .ti::after{content:'';position:absolute;top:56%;width:38px;height:7px;opacity:.6;background:linear-gradient(#14284B,#14284B) 0 3px/31px 1px no-repeat,radial-gradient(circle,#14284B 2.3px,transparent 2.6px) 31px 0/7px 7px no-repeat}
@@ -26669,6 +26671,9 @@ function ens(){try{var P=S.programs;if(!Array.isArray(P))return;var v=X();v.old6
  if(mv.length){mv.forEach(function(p){var i=v.old60.findIndex(function(o){return String(o.id)===String(p.id)});if(i<0)v.old60.push(p);else v.old60[i]=p});S.programs=P=P.filter(function(p){return mv.indexOf(p)<0})}
  if(!Object.prototype.hasOwnProperty.call(P,'find'))Object.defineProperty(P,'find',{value:function(f,t){var r=Array.prototype.find.call(this,f,t);return r!==undefined?r:Array.prototype.find.call((S.v51&&S.v51.old60)||[],f,t)},enumerable:false,configurable:true,writable:true})}catch(e){console.warn('v125 ens',e)}}
 V5.ens125=ens;ens();try{GOH.pre.push(ens)}catch(e){}
+/* v127: ختم رئيس المعهد المعتمد يُطبَّق على سجل الختم نفسه الذي تقرؤه كل الوثائق */
+function seal127(){try{var v=X(),SL=(v.seals||[]).find(function(x){return x&&x.id==='seal-pres'});if(SL&&SL.img!=='img/seal59-v126a.webp'){SL.img='img/seal59-v126a.webp';SL.u=new Date().toISOString();try{save0()}catch(e){}}}catch(e){}}
+seal127();try{GOH.pre.push(seal127)}catch(e){}
 var done=0;async function pull(){if(done||typeof sb==='undefined'||!sb)return;done=1;try{var r=await sb.from('v60_short_programs').select('id,data');if(r.error||!r.data)return;var v=X(),ch=0;
  r.data.forEach(function(row){var d=row.data||{};if(!d.id)d.id=row.id;var l=v.sp.find(function(o){return String(o.id)===String(row.id)});if(!l){v.sp.push(d);ch++}else if((d.u||'')>(l.u||l.at||'')&&!(typeof me!=='undefined'&&me&&me.r==='admin')){Object.keys(l).forEach(function(k){delete l[k]});Object.assign(l,d);ch++}});
  ens();if(ch){try{save0()}catch(e){}var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(k===''||k==='programs')go()}}catch(e){console.warn('sp pub',e)}}
@@ -26741,7 +26746,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v126';
+window.__BUILD__='v127';
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
 (function(){try{var X=typeof S!=='undefined'&&S&&S.v51;if(X&&X.sync&&!X.sync.m94){X.sync.missing={};X.sync.m94=1;try{save()}catch(e){}
