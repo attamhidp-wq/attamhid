@@ -1,97 +1,11 @@
-
 /* ===== v5: وثيقة التخرج · السجل الأكاديمي المقيَّد · الوضع الداكن/الفاتح ===== */
-(function(){try{
-const E=x=>esc(x==null?'':x),AR='معهد التمهيد';
-const f2s=x=>x==null||isNaN(x)?'—':(+x).toFixed(2);
-const semOf=l=>{try{return calGet(l)}catch(e){return{name:(rcfg().sem||{})[l]||('الفصل الدراسي '+(l%2?'الأول':'الثاني')),year:'السنة الدراسية '+(l<3?'الأولى':'الثانية')}}};
-const ratingOf=gl=>gl?String(gl).replace(/\s*مرتفع$/,''):'—';
-
-/* ---------- الوضع الداكن / الفاتح ---------- */
-const curTheme=()=>document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
-window.themeBtn=function(){const d=curTheme()==='dark',en=LG==='en',
- lab=d?(en?'Switch to light mode':'التبديل إلى الوضع الفاتح'):(en?'Switch to dark mode':'التبديل إلى الوضع الداكن'),
- ic=d?'<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></g></svg>'
-  :'<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="currentColor"/></svg>';
- return `<a role="button" tabindex="0" class="thm" data-noi18n="1" onclick="toggleTheme()" onkeydown="if(event.key=='Enter'||event.key==' '){event.preventDefault();toggleTheme()}" aria-label="${lab}" title="${lab}" aria-pressed="${d}">${ic}<span class="thmt">${d?(en?'Light':'فاتح'):(en?'Dark':'داكن')}</span></a>`};
-window.toggleTheme=function(){const n=curTheme()==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('tth',n)}catch(e){}
- const o=document.querySelector('#nav .thm');if(o)o.outerHTML=themeBtn();
- try{const m=document.querySelector('meta[name=theme-color]');if(m)m.content=n=='dark'?'#0d1526':'#12306b'}catch(e){}};
-try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',e=>{let s=null;try{s=localStorage.getItem('tth')}catch(x){}if(s!='dark'&&s!='light'){document.documentElement.setAttribute('data-theme',e.matches?'dark':'light');const o=document.querySelector('#nav .thm');if(o)o.outerHTML=themeBtn()}})}catch(e){}
-
-/* ---------- السجل الأكاديمي: الحقول المحددة حصراً ---------- */
-window.tmTranscript=function(o){
- const s=o.s,lv=(o.levels||[]).filter(v=>!v.skip&&v.rows&&v.rows.length);
- let cH=0,cQ=0,last=null;
- const blocks=lv.map(v=>{const rows=v.rows.map(c=>({...c,fin:!!c.fin}));
-  rows.filter(c=>c.fin&&c.pts!=null).forEach(c=>{cH+=c.hrs;cQ+=c.pts*c.hrs});
-  const ev=rows.filter(c=>c.fin&&c.pts!=null),eh=ev.reduce((a,c)=>a+c.hrs,0),eq=ev.reduce((a,c)=>a+c.pts*c.hrs,0);
-  const b={v,rows,gpa:v.gpa!=null?v.gpa:(eh?eq/eh:null),cum:cH?cQ/cH:null};last=b;return b});
- if(last&&o.k&&o.k.gpa!=null)last.cum=o.k.gpa;
- const info=`<table class="inf"><tr><td><b>الاسم :</b> ${E(s.name)}</td><td><b>الرقم الأكاديمي :</b> ${E(s.id)}</td></tr><tr><td><b>الجنسية :</b> ${E(s.nat||'—')}</td><td><b>رقم الهوية / الجواز :</b> ${E(s.pid||'—')}</td></tr><tr><td colspan="2"><b>البرنامج :</b> ${E((P(DIP)||{}).name||'')}</td></tr></table>`;
- let h=`<div class="bis">بسم الله الرحمن الرحيم</div>`+info;
- if(!blocks.length)h+='<p class="note">لا توجد مقررات مسجَّلة بعد.</p>';
- blocks.forEach(b=>{const sm=(window.semOf48?semOf48(s,b.v.l):semOf(b.v.l));
-  const th='<tr><th style="width:10%">رمز المقرر</th><th style="width:30%">اسم المقرر</th><th style="width:8%">الدرجة</th><th style="width:11%">الساعة المعتمدة</th><th style="width:8%">الوحدة</th><th style="width:10%">المعدل من 5</th><th style="width:11%">التقدير</th><th style="width:12%">الحالة</th></tr>';
-  const tr=b.rows.map(c=>`<tr><td>${E(c.code||'—')}</td><td class="n">${E(c.name)}</td><td>${c.fin&&c.score!=null?E(c.score):'—'}</td><td>${c.hrs}</td><td>${c.hrs}</td><td>${c.fin&&c.pts!=null?f2s(c.pts):'—'}</td><td>${c.fin?E(ratingOf(c.gl)):'—'}</td><td>${c.fin?(c.pass?'مجتاز':'غير مجتاز'):'—'}</td></tr>`).join('');
-  h+=`<h3 class="sem">الفصل الدراسي: ${E(sm.name)} — العام: ${E(sm.year)}</h3><table class="trn">${th}${tr}</table>`;
-  h+=`<table class="trn sm"><tr><th>المعدل الفصلي</th><th>المعدل التراكمي</th></tr><tr><td>${f2s(b.gpa)}</td><td>${f2s(b.cum)}</td></tr></table>`});
- h+='<div class="end">نهاية السجل الأكاديمي</div>';
- return window.frame4(trNo67(o.id),(o.R&&o.R.title)||'السجل الأكاديمي','',h,new Date().toISOString().slice(0,10),'record')};
-
+(()=>{try{let o=t=>esc(null==t?"":t),c=t=>null==t||isNaN(t)?"—":(+t).toFixed(2),h=e=>{try{return calGet(e)}catch(t){return{name:(rcfg().sem||{})[e]||"الفصل الدراسي "+(e%2?"الأول":"الثاني"),year:"السنة الدراسية "+(e<3?"الأولى":"الثانية")}}},a=()=>"dark"===document.documentElement.getAttribute("data-theme")?"dark":"light";window.themeBtn=function(){var t="dark"===a(),e="en"===LG,r=t?e?"Switch to light mode":"التبديل إلى الوضع الفاتح":e?"Switch to dark mode":"التبديل إلى الوضع الداكن";return`<a role="button" tabindex="0" class="thm" data-noi18n="1" onclick="toggleTheme()" onkeydown="if(event.key=='Enter'||event.key==' '){event.preventDefault();toggleTheme()}" aria-label="${r}" title="${r}" aria-pressed="${t}">${t?'<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></g></svg>':'<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="currentColor"/></svg>'}<span class="thmt">${t?e?"Light":"فاتح":e?"Dark":"داكن"}</span></a>`},window.toggleTheme=function(){var t="dark"===a()?"light":"dark";document.documentElement.setAttribute("data-theme",t);try{localStorage.setItem("tth",t)}catch(t){}var e=document.querySelector("#nav .thm");e&&(e.outerHTML=themeBtn());try{var r=document.querySelector("meta[name=theme-color]");r&&(r.content="dark"==t?"#0d1526":"#12306b")}catch(t){}};try{matchMedia("(prefers-color-scheme:dark)").addEventListener("change",t=>{let e=null;try{e=localStorage.getItem("tth")}catch(t){}"dark"!=e&&"light"!=e&&(document.documentElement.setAttribute("data-theme",t.matches?"dark":"light"),t=document.querySelector("#nav .thm"))&&(t.outerHTML=themeBtn())})}catch(t){}
+/* ---------- السجل الأكاديمي: الحقول المحددة حصراً ---------- */window.tmTranscript=function(t){let a=t.s,e=(t.levels||[]).filter(t=>!t.skip&&t.rows&&t.rows.length),d=0,n=0,s=null;var r=e.map(t=>{var e=t.rows.map(t=>({...t,fin:!!t.fin})),r=(e.filter(t=>t.fin&&null!=t.pts).forEach(t=>{d+=t.hrs,n+=t.pts*t.hrs}),e.filter(t=>t.fin&&null!=t.pts)),a=r.reduce((t,e)=>t+e.hrs,0),r=r.reduce((t,e)=>t+e.pts*e.hrs,0),e={v:t,rows:e,gpa:null!=t.gpa?t.gpa:a?r/a:null,cum:d?n/d:null};return s=e}),i=(s&&t.k&&null!=t.k.gpa&&(s.cum=t.k.gpa),`<table class="inf"><tr><td><b>الاسم :</b> ${o(a.name)}</td><td><b>الرقم الأكاديمي :</b> ${o(a.id)}</td></tr><tr><td><b>الجنسية :</b> ${o(a.nat||"—")}</td><td><b>رقم الهوية / الجواز :</b> ${o(a.pid||"—")}</td></tr><tr><td colspan="2"><b>البرنامج :</b> ${o((P(DIP)||{}).name||"")}</td></tr></table>`);let l='<div class="bis">بسم الله الرحمن الرحيم</div>'+i;return r.length||(l+='<p class="note">لا توجد مقررات مسجَّلة بعد.</p>'),r.forEach(t=>{var e=window.semOf48?semOf48(a,t.v.l):h(t.v.l),r=t.rows.map(t=>{return`<tr><td>${o(t.code||"—")}</td><td class="n">${o(t.name)}</td><td>${t.fin&&null!=t.score?o(t.score):"—"}</td><td>${t.hrs}</td><td>${t.hrs}</td><td>${t.fin&&null!=t.pts?c(t.pts):"—"}</td><td>${t.fin?o((e=t.gl,e?String(e).replace(/\s*مرتفع$/,""):"—")):"—"}</td><td>${t.fin?t.pass?"مجتاز":"غير مجتاز":"—"}</td></tr>`;var e}).join("");l=(l+=`<h3 class="sem">الفصل الدراسي: ${o(e.name)} — العام: ${o(e.year)}</h3><table class="trn"><tr><th style="width:10%">رمز المقرر</th><th style="width:30%">اسم المقرر</th><th style="width:8%">الدرجة</th><th style="width:11%">الساعة المعتمدة</th><th style="width:8%">الوحدة</th><th style="width:10%">المعدل من 5</th><th style="width:11%">التقدير</th><th style="width:12%">الحالة</th></tr>${r}</table>`)+`<table class="trn sm"><tr><th>المعدل الفصلي</th><th>المعدل التراكمي</th></tr><tr><td>${c(t.gpa)}</td><td>${c(t.cum)}</td></tr></table>`}),l+='<div class="end">نهاية السجل الأكاديمي</div>',window.frame4(trNo67(t.id),t.R&&t.R.title||"السجل الأكاديمي","",l,(new Date).toISOString().slice(0,10),"record")};
 /* تحديث السجل المفتوح فور اعتماد/نشر النتائج */
-let recOpen=null;
-const snap=id=>{const s=S.students.find(x=>x.id==id);return s?JSON.stringify(Object.entries(s.gr||{}).map(([k,g])=>[k,g.rel,g.score,g.pts,g.ok,g.fin])):''};
-const _seeRec=window.seeRec;
-window.seeRec=function(id){recOpen={id,snap:snap(id)};return _seeRec.apply(this,arguments)};
-const modOpen=()=>{const m=document.getElementById('mod');return m&&m.style.display==='block'};
-const refreshRec=()=>{if(!recOpen)return;if(!modOpen()){recOpen=null;return}const n=snap(recOpen.id);if(n!==recOpen.snap){const id=recOpen.id;_seeRec(id);recOpen={id,snap:n}}};
-const _save=window.save;
-try{const sv=save;save=function(){const r=sv.apply(this,arguments);try{refreshRec()}catch(e){}return r}}catch(e){}
-setInterval(async()=>{try{if(!recOpen||!modOpen())return;if(typeof sb!=='undefined'&&sb&&me&&me.r=='student'&&typeof sbUserPull=='function'){const keep=me;await sbUserPull('student',me.id);me=keep}refreshRec()}catch(e){}},15000);
-
+let r=null,d=e=>{var t=S.students.find(t=>t.id==e);return t?JSON.stringify(Object.entries(t.gr||{}).map(([t,e])=>[t,e.rel,e.score,e.pts,e.ok,e.fin])):""},n=window.seeRec,s=(window.seeRec=function(t){return r={id:t,snap:d(t)},n.apply(this,arguments)},()=>{var t=document.getElementById("mod");return t&&"block"===t.style.display}),i=()=>{var t,e;r&&(s()?(t=d(r.id))!==r.snap&&(e=r.id,n(e),r={id:e,snap:t}):r=null)};try{let e=save;save=function(){var t=e.apply(this,arguments);try{i()}catch(t){}return t}}catch(t){}setInterval(async()=>{try{var t;r&&s()&&("undefined"!=typeof sb&&sb&&me&&"student"==me.r&&"function"==typeof sbUserPull&&(await sbUserPull("student",(t=me).id),me=t),i())}catch(t){}},15e3),
 /* ---------- وثيقة التخرج: الدبلوم العام (عربية فقط) ---------- */
-CT.dgrad=['وثيقة تخرج','Graduation Certificate'];ACC.dgrad='#7a1f3d';
-const GRAD_DUR='مدة البرنامج: 80 ساعة معتمدة - 4 فصول دراسية';
-window.gradElig=function(s){
- if(!s)return{ok:0,why:'الطالب غير موجود'};
- if(+s.prog!==DIP)return{ok:0,why:'غير مسجَّل رسمياً في برنامج الدبلوم العام'};
- if(s.status!=='متخرج')return{ok:0,why:'لم تُعتمد حالة التخرج رسمياً من لوحة الإدارة'};
- const l0=s.lvl||1,miss=crs().filter(c=>c.term>=l0).filter(c=>{if(!(s.reg||[]).includes(c.id))return true;const g=(s.gr||{})[c.id];return!(g&&g.fin&&g.ok&&g.rel)});
- if(miss.length)return{ok:0,why:'لم تُستكمل متطلبات البرنامج الأكاديمية ('+miss.length+' مقرراً غير مجتاز أو غير منشور)'};
- if(S.certs.some(c=>c.type==='dgrad'&&c.sid==s.id&&!c.revoked))return{ok:0,why:'صدرت له وثيقة تخرج سارية'};
- return{ok:1}};
-const gradData=s=>{const l=Math.max(...crs().filter(c=>(s.reg||[]).includes(c.id)).map(c=>c.term),s.lvl||1),sm=(window.semOf48?semOf48(s,l):semOf(l)),k=calc(s,0,1);
- const ds=Object.values(s.gr||{}).map(g=>g.relDate||g.date||'').filter(Boolean).sort();
- return{gpa:f2s(k.gpa),gterm:sm.name,gyear:sm.year,gdate:s.gradDate||ds[ds.length-1]||today()}};
-window.gradBox=function(){
- const L=S.students.filter(s=>+s.prog===DIP),ok=[],no=[];L.forEach(s=>{const r=gradElig(s);(r.ok?ok:no).push([s,r])});
- return `<div class="box" style="margin-bottom:16px"><h3>إصدار وثيقة التخرج — الدبلوم العام</h3><p class="mu">وثيقة مستقلة تصدر بالعربية فقط، ولا تصدر إلا لطالب مسجَّل رسمياً في الدبلوم العام أكمل متطلبات البرنامج واعتُمدت حالة تخرجه (متخرج). تُسحب بيانات الطالب والمعدل التراكمي والفصل والعام وتاريخ التخرج آلياً من سجله، ويُدخل الحقلان أدناه يدوياً فقط.</p>
- <form onsubmit="return issueGrad(this)"><label>الطالب (المؤهَّلون للتخرج فقط)<select name="sid" required><option value="">— اختر الطالب —</option>${ok.map(([s])=>`<option value="${E(s.id)}">${E(s.name)} (${E(s.id)})</option>`).join('')}</select></label>
+CT.dgrad=["وثيقة تخرج","Graduation Certificate"],ACC.dgrad="#7a1f3d";window.gradElig=function(e){if(!e)return{ok:0,why:"الطالب غير موجود"};if(+e.prog!==DIP)return{ok:0,why:"غير مسجَّل رسمياً في برنامج الدبلوم العام"};if("متخرج"!==e.status)return{ok:0,why:"لم تُعتمد حالة التخرج رسمياً من لوحة الإدارة"};let r=e.lvl||1,t=crs().filter(t=>t.term>=r).filter(t=>!(e.reg||[]).includes(t.id)||!((t=(e.gr||{})[t.id])&&t.fin&&t.ok&&t.rel));return t.length?{ok:0,why:"لم تُستكمل متطلبات البرنامج الأكاديمية ("+t.length+" مقرراً غير مجتاز أو غير منشور)"}:S.certs.some(t=>"dgrad"===t.type&&t.sid==e.id&&!t.revoked)?{ok:0,why:"صدرت له وثيقة تخرج سارية"}:{ok:1}};let l=e=>{var t=Math.max(...crs().filter(t=>(e.reg||[]).includes(t.id)).map(t=>t.term),e.lvl||1),t=window.semOf48?semOf48(e,t):h(t),r=calc(e,0,1),a=Object.values(e.gr||{}).map(t=>t.relDate||t.date||"").filter(Boolean).sort();return{gpa:c(r.gpa),gterm:t.name,gyear:t.year,gdate:e.gradDate||a[a.length-1]||today()}},e=(window.gradBox=function(){let t=S.students.filter(t=>+t.prog===DIP),r=[],a=[];return t.forEach(t=>{var e=gradElig(t);(e.ok?r:a).push([t,e])}),`<div class="box" style="margin-bottom:16px"><h3>إصدار وثيقة التخرج — الدبلوم العام</h3><p class="mu">وثيقة مستقلة تصدر بالعربية فقط، ولا تصدر إلا لطالب مسجَّل رسمياً في الدبلوم العام أكمل متطلبات البرنامج واعتُمدت حالة تخرجه (متخرج). تُسحب بيانات الطالب والمعدل التراكمي والفصل والعام وتاريخ التخرج آلياً من سجله، ويُدخل الحقلان أدناه يدوياً فقط.</p>
+ <form onsubmit="return issueGrad(this)"><label>الطالب (المؤهَّلون للتخرج فقط)<select name="sid" required><option value="">— اختر الطالب —</option>${r.map(([t])=>`<option value="${o(t.id)}">${o(t.name)} (${o(t.id)})</option>`).join("")}</select></label>
  <label>رقم قرار مجلس الشؤون التعليمية<input name="boardNo" required></label><label>رقم جلسة إدارة المعهد<input name="sessNo" required></label>
  <button class="btn">اعتماد وإصدار وثيقة التخرج</button></form>
- ${no.length?`<details style="margin-top:10px"><summary>طلاب الدبلوم غير المؤهَّلين حالياً (${no.length})</summary>${no.map(([s,r])=>`<div class="mu" style="padding:3px 0"><bdi>${E(LG==='en'&&s.nameEn?s.nameEn:s.name)}</bdi> (${E(s.id)}) — <span>${E(r.why)}</span></div>`).join('')}</details>`:''}</div>`};
-window.issueGrad=function(f){const v=fv(f),s=S.students.find(x=>x.id==v.sid),r=gradElig(s);
- if(!r.ok){toast('لا يمكن إصدار وثيقة التخرج: '+r.why);return false}
- if(!String(v.boardNo||'').trim()||!String(v.sessNo||'').trim()){toast('أدخل رقم قرار مجلس الشؤون التعليمية ورقم جلسة إدارة المعهد');return false}
- const d=gradData(s),rec=v51Serial(0,'dgrad');
- S.certs.push({type:'dgrad',lang:'ar',rec,sid:s.id,name:s.name,nat:s.nat||'',pid:s.pid||'',prog:DIP,gpa:d.gpa,gterm:d.gterm,gyear:d.gyear,gdate:d.gdate,boardNo:String(v.boardNo).trim(),sessNo:String(v.sessNo).trim(),date:today()});
- save();flash=`صدرت وثيقة التخرج برقم السجل <b>${rec}</b>`;go();return false};
-const gradHTML=c=>{const st=S.students.find(x=>x.id==c.sid)||{},gv=String(st.gender||st.sex||c.gender||''),F=/أنثى|انثى|female|^f$/i.test(gv),M=/ذكر|male|^m$/i.test(gv),w=(m,f,n)=>F?f:M?m:n,bd=x=>`<bdi dir="ltr">${E(x)}</bdi>`;
- const inner=`<div class="bis">بسم الله الرحمن الرحيم</div><p class="hl">يشهد ${AR} بأن ${w('الطالب','الطالبة','الطالب/ة')}:</p><div class="nm4">${E(c.name)}</div>`+
- `<table class="kv"><tr><th>الجنسية</th><td>${E(c.nat||'—')}</td></tr><tr><th>رقم الهوية / الجواز</th><td>${bd(c.pid||'—')}</td></tr><tr><th>رقم السجل الأكاديمي</th><td>${bd(c.sid||'—')}</td></tr><tr><th>البرنامج</th><td>${E((P(c.prog)||P(DIP)||{}).name||'')}</td></tr><tr><th>المعدل التراكمي</th><td>${bd(c.gpa)} من ${bd('5.00')}</td></tr><tr><th>الفصل المتخرج به</th><td>${E(c.gterm)}</td></tr><tr><th>العام المتخرج به</th><td>${E(c.gyear)}</td></tr><tr><th>تاريخ التخرج</th><td>${bd(c.gdate)}</td></tr></table>`+
- `<p>${w('قد أتمّ','قد أتمّت','قد أتمّ/ت')} جميع متطلبات البرنامج الأكاديمية ${w('وتخرّج','وتخرّجت','وتخرّج/ت')} فيه، وذلك بعد اعتماد حالة التخرج رسمياً من إدارة المعهد.</p>`+
- `<p><b>${GRAD_DUR}</b></p>`+
- `<p>صدرت هذه الوثيقة بموجب قرار مجلس الشؤون التعليمية رقم ${bd(c.boardNo)}، وجلسة إدارة المعهد رقم ${bd(c.sessNo)}.</p>`+
- `<p>نسأل الله ل${w('ه','ها','ه/ا')} التوفيق والسداد، وتفضلوا بقبول فائق التحية والتقدير،،،</p>`;
- let h=window.frame4(c.rec,'وثيقة تخرج','',inner,c.date,'dgrad');
- if(c.revoked)h=h.replace(/<div class="tmp bl">/g,'<div class="tmp bl"><div class="rvk">ملغاة</div>').replace(/>سارية</g,'>ملغاة<');
- return h};
-window.gradData=gradData;window.gradHTML=gradHTML;window.semOf=semOf;const _chG=certHTML;certHTML=function(c){if(c&&c.type==='dgrad')return gradHTML(c);return _chG.apply(this,arguments)};
-/* حظر إصدار "grad" القديم أو "dgrad" من أي مسار عام */
-const blockG=v=>v&&(v.type==='grad'||v.type==='dgrad');
-const _is=issue;issue=function(f){const v=fv(f);if(blockG(v)){toast('تُصدر وثيقة التخرج من نموذج «إصدار وثيقة التخرج» فقط');return false}return _is.apply(this,arguments)};
-const _ib=issueBatch;issueBatch=function(f){const v=fv(f);if(blockG(v)){toast('تُصدر وثيقة التخرج من نموذج «إصدار وثيقة التخرج» فقط');return false}return _ib.apply(this,arguments)};
-}catch(e){console.error('v5',e)}
-try{if(LG=='en')window.trn(document.body)}catch(e){}
-go();
-})();
+ ${a.length?`<details style="margin-top:10px"><summary>طلاب الدبلوم غير المؤهَّلين حالياً (${a.length})</summary>${a.map(([t,e])=>`<div class="mu" style="padding:3px 0"><bdi>${o("en"===LG&&t.nameEn?t.nameEn:t.name)}</bdi> (${o(t.id)}) — <span>${o(e.why)}</span></div>`).join("")}</details>`:""}</div>`},window.issueGrad=function(t){let e=fv(t),r=S.students.find(t=>t.id==e.sid),a=gradElig(r);var d;return a.ok?String(e.boardNo||"").trim()&&String(e.sessNo||"").trim()?(t=l(r),d=v51Serial(0,"dgrad"),S.certs.push({type:"dgrad",lang:"ar",rec:d,sid:r.id,name:r.name,nat:r.nat||"",pid:r.pid||"",prog:DIP,gpa:t.gpa,gterm:t.gterm,gyear:t.gyear,gdate:t.gdate,boardNo:String(e.boardNo).trim(),sessNo:String(e.sessNo).trim(),date:today()}),save(),flash=`صدرت وثيقة التخرج برقم السجل <b>${d}</b>`,go()):toast("أدخل رقم قرار مجلس الشؤون التعليمية ورقم جلسة إدارة المعهد"):toast("لا يمكن إصدار وثيقة التخرج: "+a.why),!1},e=>{let t=S.students.find(t=>t.id==e.sid)||{},r=String(t.gender||t.sex||e.gender||""),a=/أنثى|انثى|female|^f$/i.test(r),d=/ذكر|male|^m$/i.test(r),n=(t,e,r)=>a?e:d?t:r,s=t=>`<bdi dir="ltr">${o(t)}</bdi>`;var i=`<div class="bis">بسم الله الرحمن الرحيم</div><p class="hl">يشهد معهد التمهيد بأن ${n("الطالب","الطالبة","الطالب/ة")}:</p><div class="nm4">${o(e.name)}</div>`+`<table class="kv"><tr><th>الجنسية</th><td>${o(e.nat||"—")}</td></tr><tr><th>رقم الهوية / الجواز</th><td>${s(e.pid||"—")}</td></tr><tr><th>رقم السجل الأكاديمي</th><td>${s(e.sid||"—")}</td></tr><tr><th>البرنامج</th><td>${o((P(e.prog)||P(DIP)||{}).name||"")}</td></tr><tr><th>المعدل التراكمي</th><td>${s(e.gpa)} من ${s("5.00")}</td></tr><tr><th>الفصل المتخرج به</th><td>${o(e.gterm)}</td></tr><tr><th>العام المتخرج به</th><td>${o(e.gyear)}</td></tr><tr><th>تاريخ التخرج</th><td>${s(e.gdate)}</td></tr></table>`+`<p>${n("قد أتمّ","قد أتمّت","قد أتمّ/ت")} جميع متطلبات البرنامج الأكاديمية ${n("وتخرّج","وتخرّجت","وتخرّج/ت")} فيه، وذلك بعد اعتماد حالة التخرج رسمياً من إدارة المعهد.</p>`+"<p><b>مدة البرنامج: 80 ساعة معتمدة - 4 فصول دراسية</b></p>"+`<p>صدرت هذه الوثيقة بموجب قرار مجلس الشؤون التعليمية رقم ${s(e.boardNo)}، وجلسة إدارة المعهد رقم ${s(e.sessNo)}.</p>`+`<p>نسأل الله ل${n("ه","ها","ه/ا")} التوفيق والسداد، وتفضلوا بقبول فائق التحية والتقدير،،،</p>`;let l=window.frame4(e.rec,"وثيقة تخرج","",i,e.date,"dgrad");return l=e.revoked?l.replace(/<div class="tmp bl">/g,'<div class="tmp bl"><div class="rvk">ملغاة</div>').replace(/>سارية</g,">ملغاة<"):l}),u=(window.gradData=l,window.gradHTML=e,window.semOf=h,certHTML),m=(certHTML=function(t){return t&&"dgrad"===t.type?e(t):u.apply(this,arguments)},t=>t&&("grad"===t.type||"dgrad"===t.type)),g=issue,p=(issue=function(t){t=fv(t);return m(t)?(toast("تُصدر وثيقة التخرج من نموذج «إصدار وثيقة التخرج» فقط"),!1):g.apply(this,arguments)},issueBatch);issueBatch=function(t){t=fv(t);return m(t)?(toast("تُصدر وثيقة التخرج من نموذج «إصدار وثيقة التخرج» فقط"),!1):p.apply(this,arguments)}}catch(t){console.error("v5",t)}try{"en"==LG&&window.trn(document.body)}catch(t){}go()})();

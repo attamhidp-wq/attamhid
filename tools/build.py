@@ -2,10 +2,28 @@
 """يبني index.html الخفيف من src/index.html: تُفصل السكربتات الكبيرة إلى ملفات js/ مستقلة (بالترتيب نفسه)
 حتى يخزّنها المتصفح ويعيد استخدامها دون إعادة تحميل أو إعادة تحليل، وتُحمَّل الخطوط دون حجب العرض.
 التعديل يكون دائماً في src/index.html ثم: python3 tools/build.py"""
-import re, hashlib, json, os, sys
+import re, hashlib, json, os, sys, subprocess
 R = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UG = os.path.join(R, 'tools/uglify/bin/uglifyjs')
+CACHE = os.path.join(R, 'tools/.mincache')
+os.makedirs(CACHE, exist_ok=True)
+def minify(body, h):
+    """ضغط آمن: يُبقي الأسماء العامة كما هي (السكربتات تتشارك النطاق العام) ويحافظ على أسماء الدوال"""
+    cp = os.path.join(CACHE, h + '.js')
+    if os.path.exists(cp):
+        return open(cp, encoding='utf-8').read()
+    try:
+        r = subprocess.run(['node', UG, '-c', '-m', '--keep-fnames', '--comments', 'false'], input=body.encode('utf-8'), capture_output=True, timeout=600)
+        if r.returncode != 0 or not r.stdout:
+            print('minify failed', h, r.stderr.decode()[:300]); return body
+        out = r.stdout.decode('utf-8')
+        open(cp, 'w', encoding='utf-8').write(out)
+        return out
+    except Exception as e:
+        print('minify error', e); return body
 src = open(os.path.join(R, 'src/index.html'), encoding='utf-8').read()
 MIN = 3000
+LAZY = {'jsqr'}  # تُحمَّل عند الحاجة فقط
 files = []
 n = [0]
 def repl(m):
@@ -18,11 +36,26 @@ def repl(m):
     h = hashlib.sha256(body.encode()).hexdigest()[:10]
     fn = 'js/%s-%s.js' % (re.sub(r'[^A-Za-z0-9_-]', '', name), h)
     with open(os.path.join(R, fn), 'w', encoding='utf-8', newline='') as f:
-        f.write(body)
+        f.write(minify(body, h) if '--no-min' not in sys.argv else body)
     files.append(fn)
-    extra = ' defer' if name == 'jsqr' else ''
-    return '<script%s charset="utf-8"%s src="%s"></script>' % (attrs, extra, fn)
+    if name in LAZY:
+        return '<script>window.__%s=%s</script>' % (name.upper(), json.dumps(fn))
+    return '<script%s charset="utf-8" src="%s"></script>' % (attrs, fn)
 out = re.sub(r'<script([^>]*)>([\s\S]*?)</script>', repl, src)
+def crepl(m):
+    attrs, body = m.group(1), m.group(2)
+    if len(body.encode()) < MIN or 'boot71' in attrs or 'media=' in attrs:
+        return m.group(0)
+    n[0] += 1
+    idm = re.search(r'\bid="([^"]+)"', attrs)
+    name = (idm.group(1) if idm else 'c%02d' % n[0])
+    body = re.sub(r'/\*[\s\S]*?\*/', '', body)
+    h = hashlib.sha256(body.encode()).hexdigest()[:10]
+    fn = 'js/%s-%s.css' % (re.sub(r'[^A-Za-z0-9_-]', '', name), h)
+    open(os.path.join(R, fn), 'w', encoding='utf-8', newline='').write(body)
+    files.append(fn)
+    return '<link rel="stylesheet"%s href="%s">' % ((' id="%s"' % idm.group(1)) if idm else '', fn)
+out = re.sub(r'<style([^>]*)>([\s\S]*?)</style>', crepl, out)
 # الخطوط: لا تحجب العرض
 def font(m):
     t = m.group(0)
@@ -42,7 +75,7 @@ if os.path.exists(mp):
 keep = set(files) | (set(prev) if set(prev) != set(files) else set(json.load(open(mp)).get('prev', [])) if os.path.exists(mp) else set())
 for f in os.listdir(os.path.join(R, 'js')):
     p = 'js/' + f
-    if f.endswith('.js') and p not in keep:
+    if (f.endswith('.js') or f.endswith('.css')) and p not in keep:
         os.remove(os.path.join(R, p))
 json.dump({'cur': files, 'prev': prev if set(prev) != set(files) else (json.load(open(mp)).get('prev', []) if os.path.exists(mp) else [])}, open(mp, 'w'), indent=0)
 print('index.html', len(out.encode()), 'bytes;', len(files), 'js files;', sum(os.path.getsize(os.path.join(R, f)) for f in files), 'bytes')

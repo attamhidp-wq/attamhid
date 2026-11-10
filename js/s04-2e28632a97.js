@@ -1,112 +1,20 @@
-
 /* ===== قوالب رسمية: السجل الأكاديمي + شهادة التعريف (A4) ===== */
-(()=>{
-const AR='معهد التمهيد',EN='At Tamhid Institute for Islamic &amp; Language Studies';
-const d2=n=>String(n).padStart(2,'0');
-const dts=iso=>{const d=iso&&/^\d{4}-\d{2}-\d{2}/.test(iso)?new Date(iso+'T12:00:00'):new Date();
- let h='';try{const p=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'numeric',year:'numeric'}).formatToParts(d);const g=t=>(p.find(x=>x.type==t)||{}).value;h=`${d2(g('day'))}-${d2(g('month'))}-${g('year').replace(/\D/g,'')}`}catch(e){}
- return{g:`${d.getFullYear()}-${d2(d.getMonth()+1)}-${d2(d.getDate())}`,h}};
-const hdr=(r,l,mini,gray)=>`<div class="hd${mini?' mini':''}${gray?' g':''}"><div class="r">${r}</div><div class="c"><img src="${LOGO}" alt=""></div>${l}</div>`;
-const sigBlk=rn=>`<div class="sig"><div>التوقيع<img src="${SIG}" alt=""><div class="ln"></div>${esc(sgv('signer'))}<br><small>${esc(sgv('signerTitle'))}</small></div><div>الختم الرسمي<img src="${SEAL}" alt="" style="height:96px"></div><div class="qc"><img src="${qr(vlink(rn))}" alt=""><small>امسح الرمز للتحقق</small></div></div>`;
-
-/* ---------- السجل الأكاديمي ---------- */
-const gl5=g=>{if(g==null)return '';const r=(window.GSC5||[]).find(x=>g>=+x[2]-1e-9);return r?'<br><small>'+esc(r[3]||r[1])+'</small>':''};
-window.tmTranscript=function(o){
- const s=o.s,f2=o.f2||(x=>x==null?'—':(+x).toFixed(2)),dt=dts(),by=s.birth||s.by||'';
- let cR=0,cP=0,cPts=0,cEv=0;const segs=[];let lastData=-1;
- o.levels.forEach((v,i)=>{if(v.rows.length&&!v.skip)lastData=i});
- const blocks=[];
- o.levels.forEach((v,i)=>{
-  const rows=v.rows.map(c=>{const pass=c.fin&&(c.pass!==undefined?c.pass:c.pts>0);return{...c,pass,tp:c.fin?c.pts*c.hrs:null}});
-  const R=rows.reduce((a,c)=>a+c.hrs,0),P=rows.filter(c=>c.pass).reduce((a,c)=>a+c.hrs,0),
-   ev=rows.filter(c=>c.fin),pts=ev.reduce((a,c)=>a+c.tp,0),eh=ev.reduce((a,c)=>a+c.hrs,0);
-  cR+=R;cP+=P;cPts+=pts;cEv+=eh;
-  blocks.push({v,rows,R,P,pts,gpa:v.gpa!=null?v.gpa:(eh?pts/eh:null),cum:{R:cR,P:cP,pts:cPts,gpa:i==lastData&&o.k?o.k.gpa:(cEv?cPts/cEv:null)}});
- });
- const pages=[{h:'',u:0}],cap=()=>pages.length==1?600:820;
- const nxt=()=>pages.push({h:'',u:0});
- const th='<tr><th style="width:15%">رمز المقرر</th><th>اسم المقرر</th><th style="width:12%">الوحدات</th><th style="width:13%">النقاط</th><th style="width:14%">التقدير</th></tr>';
- blocks.forEach(b=>{
-  const v=b.v,hd=`<div class="sem"><span>- ${esc(v.hd)} — ${esc(v.lvn)} -</span><small>${b.rows.length?`المعدل الفصلي: ${f2(b.gpa)} / 5.00`:''}</small></div>`;
-  if(v.skip||!b.rows.length){if(pages[pages.length-1].u+80>cap())nxt();const p=pages[pages.length-1];p.h+=hd+`<p style="font-size:14px;color:#556;margin:2px 0">${v.skip?'معفى من هذا الفصل بموجب نتيجة اختبار تحديد المستوى.':'لا توجد مقررات مسجَّلة في هذا الفصل بعد.'}</p>`;p.u+=80;return}
-  if(pages[pages.length-1].u+40+36+34>cap())nxt();
-  let p=pages[pages.length-1],first=1,buf='';
-  const flush=()=>{p.h+=(first?hd:'')+`<table>${th}${buf}</table>`;first=0;buf=''};
-  p.u+=40+36;
-  b.rows.forEach(c=>{if(p.u+34>cap()){flush();nxt();p=pages[pages.length-1];p.u+=36}
-   buf+=`<tr><td>${esc(c.code||'—')}</td><td class="n">${esc(c.name)}</td><td>${c.hrs}</td><td>${c.fin?(c.tp).toFixed(2):'—'}</td><td>${c.fin?esc(c.gl):'—'}</td></tr>`;p.u+=34});
-  flush();
-  if(p.u+116>cap()){nxt();p=pages[pages.length-1]}
-  p.h+=`<table class="sum"><tr><th style="width:16%">الوحدات</th><th>المسجلة</th><th>المجتازة</th><th>المكتسبة</th><th>النقاط</th><th>المعدل</th></tr>
-  <tr><td>الفصلي</td><td>${b.R}</td><td>${b.P}</td><td>${b.P}</td><td>${b.pts.toFixed(2)}</td><td>${f2(b.gpa)}${gl5(b.gpa)}</td></tr>
-  <tr><td>التراكمي</td><td>${b.cum.R}</td><td>${b.cum.P}</td><td>${b.cum.P}</td><td>${b.cum.pts.toFixed(2)}</td><td>${f2(b.cum.gpa)}${gl5(b.cum.gpa)}</td></tr></table>`;p.u+=116});
- if(pages[pages.length-1].u+270>cap())nxt();
- const last=pages[pages.length-1];last.h+=`<div class="end">نهاية السجل الأكاديمي</div>`;last.sig=1;
- const n=pages.length;
- const first=`<div class="bis">بسم الله الرحمن الرحيم</div>`+hdr(`${AR}<br>إدارة القبول والتسجيل`,`<div class="l ar">الرقم الجامعي: ${esc(s.id)}${by?`<br>سنة الميلاد: ${esc(by)}م`:''}</div>`)+
-  `<h1>${esc(o.R.title||'السجل الأكاديمي')}</h1><table class="info"><tr><td><b>الاسم:</b> ${esc(s.name)}</td><td><b>الدرجة:</b> دبلوم عام</td></tr><tr><td colspan="2"><b>الكلية / المعهد:</b> ${AR}</td></tr><tr><td><b>التخصص:</b> اللغة العربية</td><td><b>الجنسية:</b> ${esc(s.nat||'—')}</td></tr></table>`;
- const mini=hdr(`${AR}`,`<div class="l ar">${esc(s.name)} — ${esc(s.id)}</div>`,1);
- return `<div class="tmw">`+pages.map((p,i)=>`<div class="tmp">${i?mini:first}${p.h}${p.sig?sigBlk(trNo67(o.id)):''}<div class="ft"><span>التاريخ: ${dt.h?dt.h+' هـ — ':''}${dt.g} م</span><span class="note">* المعدل التراكمي على مقياس 5.00.</span><span>صفحة ${i+1} من ${n}</span></div></div>`).join('')+`</div>`};
-
+(()=>{let f="معهد التمهيد",$="At Tamhid Institute for Islamic &amp; Language Studies",a=t=>String(t).padStart(2,"0"),b=s=>{s=s&&/^\d{4}-\d{2}-\d{2}/.test(s)?new Date(s+"T12:00:00"):new Date;let e="";try{let t=new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn",{day:"numeric",month:"numeric",year:"numeric"}).formatToParts(s);var i=s=>(t.find(t=>t.type==s)||{}).value;e=`${a(i("day"))}-${a(i("month"))}-`+i("year").replace(/\D/g,"")}catch(t){}return{g:`${s.getFullYear()}-${a(s.getMonth()+1)}-`+a(s.getDate()),h:e}},w=(t,s,e,i)=>`<div class="hd${e?" mini":""}${i?" g":""}"><div class="r">${t}</div><div class="c"><img src="${LOGO}" alt=""></div>${s}</div>`,y=t=>`<div class="sig"><div>التوقيع<img src="${SIG}" alt=""><div class="ln"></div>${esc(sgv("signer"))}<br><small>${esc(sgv("signerTitle"))}</small></div><div>الختم الرسمي<img src="${SEAL}" alt="" style="height:96px"></div><div class="qc"><img src="${qr(vlink(t))}" alt=""><small>امسح الرمز للتحقق</small></div></div>`,x=s=>{var t;return null!=s&&(t=(window.GSC5||[]).find(t=>s>=+t[2]-1e-9))?"<br><small>"+esc(t[3]||t[1])+"</small>":""},s=(window.tmTranscript=function(n){let t=n.s,d=n.f2||(t=>null==t?"—":(+t).toFixed(2)),e=b(),s=t.birth||t.by||"",c=0,r=0,v=0,p=0;let h=-1,o=(n.levels.forEach((t,s)=>{t.rows.length&&!t.skip&&(h=s)}),[]),m=(n.levels.forEach((t,s)=>{var e=t.rows.map(t=>{var s=t.fin&&(void 0!==t.pass?t.pass:0<t.pts);return{...t,pass:s,tp:t.fin?t.pts*t.hrs:null}}),i=e.reduce((t,s)=>t+s.hrs,0),a=e.filter(t=>t.pass).reduce((t,s)=>t+s.hrs,0),l=e.filter(t=>t.fin),d=l.reduce((t,s)=>t+s.tp,0),l=l.reduce((t,s)=>t+s.hrs,0);c+=i,r+=a,v+=d,p+=l,o.push({v:t,rows:e,R:i,P:a,pts:d,gpa:null!=t.gpa?t.gpa:l?d/l:null,cum:{R:c,P:r,pts:v,gpa:s==h&&n.k?n.k.gpa:p?v/p:null}})}),[{h:"",u:0}]),u=()=>1==m.length?600:820,$=()=>m.push({h:"",u:0});o.forEach(a=>{let s=a.v,l=`<div class="sem"><span>- ${esc(s.hd)} — ${esc(s.lvn)} -</span><small>${a.rows.length?`المعدل الفصلي: ${d(a.gpa)} / 5.00`:""}</small></div>`;if(s.skip||!a.rows.length){m[m.length-1].u+80>u()&&$();let t=m[m.length-1];t.h+=l+`<p style="font-size:14px;color:#556;margin:2px 0">${s.skip?"معفى من هذا الفصل بموجب نتيجة اختبار تحديد المستوى.":"لا توجد مقررات مسجَّلة في هذا الفصل بعد."}</p>`,void(t.u+=80)}else{m[m.length-1].u+40+36+34>u()&&$();let s=m[m.length-1],t=1,e="",i=()=>{s.h+=(t?l:"")+`<table><tr><th style="width:15%">رمز المقرر</th><th>اسم المقرر</th><th style="width:12%">الوحدات</th><th style="width:13%">النقاط</th><th style="width:14%">التقدير</th></tr>${e}</table>`,t=0,e=""};s.u+=76,a.rows.forEach(t=>{s.u+34>u()&&(i(),$(),(s=m[m.length-1]).u+=36),e+=`<tr><td>${esc(t.code||"—")}</td><td class="n">${esc(t.name)}</td><td>${t.hrs}</td><td>${t.fin?t.tp.toFixed(2):"—"}</td><td>${t.fin?esc(t.gl):"—"}</td></tr>`,s.u+=34}),i(),s.u+116>u()&&($(),s=m[m.length-1]),s.h+=`<table class="sum"><tr><th style="width:16%">الوحدات</th><th>المسجلة</th><th>المجتازة</th><th>المكتسبة</th><th>النقاط</th><th>المعدل</th></tr>
+  <tr><td>الفصلي</td><td>${a.R}</td><td>${a.P}</td><td>${a.P}</td><td>${a.pts.toFixed(2)}</td><td>${d(a.gpa)}${x(a.gpa)}</td></tr>
+  <tr><td>التراكمي</td><td>${a.cum.R}</td><td>${a.cum.P}</td><td>${a.cum.P}</td><td>${a.cum.pts.toFixed(2)}</td><td>${d(a.cum.gpa)}${x(a.cum.gpa)}</td></tr></table>`,s.u+=116}}),m[m.length-1].u+270>u()&&$();var i=m[m.length-1];i.h+='<div class="end">نهاية السجل الأكاديمي</div>',i.sig=1;let a=m.length,l='<div class="bis">بسم الله الرحمن الرحيم</div>'+w(f+"<br>إدارة القبول والتسجيل",`<div class="l ar">الرقم الجامعي: ${esc(t.id)}${s?`<br>سنة الميلاد: ${esc(s)}م`:""}</div>`)+`<h1>${esc(n.R.title||"السجل الأكاديمي")}</h1><table class="info"><tr><td><b>الاسم:</b> ${esc(t.name)}</td><td><b>الدرجة:</b> دبلوم عام</td></tr><tr><td colspan="2"><b>الكلية / المعهد:</b> ${f}</td></tr><tr><td><b>التخصص:</b> اللغة العربية</td><td><b>الجنسية:</b> ${esc(t.nat||"—")}</td></tr></table>`,g=w(f,`<div class="l ar">${esc(t.name)} — ${esc(t.id)}</div>`,1);return'<div class="tmw">'+m.map((t,s)=>`<div class="tmp">${s?g:l}${t.h}${t.sig?y(trNo67(n.id)):""}<div class="ft"><span>التاريخ: ${e.h?e.h+" هـ — ":""}${e.g} م</span><span class="note">* المعدل التراكمي على مقياس 5.00.</span><span>صفحة ${s+1} من ${a}</span></div></div>`).join("")+"</div>"},
 /* ---------- شهادة التعريف (الطلاب) ---------- */
-window.tmIntro=function(c){
- const s=S.students.find(x=>x.id==c.sid)||{},dt=dts(c.date),rn=c.rec,LV=['الأول','الثاني','الثالث','الرابع'],
-  term=c.term||`المستوى ${LV[(s.lvl||1)-1]} — الفصل الدراسي ${(s.lvl||1)%2?'الأول':'الثاني'} (العام ${(s.lvl||1)<3?'الأول':'الثاني'}) ${(c.date||dt.g).slice(0,4)}`,
-  F=[['اسم الطالب',c.name],['السجل المدني / الإقامة',s.pid||c.pid],['الرقم الجامعي / الطلب',c.sid],['الجنسية',s.nat||c.nat],['الكلية / المعهد',AR],['المرحلة الدراسية','دبلوم عام'],['نوع الدراسة',(s.status||'منتظم')+''],['الفصل الدراسي',term]];
- return `<div class="tmw"><div class="tmp ci">`+(c.revoked?'<div class="rvk">ملغاة</div>':'')+
- hdr(`${AR}<br>إدارة القبول والتسجيل`,`<div class="l">${EN}<br>Admission &amp; Registration</div>`,0,1)+
- `<div class="dt">التاريخ: ${dt.g} م<br>${dt.h?dt.h+' هـ':''}</div><div class="ttl"><span>شهادة تعريف</span></div>
- <dl class="fl">${F.map(x=>`<div><dt>${x[0]}</dt><dd>${esc(x[1]||'—')}</dd></div>`).join('')}</dl>
- <p class="txt">تفيد إدارة ${AR} بأن الطالب/ة الموضحة بياناته/ا أعلاه لا يزال/ما زالت على رأس الدراسة حتى تاريخه، وبناءً على طلبه/ا تم منحه/ا هذه الوثيقة لتقديمها ( إلى من يهمه الأمر ).${c.text?'<br>'+esc(c.text):''}</p>
- <p class="fin">والله ولي التوفيق .</p>${sigBlk(rn)}
+window.tmIntro=function(s){var t=S.students.find(t=>t.id==s.sid)||{},e=b(s.date),i=s.rec,a=s.term||`المستوى ${["الأول","الثاني","الثالث","الرابع"][(t.lvl||1)-1]} — الفصل الدراسي ${(t.lvl||1)%2?"الأول":"الثاني"} (العام ${(t.lvl||1)<3?"الأول":"الثاني"}) `+(s.date||e.g).slice(0,4),t=[["اسم الطالب",s.name],["السجل المدني / الإقامة",t.pid||s.pid],["الرقم الجامعي / الطلب",s.sid],["الجنسية",t.nat||s.nat],["الكلية / المعهد",f],["المرحلة الدراسية","دبلوم عام"],["نوع الدراسة",(t.status||"منتظم")+""],["الفصل الدراسي",a]];return'<div class="tmw"><div class="tmp ci">'+(s.revoked?'<div class="rvk">ملغاة</div>':"")+w(f+"<br>إدارة القبول والتسجيل",`<div class="l">${$}<br>Admission &amp; Registration</div>`,0,1)+`<div class="dt">التاريخ: ${e.g} م<br>${e.h?e.h+" هـ":""}</div><div class="ttl"><span>شهادة تعريف</span></div>
+ <dl class="fl">${t.map(t=>`<div><dt>${t[0]}</dt><dd>${esc(t[1]||"—")}</dd></div>`).join("")}</dl>
+ <p class="txt">تفيد إدارة ${f} بأن الطالب/ة الموضحة بياناته/ا أعلاه لا يزال/ما زالت على رأس الدراسة حتى تاريخه، وبناءً على طلبه/ا تم منحه/ا هذه الوثيقة لتقديمها ( إلى من يهمه الأمر ).${s.text?"<br>"+esc(s.text):""}</p>
+ <p class="fin">والله ولي التوفيق .</p>${y(i)}
  <div class="disc">** هذه الشهادة لا يترتب عليها أي التزام تجاه المعهد</div>
- <div class="vf"><div class="ref">Ref No: ${esc(rn)}</div><div class="url"><span>يمكنك التحقق من صحة هذه الشهادة بالدخول على:</span><span dir="ltr">${esc(vlink(rn).replace(/^https?:\/\//,''))}</span></div></div>
- </div></div>`};
+ <div class="vf"><div class="ref">Ref No: ${esc(i)}</div><div class="url"><span>يمكنك التحقق من صحة هذه الشهادة بالدخول على:</span><span dir="ltr">${esc(vlink(i).replace(/^https?:\/\//,""))}</span></div></div>
+ </div></div>`},
 /* ---------- الصفحة الفارغة العمودية (خطاب رسمي) ---------- */
-window.tmBlank=function(c){
- const dt=dts(c.date),H=S.home||{},cls=c.cls||'public',Cn=700,Cl=500;
- const U=[];
- if(c.title)U.push({h:`<h2>${esc(c.title)}</h2>`});
- if(c.titleEn&&c.lang=='bi')U.push({h:`<div class="u en" style="text-align:center">${esc(c.titleEn)}</div>`,raw:1});
- if(c.nmShown&&c.name)U.push({h:`<div class="u nn">${esc(c.name)}</div>`,raw:1});
- String(c.text||'').split(/\n+/).filter(x=>x.trim()).forEach(x=>U.push({t:x,c:''}));
- if(c.lang=='bi'&&c.textEn)String(c.textEn).split(/\n+/).filter(x=>x.trim()).forEach(x=>U.push({t:x,c:' en'}));
- const m=document.createElement('div');m.className='tmw';m.style.cssText='position:fixed;left:-3000px;top:0';m.innerHTML='<div class="bl"><div class="bd" style="position:static;width:678px"></div></div>';document.body.appendChild(m);const mb=m.querySelector('.bd');
- const meas=h=>{mb.innerHTML=h;return mb.offsetHeight};
- const mk=(t,cx)=>`<div class="u${cx}">${esc(t)}</div>`;
- const items=[];
- try{U.forEach(u=>{
-  if(u.h){const h=u.raw?u.h:`<div class="u">${u.h}</div>`;items.push({h:h,ht:meas(h)});return}
-  let h=mk(u.t,u.c),ht=meas(h);
-  if(ht<=Cn){items.push({h,ht});return}
-  const w=u.t.split(/\s+/);while(w.length){let lo=1,hi=w.length;while(lo<hi){const k=Math.ceil((lo+hi)/2);meas(mk(w.slice(0,k).join(' '),u.c))<=Cn?lo=k:hi=k-1}
-   const part=mk(w.splice(0,lo).join(' '),u.c);items.push({h:part,ht:meas(part)})}
- })}finally{m.remove()}
- const pages=[[]];let h0=0;
- items.forEach(it=>{if(h0+it.ht>Cn&&pages[pages.length-1].length){pages.push([]);h0=0}pages[pages.length-1].push(it);h0+=it.ht});
- for(let g=0;g<50;g++){const L=pages[pages.length-1],sh=L.reduce((a,x)=>a+x.ht,0);if(sh<=Cl)break;if(L.length>1){pages.push([L.pop()]);continue}pages.push([]);break}
- const n=pages.length,ref=c.rec,
-  chk=(k,l)=>`<div><span class="cb${cls==k?' on':''}"></span>${l}</div>`,
-  bar=i=>`<div class="bar"><span><i>@</i>${esc(H.em||'')}</span>${n>1?`<span class="pn">صفحة ${i+1} من ${n}</span>`:''}<span>${esc(H.p1||'')}${H.p2?' , '+esc(H.p2):''}<i>+</i></span></div>`;
- return `<div class="tmw">`+pages.map((p,i)=>`<div class="tmp bl">`+(c.revoked?'<div class="rvk">ملغاة</div>':'')+
- `<div class="tp"></div><img class="tmwm" src="${window.LOGOM||LOGO}" alt="">
- <div class="bh"><div class="cls"><b>تصنيف الوثيقة:</b>${chk('public','عامة / خارجية')}${chk('internal','داخلية')}${chk('secret','سرية')}</div>
- <div class="nm"><div class="e">${EN}</div><div class="a">${AR}</div><div class="s">التعليم • التأصيل • التميز</div></div>
+window.tmBlank=function(e){let i=b(e.date),a=S.home||{},l=e.cls||"public",s=[];e.title&&s.push({h:`<h2>${esc(e.title)}</h2>`}),e.titleEn&&"bi"==e.lang&&s.push({h:`<div class="u en" style="text-align:center">${esc(e.titleEn)}</div>`,raw:1}),e.nmShown&&e.name&&s.push({h:`<div class="u nn">${esc(e.name)}</div>`,raw:1}),String(e.text||"").split(/\n+/).filter(t=>t.trim()).forEach(t=>s.push({t:t,c:""})),"bi"==e.lang&&e.textEn&&String(e.textEn).split(/\n+/).filter(t=>t.trim()).forEach(t=>s.push({t:t,c:" en"}));var t=document.createElement("div");t.className="tmw",t.style.cssText="position:fixed;left:-3000px;top:0",t.innerHTML='<div class="bl"><div class="bd" style="position:static;width:678px"></div></div>',document.body.appendChild(t);let d=t.querySelector(".bd"),n=t=>(d.innerHTML=t,d.offsetHeight),c=(t,s)=>`<div class="u${s}">${esc(t)}</div>`,r=[];try{s.forEach(e=>{if(e.h){let t=e.raw?e.h:`<div class="u">${e.h}</div>`;void r.push({h:t,ht:n(t)})}else{let t=c(e.t,e.c),s=n(t);if(s<=700)r.push({h:t,ht:s});else for(var i=e.t.split(/\s+/);i.length;){let t=1,s=i.length;for(;t<s;){var a=Math.ceil((t+s)/2);n(c(i.slice(0,a).join(" "),e.c))<=700?t=a:s=a-1}var l=c(i.splice(0,t).join(" "),e.c);r.push({h:l,ht:n(l)})}}})}finally{t.remove()}let v=[[]],p=0;r.forEach(t=>{700<p+t.ht&&v[v.length-1].length&&(v.push([]),p=0),v[v.length-1].push(t),p+=t.ht});for(let t=0;t<50;t++){var h=v[v.length-1];if(h.reduce((t,s)=>t+s.ht,0)<=500)break;if(!(1<h.length)){v.push([]);break}v.push([h.pop()])}let o=v.length,m=e.rec,u=(t,s)=>`<div><span class="cb${l==t?" on":""}"></span>${s}</div>`;return'<div class="tmw">'+v.map((t,s)=>'<div class="tmp bl">'+(e.revoked?'<div class="rvk">ملغاة</div>':"")+`<div class="tp"></div><img class="tmwm" src="${window.LOGOM||LOGO}" alt="">
+ <div class="bh"><div class="cls"><b>تصنيف الوثيقة:</b>${u("public","عامة / خارجية")}${u("internal","داخلية")}${u("secret","سرية")}</div>
+ <div class="nm"><div class="e">${$}</div><div class="a">${f}</div><div class="s">التعليم • التأصيل • التميز</div></div>
  <div class="lg"><img src="${LOGO}" alt=""></div></div>
  <div class="orn"><i></i><b></b><i></i></div>
- <div class="mt"><div><b>رقم الوثيقة :</b><span dir="ltr">${esc(ref)}</span></div><div><b>تاريخ الإصدار :</b><span>${dt.g} م</span></div><div><b>رقم الإصدار :</b><span>${esc(c.ver||'1.0')}</span></div><div><b>حالة الوثيقة :</b><span>${c.revoked?'ملغاة':'سارية'}</span></div></div>
- <div class="bd">${p.map(x=>x.h).join('')}</div>`+(i==n-1?sigBlk(ref).replace('<div class="sig">','<div class="sig">').replace('<div>الختم الرسمي<img','<div class="sl">الختم الرسمي<img'):'')+bar(i)+`</div>`).join('')+`</div>`};
-const _ch=certHTML;certHTML=function(c){if(c&&c.type=='blank')return window.tmBlank(c);if(c&&c.type=='intro'&&!/^TF/.test(c.uid||''))return window.tmIntro(c);return _ch.apply(this,arguments)};
-
-/* ---------- تنزيل متعدد الصفحات ---------- */
-const _dl=dl;dl=async function(f){
- if(!/^\s*<div class="tmw"/.test(cur))return _dl.apply(this,arguments);
- const w=document.createElement('div');w.style.cssText='position:fixed;left:-3000px;top:0';w.innerHTML=cur;document.body.appendChild(w);
- try{await document.fonts.ready;const ps=[...w.querySelectorAll('.tmp')],cvs=[];
-  for(const p of ps)cvs.push(await html2canvas(p,{scale:2.5,backgroundColor:'#fff',useCORS:true}));
-  if(f=='pdf'){const{jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4',compress:true});cvs.forEach((cv,i)=>{if(i)d.addPage('a4','p');d.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,210,297)});await fsave(curN+'.pdf',d.output('blob'))}
-  else if(f=='svg'){toast('صيغة SVG غير متاحة لهذا القالب، استخدم PDF أو PNG');}
-  else{const mt=f=='jpg'?'image/jpeg':'image/png',bl=await Promise.all(cvs.map(cv=>new Promise(r=>cv.toBlob(r,mt,.95))));
-   if(bl.length==1)await fsave(curN+'.'+f,bl[0]);else{const z=new JSZip();bl.forEach((b,i)=>z.file(`${curN}-${i+1}.${f}`,b));await fsave(curN+'.zip',await z.generateAsync({type:'blob'}))}}
- }catch(e){if(!e||e.code!='declined')toast('تعذر التنزيل: '+((e&&e.message)||e))}finally{w.remove()}};
-})();
+ <div class="mt"><div><b>رقم الوثيقة :</b><span dir="ltr">${esc(m)}</span></div><div><b>تاريخ الإصدار :</b><span>${i.g} م</span></div><div><b>رقم الإصدار :</b><span>${esc(e.ver||"1.0")}</span></div><div><b>حالة الوثيقة :</b><span>${e.revoked?"ملغاة":"سارية"}</span></div></div>
+ <div class="bd">${t.map(t=>t.h).join("")}</div>`+(s==o-1?y(m).replace('<div class="sig">','<div class="sig">').replace("<div>الختم الرسمي<img",'<div class="sl">الختم الرسمي<img'):"")+(t=s,`<div class="bar"><span><i>@</i>${esc(a.em||"")}</span>${1<o?`<span class="pn">صفحة ${t+1} من ${o}</span>`:""}<span>${esc(a.p1||"")}${a.p2?" , "+esc(a.p2):""}<i>+</i></span></div>`)+"</div>").join("")+"</div>"},certHTML),l=(certHTML=function(t){return t&&"blank"==t.type?window.tmBlank(t):t&&"intro"==t.type&&!/^TF/.test(t.uid||"")?window.tmIntro(t):s.apply(this,arguments)},dl);dl=async function(i){if(!/^\s*<div class="tmw"/.test(cur))return l.apply(this,arguments);var t=document.createElement("div");t.style.cssText="position:fixed;left:-3000px;top:0",t.innerHTML=cur,document.body.appendChild(t);try{await document.fonts.ready;var s,e=[...t.querySelectorAll(".tmp")],a=[];for(s of e)a.push(await html2canvas(s,{scale:2.5,backgroundColor:"#fff",useCORS:!0}));if("pdf"==i){let t=window.jspdf.jsPDF,e=new t({unit:"mm",format:"a4",compress:!0});a.forEach((t,s)=>{s&&e.addPage("a4","p"),e.addImage(t.toDataURL("image/jpeg",.95),"JPEG",0,0,210,297)}),await fsave(curN+".pdf",e.output("blob"))}else if("svg"==i)toast("صيغة SVG غير متاحة لهذا القالب، استخدم PDF أو PNG");else{let e="jpg"==i?"image/jpeg":"image/png",t=await Promise.all(a.map(s=>new Promise(t=>s.toBlob(t,e,.95))));if(1==t.length)await fsave(curN+"."+i,t[0]);else{let e=new JSZip;t.forEach((t,s)=>e.file(curN+`-${s+1}.`+i,t)),await fsave(curN+".zip",await e.generateAsync({type:"blob"}))}}}catch(t){t&&"declined"==t.code||toast("تعذر التنزيل: "+(t&&t.message||t))}finally{t.remove()}}})();

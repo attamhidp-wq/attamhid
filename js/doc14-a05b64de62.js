@@ -1,17 +1,9 @@
-
 /* ===== v14: الهوية الرسمية الموحَّدة (مطابقة لوثيقة التخرج) للسجل الأكاديمي وخطابي القبول والتوصية + المعاينة الحية =====
    - لا تمسّ وثيقة التخرج (gradHTML / dgrad) إطلاقاً.
    - السجل الأكاديمي: الحقول المعتمدة حصراً (بلا نقاط).
    - خطابا القبول والتوصية: النصوص والبيانات كما هي، بتصميم وثيقة التخرج. */
-(()=>{try{
-const AR='معهد التمهيد',EN='AT TAMHID INSTITUTE';
-const E=x=>esc(x==null?'':x);
-const Bz=(a,e)=>(typeof LG!='undefined'&&LG=='en')?e:a;
-if(!document.getElementById('gd13fonts')){const l=document.createElement('link');l.id='gd13fonts';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Scheherazade+New:wght@400;700&family=EB+Garamond:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap';document.head.appendChild(l)}
-
-/* ---------- التنسيق ---------- */
-const css=document.createElement('style');css.id='d14css';
-css.textContent=`.tmw[data-d14]{--b:#003366;--b2:#0c1a30;width:794px;direction:rtl;font-family:Amiri,'Scheherazade New','Traditional Arabic',serif;color:var(--b2)}
+(()=>{try{let m="معهد التمهيد",n="AT TAMHID INSTITUTE",y=t=>esc(null==t?"":t),r=(t,e)=>"undefined"!=typeof LG&&"en"==LG?e:t;document.getElementById("gd13fonts")||((w=document.createElement("link")).id="gd13fonts",w.rel="stylesheet",w.href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Scheherazade+New:wght@400;700&family=EB+Garamond:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap",document.head.appendChild(w)
+/* ---------- التنسيق ---------- */);var w,v=document.createElement("style");v.id="d14css",v.textContent=`.tmw[data-d14]{--b:#003366;--b2:#0c1a30;width:794px;direction:rtl;font-family:Amiri,'Scheherazade New','Traditional Arabic',serif;color:var(--b2)}
 .tmw[data-d14] *{box-sizing:border-box}
 .tmw[data-d14] .tmp.d14{width:794px;height:1122px;position:relative;overflow:hidden;margin:0 0 12px;padding:0;background:#eef2f6}
 .tmw[data-d14] .tmp.d14:before{display:none}
@@ -145,26 +137,9 @@ css.textContent=`.tmw[data-d14]{--b:#003366;--b2:#0c1a30;width:794px;direction:r
 .tl14b{overflow:hidden;border-radius:8px;border:1px solid var(--bd);background:#fff;min-height:80px}
 .tl14b>.tmw{zoom:var(--z,1)}
 .tl14b .tl14e{padding:18px;text-align:center;color:#556}
-`;
-document.head.appendChild(css);
-
+`,document.head.appendChild(v);
 /* ---------- أدوات ---------- */
-const NAT={'بنغلاديش':'Bangladeshi','بنغلاديشية':'Bangladeshi','سعودي':'Saudi','سعودية':'Saudi','بنغلاديشي':'Bangladeshi','بنجلاديشي':'Bangladeshi','البنغلاديشية':'Bangladeshi','البنجلاديشية':'Bangladeshi','هندي':'Indian','الهندية':'Indian','باكستاني':'Pakistani','الباكستانية':'Pakistani','مصري':'Egyptian','يمني':'Yemeni','إندونيسي':'Indonesian','اندونيسي':'Indonesian','نيجيري':'Nigerian','تركي':'Turkish','صومالي':'Somali','سوداني':'Sudanese','أفغاني':'Afghan','نيبالي':'Nepali','سريلانكي':'Sri Lankan'};
-const GEN={'ممتاز':'Excellent','جيد جداً':'Very Good','جيد جدا':'Very Good','جيد':'Good','مقبول':'Acceptable','راسب':'Fail'};
-const ratingOf=gl=>gl?String(gl).replace(/\s*مرتفع$/,''):'—';
-const f2s=x=>x==null||isNaN(x)?'—':(+x).toFixed(2);
-const dIso=d=>{const x=String(d||'').slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(x)?x:new Date().toISOString().slice(0,10)};
-const Dm=d=>{const[y,m,x]=dIso(d).split('-');return `${x}/${m}/${y}`};
-const hj=d=>{try{const p=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'2-digit',month:'2-digit',year:'numeric'}).formatToParts(new Date(dIso(d)+'T12:00:00')),g=t=>(p.find(x=>x.type==t)||{}).value;return `${g('day')}-${g('month')}-${g('year')}`}catch(e){return ''}};
-const bd=x=>`<bdi dir="ltr">${E(x)}</bdi>`;
-const num=x=>{const n=+(+x).toFixed(2);return String(n)};
-
-/* ---------- الخلفية الزخرفية (مطابقة لوثيقة التخرج، بمقاس A4 عمودي) ---------- */
-const BGW=794,BGH=1122;
-const bgSVG=first=>{const lines=[];for(let i=0;i<13;i++){const y=300+i*46,en=i%2;lines.push(`<text direction="ltr" x="${en?-110:-30}" y="${y}" font-family="${en?"'EB Garamond','Times New Roman',serif":'Amiri,serif'}" font-size="${en?24:28}" font-weight="700" fill="#6f86a3">${(en?EN+'   ':AR+'   ').repeat(3)}</text>`)}
-const orn=(x,y)=>`<g transform="translate(${x} ${y}) scale(.5)"><rect x="-20" y="-20" width="40" height="40" fill="#fff" stroke="#003366" stroke-width="2.4"/><rect x="-14" y="-14" width="28" height="28" fill="none" stroke="#1A365D" stroke-width="1"/><rect x="-9" y="-9" width="18" height="18" fill="none" stroke="#003366" stroke-width="1.6" transform="rotate(45)"/><rect x="-9" y="-9" width="18" height="18" fill="none" stroke="#003366" stroke-width="1.6"/><rect x="-3.5" y="-3.5" width="7" height="7" fill="#003366" transform="rotate(45)"/></g>`;
-const star=(x,y)=>`<g transform="translate(${x} ${y})"><rect x="-6" y="-6" width="12" height="12" fill="none" stroke="#003366" stroke-width="1.3"/><rect x="-6" y="-6" width="12" height="12" fill="none" stroke="#003366" stroke-width="1.3" transform="rotate(45)"/><rect x="-2" y="-2" width="4" height="4" fill="#003366" transform="rotate(45)"/></g>`;
-return `<svg class="d-svg" viewBox="0 0 ${BGW} ${BGH}" xmlns="http://www.w3.org/2000/svg"><defs>
+let k={"بنغلاديش":"Bangladeshi","بنغلاديشية":"Bangladeshi","سعودي":"Saudi","سعودية":"Saudi","بنغلاديشي":"Bangladeshi","بنجلاديشي":"Bangladeshi","البنغلاديشية":"Bangladeshi","البنجلاديشية":"Bangladeshi","هندي":"Indian","الهندية":"Indian","باكستاني":"Pakistani","الباكستانية":"Pakistani","مصري":"Egyptian","يمني":"Yemeni","إندونيسي":"Indonesian","اندونيسي":"Indonesian","نيجيري":"Nigerian","تركي":"Turkish","صومالي":"Somali","سوداني":"Sudanese","أفغاني":"Afghan","نيبالي":"Nepali","سريلانكي":"Sri Lankan"},$={"ممتاز":"Excellent","جيد جداً":"Very Good","جيد جدا":"Very Good","جيد":"Good","مقبول":"Acceptable","راسب":"Fail"},A=t=>null==t||isNaN(t)?"—":(+t).toFixed(2),a=t=>{t=String(t||"").slice(0,10);return/^\d{4}-\d{2}-\d{2}$/.test(t)?t:(new Date).toISOString().slice(0,10)},E=t=>{var[t,e,i]=a(t).split("-");return i+`/${e}/`+t},t=i=>{try{let t=new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn",{day:"2-digit",month:"2-digit",year:"numeric"}).formatToParts(new Date(a(i)+"T12:00:00")),e=e=>(t.find(t=>t.type==e)||{}).value;return`${e("day")}-${e("month")}-`+e("year")}catch(t){return""}},L=t=>`<bdi dir="ltr">${y(t)}</bdi>`,T=t=>{t=+(+t).toFixed(2);return String(t)},o=794,s=1122,g=t=>{var e=[];for(let t=0;t<13;t++){var i=300+46*t,a=t%2;e.push(`<text direction="ltr" x="${a?-110:-30}" y="${i}" font-family="${a?"'EB Garamond','Times New Roman',serif":"Amiri,serif"}" font-size="${a?24:28}" font-weight="700" fill="#6f86a3">${(a?n+"   ":m+"   ").repeat(3)}</text>`)}var d=(t,e)=>`<g transform="translate(${t} ${e}) scale(.5)"><rect x="-20" y="-20" width="40" height="40" fill="#fff" stroke="#003366" stroke-width="2.4"/><rect x="-14" y="-14" width="28" height="28" fill="none" stroke="#1A365D" stroke-width="1"/><rect x="-9" y="-9" width="18" height="18" fill="none" stroke="#003366" stroke-width="1.6" transform="rotate(45)"/><rect x="-9" y="-9" width="18" height="18" fill="none" stroke="#003366" stroke-width="1.6"/><rect x="-3.5" y="-3.5" width="7" height="7" fill="#003366" transform="rotate(45)"/></g>`,r=(t,e)=>`<g transform="translate(${t} ${e})"><rect x="-6" y="-6" width="12" height="12" fill="none" stroke="#003366" stroke-width="1.3"/><rect x="-6" y="-6" width="12" height="12" fill="none" stroke="#003366" stroke-width="1.3" transform="rotate(45)"/><rect x="-2" y="-2" width="4" height="4" fill="#003366" transform="rotate(45)"/></g>`;return`<svg class="d-svg" viewBox="0 0 ${o} ${s}" xmlns="http://www.w3.org/2000/svg"><defs>
 <linearGradient id="d14b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7f9fc"/><stop offset=".22" stop-color="#d4e1f0"/><stop offset=".5" stop-color="#f1f3f5"/><stop offset=".78" stop-color="#d0deee"/><stop offset="1" stop-color="#e4e7ea"/></linearGradient>
 <linearGradient id="d14h" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b4cbe6" stop-opacity=".75"/><stop offset=".12" stop-color="#dbe6f3" stop-opacity=".5"/><stop offset=".3" stop-color="#fff" stop-opacity=".35"/><stop offset=".7" stop-color="#fff" stop-opacity=".35"/><stop offset=".88" stop-color="#dbe6f3" stop-opacity=".5"/><stop offset="1" stop-color="#b4cbe6" stop-opacity=".75"/></linearGradient>
 <linearGradient id="d14t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bcd0e6"/><stop offset="1" stop-color="#bcd0e6" stop-opacity="0"/></linearGradient>
@@ -173,168 +148,41 @@ return `<svg class="d-svg" viewBox="0 0 ${BGW} ${BGH}" xmlns="http://www.w3.org/
 <pattern id="d14a" width="76" height="120" patternUnits="userSpaceOnUse" x="12"><path d="M6 118V62C6 34 24 14 38 4C52 14 70 34 70 62V118Z" fill="#fff" fill-opacity=".30" stroke="#fff" stroke-opacity=".6" stroke-width="1.5"/><path d="M16 118V64C16 42 28 26 38 18C48 26 60 42 60 64V118Z" fill="none" stroke="#9db4d0" stroke-opacity=".5" stroke-width="1"/></pattern>
 <linearGradient id="d14c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".11" stop-color="#fff"/><stop offset=".19" stop-color="#000"/></linearGradient>
 <linearGradient id="d14e" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000"/><stop offset=".6" stop-color="#fff"/></linearGradient>
-<mask id="d14q"><rect width="${BGW}" height="${BGH}" fill="url(#d14c)"/></mask>
-<mask id="d14r"><rect y="1000" width="${BGW}" height="110" fill="url(#d14e)"/></mask>
+<mask id="d14q"><rect width="${o}" height="${s}" fill="url(#d14c)"/></mask>
+<mask id="d14r"><rect y="1000" width="${o}" height="110" fill="url(#d14e)"/></mask>
 <linearGradient id="d14m" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset=".2" stop-color="#fff"/><stop offset=".32" stop-color="#000"/><stop offset=".68" stop-color="#000"/><stop offset=".8" stop-color="#fff"/><stop offset="1" stop-color="#fff"/></linearGradient>
-<mask id="d14w"><rect width="${BGW}" height="${BGH}" fill="url(#d14m)"/></mask></defs>
-<rect width="${BGW}" height="${BGH}" fill="#fff"/><rect width="${BGW}" height="${BGH}" fill="url(#d14b)"/><rect width="${BGW}" height="${BGH}" fill="url(#d14h)"/>
-<rect width="${BGW}" height="80" fill="url(#d14t)"/><rect y="1040" width="${BGW}" height="82" fill="url(#d14u)"/>
-<rect width="${BGW}" height="${BGH}" fill="url(#d14p)" opacity=".9"/>
-<rect y="28" width="${BGW}" height="190" fill="url(#d14a)" mask="url(#d14q)"/>
-<rect y="1000" width="${BGW}" height="110" fill="url(#d14a)" opacity=".35" mask="url(#d14r)"/>
-<g mask="url(#d14w)" opacity=".20">${lines.join('')}</g>
-<rect x="0" y="238" width="${BGW}" height="650" fill="#fff" fill-opacity=".34"/>
-<rect x="9" y="9" width="${BGW-18}" height="${BGH-18}" fill="none" stroke="#003366" stroke-width="1.6"/><rect x="15" y="15" width="${BGW-30}" height="${BGH-30}" fill="none" stroke="#003366" stroke-width=".7" stroke-opacity=".7"/>
-${orn(14,14)}${orn(BGW-14,14)}${orn(14,BGH-14)}${orn(BGW-14,BGH-14)}${first?star(262,186)+star(532,186):''}</svg>`};
-const DVS=`<svg class="d-dv" viewBox="0 0 674 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="d14d" x1="0" x2="1"><stop offset="0" stop-color="#003366" stop-opacity="0"/><stop offset=".2" stop-color="#003366" stop-opacity=".65"/><stop offset=".8" stop-color="#003366" stop-opacity=".65"/><stop offset="1" stop-color="#003366" stop-opacity="0"/></linearGradient></defs><rect x="0" y="4.5" width="674" height="1" fill="url(#d14d)"/><path d="M337 0l6 5-6 5-6-5z" fill="#003366"/></svg>`;
-const MT=AR+' · '+EN+' · ';
-
-/* ---------- القياس والتصفيح ---------- */
-const CAP0=596,CAPN=640; /* v45: سعة آمنة لا تلامس منطقة التذييل */
-function mbox(){const m=document.createElement('div');m.className='tmw';m.setAttribute('data-d14','1');m.style.cssText='position:fixed;left:-3000px;top:0';m.innerHTML='<div class="tmp d14"><div class="d-bd" style="position:static;width:690px;height:auto"></div></div>';document.body.appendChild(m);const b=m.querySelector('.d-bd');return{meas:h=>{b.innerHTML=h;return b.offsetHeight},done:()=>m.remove()}}
-function paginate(U){const pages=[[]];let used=0,cap=CAP0;
- U.forEach(it=>{const cur=pages[pages.length-1];if(it.brk&&cur.length){pages.push([]);used=0;cap=CAPN}
-  if(used+it.ht>cap&&pages[pages.length-1].length){pages.push([]);used=0;cap=CAPN}
-  pages[pages.length-1].push(it);used+=it.ht});
- /* لا يُترك عنوان فصل أو فاصل معلّقاً في آخر صفحة */
- for(let g=0;g<20;g++){let moved=false;for(let i=0;i<pages.length-1;i++){const p=pages[i],l=p[p.length-1];if(l&&l.kn&&p.length>1){p.pop();pages[i+1].unshift(l);moved=true}}if(!moved)break}
- return pages.filter(p=>p.length)}
-
+<mask id="d14w"><rect width="${o}" height="${s}" fill="url(#d14m)"/></mask></defs>
+<rect width="${o}" height="${s}" fill="#fff"/><rect width="${o}" height="${s}" fill="url(#d14b)"/><rect width="${o}" height="${s}" fill="url(#d14h)"/>
+<rect width="${o}" height="80" fill="url(#d14t)"/><rect y="1040" width="${o}" height="82" fill="url(#d14u)"/>
+<rect width="${o}" height="${s}" fill="url(#d14p)" opacity=".9"/>
+<rect y="28" width="${o}" height="190" fill="url(#d14a)" mask="url(#d14q)"/>
+<rect y="1000" width="${o}" height="110" fill="url(#d14a)" opacity=".35" mask="url(#d14r)"/>
+<g mask="url(#d14w)" opacity=".20">${e.join("")}</g>
+<rect x="0" y="238" width="${o}" height="650" fill="#fff" fill-opacity=".34"/>
+<rect x="9" y="9" width="${o-18}" height="${s-18}" fill="none" stroke="#003366" stroke-width="1.6"/><rect x="15" y="15" width="${o-30}" height="${s-30}" fill="none" stroke="#003366" stroke-width=".7" stroke-opacity=".7"/>
+${d(14,14)}${d(o-14,14)}${d(14,s-14)}${d(o-14,s-14)}${t?r(262,186)+r(532,186):""}</svg>`},b='<svg class="d-dv" viewBox="0 0 674 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="d14d" x1="0" x2="1"><stop offset="0" stop-color="#003366" stop-opacity="0"/><stop offset=".2" stop-color="#003366" stop-opacity=".65"/><stop offset=".8" stop-color="#003366" stop-opacity=".65"/><stop offset="1" stop-color="#003366" stop-opacity="0"/></linearGradient></defs><rect x="0" y="4.5" width="674" height="1" fill="url(#d14d)"/><path d="M337 0l6 5-6 5-6-5z" fill="#003366"/></svg>',h=m+" · "+n+" · ",e=596,u=640;/* v45: سعة آمنة لا تلامس منطقة التذييل */
+function mbox(){let t=document.createElement("div"),e=(t.className="tmw",t.setAttribute("data-d14","1"),t.style.cssText="position:fixed;left:-3000px;top:0",t.innerHTML='<div class="tmp d14"><div class="d-bd" style="position:static;width:690px;height:auto"></div></div>',document.body.appendChild(t),t.querySelector(".d-bd"));return{meas:t=>(e.innerHTML=t,e.offsetHeight),done:()=>t.remove()}}
 /* ---------- بناء الصفحات ---------- */
-function build14(o){
- const LG=window.__LG13||LOGO,SL=window.__SL13||SEAL,rec=o.rec,date=dIso(o.date),hi=hj(date),pages=paginate(o.items),n=pages.length;
- let vu='';try{vu=vlink(rec)}catch(e){}
- return `<div class="tmw" data-d14="1">`+pages.map((p,i)=>{const first=i==0||!!p[0].brk,last=i==n-1||!!pages[i+1][0].brk;
- return `<div class="tmp d14">${o.revoked?'<div class="rvk">ملغاة</div>':''}${bgSVG(first)}<img class="d-wm" src="${window.LOGOM||LG}" alt=""><div class="d-mt">${MT.repeat(10)}</div>
+function build14(d){let r=window.__LG13||LOGO,n=window.__SL13||SEAL,o=d.rec,s=a(d.date),l=t(s),c=function paginate(t){let i=[[]],a=0,d=e;t.forEach(t=>{var e=i[i.length-1];t.brk&&e.length&&(i.push([]),a=0,d=u),a+t.ht>d&&i[i.length-1].length&&(i.push([]),a=0,d=u),i[i.length-1].push(t),a+=t.ht});
+/* لا يُترك عنوان فصل أو فاصل معلّقاً في آخر صفحة */
+for(let t=0;t<20;t++){let e=!1;for(let t=0;t<i.length-1;t++){var r=i[t],n=r[r.length-1];n&&n.kn&&1<r.length&&(r.pop(),i[t+1].unshift(n),e=!0)}if(!e)break}return i.filter(t=>t.length)}(d.items),p=c.length,f="";try{f=vlink(o)}catch(t){}return'<div class="tmw" data-d14="1">'+c.map((t,e)=>{var i=0==e||!!t[0].brk,a=e==p-1||!!c[e+1][0].brk;return`<div class="tmp d14">${d.revoked?'<div class="rvk">ملغاة</div>':""}${g(i)}<img class="d-wm" src="${window.LOGOM||r}" alt=""><div class="d-mt">${h.repeat(10)}</div>
 <div class="d-bs">بسم الله الرحمن الرحيم</div>
-<div class="d-hd"><div class="d-ar"><b>${AR}</b><span>مجلس الشؤون التعليمية</span><span>قسم القبول والتسجيل</span></div><img src="${LG}" alt=""><div class="d-en"><b>At Tamhid Institute</b><span>Board of Educational Affairs</span><span>Admission &amp; Registration Department</span></div></div>
-${DVS}
-<div class="d-ti${first?'':' c'}"><b>${E(o.title)}${first?'':' — تابع'}</b><span>${E(o.titleEn)}${first?'':' (continued)'}</span></div>
-<div class="d-bd${first?'':' c'}">${p.map(x=>x.h).join('')}</div>
-<div class="d-ft"><div class="d-inf"><div class="au"><span>المدقق :</span><b>تدقيق إلكتروني</b><em>Verifier: Electronic Verification</em><i></i></div><div>حُرّرت في ${bd(hi)} هـ الموافق ${bd(Dm(date))} م</div><div class="en">Issue Date: ${E(Dm(date))} AD (${E(hi)} AH)</div></div>
-<div class="d-dn">${last?`<div class="t">رئيس معهد التمهيد</div><div class="te">Chairman of At Tamhid Institute</div><div class="im"><img src="${SIG}" alt=""></div><i class="ln"></i><div class="nmz">أ. المفتي منير الإسلام بن معيذ الدين</div><div class="nme">Mufti Munirul Islam Ibn Moiez Uddin</div><img class="sl" src="${SL}" alt="">`:`<div class="cn">يتبع في الصفحة التالية ←</div>`}</div>
-<div class="d-qrw"><div class="d-qr"><img src="${qr(vu||rec)}" alt=""></div><div class="d-idn a">رقم السجل</div><div class="d-idn">Record No.: ${E(rec)}</div></div></div>
+<div class="d-hd"><div class="d-ar"><b>${m}</b><span>مجلس الشؤون التعليمية</span><span>قسم القبول والتسجيل</span></div><img src="${r}" alt=""><div class="d-en"><b>At Tamhid Institute</b><span>Board of Educational Affairs</span><span>Admission &amp; Registration Department</span></div></div>
+${b}
+<div class="d-ti${i?"":" c"}"><b>${y(d.title)}${i?"":" — تابع"}</b><span>${y(d.titleEn)}${i?"":" (continued)"}</span></div>
+<div class="d-bd${i?"":" c"}">${t.map(t=>t.h).join("")}</div>
+<div class="d-ft"><div class="d-inf"><div class="au"><span>المدقق :</span><b>تدقيق إلكتروني</b><em>Verifier: Electronic Verification</em><i></i></div><div>حُرّرت في ${L(l)} هـ الموافق ${L(E(s))} م</div><div class="en">Issue Date: ${y(E(s))} AD (${y(l)} AH)</div></div>
+<div class="d-dn">${a?`<div class="t">رئيس معهد التمهيد</div><div class="te">Chairman of At Tamhid Institute</div><div class="im"><img src="${SIG}" alt=""></div><i class="ln"></i><div class="nmz">أ. المفتي منير الإسلام بن معيذ الدين</div><div class="nme">Mufti Munirul Islam Ibn Moiez Uddin</div><img class="sl" src="${n}" alt="">`:'<div class="cn">يتبع في الصفحة التالية ←</div>'}</div>
+<div class="d-qrw"><div class="d-qr"><img src="${qr(f||o)}" alt=""></div><div class="d-idn a">رقم السجل</div><div class="d-idn">Record No.: ${y(o)}</div></div></div>
 <div class="d-nt"><span class="en">ANY ADDITION, ALTERATION OR ERASURE VOIDS THIS DOCUMENT.</span><span class="ar">أي كشط أو تعديل يلغي هذه الوثيقة</span></div>
-<div class="d-pn"><span class="ar">صفحة ${bd(i+1)} من ${bd(n)}</span><span class="en">Page ${i+1} of ${n}</span></div></div>`}).join('')+`</div>`}
-
+<div class="d-pn"><span class="ar">صفحة ${L(e+1)} من ${L(p)}</span><span class="en">Page ${e+1} of ${p}</span></div></div>`}).join("")+"</div>"}
 /* ---------- السجل الأكاديمي: الحقول المعتمدة حصراً ---------- */
-
-/* ---------- v50: القاموس الأكاديمي الثنائي ومساعدات السجل ---------- */
-const NX=x=>String(x==null?'':x).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-const NA=x=>String(x==null?'':x).replace(/[0-9]/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
-const CEN={'0101':'The Holy Quran','0102':'Basic Linguistics (Reading) 1','0103':'Basic Linguistics (Writing) 1','0104':'Basic Linguistics (Listening and Speaking) 1','0107':'Arabic Grammar 1','0108':'Basic Linguistics (Structures)',
-'0110':'Islamic Sciences','0111':'Reading','0112':'Arabic Grammar 2','0114':'Basic Linguistics (Writing) 2','0115':'Linguistic Communication (Listening and Speaking)','0216':'Written Expression','0217':'Reading',
-'0218':'Saudi Civilization and Culture','0219':'Lessons from the Holy Quran','0220':'Islamic Sciences','0221':'Lessons from the Holy Quran','0222':'History of the Kingdom of Saudi Arabia','0223':'Islamic Sciences','0224':'Reading',
-'0225':'Linguistic Editing 1','0226':'Literary Texts 1','0227':'Linguistic Communication (Listening and Speaking)','0228':'E-Learning Applications 1 (Arabic Language)','0229':'Lessons from the Holy Quran'};
-const NEN={'القرآن الكريم':'The Holy Quran','القراءة':'Reading','العلوم الشرعية':'Islamic Sciences','دروس من القرآن الكريم':'Lessons from the Holy Quran','التعبير الكتابي':'Written Expression','قواعد اللغة':'Arabic Grammar','لغويات أساسية (القراءة)':'Basic Linguistics (Reading)','لغويات أساسية (الكتابة)':'Basic Linguistics (Writing)','لغويات أساسية (استماع ومحادثة)':'Basic Linguistics (Listening and Speaking)','لغويات أساسية (التراكيب)':'Basic Linguistics (Structures)','التواصل اللغوي (استماع ومحادثة)':'Linguistic Communication (Listening and Speaking)','الحضارة والثقافة السعودية':'Saudi Civilization and Culture','تاريخ المملكة العربية السعودية':'History of the Kingdom of Saudi Arabia','التحرير اللغوي':'Linguistic Editing','النصوص الأدبية':'Literary Texts','تطبيقات تعلم إلكتروني':'E-Learning Applications'};
-const POB={'KISHOREGANJ':'كيشوريغانج','DHAKA':'دكا','TANGAIL':'تانغيل','SIRAJGANJ':'سيراجغانج'};
-const STEN={'متخرج':'Graduated','منتظم':'Enrolled','موقوف':'Suspended','منسحب':'Withdrawn','مؤجل':'Deferred','مفصول':'Dismissed'};
-function courseEn(code,name){
- try{const L=(typeof crs=='function'?crs():[]),k=NX(code),c=L.find(x=>x&&((code&&NX(x.code)==k)||(!code&&x.name==name)));if(c&&c.nameEn&&!/[\u0600-\u06FF]/.test(c.nameEn))return c.nameEn}catch(e){}
- /* v65: مصدر واحد — قائمة المقررات المعتمدة فقط */
- try{const A=(window.V51&&V51.allCourses65)?V51.allCourses65():[],k=NX(code),c=A.find(x=>x&&((code&&NX(x.code)==k)||(!code&&x.name==name)));if(c&&c.nameEn)return c.nameEn}catch(e){}
- return ''}
-const tmEn=c=>{const en=courseEn(c.code,c.name);return en?`<small class="ce">${E(en)}</small>`:''};
-const tmCode=code=>{if(!code)return '—';return `<span class="ca">${E(NA(NX(code)))}</span><small class="ce">${E(NX(code))}</small>`};
-const nb=x=>E(x).replace(/(\d[\d\s\/\-–]*\d|\d)/g,'<bdi dir="ltr">$1</bdi>');
-const ORDN=['','One','Two','Three','Four'];
-function semEn(sm,v){
- const nm=String(sm&&sm.name||''),m=nm.match(/(\d{4})\s*هـ\s*\/\s*(\d{4})\s*م/),ord=ORDN[v.l]||v.l;
- const sem=/الثاني/.test(nm)?'Second':/الأول/.test(nm)?'First':(v.l%2?'First':'Second');
- return `Level ${ord} — ${sem} Semester${m?` ${m[1]} AH / ${m[2]} AD`:''}`}
-function yearEn(sm){const m=String(sm&&sm.year||'').match(/(\d{4})\s*\/\s*(\d{4})\s*هـ\s*\(\s*(\d{4})\s*\/\s*(\d{4})\s*م\s*\)/);return m?`Academic Year ${m[1]} / ${m[2]} AH (${m[3]} / ${m[4]} AD)`:''}
-function semHead(sm,v){
- const ar=nb((v.lvn?v.lvn+' — ':'')+(sm.name||('الفصل الدراسي '+(v.l%2?'الأول':'الثاني')))),en=semEn(sm,v),ye=yearEn(sm);
- return `<b>${ar}</b><span>${E(en)}</span>${sm.year?`<div class="sy"><span class="a">العام الدراسي: ${nb(sm.year)}</span>${ye?`<span class="e">${E(ye)}</span>`:''}</div>`:''}`}
-window.TMX={courseEn,CEN,NEN,POB,STEN,NX,NA};
-
-window.tmTranscript=function(o){
- const s=o.s||{},st=S.students.find(x=>x.id==s.id)||s,rq=S.requests.find(r=>r.sid==s.id)||{},nEn=st.nameEn||rq.nameEn||'',nat=s.nat||st.nat||'',natEn=NAT[nat]||st.natEn||rq.natEn||'',
-  prog=(P(DIP)||{}).name||'',progEn=(P(DIP)||{}).nameEn||'Diploma of General Arabic Language for Non-Native Speakers',
-  R=o.R||{},title=R.title||'السجل الأكاديمي',titleEn=R.titleEn||'Academic Transcript',
-  lv=(o.levels||[]).filter(v=>!v.skip&&v.rows&&v.rows.length),mb=mbox(),U=[],push=(h,x)=>U.push(Object.assign({h,ht:mb.meas(h)},x||{}));
- try{
-  const ir=(a,e,v,ve,f)=>`<div class="ir${f?' f':''}"><div class="il"><b>${a}</b><i>${e}</i></div><div class="iv">${v}${ve?`<span>${ve}</span>`:''}</div></div>`;
-  push(`<div class="ib">${ir('الاسم','Name',E(s.name),E(nEn))}${ir('الرقم الأكاديمي','Student ID',bd(s.id||'—'))}${ir('الجنسية','Nationality',E(nat||'—'),E(natEn))}${ir('رقم الهوية / الجواز','ID / Passport No.',bd(s.pid||st.pid||'—'))}${(()=>{const gx=String(st.sex||st.gender||''),F=/أنثى|انثى|female/i.test(gx),M=/ذكر|male/i.test(gx),sa=String(st.status||s.status||'');return ir('الجنس','Gender',F?'أنثى':M?'ذكر':'—',F?'Female':M?'Male':'')+ir('الحالة الأكاديمية','Academic Status',E(sa||'—'),E(STEN[sa]||''))})()}${(st.dob||st.pob)?ir('تاريخ الميلاد','Date of Birth',st.dob?bd(Dm(st.dob)):'—')+ir('مكان الميلاد','Place of Birth',E(POB[String(st.pob||'').toUpperCase()]||st.pob||'—'),E(POB[String(st.pob||'').toUpperCase()]?st.pob:'')):''}${ir('البرنامج','Program',E(prog),E(progEn),1)}</div>`);
-  let tS=0,tM=0;
-  lv.forEach(v=>{const rows=v.rows,ev=rows.filter(c=>c.fin&&c.score!=null),sum=ev.reduce((a,c)=>a+numOr0(c.score),0),max=ev.length*100,pct=max?sum/max*100:null;tS+=sum;tM+=max;
-   let sm={name:'',year:''};try{sm=(window.semOf48?semOf48(s,v.l):window.semOf(v.l))||sm}catch(e){}
-   const th=`<tr><th style="width:12%">رمز المقرر<small>Code</small></th><th style="width:33%">اسم المقرر<small>Course Name</small></th><th style="width:23%">الدرجة النهائية (من 100)<small>Final Mark /100</small></th><th style="width:15%">الساعات المعتمدة<small>Credit Hours</small></th><th>التقدير اللفظي<small>Grade</small></th></tr>`;
-   const tr=rows.map(c=>{const g=c.fin?ratingOf(c.gl):'—',ge=c.fin?(GEN[g]||''):'';return `<tr><td class="c">${tmCode(c.code)}</td><td class="n">${E(c.name)}${tmEn(c)}</td><td class="c">${c.fin&&c.score!=null?num(c.score):'—'}</td><td class="c">${E(c.hrs)}</td><td>${E(g)}${ge?`<small class="ce">${ge}</small>`:''}</td></tr>`}).join('');
-   push(`<div class="sm"><div class="sh">${semHead(sm,v)}</div><table class="d-tb">${th}${tr}</table><div class="ss"><div><b>مجموع الدرجات</b><i>Total Marks</i><em>${ev.length?num(sum)+' / '+max:'—'}</em></div><div><b>النسبة المئوية (%)</b><i>Percentage</i><em>${pct==null?'—':pct.toFixed(2)+'%'}</em></div><div><b>المعدل الفصلي</b><i>Semester GPA (out of 5.00)</i><em>${v.gpa==null?'—':f2s(v.gpa)+' / 5.00'}</em></div></div></div>`,{kn:0});
-  });
-  if(!lv.length)push(`<div class="lt"><p style="text-align:center">لا توجد مقررات مسجَّلة بعد.</p></div>`);
-  const cg=o.k&&o.k.gpa!=null?o.k.gpa:null,tp=tM?tS/tM*100:null;
-  push(`<div class="tt"><div class="ss"><div><b>مجموع الدرجات الإجمالي</b><i>Overall Total Marks</i><em>${tM?num(tS)+' / '+tM:'—'}</em></div><div><b>النسبة المئوية العامة (%)</b><i>Overall Percentage</i><em>${tp==null?'—':tp.toFixed(2)+'%'}</em></div><div><b>المعدل التراكمي</b><i>Cumulative GPA (out of 5.00)</i><em>${cg==null?'—':f2s(cg)+' / 5.00'}</em></div></div></div>`);
-  push(`<div class="end">نهاية السجل الأكاديمي<small>End of Academic Transcript</small></div>`);
- }finally{mb.done()}
- return build14({rec:trNo67(o.id),date:new Date().toISOString().slice(0,10),title,titleEn,items:U})};
-
+/* ---------- v50: القاموس الأكاديمي الثنائي ومساعدات السجل ---------- */let G=t=>String(null==t?"":t).replace(/[٠-٩]/g,t=>"٠١٢٣٤٥٦٧٨٩".indexOf(t)),B=t=>String(null==t?"":t).replace(/[0-9]/g,t=>"٠١٢٣٤٥٦٧٨٩"[t]);var I={"0101":"The Holy Quran","0102":"Basic Linguistics (Reading) 1","0103":"Basic Linguistics (Writing) 1","0104":"Basic Linguistics (Listening and Speaking) 1","0107":"Arabic Grammar 1","0108":"Basic Linguistics (Structures)","0110":"Islamic Sciences","0111":"Reading","0112":"Arabic Grammar 2","0114":"Basic Linguistics (Writing) 2","0115":"Linguistic Communication (Listening and Speaking)","0216":"Written Expression","0217":"Reading","0218":"Saudi Civilization and Culture","0219":"Lessons from the Holy Quran","0220":"Islamic Sciences","0221":"Lessons from the Holy Quran","0222":"History of the Kingdom of Saudi Arabia","0223":"Islamic Sciences","0224":"Reading","0225":"Linguistic Editing 1","0226":"Literary Texts 1","0227":"Linguistic Communication (Listening and Speaking)","0228":"E-Learning Applications 1 (Arabic Language)","0229":"Lessons from the Holy Quran"},C={"القرآن الكريم":"The Holy Quran","القراءة":"Reading","العلوم الشرعية":"Islamic Sciences","دروس من القرآن الكريم":"Lessons from the Holy Quran","التعبير الكتابي":"Written Expression","قواعد اللغة":"Arabic Grammar","لغويات أساسية (القراءة)":"Basic Linguistics (Reading)","لغويات أساسية (الكتابة)":"Basic Linguistics (Writing)","لغويات أساسية (استماع ومحادثة)":"Basic Linguistics (Listening and Speaking)","لغويات أساسية (التراكيب)":"Basic Linguistics (Structures)","التواصل اللغوي (استماع ومحادثة)":"Linguistic Communication (Listening and Speaking)","الحضارة والثقافة السعودية":"Saudi Civilization and Culture","تاريخ المملكة العربية السعودية":"History of the Kingdom of Saudi Arabia","التحرير اللغوي":"Linguistic Editing","النصوص الأدبية":"Literary Texts","تطبيقات تعلم إلكتروني":"E-Learning Applications"};let N={KISHOREGANJ:"كيشوريغانج",DHAKA:"دكا",TANGAIL:"تانغيل",SIRAJGANJ:"سيراجغانج"},q={"متخرج":"Graduated","منتظم":"Enrolled","موقوف":"Suspended","منسحب":"Withdrawn","مؤجل":"Deferred","مفصول":"Dismissed"};function courseEn(a,d){try{let t="function"==typeof crs?crs():[],e=G(a),i=t.find(t=>t&&(a&&G(t.code)==e||!a&&t.name==d));if(i&&i.nameEn&&!/[\u0600-\u06FF]/.test(i.nameEn))return i.nameEn}catch(t){}
+/* v65: مصدر واحد — قائمة المقررات المعتمدة فقط */try{let t=window.V51&&V51.allCourses65?V51.allCourses65():[],e=G(a),i=t.find(t=>t&&(a&&G(t.code)==e||!a&&t.name==d));if(i&&i.nameEn)return i.nameEn}catch(t){}return""}let d=t=>y(t).replace(/(\d[\d\s\/\-–]*\d|\d)/g,'<bdi dir="ltr">$1</bdi>'),l=["","One","Two","Three","Four"];function semHead(t,e){var i=d((e.lvn?e.lvn+" — ":"")+(t.name||"الفصل الدراسي "+(e.l%2?"الأول":"الثاني"))),e=function semEn(t,e){var i=(t=String(t&&t.name||"")).match(/(\d{4})\s*هـ\s*\/\s*(\d{4})\s*م/);return`Level ${l[e.l]||e.l} — ${!/الثاني/.test(t)&&(/الأول/.test(t)||e.l%2)?"First":"Second"} Semester`+(i?` ${i[1]} AH / ${i[2]} AD`:"")}(t,e),a=function yearEn(t){return(t=String(t&&t.year||"").match(/(\d{4})\s*\/\s*(\d{4})\s*هـ\s*\(\s*(\d{4})\s*\/\s*(\d{4})\s*م\s*\)/))?`Academic Year ${t[1]} / ${t[2]} AH (${t[3]} / ${t[4]} AD)`:""}(t);return`<b>${i}</b><span>${y(e)}</span>`+(t.year?`<div class="sy"><span class="a">العام الدراسي: ${d(t.year)}</span>${a?`<span class="e">${y(a)}</span>`:""}</div>`:"")}
 /* ---------- خطابا القبول والتوصية: إعادة إخراج بهوية وثيقة التخرج (النصوص والبيانات كما هي) ---------- */
-function restyleLetter(h,c){
- const w=document.createElement('div');w.innerHTML=h;const raw=[];let brk=false;
- w.querySelectorAll('.tmp .bd').forEach(bdn=>[...bdn.children].forEach(ch=>{
-  const h2=ch.querySelector&&ch.querySelector('h2');
-  if(h2){if(/direction\s*:\s*ltr/i.test(h2.getAttribute('style')||''))brk=true;return}
-  if(ch.classList.contains('lt')&&ch.classList.contains('en')&&/text-align\s*:\s*center/i.test(ch.getAttribute('style')||'')&&!ch.querySelector('p,table'))return;
-  raw.push({h:ch.outerHTML,brk});brk=false}));
- const mb=mbox(),U=[];try{raw.forEach(r=>U.push({h:r.h,ht:mb.meas(r.h),brk:r.brk}))}finally{mb.done()}
- const t=(typeof CT!='undefined'&&CT[c.type])||['',''];
- return build14({rec:c.rec,date:c.date,title:t[0],titleEn:t[1],items:U,revoked:!!c.revoked})}
-const _c14=certHTML;
-certHTML=function(c){const h=_c14.apply(this,arguments);
- if(c&&(c.type=='acc'||c.type=='rec')&&/^\s*<div class="tmw"/.test(h||'')&&!/data-d14/.test(h)){try{return restyleLetter(h,c)}catch(e){console.error('d14 letter',e)}}
- return h};
-
+function restyleLetter(t,e){var i=document.createElement("div");i.innerHTML=t;let a=[],d=!1,r=(i.querySelectorAll(".tmp .bd").forEach(t=>[...t.children].forEach(t=>{var e=t.querySelector&&t.querySelector("h2");e?/direction\s*:\s*ltr/i.test(e.getAttribute("style")||"")&&(d=!0):t.classList.contains("lt")&&t.classList.contains("en")&&/text-align\s*:\s*center/i.test(t.getAttribute("style")||"")&&!t.querySelector("p,table")||(a.push({h:t.outerHTML,brk:d}),d=!1)})),mbox()),n=[];try{a.forEach(t=>n.push({h:t.h,ht:r.meas(t.h),brk:t.brk}))}finally{r.done()}t="undefined"!=typeof CT&&CT[e.type]||["",""];return build14({rec:e.rec,date:e.date,title:t[0],titleEn:t[1],items:n,revoked:!!e.revoked})}window.TMX={courseEn:courseEn,CEN:I,NEN:C,POB:N,STEN:q,NX:G,NA:B},window.tmTranscript=function(e){let l=e.s||{},i=S.students.find(t=>t.id==l.id)||l,t=S.requests.find(t=>t.sid==l.id)||{},a=i.nameEn||t.nameEn||"",d=l.nat||i.nat||"",r=k[d]||i.natEn||t.natEn||"",n=(P(DIP)||{}).name||"",c=(P(DIP)||{}).nameEn||"Diploma of General Arabic Language for Non-Native Speakers",o=e.R||{},s=o.title||"السجل الأكاديمي",p=o.titleEn||"Academic Transcript",f=(e.levels||[]).filter(t=>!t.skip&&t.rows&&t.rows.length),m=mbox(),g=[],b=(t,e)=>g.push(Object.assign({h:t,ht:m.meas(t)},e||{}));try{let t=(t,e,i,a,d)=>`<div class="ir${d?" f":""}"><div class="il"><b>${t}</b><i>${e}</i></div><div class="iv">${i}${a?`<span>${a}</span>`:""}</div></div>`,o=(b(`<div class="ib">${t("الاسم","Name",y(l.name),y(a))}${t("الرقم الأكاديمي","Student ID",L(l.id||"—"))}${t("الجنسية","Nationality",y(d||"—"),y(r))}${t("رقم الهوية / الجواز","ID / Passport No.",L(l.pid||i.pid||"—"))}${x=String(i.sex||i.gender||""),w=/أنثى|انثى|female/i.test(x),x=/ذكر|male/i.test(x),v=String(i.status||l.status||""),t("الجنس","Gender",w?"أنثى":x?"ذكر":"—",w?"Female":x?"Male":"")+t("الحالة الأكاديمية","Academic Status",y(v||"—"),y(q[v]||""))}${i.dob||i.pob?t("تاريخ الميلاد","Date of Birth",i.dob?L(E(i.dob)):"—")+t("مكان الميلاد","Place of Birth",y(N[String(i.pob||"").toUpperCase()]||i.pob||"—"),y(N[String(i.pob||"").toUpperCase()]?i.pob:"")):""}${t("البرنامج","Program",y(n),y(c),1)}</div>`),0),s=0;f.forEach(t=>{var e=t.rows,i=e.filter(t=>t.fin&&null!=t.score),a=i.reduce((t,e)=>t+numOr0(e.score),0),d=100*i.length,r=d?a/d*100:null;o+=a,s+=d;let n={name:"",year:""};try{n=(window.semOf48?semOf48(l,t.l):window.semOf(t.l))||n}catch(t){}e=e.map(t=>{var e,i=t.fin&&(i=t.gl)?String(i).replace(/\s*مرتفع$/,""):"—",a=t.fin&&$[i]||"";return`<tr><td class="c">${e=t.code,e?`<span class="ca">${y(B(G(e)))}</span><small class="ce">${y(G(e))}</small>`:"—"}</td><td class="n">${y(t.name)}${(t=>{t=courseEn(t.code,t.name);return t?`<small class="ce">${y(t)}</small>`:""})(t)}</td><td class="c">${t.fin&&null!=t.score?T(t.score):"—"}</td><td class="c">${y(t.hrs)}</td><td>${y(i)}${a?`<small class="ce">${a}</small>`:""}</td></tr>`}).join("");b(`<div class="sm"><div class="sh">${semHead(n,t)}</div><table class="d-tb"><tr><th style="width:12%">رمز المقرر<small>Code</small></th><th style="width:33%">اسم المقرر<small>Course Name</small></th><th style="width:23%">الدرجة النهائية (من 100)<small>Final Mark /100</small></th><th style="width:15%">الساعات المعتمدة<small>Credit Hours</small></th><th>التقدير اللفظي<small>Grade</small></th></tr>${e}</table><div class="ss"><div><b>مجموع الدرجات</b><i>Total Marks</i><em>${i.length?T(a)+" / "+d:"—"}</em></div><div><b>النسبة المئوية (%)</b><i>Percentage</i><em>${null==r?"—":r.toFixed(2)+"%"}</em></div><div><b>المعدل الفصلي</b><i>Semester GPA (out of 5.00)</i><em>${null==t.gpa?"—":A(t.gpa)+" / 5.00"}</em></div></div></div>`,{kn:0})}),f.length||b('<div class="lt"><p style="text-align:center">لا توجد مقررات مسجَّلة بعد.</p></div>');var h=e.k&&null!=e.k.gpa?e.k.gpa:null,u=s?o/s*100:null;b(`<div class="tt"><div class="ss"><div><b>مجموع الدرجات الإجمالي</b><i>Overall Total Marks</i><em>${s?T(o)+" / "+s:"—"}</em></div><div><b>النسبة المئوية العامة (%)</b><i>Overall Percentage</i><em>${null==u?"—":u.toFixed(2)+"%"}</em></div><div><b>المعدل التراكمي</b><i>Cumulative GPA (out of 5.00)</i><em>${null==h?"—":A(h)+" / 5.00"}</em></div></div></div>`),b('<div class="end">نهاية السجل الأكاديمي<small>End of Academic Transcript</small></div>')}finally{m.done()}var x,w,v;return build14({rec:trNo67(e.id),date:(new Date).toISOString().slice(0,10),title:s,titleEn:p,items:g})};let i=certHTML;certHTML=function(t){var e=i.apply(this,arguments);if(t&&("acc"==t.type||"rec"==t.type)&&/^\s*<div class="tmw"/.test(e||"")&&!/data-d14/.test(e))try{return restyleLetter(e,t)}catch(t){console.error("d14 letter",t)}return e};let c=mkBlob,p=(mkBlob=async function(t,e,i){return"pdf"==e&&/^\s*<div class="tmw"[^>]*data-d14/.test(t||"")?
 /* ---------- تنزيل PDF متعدد الصفحات (A4 دقيق) للدُفعات ---------- */
-async function tmwPdf(h){const w=document.createElement('div');w.style.cssText='position:fixed;left:-3000px;top:0';w.innerHTML=h;document.body.appendChild(w);
- try{await document.fonts.ready;const ps=[...w.querySelectorAll('.tmp')],{jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4',compress:true});
-  for(let i=0;i<ps.length;i++){const cv=await html2canvas(ps[i],{scale:2.5,backgroundColor:'#ffffff',useCORS:true});if(i)d.addPage('a4','p');d.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,210,297)}
-  return d.output('blob')}finally{w.remove()}}
-const _mk14=mkBlob;mkBlob=async function(h,f,sc){if(f=='pdf'&&/^\s*<div class="tmw"[^>]*data-d14/.test(h||''))return tmwPdf(h);return _mk14.apply(this,arguments)};
-
+async function tmwPdf(t){var e=document.createElement("div");e.style.cssText="position:fixed;left:-3000px;top:0",e.innerHTML=t,document.body.appendChild(e);try{await document.fonts.ready;var i=[...e.querySelectorAll(".tmp")],a=window.jspdf.jsPDF,d=new a({unit:"mm",format:"a4",compress:!0});for(let t=0;t<i.length;t++){var r=await html2canvas(i[t],{scale:2.5,backgroundColor:"#ffffff",useCORS:!0});t&&d.addPage("a4","p"),d.addImage(r.toDataURL("image/jpeg",.95),"JPEG",0,0,210,297)}return d.output("blob")}finally{e.remove()}}(t):c.apply(this,arguments)},
 /* ---------- المعاينة الحية للسجل الأكاديمي ---------- */
-window.trHTML=function(id,draft){const A=S.students,i=A.findIndex(x=>x.id==id);if(i<0)return '';const orig=A[i],_s=show;let out='';
- show=function(h){out=h};
- try{if(draft)A[i]=draft;window.seeRec(id)}finally{A[i]=orig;show=_s}
- return out};
-const liveBox=(sid,mode,sel)=>`<div class="tl14" data-sid="${E(sid||'')}" data-mode="${mode}" data-noi18n="1"><div class="th"><b>${Bz('المعاينة الحية للسجل الأكاديمي','Live academic transcript preview')}</b><span class="tg" data-t>${Bz('تتحدّث تلقائياً','Updates automatically')}</span><button type="button" class="btn s" onclick="trLiveOpen(this)">${Bz('عرض بملء الشاشة · طباعة · تصدير','Full view · print · export')}</button></div>${sel?`<label class="sl">${Bz('الطالب','Student')}<select onchange="trLiveSel(this)">${S.students.map(x=>`<option value="${E(x.id)}" ${x.id==sid?'selected':''}>${E(x.name)} — ${E(x.id)}</option>`).join('')}</select></label>`:''}<div class="tl14b"></div></div>`;
-function fitLive(el){const b=el.querySelector('.tl14b');if(!b)return;b.style.setProperty('--z',1);const t=b.firstElementChild;if(!t||!t.offsetWidth)return;b.style.setProperty('--z',Math.min(1,(b.clientWidth-4)/t.offsetWidth))}
-function renderLive(el,force){const b=el.querySelector('.tl14b'),id=el.dataset.sid;if(!b)return;
- if(!id){b.innerHTML=`<div class="tl14e">${Bz('اختر طالباً لعرض سجله الأكاديمي.','Select a student to preview the academic transcript.')}</div>`;return}
- let h='';try{h=window.trHTML(id,el._draft)}catch(e){console.error('d14 live',e)}
- if(!h){b.innerHTML=`<div class="tl14e">${Bz('تعذّر عرض السجل.','Unable to render the record.')}</div>`;return}
- if(!force&&el._h===h)return;el._h=h;b.innerHTML=h;fitLive(el);
- const tg=el.querySelector('[data-t]');if(tg){tg.classList.toggle('dr',!!el._draft);tg.textContent=el._draft?Bz('مسودة — قبل الحفظ','Draft — not saved yet'):Bz('محدَّثة '+new Date().toLocaleTimeString('en-GB'),'Updated '+new Date().toLocaleTimeString('en-GB'))}
- if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>fitLive(el))}
-const refreshAll=force=>{document.querySelectorAll('.tl14').forEach(el=>{try{renderLive(el,force)}catch(e){console.error(e)}})};
-window.trLiveSel=sel=>{const el=sel.closest('.tl14');el.dataset.sid=sel.value;window.__tl14sel=sel.value;el._draft=null;renderLive(el,true)};
-window.trLiveOpen=btn=>{const el=btn.closest('.tl14'),id=el.dataset.sid;if(id)window.seeRec(id)};
-function draftOf(f,sid){const s=S.students.find(x=>x.id==sid);if(!s)return null;const d=JSON.parse(JSON.stringify(s)),v=fv(f),GS=window.GSC5||[];d.gr=d.gr||{};
- d.reg=d.reg||[];crs().filter(c=>!c.legacy).forEach(c=>{const sc=v['s_'+c.id],gl=v['g_'+c.id],stt=v['o_'+c.id],old=d.gr[c.id];if(sc===undefined)return;
-  if(sc===''&&!gl&&!stt){if(old&&old.man)delete d.gr[c.id];return}
-  const nm=sc===''?null:Math.min(100,Math.max(0,+sc)),base=gl?GS.find(x=>x[1]==gl):(nm!=null?GS.find(x=>nm>=x[0]):null);if(!base)return;
-  d.gr[c.id]={rel:1,score:nm,gl:base[1],pts:base[2],ok:stt?stt=='اجتاز':base[2]>=2,fin:1,man:1};if(!d.reg.includes(c.id))d.reg.push(c.id)});
- return d}
-let dt;document.addEventListener('input',e=>{const f=e.target&&e.target.form;if(!f||!/return grSave\(/.test(f.getAttribute('onsubmit')||''))return;const el=f.querySelector('.tl14');if(!el)return;clearTimeout(dt);dt=setTimeout(()=>{el._draft=draftOf(f,el.dataset.sid);renderLive(el,true)},250)});
-document.addEventListener('change',e=>{const f=e.target&&e.target.form;if(!f||!/return grSave\(/.test(f.getAttribute('onsubmit')||''))return;const el=f.querySelector('.tl14');if(!el)return;el._draft=draftOf(f,el.dataset.sid);renderLive(el,true)});
-function inject(){if(typeof me=='undefined'||!me)return;
- if(me.r=='student'){if(document.querySelector('#app .tl14'))return;
-  const h3=[...document.querySelectorAll('#app h3')].find(x=>/درجاتي في مقررات الدبلوم/.test(x.textContent)),host=h3&&h3.nextElementSibling;
-  if(host){host.insertAdjacentHTML('afterend',liveBox(me.id,'student',false));renderLive(document.querySelector('#app .tl14'),true)}}
- else if(me.r=='admin'){
-  const f=document.querySelector('form[onsubmit^="return grSave("]');
-  if(f&&!f.querySelector('.tl14')&&typeof cf!='undefined'&&cf&&cf.id){const b=f.querySelector('button.btn:not([type=button])');const d=document.createElement('div');d.innerHTML=liveBox(cf.id,'admin-draft',false);const bx=d.firstElementChild;b?b.before(bx):f.append(bx);renderLive(bx,true)}
-  const acx=document.getElementById('acx');
-  if(acx&&!acx.querySelector('.tl14')){const sid=window.__tl14sel||(S.students[0]||{}).id||'';acx.insertAdjacentHTML('beforeend',liveBox(sid,'admin',true));renderLive(acx.querySelector('.tl14'),true)}}}
-try{GOH.post.push(()=>{try{inject();document.querySelectorAll('.tl14').forEach(el=>{el._k=snapOf(el.dataset.sid)})}catch(e){console.error('d14 inject',e)}})}catch(e){console.error(e)}
-/* رصد فوري لأي تغيّر في الدرجات/التسجيل (save ثابت لا يمكن تغليفه، لذا نقارن لقطة خفيفة كل ثانية ونصف) */
-const snapOf=id=>{const s=S.students.find(x=>x.id==id);if(!s)return '';try{return JSON.stringify([s.lvl,s.reg,s.name,s.nat,s.pid,Object.entries(s.gr||{}).map(([k,g])=>[k,g.rel,g.score,g.gl,g.fin,g.ok])])}catch(e){return ''}};
-setInterval(()=>{try{document.querySelectorAll('.tl14').forEach(el=>{if(el.dataset.mode=='admin-draft'&&el._draft)return;const k=snapOf(el.dataset.sid);if(el._k!==k){el._k=k;if(el.dataset.mode!='admin-draft')el._draft=null;renderLive(el)}})}catch(e){}},1500);
-setInterval(async()=>{try{if(document.hidden||!document.querySelector('.tl14'))return;
- if(typeof sb!=='undefined'&&sb&&me&&me.r=='student'&&typeof sbUserPull=='function'){const keep=me;await sbUserPull('student',me.id);me=keep}
- document.querySelectorAll('.tl14').forEach(el=>{if(el.dataset.mode!='admin-draft')renderLive(el)})}catch(e){}},8000);
-window.addEventListener('resize',()=>document.querySelectorAll('.tl14').forEach(fitLive));
-window.d14={build:build14,restyleLetter,refresh:refreshAll};
-}catch(e){console.error('d14',e)}})();
-
+window.trHTML=function(e,t){var i=S.students,a=i.findIndex(t=>t.id==e);if(a<0)return"";var d=i[a],r=show;let n="";show=function(t){n=t};try{t&&(i[a]=t),window.seeRec(e)}finally{i[a]=d,show=r}return n},(e,t,i)=>`<div class="tl14" data-sid="${y(e||"")}" data-mode="${t}" data-noi18n="1"><div class="th"><b>${r("المعاينة الحية للسجل الأكاديمي","Live academic transcript preview")}</b><span class="tg" data-t>${r("تتحدّث تلقائياً","Updates automatically")}</span><button type="button" class="btn s" onclick="trLiveOpen(this)">${r("عرض بملء الشاشة · طباعة · تصدير","Full view · print · export")}</button></div>${i?`<label class="sl">${r("الطالب","Student")}<select onchange="trLiveSel(this)">${S.students.map(t=>`<option value="${y(t.id)}" ${t.id==e?"selected":""}>${y(t.name)} — ${y(t.id)}</option>`).join("")}</select></label>`:""}<div class="tl14b"></div></div>`);function fitLive(t){var e,t=t.querySelector(".tl14b");t&&(t.style.setProperty("--z",1),e=t.firstElementChild)&&e.offsetWidth&&t.style.setProperty("--z",Math.min(1,(t.clientWidth-4)/e.offsetWidth))}function renderLive(e,i){var a=e.querySelector(".tl14b"),d=e.dataset.sid;if(a)if(d){let t="";try{t=window.trHTML(d,e._draft)}catch(t){console.error("d14 live",t)}t?(i||e._h!==t)&&(e._h=t,a.innerHTML=t,fitLive(e),(d=e.querySelector("[data-t]"))&&(d.classList.toggle("dr",!!e._draft),d.textContent=e._draft?r("مسودة — قبل الحفظ","Draft — not saved yet"):r("محدَّثة "+(new Date).toLocaleTimeString("en-GB"),"Updated "+(new Date).toLocaleTimeString("en-GB"))),document.fonts)&&document.fonts.ready&&document.fonts.ready.then(()=>fitLive(e)):a.innerHTML=`<div class="tl14e">${r("تعذّر عرض السجل.","Unable to render the record.")}</div>`}else a.innerHTML=`<div class="tl14e">${r("اختر طالباً لعرض سجله الأكاديمي.","Select a student to preview the academic transcript.")}</div>`}function draftOf(t,e){var i=S.students.find(t=>t.id==e);if(!i)return null;let n=JSON.parse(JSON.stringify(i)),o=fv(t),s=window.GSC5||[];return n.gr=n.gr||{},n.reg=n.reg||[],crs().filter(t=>!t.legacy).forEach(i=>{let a=o["s_"+i.id],d=o["g_"+i.id],r=o["o_"+i.id],t=n.gr[i.id];if(void 0!==a)if(""!==a||d||r){let e=""===a?null:Math.min(100,Math.max(0,+a)),t=d?s.find(t=>t[1]==d):null!=e?s.find(t=>e>=t[0]):null;t&&(n.gr[i.id]={rel:1,score:e,gl:t[1],pts:t[2],ok:r?"اجتاز"==r:2<=t[2],fin:1,man:1},n.reg.includes(i.id)||n.reg.push(i.id))}else t&&t.man&&delete n.gr[i.id]}),n}window.trLiveSel=t=>{var e=t.closest(".tl14");e.dataset.sid=t.value,window.__tl14sel=t.value,e._draft=null,renderLive(e,!0)},window.trLiveOpen=t=>{t=t.closest(".tl14").dataset.sid;t&&window.seeRec(t)};let f;document.addEventListener("input",t=>{let e=t.target&&t.target.form;if(e&&/return grSave\(/.test(e.getAttribute("onsubmit")||"")){let t=e.querySelector(".tl14");t&&(clearTimeout(f),f=setTimeout(()=>{t._draft=draftOf(e,t.dataset.sid),renderLive(t,!0)},250))}}),document.addEventListener("change",t=>{var e,t=t.target&&t.target.form;t&&/return grSave\(/.test(t.getAttribute("onsubmit")||"")&&(e=t.querySelector(".tl14"))&&(e._draft=draftOf(t,e.dataset.sid),renderLive(e,!0))});try{GOH.post.push(()=>{try{!function inject(){var t,e,i;"undefined"!=typeof me&&me&&("student"==me.r?document.querySelector("#app .tl14")||(i=(i=[...document.querySelectorAll("#app h3")].find(t=>/درجاتي في مقررات الدبلوم/.test(t.textContent)))&&i.nextElementSibling)&&(i.insertAdjacentHTML("afterend",p(me.id,"student",!1)),renderLive(document.querySelector("#app .tl14"),!0)):"admin"==me.r&&((i=document.querySelector('form[onsubmit^="return grSave("]'))&&!i.querySelector(".tl14")&&"undefined"!=typeof cf&&cf&&cf.id&&(e=i.querySelector("button.btn:not([type=button])"),(t=document.createElement("div")).innerHTML=p(cf.id,"admin-draft",!1),t=t.firstElementChild,e?e.before(t):i.append(t),renderLive(t,!0)),e=document.getElementById("acx"))&&!e.querySelector(".tl14")&&(i=window.__tl14sel||(S.students[0]||{}).id||"",e.insertAdjacentHTML("beforeend",p(i,"admin",!0)),renderLive(e.querySelector(".tl14"),!0)))}(),document.querySelectorAll(".tl14").forEach(t=>{t._k=x(t.dataset.sid)})}catch(t){console.error("d14 inject",t)}})}catch(t){console.error(t)}
+/* رصد فوري لأي تغيّر في الدرجات/التسجيل (save ثابت لا يمكن تغليفه، لذا نقارن لقطة خفيفة كل ثانية ونصف) */let x=e=>{var t=S.students.find(t=>t.id==e);if(!t)return"";try{return JSON.stringify([t.lvl,t.reg,t.name,t.nat,t.pid,Object.entries(t.gr||{}).map(([t,e])=>[t,e.rel,e.score,e.gl,e.fin,e.ok])])}catch(t){return""}};setInterval(()=>{try{document.querySelectorAll(".tl14").forEach(t=>{var e;"admin-draft"==t.dataset.mode&&t._draft||(e=x(t.dataset.sid),t._k!==e&&(t._k=e,"admin-draft"!=t.dataset.mode&&(t._draft=null),renderLive(t)))})}catch(t){}},1500),setInterval(async()=>{try{var t;!document.hidden&&document.querySelector(".tl14")&&("undefined"!=typeof sb&&sb&&me&&"student"==me.r&&"function"==typeof sbUserPull&&(await sbUserPull("student",(t=me).id),me=t),document.querySelectorAll(".tl14").forEach(t=>{"admin-draft"!=t.dataset.mode&&renderLive(t)}))}catch(t){}},8e3),window.addEventListener("resize",()=>document.querySelectorAll(".tl14").forEach(fitLive)),window.d14={build:build14,restyleLetter:restyleLetter,refresh:e=>{document.querySelectorAll(".tl14").forEach(t=>{try{renderLive(t,e)}catch(t){console.error(t)}})}}}catch(t){console.error("d14",t)}})();

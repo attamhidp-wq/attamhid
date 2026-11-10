@@ -1,46 +1,13 @@
-
 /* =====================================================================
    v116 — التخزين المحلي لا يمتلئ: حين تقترب النسخة المحلية من حد المتصفح (≈5 ملايين حرف)
    تُنقل أكبر أجزائها تلقائياً إلى قاعدة المتصفح الكبيرة (IndexedDB) وتبقى في الذاكرة كما هي للكود كله،
    ثم يُعاد الحفظ بصمت. لا تتأثر بيانات الخادم؛ هذه النسخة المحلية للسرعة فقط.
    ===================================================================== */
-(function(){
-var W=window,LS='off116',DBN='tamhid116',STN='kv',BUDGET=3200000,cache={},sigs={},lastS=null,busy=0;
-var OFF=[];try{OFF=JSON.parse(localStorage.getItem(LS)||'[]')||[]}catch(e){OFF=[]}
-var SKIP={v51:1,bank65:1,bank73:1};
-function db(){return new Promise(function(res,rej){try{var r=indexedDB.open(DBN,1);r.onupgradeneeded=function(){r.result.createObjectStore(STN)};r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}}catch(e){rej(e)}})}
-function put(k,v){return db().then(function(d){return new Promise(function(res,rej){var t=d.transaction(STN,'readwrite');t.objectStore(STN).put(v,k);t.oncomplete=function(){res(1)};t.onerror=function(){rej(t.error)}})})}
-function get(k){return db().then(function(d){return new Promise(function(res,rej){var t=d.transaction(STN,'readonly'),r=t.objectStore(STN).get(k);r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}})})}
+(()=>{var t=window,e="off116",r="tamhid116",c="kv",i=32e5,a={},f={},n=null,o=0,u=[];try{u=JSON.parse(localStorage.getItem(e)||"[]")||[]}catch(t){u=[]}var l={v51:1,bank65:1,bank73:1};function db(){return new Promise(function(t,e){try{var n=indexedDB.open(r,1);n.onupgradeneeded=function(){n.result.createObjectStore(c)},n.onsuccess=function(){t(n.result)},n.onerror=function(){e(n.error)}}catch(t){e(t)}})}
 /* المسار: «exams» أو «v51.imgs» */
-function at(p){if(typeof S==='undefined'||!S)return null;var i=p.indexOf('.');if(i<0)return [S,p];var o=S[p.slice(0,i)];return o&&typeof o==='object'?[o,p.slice(i+1)]:null}
-function hide(){OFF.forEach(function(p){var h=at(p);if(!h)return;var o=h[0],k=h[1],d=Object.getOwnPropertyDescriptor(o,k);
- if(d&&d.enumerable){var v=o[k];delete o[k];Object.defineProperty(o,k,{value:v,writable:true,configurable:true,enumerable:false});cache[p]=v}
- else if(!d&&cache[p]!==undefined){Object.defineProperty(o,k,{value:cache[p],writable:true,configurable:true,enumerable:false})}
- else if(d)cache[p]=o[k]});lastS=S}
-function fp(v){try{var s=JSON.stringify(v)||'',h=0;for(var i=0;i<s.length;i+=97)h=(h*31+s.charCodeAt(i))|0;return s.length+':'+h}catch(e){return ''}}
-function persist(){OFF.forEach(function(p){var v=cache[p];if(v===undefined)return;var f=fp(v);if(sigs[p]===f)return;put(p,v).then(function(){sigs[p]=f}).catch(function(e){console.warn('v116 idb',e)})})}
-function anyVisible(){return OFF.some(function(p){var h=at(p);if(!h)return false;var d=Object.getOwnPropertyDescriptor(h[0],h[1]);return d&&d.enumerable})}
-/* اختيار ما يُنقل: الأكبر أولاً حتى تنزل النسخة المحلية تحت الميزانية */
-function plan(){if(typeof S==='undefined'||!S)return [];var C=[];
- Object.keys(S).forEach(function(k){if(SKIP[k])return;try{C.push([k,(JSON.stringify(S[k])||'').length])}catch(e){}});
- if(S.v51&&typeof S.v51==='object')Object.keys(S.v51).forEach(function(k){try{C.push(['v51.'+k,(JSON.stringify(S.v51[k])||'').length])}catch(e){}});
- var total=0;try{total=JSON.stringify(S).length}catch(e){}C.sort(function(a,b){return b[1]-a[1]});var add=[];
- for(var i=0;i<C.length&&total>BUDGET;i++){if(C[i][1]<50000)break;if(OFF.indexOf(C[i][0])<0){add.push(C[i][0]);total-=C[i][1]}}return add}
-function lighten(){var add=plan();if(!add.length)return false;OFF=OFF.concat(add);try{localStorage.setItem(LS,JSON.stringify(OFF))}catch(e){}hide();persist();console.info('v116 offloaded',add);return true}
-W.V51&&(W.V51.off116={list:function(){return OFF.slice()},lighten:lighten,hide:hide});
+function at(t){var e,n;return"undefined"!=typeof S&&S?(e=t.indexOf("."))<0?[S,t]:(n=S[t.slice(0,e)])&&"object"==typeof n?[n,t.slice(e+1)]:null:null}function hide(){u.forEach(function(t){var e,n,r,i=at(t);i&&(e=i[0],i=i[1],(n=Object.getOwnPropertyDescriptor(e,i))&&n.enumerable?(r=e[i],delete e[i],Object.defineProperty(e,i,{value:r,writable:!0,configurable:!0,enumerable:!1}),a[t]=r):n||void 0===a[t]?n&&(a[t]=e[i]):Object.defineProperty(e,i,{value:a[t],writable:!0,configurable:!0,enumerable:!1}))}),n=S}function persist(){u.forEach(function(t){var e,n=a[t];void 0!==n&&(e=function fp(t){try{for(var e=JSON.stringify(t)||"",n=0,r=0;r<e.length;r+=97)n=31*n+e.charCodeAt(r)|0;return e.length+":"+n}catch(t){return""}}(n),f[t]!==e)&&function put(i,o){return db().then(function(r){return new Promise(function(t,e){var n=r.transaction(c,"readwrite");n.objectStore(c).put(o,i),n.oncomplete=function(){t(1)},n.onerror=function(){e(n.error)}})})}(t,n).then(function(){f[t]=e}).catch(function(t){console.warn("v116 idb",t)})})}function anyVisible(){return u.some(function(t){var t=at(t);return!!t&&(t=Object.getOwnPropertyDescriptor(t[0],t[1]))&&t.enumerable})}
+/* اختيار ما يُنقل: الأكبر أولاً حتى تنزل النسخة المحلية تحت الميزانية */function lighten(){var t=function plan(){if("undefined"==typeof S||!S)return[];var e=[],t=(Object.keys(S).forEach(function(t){if(!l[t])try{e.push([t,(JSON.stringify(S[t])||"").length])}catch(t){}}),S.v51&&"object"==typeof S.v51&&Object.keys(S.v51).forEach(function(t){try{e.push(["v51."+t,(JSON.stringify(S.v51[t])||"").length])}catch(t){}}),0);try{t=JSON.stringify(S).length}catch(t){}e.sort(function(t,e){return e[1]-t[1]});for(var n=[],r=0;r<e.length&&i<t&&!(e[r][1]<5e4);r++)u.indexOf(e[r][0])<0&&(n.push(e[r][0]),t-=e[r][1]);return n}();if(!t.length)return!1;u=u.concat(t);try{localStorage.setItem(e,JSON.stringify(u))}catch(t){}return hide(),persist(),console.info("v116 offloaded",t),!0}t.V51&&(t.V51.off116={list:function(){return u.slice()},lighten:lighten,hide:hide});
 /* عند فشل الحفظ: تخفيف صامت ثم إعادة الحفظ؛ لا تظهر الرسالة إلا إن بقي الفشل */
-var _fail=W.__lsFail81;
-W.__lsFail81=function(e){if(!busy){busy=1;try{if(lighten()){var ok=1;try{localStorage.setItem('tisa_proto_v1',JSON.stringify(S))}catch(x){ok=0}busy=0;if(ok)return}}catch(x){}busy=0}
- if(typeof _fail==='function')return _fail(e)};
+var s=t.__lsFail81,h=(t.__lsFail81=function(t){if(!o){o=1;try{if(lighten()){var e=1;try{localStorage.setItem("tisa_proto_v1",JSON.stringify(S))}catch(t){e=0}if(o=0,e)return}}catch(t){}o=0}if("function"==typeof s)return s(t)},
 /* الإقلاع: تحميل الأجزاء المنقولة من قاعدة المتصفح، ثم تخفيف وقائي إن كانت النسخة كبيرة */
-hide();
-if(OFF.length)Promise.all(OFF.map(function(p){return get(p).catch(function(){return undefined})})).then(function(vals){OFF.forEach(function(p,i){var v=vals[i];if(v===undefined)return;var h=at(p);if(!h)return;var o=h[0],k=h[1],cur=o[k];
-  var empty=cur==null||(Array.isArray(cur)?!cur.length:(typeof cur==='object'&&!Object.keys(cur).length));
-  if(empty){try{delete o[k]}catch(e){}Object.defineProperty(o,k,{value:v,writable:true,configurable:true,enumerable:false});cache[p]=v}
-  else if(Array.isArray(cur)&&Array.isArray(v)){var ids={};cur.forEach(function(x){if(x&&x.id!=null)ids[String(x.id)]=1});v.forEach(function(x){if(x&&x.id!=null&&!ids[String(x.id)])cur.push(x)})}
-  else if(cur&&typeof cur==='object'&&v&&typeof v==='object'&&!Array.isArray(v)){Object.keys(v).forEach(function(c){if(!(c in cur))cur[c]=v[c]})}
-  sigs[p]='';});hide();try{W.go&&W.go()}catch(e){}});
-setTimeout(function(){try{if(JSON.stringify(S).length>BUDGET+600000)lighten()}catch(e){}},4000);
-var _s=W.save;if(typeof _s==='function'){W.save=function(){if(S!==lastS||anyVisible())hide();var r=_s.apply(this,arguments);return r};try{save=W.save}catch(e){}}
-setInterval(function(){try{if(S!==lastS||anyVisible())hide();persist()}catch(e){}},5000);
-})();
+hide(),u.length&&Promise.all(u.map(function(t){return function get(i){return db().then(function(r){return new Promise(function(t,e){var n=r.transaction(c,"readonly").objectStore(c).get(i);n.onsuccess=function(){t(n.result)},n.onerror=function(){e(n.error)}})})}(t).catch(function(){})})).then(function(c){u.forEach(function(t,e){var n=c[e];if(void 0!==n){e=at(t);if(e){var r,i=e[0],e=e[1],o=i[e];if(null==o||(Array.isArray(o)?!o.length:"object"==typeof o&&!Object.keys(o).length)){try{delete i[e]}catch(t){}Object.defineProperty(i,e,{value:n,writable:!0,configurable:!0,enumerable:!1}),a[t]=n}else Array.isArray(o)&&Array.isArray(n)?(r={},o.forEach(function(t){t&&null!=t.id&&(r[String(t.id)]=1)}),n.forEach(function(t){t&&null!=t.id&&!r[String(t.id)]&&o.push(t)})):o&&"object"==typeof o&&n&&"object"==typeof n&&!Array.isArray(n)&&Object.keys(n).forEach(function(t){t in o||(o[t]=n[t])});f[t]=""}}}),hide();try{t.go&&t.go()}catch(t){}}),setTimeout(function(){try{JSON.stringify(S).length>i+6e5&&lighten()}catch(t){}},4e3),t.save);if("function"==typeof h){t.save=function(){return S===n&&!anyVisible()||hide(),h.apply(this,arguments)};try{save=t.save}catch(t){}}setInterval(function(){try{S===n&&!anyVisible()||hide(),persist()}catch(t){}},5e3)})();
