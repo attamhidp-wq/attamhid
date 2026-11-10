@@ -22998,14 +22998,18 @@ var SEMBN=['প্রথম','দ্বিতীয়','তৃতীয়'],BN
  [/^(\d+) hours from (.+)$/,function(m){var r=bnOf(m[2],3);return r?m[1]+' ঘণ্টা, '+r+' থেকে':null}],
  [/^Page (\d+) of (\d+)$/,function(m){return 'পৃষ্ঠা '+m[1]+' / '+m[2]}],
  [/^approved (\d+)$/,function(m){return 'অনুমোদিত '+m[1]}],
- [/^Mr\. (.+)$/,function(m){return 'জনাব '+m[1]}]
+ [/^Mr\. (.+)$/,function(m){return 'জনাব '+m[1]}],
+ [/^Starts in (\d+) days$/,function(m){return m[1]+' দিন পরে শুরু'}],
+ [/^Officially approved and published, signed by the President (.+?)(, decision No\.)?$/,function(m){return 'আনুষ্ঠানিকভাবে অনুমোদিত ও প্রকাশিত, প্রেসিডেন্ট '+m[1]+'-এর স্বাক্ষরে'+(m[2]?', সিদ্ধান্ত নং':'')}],
+ [/^Starts in (\d+) h$/,function(m){return m[1]+' ঘণ্টা পরে শুরু'}]
 ];
 function bnPat(k){for(var i=0;i<BNPAT.length;i++){var m=BNPAT[i][0].exec(k);if(m)return BNPAT[i][1](m)}return null}
 V5.bnOf=bnOf;
 function noteMiss(s){s=norm(s);if(s.length<2||s.length>260||!LAT.test(s))return;if(/^[\w.+-]+@|https?:|^[A-Z0-9 .:\/()+\-–—#]+$/.test(s))return;var X=S.v51=S.v51||{},M=X.i18nMissBn=X.i18nMissBn||{};if(!M[s]&&Object.keys(M).length>1500)return;var w=(location.hash||'#/');M[s]=M[s]||{n:0,w:w};M[s].n++;clearTimeout(missT);missT=setTimeout(function(){try{save0?save0():save()}catch(e){}},4000)}
 var SKIP='script,style,textarea,code,pre,.cert,.cert2,.tmw,#pvw,#lpv,[data-noi18n],.g5,.cw,.v51-raw,[contenteditable="true"],svg';
 var DONE=new WeakMap();
-function bnNode(t){var p=t.parentElement;if(!p||p.closest(SKIP))return;var v=t.nodeValue;if(DONE.get(t)===v)return;var s=v.trim();if(!s||BNRX.test(s)||ARX.test(s)||!LAT.test(s)){DONE.set(t,v);return}
+function bnNode(t){var p=t.parentElement;if(!p||p.closest(SKIP))return;var v=t.nodeValue;if(DONE.get(t)===v)return;var s=v.trim();if(s&&!BNRX.test(s)&&ARX.test(s)&&LAT.test(s)){var mx=/^([A-Za-z][A-Za-z ]{2,40}?)(: | · )([\s\S]+)$/.exec(s),rx=mx&&bnOf(mx[1]);if(rx){var nx=v.replace(s,rx+mx[2]+mx[3]);DONE.set(t,nx);t.nodeValue=nx;return}}
+ if(!s||BNRX.test(s)||ARX.test(s)||!LAT.test(s)){DONE.set(t,v);return}
  var r=bnOf(s);if(r){var nv=v.replace(s,r);DONE.set(t,nv);t.nodeValue=nv}else{DONE.set(t,v);noteMiss(s)}}
 function bnAttr(el){['placeholder','title','aria-label','alt'].forEach(function(a){var v=el.getAttribute&&el.getAttribute(a);if(!v||BNRX.test(v)||ARX.test(v)||!LAT.test(v))return;var r=bnOf(v);if(r)el.setAttribute(a,r)});
  if(el.tagName==='INPUT'&&/^(button|submit|reset)$/.test(el.type)&&el.value&&!BNRX.test(el.value)){var r2=bnOf(el.value);if(r2)el.value=r2}}
@@ -27319,7 +27323,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v139';
+window.__BUILD__='v140';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -27466,6 +27470,40 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 })();
 </script>
 <style id="css138">
+/* v140 — تذييل رسمي، صفحات النماذج، شريط التنقل */
+#ft .ftc{display:grid!important;grid-template-columns:1.25fr 1fr 1.15fr 1fr;gap:28px 34px!important;align-items:start;padding-top:40px!important;padding-bottom:8px!important}
+#ft .ftr{display:block!important;min-width:0;flex:none!important}
+#ft .ftr>b,#ft .ftb140>b{display:block;color:#fff;font-size:15.5px;font-weight:700;margin-bottom:14px;padding-bottom:9px;position:relative}
+#ft .ftr>b:after{content:"";position:absolute;inset-inline-start:0;bottom:0;width:34px;height:2px;border-radius:2px;background:#C9A24A}
+#ft .ftb140{grid-row:span 2;min-width:0}
+#ft .ftb140 .nm{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+#ft .ftb140 .nm i{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(231,207,138,.45);color:#E7CF8A;font-style:normal;flex:none}
+#ft .ftb140 .nm b{color:#fff;font-size:19px;line-height:1.3;margin:0;padding:0;display:block}#ft .ftb140 .nm small{display:block;color:#B9C4D4;font-size:12.5px;letter-spacing:.04em}
+#ft .ftb140 p{margin:0 0 16px;color:#C6D0DE;line-height:1.9;font-size:14px;max-width:34ch}
+#ft .ftb140 .act{display:flex;flex-wrap:wrap;gap:8px}
+#ft .ftq140{display:grid;gap:9px}
+#ft .ftq140 a{color:#D6DEEA!important;text-decoration:none!important;font-size:14.5px;display:inline-flex;align-items:center;gap:7px;width:fit-content;padding:0!important;background:none!important;border:0!important}
+#ft .ftq140 a:before{content:"";width:5px;height:5px;border-radius:50%;background:#C9A24A;flex:none}
+#ft .ftq140 a:hover{color:#fff!important;text-decoration:underline!important}
+#ft .ftl{display:flex;flex-wrap:wrap;gap:8px}
+#ft .ftr.con140 .ftl{display:grid;gap:8px;justify-items:start}
+#ft .hid140{display:none!important}
+#ft .b140{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+#ft .b140:hover{background:rgba(255,255,255,.16)}#ft .b140.g{background:#C9A24A;border-color:#C9A24A;color:#14213d}#ft .b140.g:hover{background:#D9B663}
+#ft .ftr.soc140 .ftl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#ft .ftr.soc140 .ftl .chip{justify-content:flex-start;min-width:0}
+#ft .ftr.soc140 .ftl .chip span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ft .ftp{grid-column:1/-1;border-top:1px solid rgba(201,206,214,.16);padding-top:14px;margin-top:4px;font-size:13.5px;color:#B9C4D4}
+#ft .ftp a{color:#D6DEEA}
+#ft .ftc,#ft .ft77{max-width:1280px;margin-inline:auto;padding-inline:20px!important;box-sizing:border-box}
+@media (max-width:1000px){#ft .ftc{grid-template-columns:1fr 1fr}#ft .ftb140{grid-row:auto;grid-column:1/-1}}
+@media (max-width:600px){#ft .ftc{grid-template-columns:1fr;gap:24px!important}}
+#app>img[style*="height:72px"]{display:none!important}
+#app>h2:has(+.box.narrow),#app>img+h2:has(+.box){display:block;width:fit-content;margin-inline:auto!important;text-align:center}
+#app>.box.narrow,#app>.box.narrow+.box.narrow,#app>.inv138b{margin-inline:auto!important}
+#app>.box.narrow{box-shadow:0 14px 40px -26px rgba(20,40,75,.45)}
+#app>.box.narrow form>.btn{grid-column:1/-1;width:100%;padding-block:12px}
+@media (min-width:1025px) and (max-width:1500px){.h69-ln a{padding-inline:9px!important;font-size:14.5px!important;white-space:nowrap}.h69-ln{gap:0!important}}
 /* v138 — بطاقات الإعلانات والأخبار وبوابة المشاركين */
 .acc138{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:20px;border-radius:16px;border:1px solid rgba(20,40,75,.18);background:linear-gradient(135deg,#F4F7FB,#EEF3FA);margin:12px 0}
 .acc138 .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:#14284B;color:#E7CF8A}
@@ -27738,6 +27776,17 @@ try{var _pg=V.programs;V.programs=function(){var h=_pg.apply(this,arguments),i=h
 H.fl138=function(b,k){var s=b.closest('.sps138');s.querySelectorAll('.fl138 button').forEach(function(x){x.classList.toggle('on',x===b);x.setAttribute('aria-selected',x===b?'true':'false')});s.querySelectorAll('.spc138').forEach(function(c){var st=c.dataset.st,show=k==='all'||(k==='open'&&st==='open')||(k==='up'&&/open|soon|closed|inv|live/.test(st))||(k==='end'&&st==='end');c.style.display=show?'':'none'})};
 /* صفحة الأخبار */
 try{V.news=function(){var N=(S.news||[]).slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''))});return '<section class="nwp138"><div class="hd2"><h2>'+L('الأخبار والفعاليات','News & Events')+'</h2><a class="more138x" href="'+SITE+'news/" target="_blank" rel="noopener">'+L('أرشيف الأخبار','News archive')+' '+ic('arrow',16)+'</a></div>'+(N.length?'<div class="nwg138">'+N.map(function(n){return newsCard(n)}).join('')+'</div>':'<p class="mu">'+L('لا توجد أخبار بعد.','No news yet.')+'</p>')+'</section>'}}catch(e){}
+/* v140 — تذييل رسمي منظم */
+function ft140(){try{var f=document.getElementById('ft');if(!f)return;var c=f.querySelector('.ftc');if(!c||c.querySelector('.ftb140'))return;var R=c.querySelectorAll('.ftr');if(!R.length)return;
+ var soc=R[0];soc.classList.add('soc140');
+ var b=document.createElement('div');b.className='ftb140';b.innerHTML='<div class="nm"><i>'+ic('award',24)+'</i><span><b>'+L('معهد التمهيد','At Tamhid Institute')+'</b><small dir="ltr">AT TAMHID INSTITUTE</small></span></div><p>'+L('مؤسسة تعليمية رائدة تقدّم برامج نوعية في التأهيل والتدريب، من أبرزها الدبلوم العام في اللغة العربية لغير الناطقين بها، وبرامج قصيرة ودورات وورش عمل.','A leading educational institution offering quality programmes in qualification and training, most notably the General Diploma in Arabic for Non-Native Speakers, along with short programmes, courses and workshops.')+'</p><div class="act"></div>';
+ c.insertBefore(b,c.firstChild);
+ var q=document.createElement('div');q.className='ftr';q.innerHTML='<b>'+L('روابط سريعة','Quick links')+'</b><div class="ftq140"><a href="#/programs">'+L('البرامج الأكاديمية','Academic programmes')+'</a><a href="#/programs#sp138">'+L('البرامج القصيرة والدورات','Short programmes & courses')+'</a><a href="#/me">'+L('بوابة المشاركين','Participant portal')+'</a><a href="#/register">'+L('طلب الالتحاق','Apply for admission')+'</a><a href="#/verify">'+L('التحقق من الوثائق','Verify documents')+'</a><a href="#/news">'+L('الأخبار والفعاليات','News & events')+'</a></div>';
+ c.insertBefore(q,soc);var Q=q.querySelector('.ftq140');
+ var move=function(){['.p134','.app136'].forEach(function(k){var a=f.querySelector(k);if(a&&a.parentNode!==Q){a.className=a.className.replace(/\bchip\b/,'');Q.appendChild(a)}});var act=b.querySelector('.act');if(!act.firstChild){act.innerHTML='<button type="button" class="b140" onclick="window.cbOpen&&cbOpen()">'+ic('bell',16)+'<span>'+L('تواصل معنا','Contact us')+'</span></button><button type="button" class="b140 g" onclick="V51.h.donate71&&V51.h.donate71()">'+L('تبرع لوقف المعهد','Donate to the Institute endowment')+'</button>'}f.querySelectorAll('.cbtn').forEach(function(x){var pr=x.closest('.ftr');if(pr)pr.classList.add('hid140')})};
+ try{var wa=null,em=null;c.querySelectorAll('.ftr').forEach(function(r){if(r===q||r===soc)return;if(r.querySelector('a[href^="https://wa.me"]'))wa=r;else if(r.querySelector('a[href^="mailto:"]'))em=r});if(wa&&em){em.querySelectorAll('.ftl>*').forEach(function(x){wa.querySelector('.ftl').appendChild(x)});em.remove();var hb=wa.querySelector('b');if(hb)hb.textContent=L('تواصل معنا','Contact us');wa.classList.add('con140')}}catch(e){}
+ move();setTimeout(move,1200);setTimeout(move,4000);try{if(typeof trn==='function')trn(f)}catch(e){}}catch(e){console.warn('ft140',e)}}
+try{GOH.post.push(ft140)}catch(e){}setTimeout(ft140,800);setTimeout(ft140,2500);
 /* شريط «مستجدات المعهد» */
 /* التحميل */
 setTimeout(function(){loadPU().then(function(p){if(p)rerender();else hdrFix()})},1200);
