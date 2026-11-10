@@ -27319,7 +27319,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v138';
+window.__BUILD__='v139';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -27467,6 +27467,14 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 </script>
 <style id="css138">
 /* v138 — بطاقات الإعلانات والأخبار وبوابة المشاركين */
+.acc138{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:20px;border-radius:16px;border:1px solid rgba(20,40,75,.18);background:linear-gradient(135deg,#F4F7FB,#EEF3FA);margin:12px 0}
+.acc138 .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:#14284B;color:#E7CF8A}
+.acc138 h3{margin:0 0 6px;font-size:19px}.acc138 p{margin:0 0 14px;line-height:1.8;color:var(--mu,#4a5a70)}
+.acc138 .bt{display:flex;flex-wrap:wrap;gap:10px}.acc138 .bt .btn{text-decoration:none;padding:11px 20px;font-size:15px}
+.gst138{margin-top:16px;border-top:1px dashed var(--bd,#dfe4ea);padding-top:12px}.gst138 summary{cursor:pointer;font-weight:600;color:var(--pr,#14284B)}.gst138 form{margin-top:12px}
+:root[data-theme=dark] .acc138{background:rgba(255,255,255,.05)}
+@media (max-width:600px){.acc138{grid-template-columns:1fr}.acc138 .bt .btn{flex:1;text-align:center}}
+
 .pa138 form,.pp138 form,.pa138s form{display:block!important;max-width:none}
 .pa138 .g2138x,.pp138 .g2138x{display:grid!important}
 .spc138 h2,.spc138 h3,.pa138 h2,.pp138 h2{border:0!important;padding-bottom:0!important;background:none}.spc138 h2:after,.spc138 h3:after,.pa138 h2:after,.pp138 h2:after{display:none!important}
@@ -27708,7 +27716,9 @@ try{var _sp=V.sp;V.sp=function(){var h=_sp.apply(this,arguments),id=decodeURICom
  if(PU&&P.aud==='public'){var box;if(reg)box='<div class="msg ok big138">'+(reg.wait&&+reg.wait?L('أنت في قائمة الانتظار لهذا البرنامج، ونبلغك بالبريد فور توفر مقعد.','You are on the waiting list for this programme; we will email you as soon as a seat becomes available.'):'<b>'+L('أنت مسجّل في هذا البرنامج ✓','You are registered for this programme ✓')+'</b><br>'+L('تجده مع شهادته في ','You will find it, with its certificate, in ')+'<a href="#/me">'+L('حسابي','My account')+'</a>.')+'</div>';
   else if(stOf(P)==='open')box='<div class="one138"><p>'+L('ستُسحب بياناتك تلقائياً من حسابك: ','Your details will be taken from your account automatically: ')+'<b>'+e0(isEn()?(PU.data.nameEn||PU.data.nameAr):PU.data.nameAr)+'</b> · <span dir="ltr">'+e0(PU.email)+'</span></p><button type="button" class="btn" onclick="V51.h.p138reg(\''+e0(id)+'\',this)">'+L('سجّلني بضغطة','Register me in one click')+'</button></div>';
   if(box){var re=/<form class="v51g" onsubmit="V51\.h\.sp60pub[\s\S]*?<\/form>(<p class="mu">[\s\S]*?<\/p>)?/;h=re.test(h)?h.replace(re,box):h.replace(/<\/section>\s*$/,box+'</section>')}}
- else if(!PU&&P.aud==='public'&&stOf(P)==='open')h=h.replace(/(<form class="v51g" onsubmit="V51\.h\.sp60pub)/,'<div class="inv138">'+ic('user',18)+'<span>'+L('لديك حساب مشارك؟ ','Have a participant account? ')+'<a href="#/me" onclick="V51.V5p138b()">'+L('ادخل وسجّل بضغطة','Sign in and register in one click')+'</a> · '+L('أو ','or ')+'<a href="#/me/join" onclick="V51.V5p138b()">'+L('أنشئ حساباً مرة واحدة','create an account once')+'</a></span></div>$1');
+ else if(!PU&&P.aud==='public'&&stOf(P)==='open'){var re2=/<form class="v51g" onsubmit="V51\.h\.sp60pub[\s\S]*?<\/form>(<p class="mu">[\s\S]*?<\/p>)?/,m2=h.match(re2);
+  var acc='<div class="acc138"><div class="ic">'+ic('award',26)+'</div><div class="tx"><h3>'+L('سجّل في هذا البرنامج بحسابك','Register for this programme with your account')+'</h3><p>'+L('أنشئ حسابك مرة واحدة فقط، ثم سجّل في هذا البرنامج وفي أي برنامج قادم بضغطة واحدة، وتجد شهاداتك في حسابك فور صدورها، وتصلك دعوات البرامج الجديدة.','Create your account just once, then register for this and any future programme in one click, find your certificates in your account as soon as they are issued, and receive invitations to new programmes.')+'</p><div class="bt"><a class="btn" href="#/me/join" onclick="V51.V5p138b()">'+L('إنشاء حساب جديد','Create a new account')+'</a><a class="btn s" href="#/me" onclick="V51.V5p138b()">'+L('لديّ حساب: دخول','I have an account: sign in')+'</a></div>'+(m2?'<details class="gst138"><summary>'+L('أو سجّل هذه المرة دون حساب','Or register this time without an account')+'</summary>'+m2[0]+'</details>':'')+'</div></div>';
+  h=m2?h.replace(re2,acc):h.replace(/<\/section>\s*$/,acc+'</section>')}
  return h}}catch(e){console.warn('v138 sp',e)}
 V5.V5p138b=function(){V5.p138back=location.hash};
 /* صفحة الدخول: مدخل بوابة المشاركين */
