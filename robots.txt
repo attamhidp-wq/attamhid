@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /tools/
+Disallow: /supabase/
+Disallow: /src/
+
+Sitemap: https://attamhid.com/sitemap.xml
