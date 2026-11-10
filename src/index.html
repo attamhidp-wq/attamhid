@@ -27198,7 +27198,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v135';
+window.__BUILD__='v136';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -27221,7 +27221,18 @@ W.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;set
 W.addEventListener('appinstalled',function(){snooze(3650);hide()});
 if(safari)setTimeout(show,8000);
 W.pwaInstall132=function(){if(dp){var p=dp;dp=null;p.prompt();return true}return false};
-var st=D.createElement('style');st.textContent='#pwa132{position:fixed;z-index:9000;inset-inline:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));margin:0 auto;max-width:520px;display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sf,#fff);color:var(--tx,#14284B);border:1px solid var(--bd,#d9dee7);border-radius:14px;box-shadow:0 10px 30px rgba(10,20,40,.18);animation:pw132 .35s ease-out}#pwa132 img{border-radius:10px;flex:none}#pwa132 .t{flex:1;min-width:0;display:grid;gap:2px}#pwa132 .t small{opacity:.8;line-height:1.5}#pwa132 .btn{flex:none}@keyframes pw132{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}@media (prefers-reduced-motion:reduce){#pwa132{animation:none}}@media print{#pwa132{display:none}}';(D.head||D.documentElement).appendChild(st);
+/* v136: زر ثابت «تطبيق المعهد» في تذييل الموقع — يثبّت مباشرة إن أمكن، وإلا يعرض طريقة التثبيت */
+W.pwaHelp136=function(){if(dp){var p=dp;dp=null;p.prompt();(p.userChoice||Promise.resolve({})).then(function(c){if(c&&c.outcome==='accepted')snooze(3650)});return}
+ var m=D.getElementById('pwa136');if(m){m.remove();return}m=D.createElement('div');m.id='pwa136';m.setAttribute('role','dialog');
+ var inst=standalone(),and=/android/i.test(N.userAgent);
+ m.innerHTML='<div class="c"><img src="img/app-192-v132.png" alt="" width="56" height="56"><h3>'+T('تطبيق معهد التمهيد','At Tamhid Institute app','আত তামহীদ ইনস্টিটিউট অ্যাপ')+'</h3>'+
+  (inst?'<p>'+T('أنت تستخدم التطبيق الآن، وهو مثبّت على جهازك ويتحدّث تلقائياً.','You are using the app now; it is installed on your device and updates automatically.','আপনি এখন অ্যাপটি ব্যবহার করছেন; এটি ইনস্টল করা আছে এবং স্বয়ংক্রিয়ভাবে আপডেট হয়।')+'</p>':
+  ios?'<ol><li>'+T('افتح الموقع في متصفح Safari.','Open the site in Safari.','Safari-তে সাইটটি খুলুন।')+'</li><li>'+T('اضغط زر المشاركة (المربع والسهم للأعلى).','Tap the Share button (square with an up arrow).','শেয়ার বোতাম চাপুন।')+'</li><li>'+T('اختر «إضافة إلى الشاشة الرئيسية» ثم «إضافة».','Choose “Add to Home Screen”, then “Add”.','“Add to Home Screen” বেছে নিন, তারপর “Add”।')+'</li></ol>':
+  '<ol><li>'+T('افتح الموقع في متصفح Chrome.','Open the site in Chrome.','Chrome-এ সাইটটি খুলুন।')+'</li><li>'+T('اضغط قائمة المتصفح ⋮ في الأعلى.','Tap the browser menu ⋮ at the top.','উপরের ⋮ মেনু চাপুন।')+'</li><li>'+T('اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».','Choose “Install app” or “Add to Home screen”.','“Install app” বা “Add to Home screen” বেছে নিন।')+'</li></ol><p class="mu">'+T('إن لم يظهر خيار التثبيت فالتطبيق مثبّت على جهازك مسبقاً؛ افتحه من أيقونة «معهد التمهيد».','If the install option does not appear, the app is already installed on your device; open it from the “معهد التمهيد” icon.','ইনস্টল অপশন না দেখালে অ্যাপটি আগেই ইনস্টল করা আছে।')+'</p>')+
+  '<button type="button" class="btn">'+T('حسناً','OK','ঠিক আছে')+'</button></div>';
+ m.addEventListener('click',function(e){if(e.target===m||e.target.closest('button'))m.remove()});D.body.appendChild(m)};
+setInterval(function(){try{var ft=D.getElementById('ft');if(!ft||ft.querySelector('.app136'))return;var a0=ft.querySelector('a');if(!a0)return;var a=D.createElement('a');a.href='javascript:void 0';a.className='app136';a.setAttribute('role','button');a.textContent='📱 '+T('تطبيق المعهد','Institute app','ইনস্টিটিউট অ্যাপ');a.addEventListener('click',function(e){e.preventDefault();W.pwaHelp136()});a0.parentNode.insertBefore(a,a0);a0.parentNode.insertBefore(D.createTextNode(' '),a0)}catch(e){}},1500);
+var st=D.createElement('style');st.textContent='#pwa132{position:fixed;z-index:9000;inset-inline:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));margin:0 auto;max-width:520px;display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sf,#fff);color:var(--tx,#14284B);border:1px solid var(--bd,#d9dee7);border-radius:14px;box-shadow:0 10px 30px rgba(10,20,40,.18);animation:pw132 .35s ease-out}#pwa132 img{border-radius:10px;flex:none}#pwa132 .t{flex:1;min-width:0;display:grid;gap:2px}#pwa132 .t small{opacity:.8;line-height:1.5}#pwa132 .btn{flex:none}@keyframes pw132{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}@media (prefers-reduced-motion:reduce){#pwa132{animation:none}}@media print{#pwa132{display:none}}#pwa136{position:fixed;inset:0;z-index:9100;background:rgba(10,20,40,.45);display:flex;align-items:center;justify-content:center;padding:16px}#pwa136 .c{background:var(--sf,#fff);color:var(--tx,#14284B);border-radius:16px;max-width:420px;width:100%;padding:20px;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.25)}#pwa136 img{border-radius:12px}#pwa136 h3{margin:8px 0}#pwa136 ol{text-align:start;line-height:1.9;padding-inline-start:22px}#pwa136 .mu{opacity:.8;font-size:.92em}';(D.head||D.documentElement).appendChild(st);
 })();
 /* v94 — الخادم صار يحفظ الهيكل الإداري (الجهات والمناصب والأختام وأعضاء الإدارة…)؛
    المتصفحات التي سجّلت سابقاً أن هذه الجداول «غير موجودة» تعيد الفحص مرة واحدة فتُرفع بياناتها وتُسحب بيانات الخادم */
