@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
     const { data: any } = await admin.from("profiles").select("login_email").not("login_email", "is", null).neq("ref_id", "robot").limit(1).maybeSingle();
     const dom = String(any?.login_email || "").split("@")[1] || "robot.attamhid.local";
     const email = "robot@" + dom;
-    const password = crypto.randomUUID() + "-" + crypto.randomUUID();
+    const password = (crypto.randomUUID() + crypto.randomUUID()).replace(/-/g, "").slice(0, 48) + "#Aa9";
     const { data: pr } = await admin.from("profiles").select("id").eq("ref_id", "robot").eq("role", "admin").maybeSingle();
     let uid = pr?.id as string | undefined;
     if (uid) {
