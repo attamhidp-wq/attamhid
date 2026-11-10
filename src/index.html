@@ -18230,12 +18230,12 @@ H.saveP=(function(prev){return function(f){var p=prog(U.pid);if(p&&f.o_award){va
    كل شيء يتحدث تلقائياً من بيانات الطالب والبرنامج والهوية والتوقيعات، مع إعدادات قابلة للتعديل
    ===================================================================== */
 var TR0={orient:'landscape',numCol:0,digits:'latn',dedupe:1,modeAr:'انتظام',modeEn:'Regular',accImg:'',
- colors:{bg:'#F5F8FC',navy:'#14284B',thead:'#E2EAF5',sum:'#EDF2F9',line:'#B3C2D6',text:'#1E2A33',accent:'#14284B'},
+ colors:{bg:'#FFFFFF',navy:'#14284B',thead:'#FFFFFF',sum:'#FFFFFF',line:'#B3C2D6',text:'#1E2A33',accent:'#14284B'},
  /* الرموز الإنجليزية ومعانيها، مرتبطة بصفوف سلّم التقديرات المعتمد في النظام بالترتيب (النطاقات والأسماء العربية من السلّم نفسه) */
  scaleEn:[['A+','Exceptional'],['A','Excellent'],['B+','Superior'],['B','Very Good'],['C+','Above Average'],['C','Good'],['D+','High Pass'],['D','Pass'],['F','Fail']],
  codes:[{c:'ق',ar:'قيد الدراسة',ce:'IP',en:'In progress',k:'ip'},{c:'م',ar:'منسحب',ce:'W',en:'Withdrawn',k:'w'},{c:'*',ar:'غير محتسب في المعدل',ce:'*',en:'Not counted in GPA',k:'nc'}]};
 V5.TR0=TR0;SET_KEYS.push('tr');
-function tr54(){var t=(S.v51&&S.v51.tr)||{};return Object.assign({},TR0,t,{colors:Object.assign({},TR0.colors,t.colors||{}),codes:(t.codes&&t.codes.length)?t.codes:TR0.codes,scaleEn:(t.scaleEn&&t.scaleEn.length)?t.scaleEn:TR0.scaleEn})}
+function tr54(){var t=(S.v51&&S.v51.tr)||{};return Object.assign({},TR0,t,{colors:Object.assign({},TR0.colors,t.colors||{},{bg:'#FFFFFF',thead:'#FFFFFF',sum:'#FFFFFF'}),codes:(t.codes&&t.codes.length)?t.codes:TR0.codes,scaleEn:(t.scaleEn&&t.scaleEn.length)?t.scaleEn:TR0.scaleEn})}
 V5.tr54=tr54;
 var WD=function(s){return String(s==null?'':s).replace(/[٠-٩]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.indexOf(d)})};
 var IND0=function(s){return String(s==null?'':s).replace(/\d/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d]})};
@@ -20540,9 +20540,9 @@ function ranked(list){return list.filter(function(r){return OPEN.indexOf(r.statu
 V5.ranked64=function(prog,term){return ranked((groups()[(prog||DIP)+'|'+(term||'—')])||[])};
 H.rank64=function(key){var G=groups(),list=G[key]||[],a=A(),pr=key.split('|')[0],cap=+a.cap[key]||+a.cap[pr]||0;if(!cap){toast(L('حدّد الطاقة الاستيعابية لهذا البرنامج أولاً.','Set the capacity for this program first.'));return}
  var acc=list.filter(function(r){return /مقبول/.test(r.status||'')}).length,R=ranked(list),free=Math.max(0,cap-acc);if(!R.length){toast(L('لا متقدمين مكتملي المراجعة في هذه المجموعة.','No applicants with complete review in this group.'));return}
- if(!confirm(L('سيُقبل أعلى ','The top ')+Math.min(free,R.length)+L(' متقدماً وتُنفَّذ إجراءات القبول التلقائية، ويُدرج الباقون في قائمة الانتظار. متابعة؟',' applicants will be admitted with automatic admission steps, and the rest placed on the waiting list. Continue?')))return;
- var goB=go,n=0;try{go=function(){};R.forEach(function(r,i){r.rank64=i+1;r.score64=score(r).v;if(i<free){var ok=admit(r.id);if(ok)n++}else{r.status='قائمة الانتظار';r.waitPos=i+1-free;r.admRes='قائمة الانتظار';r.admNote='أنت في قائمة الانتظار برقم '+(i+1-free)+'.'}})}finally{go=goB}
- a.last=a.last||{};a.last[key]=new Date().toISOString().slice(0,16).replace('T',' ')+' — '+L('مقبولون: ','admitted: ')+n+' · '+L('انتظار: ','waiting: ')+Math.max(0,R.length-free);setTouch('adm64');save();try{aud(L('تشغيل المفاضلة','Ranking run'),key,a.last[key])}catch(e){}go()};
+ if(!confirm(L('سيُقبل أعلى ','The top ')+Math.min(free,R.length)+L(' متقدماً وتُنفَّذ إجراءات القبول التلقائية، ويبقى الباقون «قيد المراجعة» حتى إنهاء الفرز. متابعة؟',' applicants will be admitted with automatic admission steps; the rest stay “Under review” until selection is closed. Continue?')))return;
+ var goB=go,n=0;try{go=function(){};R.forEach(function(r,i){r.rank64=i+1;r.score64=score(r).v;if(i<free){var ok=admit(r.id);if(ok)n++}else{r.status='قيد المراجعة';r.waitPos=i+1-free;delete r.admRes;r.admNote=''}})}finally{go=goB}
+ a.last=a.last||{};a.last[key]=new Date().toISOString().slice(0,16).replace('T',' ')+' — '+L('مقبولون: ','admitted: ')+n+' · '+L('قيد المراجعة: ','under review: ')+Math.max(0,R.length-free);setTouch('adm64');save();try{aud(L('تشغيل المفاضلة','Ranking run'),key,a.last[key])}catch(e){}go()};
 H.capSet64=function(key,v){A().cap[key]=v===''?'':Math.max(0,parseInt(v)||0);setTouch('adm64');save()};
 H.w64=function(f){var v=fv(f),a=A();a.w={gpa:+v.wg||0,interview:+v.wi||0,test:+v.wt||0};if(!(a.w.gpa+a.w.interview+a.w.test)){toast(L('مجموع الأوزان لا يكون صفراً.','Weights cannot all be zero.'));return false}
  a.tie=[v.t1,v.t2,v.t3].filter(function(x,i,s){return x&&s.indexOf(x)===i});
@@ -22631,6 +22631,86 @@ GOH.post.push(function(){try{if(typeof me!=='undefined'&&me&&me.r==='admin'&&/^#
 
 /* v134: رابط «دليل البرامج» (الصفحات القابلة للفهرسة) في تذييل الموقع */
 GOH.post.push(function(){try{var ft=document.getElementById('ft');if(!ft||ft.querySelector('a.p134'))return;var a0=ft.querySelector('a');if(!a0)return;var a=document.createElement('a');a.className='p134';a.href='/programs/';a.textContent=L('دليل البرامج والدورات','Programmes & courses guide');a0.parentNode.insertBefore(a,a0.nextSibling);a0.parentNode.insertBefore(document.createTextNode(' '),a)}catch(e){}});
+/* ===================== v135: الإرسال الفعلي لشهادات البرامج القصيرة مرفقةً PDF + المنفّذ الآلي ===================== */
+var ROBOT_FROM='2026-11-10T00:00:00Z';
+var EM135=/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
+var b64_135=function(blob){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result).split(',')[1]||'')};r.onerror=rej;r.readAsDataURL(blob)})};
+function spReg135(c){return spAll().concat(((S.v51&&S.v51.spr)||[]).filter(function(r){return r&&r.deleted})).find(function(r){return r.id===c.spr})}
+async function spCertSend(c,to){var P=spP(c.sp);if(!P)return {error:'no_program'};var r=spReg135(c)||{},p=spPerson(r);to=String(to||p.email||'').trim().toLowerCase();if(!EM135.test(to))return {error:'no_email'};
+ var k=(SPCORE.KIND_OF&&SPCORE.KIND_OF[c.type])||P.ctype||'att',T0=(SPCORE.TITLES&&SPCORE.TITLES[k])||['شهادة','Certificate'],fn='certificate-'+c.rec+'.pdf',att=[];
+ try{var blob=await W.mkBlob(certHTML(c),'pdf');att.push({filename:fn,content:await b64_135(blob),content_type:'application/pdf'})}catch(e){return {error:'letter_blocked',detail:String(e&&e.message||e)}}
+ var LK=String(P.links131||'').split(/\n+/).map(function(x){var a=x.split('|');return a.length>1?[a[0].trim(),a.slice(1).join('|').trim()]:['',x.trim()]}).filter(function(x){return /^https?:\/\/\S+$/i.test(x[1])}).slice(0,12);
+ var M=/أنثى|^f$/.test(String(p.sex||c.sex||'')),subject=T0[0]+' — '+P.nameAr+' / '+T0[1]+' — '+(P.nameEn||P.nameAr);
+ var B=V5.mailDoc70({subject:subject,titleAr:T0[0],titleEn:T0[1],dearAr:'السلام عليكم '+(M?'الأخت ':'الأخ ')+(p.name||c.name||'')+'،',dearEn:'Dear '+(p.nameEn||c.nameEn||p.name||'')+',',
+  bodyAr:'يسرّ معهد التمهيد أن يهنئ'+(M?'كِ':'كَ')+' بإتمام «'+P.nameAr+'»، ويشكر'+(M?'كِ':'كَ')+' على المشاركة.\nتجد'+(M?'ين':'')+' '+T0[0]+' مرفقة بهذه الرسالة (رقم الشهادة: '+c.rec+')، ويمكن التحقق منها في موقع المعهد برقمها.'+(LK.length?'\nمحتوى البرنامج:\n'+LK.map(function(x){return (x[0]?x[0]+': ':'')+x[1]}).join('\n'):'')+'\nنسعد بلقائ'+(M?'كِ':'كَ')+' في برامجنا القادمة.',
+  bodyEn:'At Tamhid Institute congratulates you on completing “'+(P.nameEn||P.nameAr)+'” and thanks you for taking part.\nPlease find your '+T0[1]+' attached (Certificate No. '+c.rec+'); it can be verified on the Institute website by its number.'+(LK.length?'\nProgramme content:\n'+LK.map(function(x){return (x[0]?x[0]+': ':'')+x[1]}).join('\n'):'')+'\nWe look forward to seeing you at our next programmes.',att:fn});
+ try{var lg=await V5.logoPng70();if(lg)att.push({filename:'logo.png',content:lg,content_type:'image/png',content_id:'logo64'})}catch(e){}
+ var res=await V5.fn63({action:'mail',type:'sp_cert',ref_id:c.rec,to:to,subject:subject,html:B.html,text:B.text,cred_with:'',cred_without:'',cred_with_text:'',cred_without_text:'',from_name:B.from_name,reply_to:B.reply_to,attachments:att});
+ if(res&&res.ok){c.mailedAt=NOW();c.mailTo=to;delete c.mailErr134;(c.mail135=c.mail135||[]).push({at:NOW(),to:to,by:who()});aud(L('إرسال شهادة برنامج قصير بالبريد مرفقةً','Short-programme certificate emailed (attached)'),c.rec,to)}
+ else{c.mailTry134=(+c.mailTry134||0)+1;c.mailErr134=(res&&res.error)||'error'}
+ return res||{error:'empty'}}
+V5.spCertSend135=spCertSend;
+/* زر «إرسال بالبريد»: إرسال حقيقي بمرفق PDF (كان يُحفظ محلياً فقط) */
+var mail135=async function(pid,mode){var P=spP(pid);if(!P)return;var I=V5.sp60i,sel=(((V5.sp60st||{}).sel)||{})[pid]||{},R=spAll().filter(function(r){return r.pid===pid&&!r.wait&&(mode==='all'||(mode==='sel'?sel[r.id]:r.id===mode))});
+ var C=R.map(function(r){return I.issued(r.id)}).filter(function(c){return c&&!c.revoked});if(!C.length){tst(L('لا شهادات صادرة للإرسال.','No issued certificates to send.'));return}
+ if(!confirm(L('إرسال ','Send ')+C.length+L(' شهادة بالبريد، كل شهادة PDF مرفقة لصاحبها؟',' certificate(s) by email, each PDF attached to its holder?')))return;var o=document.getElementById('sp65o'),n=0,bad=0;
+ for(var i=0;i<C.length;i++){if(o)o.textContent=L('جارٍ الإرسال ','Sending ')+(i+1)+' / '+C.length+' …';var r=await spCertSend(C[i]);if(r&&r.ok)n++;else bad++}
+ save();if(o)o.textContent='';tst(L('أُرسلت: ','Sent: ')+n+(bad?L(' · تعذّر: ',' · failed: ')+bad:''));go()};
+setTimeout(function(){H.sp65mail=mail135},0);
+/* تذكير يدوي الآن */
+H.sp135rem=function(pid){if(!confirm(L('إرسال تذكير الآن لكل المسجّلين في هذا البرنامج (مع رابط المحاضرة إن وُجد)؟','Send a reminder now to everyone registered in this programme (with the session link if any)?')))return;
+ if(!hasSb()){tst(L('غير متصل بالخادم.','Not connected to the server.'));return}sb.rpc('v134_sp_remind_now',{pid:pid}).then(function(r){if(r&&r.error){tst(r.error.message);return}tst(L('أُرسل التذكير إلى: ','Reminder sent to: ')+(r.data||0))})};
+/* إصدار وإرسال الشهادات الآن لهذا البرنامج (يدوياً) */
+H.sp135now=async function(pid){var P=spP(pid);if(!P)return;if(!confirm(L('إصدار الشهادات المستحقة الآن وإرسالها بالبريد مرفقةً، مع شهادة الشكر للمدرب؟','Issue due certificates now and email them attached, along with the trainer’s Certificate of Appreciation?')))return;
+ var o=document.getElementById('sp65o');if(o)o.textContent=L('جارٍ الإصدار والإرسال…','Issuing and sending…');var res=await V5.robot134({pid:pid,force:1});save();if(o)o.textContent='';
+ tst(L('صدرت: ','Issued: ')+res.issued+' · '+L('أُرسلت: ','Sent: ')+res.mailed+(res.thxMailed?' · '+L('شهادة الشكر: أُرسلت','Appreciation: sent'):'')+(res.err.length?' · '+L('تعذّر: ','failed: ')+res.err.length:''));go()};
+function trEmail135(P){var t=null;try{t=P.trainerTid&&liveTr().find(function(x){return x.id===P.trainerTid})}catch(e){}var e=String(P.trainerEmail||(t&&t.email)||'').trim();if(!e&&P.trainerFid){var f=(S.faculty||[]).find(function(x){return x.id==P.trainerFid});e=f&&f.email||''}return e}
+/* المنفّذ الآلي: يُستدعى من الخادم الآلي كل بضع دقائق، ويدوياً من زر البرنامج */
+V5.robot134=async function(o){o=o||{};var out={promoted:0,issued:0,mailed:0,thx:0,thxMailed:0,err:[]};
+ try{if(V5.spRegsPull)await V5.spRegsPull()}catch(e){}
+ ((S.v51&&S.v51.sp)||[]).forEach(function(P){if(P&&!P.deleted&&+P.waitList!==0&&(!o.pid||P.id===o.pid))out.promoted+=promote(P)});
+ try{out.issued=V5.tick60(1)||0}catch(e){out.err.push('tick60: '+e.message)}
+ try{out.thx=V5.thxTick70?V5.thxTick70()||0:0}catch(e){out.err.push('thx: '+e.message)}
+ if(o.pid&&o.force){try{var Pf=spP(o.pid);if(Pf&&V5.thxEnsure70)V5.thxEnsure70(Pf,SPCORE.ended(Pf))}catch(e){}}
+ var C=(S.certs||[]).filter(function(c){return c&&c.sp&&c.spr&&!c.revoked&&!c.mailedAt&&(+c.mailTry134||0)<3&&(o.pid?c.sp===o.pid:String(c.at||c.date||'')>=ROBOT_FROM)});
+ for(var i=0;i<C.length;i++){var r=await spCertSend(C[i]);if(r&&r.ok)out.mailed++;else out.err.push(C[i].rec+': '+((r&&r.error)||'?'))}
+ var TH=(S.certs||[]).filter(function(c){return c&&c.type==='thanks'&&c.thx70&&!c.revoked&&!c.mailedAt&&(+c.mailTry134||0)<3&&(o.pid?c.thx70===o.pid:String(c.at||'')>=ROBOT_FROM)});
+ for(var j=0;j<TH.length;j++){var c=TH[j],P=spP(c.thx70),to=P?trEmail135(P):'';if(!EM135.test(to)){c.mailTry134=3;c.mailErr134='no_email';continue}
+  try{var rr=await V5.thxSend70(c.rec,to);if(rr&&rr.ok)out.thxMailed++;else{c.mailTry134=(+c.mailTry134||0)+1;out.err.push(c.rec+': '+((rr&&rr.error)||'?'))}}catch(e){c.mailTry134=(+c.mailTry134||0)+1;out.err.push(c.rec+': '+e.message)}}
+ try{save()}catch(e){}return out};
+/* أزرار يدوية في صفحة المسجّلين والشهادات */
+function spButtons135(){var o=document.getElementById('sp65o');if(!o||document.getElementById('sp135b'))return;var b=document.querySelector('#app [onclick*="sp65issue(\'"]');var m=b&&String(b.getAttribute('onclick')).match(/sp65issue\('([^']+)'/);if(!m)return;var pid=m[1],P=spP(pid);
+ o.insertAdjacentHTML('beforebegin','<p id="sp135b" class="v51inl">'+B(L('إرسال تذكير الآن (مع رابط المحاضرة)','Send reminder now (with session link)'),"V51.h.sp135rem('"+Qs(pid)+"')",'s')+' '+B(L('إصدار وإرسال الشهادات الآن (مرفقة PDF)','Issue & send certificates now (PDF attached)'),"V51.h.sp135now('"+Qs(pid)+"')",'s')+'</p><p class="mu"><small>'+L('آلياً دون تدخل: تذكير قبل كل جلسة بـ30 دقيقة مع الرابط، وعند انتهاء البرنامج تصدر الشهادات وتُرسل مرفقةً لكل مستوفٍ للشروط، وشهادة الشكر للمدرب.','Automatic, no action needed: a reminder 30 minutes before each session with the link; when the programme ends, certificates are issued and emailed (attached) to every eligible participant, with the Certificate of Appreciation to the trainer.')+(P&&P.remind==0?' '+tag(L('التذكير معطّل لهذا البرنامج','Reminders off for this programme'),'wn'):'')+'</small></p>')}
+GOH.post.push(function(){try{if(typeof me!=='undefined'&&me&&me.r==='admin')spButtons135()}catch(e){}});
+
+/* ===================== v135: دورة القبول لكل فصل ===================== */
+var OPEN135=['قيد المراجعة','قائمة الانتظار','جديد'];
+var nid135=function(x){return String(x||'').toUpperCase().replace(/[\s\-\/]/g,'')};
+/* منع تكرار الطلب بالرقم نفسه ما دام له طلب مفتوح أو قبول */
+setTimeout(function(){try{var _r=W.reg;if(!_r||_r.__135)return;var nr=function(f){var el=f&&f.querySelector&&f.querySelector('[name=pid]'),k=nid135(el&&el.value);if(!el||k.length<5||f.dataset.d135==='1'||!hasSb()||(typeof me!=='undefined'&&me&&me.r==='admin'))return _r.apply(this,arguments);
+ var self=this,args=arguments;sb.rpc('v135_dup_check',{nid:k}).then(function(x){var d=x&&x.data;var M={pending:L('لديك طلب التحاق قيد المراجعة بهذا الرقم، ولا يمكن تقديم طلب جديد حتى تصدر نتيجته. تابع طلبك من «متابعة الطلب».','You already have an application under review with this ID number; a new one cannot be submitted until its result is out. Follow it from “Track application”.'),admitted:L('سبق قبولك بهذا الرقم. سجّل الدخول إلى بوابة الطالب.','You have already been admitted with this ID number. Please sign in to the student portal.'),student:L('هذا الرقم مسجّل لطالب قائم في المعهد. سجّل الدخول إلى بوابة الطالب.','This ID number belongs to a current student of the Institute. Please sign in to the student portal.')};
+  if(d&&M[d]){try{out('<div class="msg er">'+M[d]+'</div>')}catch(e){}tst(M[d]);return}f.dataset.d135='1';try{_r.apply(self,args)}finally{setTimeout(function(){delete f.dataset.d135},1500)}},function(){f.dataset.d135='1';try{_r.apply(self,args)}finally{delete f.dataset.d135}});return false};nr.__135=1;W.reg=nr;try{reg=nr}catch(e){}}catch(e){console.error('v135 reg',e)}},0);
+/* إنهاء الفرز: رفض كل غير المقبولين في المجموعة لعدم توفر مقاعد، وإبلاغهم بالفصل القادم */
+H.adm135open=function(key){var d=document.getElementById('adm135_'+key.replace(/\W/g,'_'));if(d){d.hidden=!d.hidden;return}};
+function adm135form(key){var pr=key.split('|')[0],tm=key.split('|')[1],A=terms(),i=A.findIndex(function(t){return t.id===tm}),nx=(i>-1?A[i+1]:null)||A.find(function(t){return t.id>curTerm()})||{},nn=termName(nx.id),last=((S.v51&&S.v51.adm64&&S.v51.adm64.next135)||{});
+ var R=(S.requests||[]).filter(function(r){return (r.prog||DIP)+'|'+(r.q64_term||r.admTerm51||'—')===key&&OPEN135.indexOf(r.status)>-1&&!r.deleted}),inp=function(n,lab,v,x){return '<label>'+lab+'<input name="'+n+'" value="'+esc(v||'')+'"'+(x||'')+'></label>'};
+ return '<div id="adm135_'+key.replace(/\W/g,'_')+'" hidden class="box" style="margin-top:8px"><h4 style="margin-top:0">'+L('إنهاء الفرز وإبلاغ غير المقبولين','Close selection & notify those not admitted')+' ('+R.length+')</h4><p class="mu">'+L('تتحوّل الطلبات المفتوحة في هذه المجموعة إلى «اعتذار لعدم توفر مقاعد»، ويصل كل متقدم بريد فوري يدعوه للتقديم في الفصل القادم بالرقم نفسه، وتظهر النتيجة فوراً في «متابعة الطلب».','Open applications in this group become “Declined — no seats available”; each applicant immediately receives an email inviting them to apply next term with the same number, and the result shows at once in “Track application”.')+'</p>'+
+  '<form class="v51g" onsubmit="return V51.h.adm135go(this,\''+Qs(key)+'\')">'+inp('termAr',L('الفصل القادم (عربي)','Next term (Arabic)'),last.termAr||nn.ar)+inp('termEn',L('الفصل القادم (إنجليزي)','Next term (English)'),last.termEn||nn.en,' dir="ltr"')+
+  inp('whenAr',L('موعد التقديم (عربي)','Application period (Arabic)'),last.whenAr||'',' placeholder="'+esc(L('مثال: من 1 ديسمبر إلى 31 ديسمبر 2026','e.g. 1–31 December 2026'))+'" required')+inp('whenEn',L('موعد التقديم (إنجليزي)','Application period (English)'),last.whenEn||'',' dir="ltr" required')+
+  '<label style="grid-column:1/-1">'+L('آلية التقديم (عربي)','How to apply (Arabic)')+'<textarea name="howAr" rows="2">'+esc(last.howAr||'التقديم إلكترونياً عبر صفحة «التقديم» في موقع المعهد بالرقم نفسه، ثم أداء اختبار تحديد المستوى، ويُعلن القبول بالبريد.')+'</textarea></label>'+
+  '<label style="grid-column:1/-1">'+L('آلية التقديم (إنجليزي)','How to apply (English)')+'<textarea name="howEn" rows="2" dir="ltr">'+esc(last.howEn||'Apply online through the “Apply” page on the Institute website with the same ID number, then sit the placement test; admission results are announced by email.')+'</textarea></label>'+
+  inp('url',L('رابط التقديم','Application link'),last.url||((V5.qrBase64?V5.qrBase64():'https://attamhid.com/')+'#/register'),' dir="ltr" type="url"')+'<div><button class="btn d">'+L('إنهاء الفرز وإرسال البريد للجميع','Close selection & email everyone')+'</button></div></form></div>'}
+H.adm135go=function(f,key){if(!can('v112a')&&!can('req'))return false;var v=fv(f),R=(S.requests||[]).filter(function(r){return (r.prog||DIP)+'|'+(r.q64_term||r.admTerm51||'—')===key&&OPEN135.indexOf(r.status)>-1&&!r.deleted});
+ if(!R.length){tst(L('لا طلبات مفتوحة في هذه المجموعة.','No open applications in this group.'));return false}
+ if(!confirm(L('اعتذار لـ','Decline ')+R.length+L(' متقدماً لعدم توفر مقاعد وإبلاغهم بالبريد فوراً؟ لا يمكن التراجع عن البريد بعد إرساله.',' applicant(s) for lack of seats and email them now? Emails cannot be recalled once sent.')))return false;
+ var info={termAr:v.termAr,termEn:v.termEn,whenAr:v.whenAr,whenEn:v.whenEn,howAr:v.howAr,howEn:v.howEn,url:v.url};try{var a=S.v51.adm64=S.v51.adm64||{};a.next135=info;V5.setTouch('adm64')}catch(e){}
+ R.forEach(function(r){r.status='اعتذار لعدم توفر مقاعد';r.admRes='اعتذار لعدم توفر مقاعد';r.admNote='نعتذر لعدم توفر مقاعد شاغرة بعد اكتمال الفرز. ندعوك للتقديم في '+(v.termAr||'الفصل القادم')+' بالرقم نفسه'+(v.whenAr?' ('+v.whenAr+')':'')+'.';r.closedAt135=NOW();r.u=NOW()});
+ aud(L('إنهاء الفرز وإبلاغ غير المقبولين','Selection closed; applicants not admitted notified'),key,String(R.length));save();
+ var ids=R.map(function(r){return String(r.id)});setTimeout(function(){if(!hasSb()){tst(L('حُدّثت الحالات؛ تعذّر الإرسال لعدم الاتصال بالخادم.','Statuses updated; emails not sent (no server connection).'));return}
+  sb.rpc('v135_adm_close_mail',{ids:ids,info:info}).then(function(x){if(x&&x.error){tst(L('حُدّثت الحالات، وتعذّر البريد: ','Statuses updated; email failed: ')+x.error.message);return}tst(L('أُبلغ بالبريد: ','Emailed: ')+(x.data||0)+' / '+ids.length)})},2500);go();return false};
+GOH.post.push(function(){try{if(typeof me==='undefined'||!me||me.r!=='admin')return;document.querySelectorAll('#app [onclick*="rank64(\'"]').forEach(function(b){if(b.dataset.a135)return;b.dataset.a135=1;var m=String(b.getAttribute('onclick')).match(/rank64\('([^']+)'/);if(!m)return;var key=m[1];
+ b.insertAdjacentHTML('afterend',' '+B(L('إنهاء الفرز وإبلاغ غير المقبولين','Close selection & notify the rest'),"V51.h.adm135open('"+Qs(key)+"')",'s d'));var host=b.closest('p,div')||b.parentNode;host.insertAdjacentHTML('afterend',adm135form(key))})}catch(e){console.error('v135 adm',e)}});
+
 /* ===================== التسجيل في القائمة ===================== */
 try{[['v131s','أحوال القيد والإنذار الأكاديمي','Enrolment status & warnings',tabSt],['v131p','الترقية بين المستويات','Level promotion',tabPr],['v131c','المحتوى التعليمي للمقررات','Course learning content',tabLk],['v131t','المدربون والمحاضرون','Trainers & lecturers',tabTr]].forEach(function(x){V51TABS.push(x);TABLBL[x[1]]=x[0];TABLBL[x[2]]=x[0];SVC_ADMIN.push([x[0],x[1],x[2]])})}catch(e){console.error('v131 tabs',e)}
 
@@ -27118,7 +27198,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v134';
+window.__BUILD__='v135';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};

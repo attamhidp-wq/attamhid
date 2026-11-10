@@ -1,0 +1,36 @@
+# v135 — المنفّذ الآلي للبرامج القصيرة: الإصدار والإرسال التلقائي للشهادات مرفقةً، وترقية قوائم الانتظار
+name: robot
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: robot
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            tools
+            src
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Cache browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-1.48.2-chromium
+      - name: Install
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1.48.2
+          npx playwright install --with-deps chromium
+      - name: Run
+        run: node tools/robot.js
