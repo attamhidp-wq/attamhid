@@ -19312,6 +19312,15 @@ function fixNew(s){var c=S.v51&&S.v51.cal61;if(!c||!c.idOn||!s||!s.id||isNew(s.i
  setTimeout(function(){deepRename(old,s.id);try{aud(L('توليد رقم أكاديمي','Student ID generated'),s.id,old+' → '+s.id)}catch(e){}save()},0)}
 function patchPush(){var a=S&&S.students;if(!a||a.__p61)return;var o=a.push;Object.defineProperty(a,'push',{value:function(){var args=[].slice.call(arguments);args.forEach(function(s){try{fixNew(s)}catch(e){}});return o.apply(this,args)},configurable:true,writable:true});Object.defineProperty(a,'__p61',{value:1})}
 GOH.pre.push(patchPush);setTimeout(patchPush,0);
+/* v150 — إصلاح: قد تُستبدل قائمة الطلاب بعد مزامنة فيفقد المصفوف ربط توليد الرقم، فيُقبل الطالب برقم مؤقت (ST-…) دون فصل قبول ويُمنع خطاب القبول.
+   heal: يمنح كل طالب غير متخرج برقم مؤقت رقماً معتمداً (9 خانات) وفصل قبول، ويحدّث كل الإحالات؛ ويُستدعى قبل القبول وبعده وعند فتح بوابة الإدارة */
+function heal150(){var c=S.v51&&S.v51.cal61;if(!c||!c.idOn||typeof me==='undefined'||!me||me.r!=='admin')return 0;c.idMap=c.idMap||{};var n=0,R=[];
+ (S.students||[]).forEach(function(s){if(!s||s.deleted||!s.id||isNew(s.id)||s.status==='متخرج')return;var t=admTermOf(s)||admitTerm();if(!t)return;var old=s.id,nw=nextId(t);s.id=nw;s.admTerm=t.id;c.idMap[old]=nw;(c.idLog=c.idLog||[]).push({old:old,nw:nw,term:t.id,at:NOW(),by:who(),name:s.name,auto:'v150'});R.push([old,nw]);n++});
+ R.forEach(function(x){try{deepRename(x[0],x[1])}catch(e){}try{aud(L('توليد رقم أكاديمي (تصحيح تلقائي)','Student ID generated (automatic correction)'),x[1],x[0]+' → '+x[1])}catch(e){}});
+ if(n){try{setTouch('cal61')}catch(e){}try{save()}catch(e){}try{if(typeof sb!=='undefined'&&sb)setTimeout(function(){sb.rpc('v61_apply_id_map').then(function(r){if(r.error)console.warn('v150 id map',r.error.message)})},2500)}catch(e){}}return n}
+V5.heal150=heal150;
+GOH.post.push(function(){try{patchPush();if(typeof me!=='undefined'&&me&&me.r==='admin'&&!heal150.t){heal150.t=setTimeout(function(){heal150.t=0;try{if(heal150())go()}catch(e){}},1200)}}catch(e){}});
+window.addEventListener('load',function(){try{var d0=W.decide;if(!d0||d0.__v150)return;var d1=function(id,yes){try{patchPush()}catch(e){}var res=d0.apply(this,arguments);try{if(yes)heal150()}catch(e){}return res};d1.__v150=1;W.decide=d1;try{window.decide=d1}catch(e){}}catch(e){}});
 try{var _nt61=window.notify;window.notify=function(to,subject,ps){var c=S.v51&&S.v51.cal61,m=c&&c.idMap,f=function(x){if(!m||typeof x!=='string')return x;Object.keys(m).forEach(function(o){x=x.split(o).join(m[o])});return x};var a=[].slice.call(arguments);a[1]=f(a[1]);if(Array.isArray(a[2]))a[2]=a[2].map(f);return _nt61.apply(this,a)}}catch(e){}
 /* الدخول والتحقق بالرقم القديم (يُحوَّل للرقم الجديد) */
 try{var _la61=window.loginAny;window.loginAny=function(f){var self=this,args=arguments;try{if(f&&f.u){var v0=String(f.u.value||'').trim(),a=aliasOf(v0);f.u.value=a;
@@ -27386,7 +27395,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v149';
+window.__BUILD__='v150';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
