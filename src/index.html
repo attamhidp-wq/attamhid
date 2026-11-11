@@ -16902,7 +16902,7 @@ V5.v51Push=v51Push;V5.v51Pull=v51Pull;
 /* قراءة عامة (للزوار): المنح والرسوم والدرجات والمسميات وأسماء الجهات — لعرضها في بوابة التسجيل والواجهات */
 async function v51PubPull(){if(typeof sb==='undefined'||!sb||(typeof sbAdmin!=='undefined'&&sbAdmin))return;var X=S.v51,ch=0;
  try{for(var i=0;i<TB.length;i++){var t=TB[i][0];if(['v51_units','v51_degrees','v51_fees','v51_scholarships'].indexOf(t)<0)continue;var r=await sb.from(t).select('id,data,updated_at');if(r.error||!r.data)continue;
-   var arr=TB[i][1]();r.data.forEach(function(row){var l=arr.find(function(o){return String(o.id)===row.id});if(!l){arr.push(row.data);ch++}else if((row.updated_at||'')>(l.u||'')){Object.keys(l).forEach(function(k){delete l[k]});Object.assign(l,row.data);ch++}})}
+   var arr=TB[i][1]();r.data.forEach(function(row){if(!row||!row.data)return;var l=arr.find(function(o){return o&&String(o.id)===row.id});if(!l){arr.push(row.data);ch++}else if((row.updated_at||'')>(l.u||'')){Object.keys(l).forEach(function(k){delete l[k]});Object.assign(l,row.data);ch++}})}
   /* v144: الزائر لا يملك تعديلاً محلياً معتبراً — نسخة الخادم هي المرجع دائماً (كان ختم محلي أحدث يحجب تحديث حالة البوابة) */
   var adm144=typeof me!=='undefined'&&me&&me.r==='admin';var rs=await sb.from('v51_settings').select('key,data,updated_at').in('key',['inst','terms','custom','serial','i18n','scale','reg75','cal61']);if(!rs.error)(rs.data||[]).forEach(function(r){if(r.data==null)return;var lu=(X.setU&&X.setU[r.key])||'';if(adm144?(Date.parse(r.updated_at||'')||0)>(Date.parse(lu)||0):JSON.stringify(X[r.key])!==JSON.stringify(r.data)){X[r.key]=r.data;(X.setU=X.setU||{})[r.key]=r.updated_at;ch++}});
   if(ch){save0();try{go()}catch(e){}}}catch(e){console.warn('v51 public pull',e)}}
@@ -17951,7 +17951,7 @@ W.saveEd=function(f){var c=S.certs.find(function(x){return x.rec==(cf&&cf.rec)})
 /* --- التحقق العام: يجلب التوقيعات والأختام والملفات والصور الحالية ليعرض النسخة المحدَّثة على أي جهاز --- */
 v51PubPull=async function(){if(typeof sb==='undefined'||!sb||(typeof sbAdmin!=='undefined'&&sbAdmin))return;var X=S.v51,ch=0;
  try{for(var i=0;i<TB.length;i++){var t=TB[i][0];if(['v51_units','v51_degrees','v51_fees','v51_scholarships','v51_positions','v51_seals'].indexOf(t)<0)continue;var r=await sb.from(t).select('id,data,updated_at');if(r.error||!r.data)continue;
-   var arr=TB[i][1]();r.data.forEach(function(row){var l=arr.find(function(o){return String(o.id)===row.id});if(!l){arr.push(row.data);ch++}else if((row.updated_at||'')>(l.u||'')){Object.keys(l).forEach(function(k){delete l[k]});Object.assign(l,row.data);ch++}})}
+   var arr=TB[i][1]();r.data.forEach(function(row){if(!row||!row.data)return;var l=arr.find(function(o){return o&&String(o.id)===row.id});if(!l){arr.push(row.data);ch++}else if((row.updated_at||'')>(l.u||'')){Object.keys(l).forEach(function(k){delete l[k]});Object.assign(l,row.data);ch++}})}
   var rs=await sb.from('v51_settings').select('key,data,updated_at').in('key',['inst','terms','custom','serial','i18n','scale','profiles','docs','tr']);if(!rs.error)(rs.data||[]).forEach(function(r){if(r.data!=null&&(r.updated_at||'')>((X.setU&&X.setU[r.key])||'')){X[r.key]=r.data;(X.setU=X.setU||{})[r.key]=r.updated_at;ch++}});
   var need=[];JSON.stringify(X).replace(/"h:([0-9a-f]{8}[0-9a-z]+)"/g,function(m,h){if(!X.imgs[h]&&need.indexOf(h)<0)need.push(h)});if(need.length){var ri=await sb.from('v51_images').select('id,data').in('id',need);if(!ri.error)(ri.data||[]).forEach(function(r){X.imgs[r.id]=r.data;ch++})}
   if(ch){save0();try{go()}catch(e){}}}catch(e){console.warn('v53 public pull',e)}};V5.v51PubPull=v51PubPull;
@@ -27343,7 +27343,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v144';
+window.__BUILD__='v145';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -27962,6 +27962,12 @@ function natFix143(root){try{var I=(root||document).querySelectorAll('input[name
   build(cur);s.addEventListener('change',sync);if(sx)sx.addEventListener('change',function(){var o=s.options[s.selectedIndex],k=o&&o.value?(o.getAttribute('data-en')||o.value):'';build(k);sync()});
   i.parentNode.replaceChild(s,i);sync()})(I[n])}catch(e){}}
 try{GOH.post.push(function(){natFix143()});var mo143=null,tm143=0;if('MutationObserver' in window){mo143=new MutationObserver(function(){clearTimeout(tm143);tm143=setTimeout(natFix143,80)});mo143.observe(document.body,{childList:true,subtree:true})}}catch(e){}
+/* v145 — جلب مستقل ومباشر لحالة بوابة القبول من الخادم عند كل فتح للموقع، لا يتوقف على أي مزامنة أخرى */
+var rg145={busy:0,at:0};function reg145(force){try{if(rg145.busy||(!force&&Date.now()-rg145.at<20000)||typeof sb==='undefined'||!sb)return;rg145.busy=1;
+ sb.from('v51_settings').select('data,updated_at').eq('key','reg75').maybeSingle().then(function(r){rg145.busy=0;rg145.at=Date.now();var d=r&&r.data;if(!d||!d.data)return;var X=S.v51=S.v51||{},U=X.setU=X.setU||{},adm=typeof me!=='undefined'&&me&&me.r==='admin';
+  if(JSON.stringify(X.reg75)===JSON.stringify(d.data))return;if(adm&&(Date.parse(U.reg75||'')||0)>=(Date.parse(d.updated_at||'')||0))return;
+  X.reg75=d.data;U.reg75=d.updated_at;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(!k||k==='register'||k==='reg'||k==='admission'||k==='programs'||k==='portals')try{go()}catch(e){}},function(){rg145.busy=0})}catch(e){rg145.busy=0}}
+try{reg145(1);setTimeout(function(){reg145(1)},2500);GOH.post.push(function(){var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(k==='register'||k==='reg'||k==='admission')reg145()});document.addEventListener('visibilitychange',function(){if(!document.hidden)reg145()})}catch(e){}
 /* شريط «مستجدات المعهد» */
 /* التحميل */
 setTimeout(function(){loadPU().then(function(p){if(p)rerender();else hdrFix()})},1200);
