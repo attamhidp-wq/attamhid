@@ -31,6 +31,7 @@ jobs:
       - name: Install
         run: |
           npm i --no-save --no-audit --no-fund playwright@1.48.2
-          npx playwright install --with-deps chromium
+          # إعادة المحاولة عند تعطل شبكة الخادم المؤقت (فشل تنزيل الحزم)
+          npx playwright install --with-deps chromium || (sleep 30 && npx playwright install --with-deps chromium) || (sleep 60 && npx playwright install --with-deps chromium)
       - name: Run
         run: node tools/robot.js
