@@ -20375,6 +20375,11 @@ async function sendGrad(id,opt){opt=opt||{};var E=entOf(id);if(!E||E.kind!=='stu
  try{if(r&&r.ok){s.gradMail98={at:new Date().toISOString(),to:opt.to||B.to,rec:G.c.rec};try{touch(s)}catch(e){}save();aud(L('إرسال رسالة التهنئة بالتخرج','Graduation email sent'),id,'→ '+(opt.to||B.to))}}catch(e){}
  return r}
 async function send0(id,type,opt){opt=opt||{};if(type==='grad')return sendGrad(id,opt);var E=entOf(id);if(!E)return {error:'no_account'};type=type||(E.kind==='student'?'admit':'appoint');
+ /* v153 — منع التكرار (حصة البريد اليومية محدودة): لا يُعاد البريد نفسه للحساب نفسه خلال دقيقتين مطلقاً، والتلقائي لا يُعاد خلال 24 ساعة، واليدوي يُسأل عنه */
+ if(!opt.test&&!opt.force){var dk=type+'|'+id,M=V5.mDup153=V5.mDup153||{};if(M[dk]&&Date.now()-M[dk]<120000)return {error:'dup_recent',detail:L(' (قبل أقل من دقيقتين)',' (less than two minutes ago)')};
+  var last=null;try{if(typeof sb!=='undefined'&&sb){var q=await sb.from('v63_mail_log').select('at').eq('type',type).eq('ref_id',String(id)).eq('status','sent').gte('at',new Date(Date.now()-864e5).toISOString()).order('at',{ascending:false}).limit(1);if(q&&q.data&&q.data[0])last=q.data[0].at}}catch(e){}
+  if(last){var tm=new Date(last).toLocaleString(document.documentElement.lang==='en'?'en-GB':'ar-EG',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'});if(opt.auto)return {error:'dup_recent',detail:' ('+tm+')'};if(!confirm(L('أُرسل هذا البريد لهذا الحساب سابقاً في ','This email was already sent to this account at ')+tm+L('. حصة البريد اليومية محدودة؛ هل تريد إعادة الإرسال فعلاً؟','. The daily email quota is limited; send again anyway?')))return {error:'cancelled'}}
+  M[dk]=Date.now()}
  var c=letterFor(id);if(!c)return {error:'no_letter'};var att=[],fn=(E.kind==='student'?'admission-letter-':'appointment-letter-')+id+'.pdf';
  try{var blob=await W.mkBlob(certHTML(c),'pdf');att.push({filename:fn,content:await b64(blob),content_type:'application/pdf'})}catch(e){return {error:'letter_blocked',detail:String(e&&e.message||e)}}
  var B=build(type,id,{attName:fn});if(!B)return {error:'no_template'};if(!B.to)return {error:'no_email'};
@@ -20384,7 +20389,7 @@ async function send0(id,type,opt){opt=opt||{};if(type==='grad')return sendGrad(i
  try{if(r&&r.ok)aud(L('إرسال بريد رسمي','Official email sent'),id,type+' → '+(opt.to||B.to)+(r.password_included?' (+'+L('كلمة المرور الأولى','initial password')+')':''))}catch(e){}
  return r}
 V5.send64=send;
-var MSG={no_email:['لا يوجد بريد مسجَّل لهذا الحساب.','No registered email for this account.'],mail_off:['البريد غير مفعّل على الخادم (RESEND_API_KEY وMAIL_FROM).','Email is not enabled on the server (RESEND_API_KEY and MAIL_FROM).'],letter_blocked:['تعذّر إصدار الخطاب المرفق: ','The attached letter could not be issued: '],links_found:['مُنع الإرسال: يوجد رابط مكتوب في الرسالة — ','Blocked: the message contains a written link — '],fn_unavailable:['الدالة الطرفية غير منشورة على الخادم.','The edge function is not deployed.'],mail_error:['فشل الإرسال بعد إعادة المحاولة: ','Sending failed after retries: '],forbidden:['غير مصرّح.','Not permitted.'],mfa_required:['أكمل التحقق الثنائي أولاً.','Complete two-factor verification first.']};
+var MSG={dup_recent:['لم يُرسل: أُرسل البريد نفسه لهذا الحساب مؤخراً','Not sent: the same email was sent to this account recently'],cancelled:['أُلغي الإرسال.','Sending cancelled.'],no_email:['لا يوجد بريد مسجَّل لهذا الحساب.','No registered email for this account.'],mail_off:['البريد غير مفعّل على الخادم (RESEND_API_KEY وMAIL_FROM).','Email is not enabled on the server (RESEND_API_KEY and MAIL_FROM).'],letter_blocked:['تعذّر إصدار الخطاب المرفق: ','The attached letter could not be issued: '],links_found:['مُنع الإرسال: يوجد رابط مكتوب في الرسالة — ','Blocked: the message contains a written link — '],fn_unavailable:['الدالة الطرفية غير منشورة على الخادم.','The edge function is not deployed.'],mail_error:['فشل الإرسال بعد إعادة المحاولة: ','Sending failed after retries: '],forbidden:['غير مصرّح.','Not permitted.'],mfa_required:['أكمل التحقق الثنائي أولاً.','Complete two-factor verification first.']};
 function say(r,id){if(r&&r.ok){toast(L('أُرسلت الرسالة إلى ','Message sent to ')+(r.to||'')+(r.no_password?L(' — دون كلمة مرور: صاحب الحساب غيّر كلمة مروره، ولإرسال كلمة مرور جديدة يلزم إعادة التعيين.',' — without a password: the account holder changed it; a new password requires a reset.'):r.password_included?L(' — مع كلمة المرور الأولى.',' — with the initial password.'):''));return}
  var m=MSG[r&&r.error]||[r&&r.error||'error',r&&r.error||'error'];toast(L(m[0],m[1])+(r&&(r.detail||r.sample)?String(r.detail||r.sample):'')+(r&&r.retry_scheduled?L(' — ستُعاد المحاولة تلقائياً بعد ساعة ثم بعد 24 ساعة.',' — it will be retried automatically after 1 hour, then after 24 hours.'):''))}
 V5.h.mail64=function(id,type){if(!central()){toast(L('الإرسال للإدارة المركزية فقط.','Sending is for the central administration only.'));return}toast(L('… جارٍ تجهيز الخطاب والإرسال','… Preparing the letter and sending'));
@@ -24106,14 +24111,15 @@ V5.annFb147=async function(){if(fbB147||!adminOK()||typeof sb==='undefined'||!sb
 var MA148=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],ME148=['January','February','March','April','May','June','July','August','September','October','November','December'];
 var dA148=function(x){var d=new Date(String(x).length<=10?x+'T12:00':x);return isNaN(d)?'':d.getDate()+' '+MA148[d.getMonth()]+' '+d.getFullYear()+'م'},dE148=function(x){var d=new Date(String(x).length<=10?x+'T12:00':x);return isNaN(d)?'':d.getDate()+' '+ME148[d.getMonth()]+' '+d.getFullYear()};
 V5.posters148=function(){var out=[],now=Date.now(),MD=function(x){var d=new Date(String(x).length<=10?x+'T12:00':x);return isNaN(d)?null:d};
- try{var c=V5.reg75cfg&&V5.reg75cfg(),st=V5.regState75&&V5.regState75();if(c&&st&&st.open)Object.keys(c.progs||{}).forEach(function(k){var g=c.progs[k]||{};if(g.state!=='open')return;var p=(S.programs||[]).filter(function(x){return String(x.id)===String(k)})[0];if(!p||!(p.name||p.nameAr))return;var to=g.to||st.to||c.to||'',nA=p.name||p.nameAr,nE=p.nameEn||p.en||'';
-   var facts=[];if(to&&dA148(to))facts.push({ic:'cal',la:'آخر موعد للتقديم',va:dA148(to),en:'Deadline · '+dE148(to)});
-   facts.push({ic:'cap',la:'شرط القبول',va:'الثانوية العامة أو ما يعادلها',en:'Secondary certificate or equivalent'});
-   facts.push({ic:'star',la:'منحة دعم المتميزين',va:'بنسبة 50%',en:'لمن شارك في 10 برامج قصيرة على الأقل ونشر شهاداتها'});
-   out.push({name:'adm-'+k,key:['adm149',nA,nE,to,g.stateAt||''].join('|'),P:{id:'adm-'+k,poster148:{t:'adm',tagA:'إعلان قبول',tagE:'ADMISSION',kA:'باب القبول مفتوح الآن',kE:'NOW OPEN',tA:'القبول والتسجيل',pA:String(nA).replace(/\s+-\s+/g,'، '),pE:String(nE).replace(/\s+-\s+/g,' · '),facts:facts,ctaA:'قدّم طلبك الآن',ctaE:'Apply online',urlTxt:'attamhid.com/#/admission',url:'https://attamhid.com/#/admission',qA:'للتقديم'}}})})}catch(e){}
- try{(S.news||[]).forEach(function(n){if(!n||!n.title||n.deleted||String(n.fb)==='0')return;var t=+n.id>1e12?+n.id:Date.parse(n.date||'');if(!t||t<now-2*864e5)return;var ev=/فعالية|event/i.test(n.type||''),b=String(n.body||'').replace(/\s+/g,' ').trim();if(b.length>260)b=b.slice(0,258).replace(/\s+\S*$/,'')+'…';
+ try{var c=V5.reg75cfg&&V5.reg75cfg(),st=V5.regState75&&V5.regState75();if(c&&st&&st.open)Object.keys(c.progs||{}).forEach(function(k){var g=c.progs[k]||{};if(g.state!=='open')return;var p=(S.programs||[]).filter(function(x){return String(x.id)===String(k)})[0];if(!p||!(p.name||p.nameAr))return;var to=g.to||st.to||c.to||'',nA=String(p.name||p.nameAr).replace(/\s+-\s+/g,'، '),nE=String(p.nameEn||p.en||'').replace(/\s+-\s+/g,' · ');
+   var fa=[];if(to&&dA148(to))fa.push({ic:'cal',la:'آخر موعد للتقديم',va:dA148(to)});fa.push({ic:'cap',la:'شرط القبول',va:'الثانوية العامة أو ما يعادلها'});fa.push({ic:'star',la:'منحة دعم المتميزين',va:'بنسبة \u206650%\u2069',sub:'لمن شارك في 10 برامج قصيرة على الأقل ونشر شهاداتها'});
+   var fe=[];if(to&&dE148(to))fe.push({ic:'cal',la:'Application deadline',va:dE148(to)});fe.push({ic:'cap',la:'Admission requirement',va:'Secondary certificate or equivalent'});fe.push({ic:'star',la:'Excellence Support Scholarship',va:'50% scholarship',sub:'For those who completed 10+ short programmes and shared their certificates'});
+   out.push({name:'adm-'+k,key:['adm153',nA,to,g.stateAt||''].join('|'),P:{id:'adm-'+k,poster148:{t:'adm',lang:'ar',tagA:'إعلان قبول',kA:'باب القبول مفتوح الآن',tA:'القبول والتسجيل',pA:nA,facts:fa,bUp:'منح دراسية تصل إلى',bFr:'تبدأ من \u206620%\u2069',ctaA:'قدّم طلبك الآن',urlTxt:'attamhid.com/#/admission',url:'https://attamhid.com/#/admission',qA:'امسح للتقديم'}}});
+   if(nE)out.push({name:'adm-'+k+'-en',key:['adm153en',nE,to,g.stateAt||''].join('|'),P:{id:'adm-'+k+'-en',poster148:{t:'adm',lang:'en',tagA:'ADMISSION',kA:'Admission is now open',tA:'Admissions Open',pA:nE,facts:fe,bUp:'Scholarships up to',bFr:'Starting from 20%',ctaA:'Apply now',urlTxt:'attamhid.com/#/admission',url:'https://attamhid.com/#/admission',qA:'Scan to apply'}}})})}catch(e){}
+ try{(S.news||[]).forEach(function(n){if(!n||!n.title||n.deleted||String(n.fb)==='0')return;var t=+n.id>1e12?+n.id:Date.parse(n.date||'');if(!t||t<now-2*864e5)return;var ev=/فعالية|event/i.test(n.type||''),cut=function(b){b=String(b||'').replace(/\s+/g,' ').trim();return b.length>260?b.slice(0,258).replace(/\s+\S*$/,'')+'…':b};
    var ds=ev&&n.ev?n.ev:(n.date||new Date(t).toISOString().slice(0,10)),d=MD(ds);
-   out.push({name:'news-'+n.id,key:['news149',n.title,b,n.type,n.date,n.ev].join('|'),P:{id:'news-'+n.id,poster148:{t:'nw',ev:ev,tagA:ev?'فعالية':'خبر',tagE:ev?'EVENT':'NEWS',kA:ev?'فعاليات المعهد':'أخبار المعهد',kE:ev?'Institute events':'Institute news',tA:n.title,tE:n.titleEn||'',sA:b,dLab:ev?'موعد الفعالية':'تاريخ النشر',dD:d?String(d.getDate()):'',dM:d?MA148[d.getMonth()]:'',dY:d?d.getFullYear()+'':'',dE:d?ME148[d.getMonth()]:'',ctaA:ev?'التفاصيل والتسجيل':'اقرأ الخبر كاملاً',ctaE:ev?'Details & registration':'Read the full story',urlTxt:'attamhid.com/#/news',url:'https://attamhid.com/#/news',qA:'للتفاصيل'}}})})}catch(e){}
+   out.push({name:'news-'+n.id,key:['news153',n.title,n.body,n.type,n.date,n.ev].join('|'),P:{id:'news-'+n.id,poster148:{t:'nw',lang:'ar',ev:ev,tagA:ev?'فعالية':'خبر',kA:ev?'فعاليات المعهد':'أخبار المعهد',tA:n.title,sA:cut(n.body),dLab:ev?'موعد الفعالية':'تاريخ النشر',dD:d?String(d.getDate()):'',dM:d?MA148[d.getMonth()]:'',dY:d?d.getFullYear()+'':'',ctaA:ev?'التفاصيل والتسجيل':'اقرأ الخبر كاملاً',urlTxt:'attamhid.com/#/news',url:'https://attamhid.com/#/news',qA:'امسح للتفاصيل'}}});
+   var tE=String(n.titleEn||n.enTitle||'').trim();if(tE)out.push({name:'news-'+n.id+'-en',key:['news153en',tE,n.bodyEn,n.type,n.date,n.ev].join('|'),P:{id:'news-'+n.id+'-en',poster148:{t:'nw',lang:'en',ev:ev,tagA:ev?'EVENT':'NEWS',kA:ev?'Institute events':'Institute news',tA:tE,sA:cut(n.bodyEn||n.enBody||''),dLab:ev?'Event date':'Published',dD:d?String(d.getDate()):'',dM:d?ME148[d.getMonth()]:'',dY:d?d.getFullYear()+'':'',ctaA:ev?'Details & registration':'Read the full story',urlTxt:'attamhid.com/#/news',url:'https://attamhid.com/#/news',qA:'Scan for details'}}})})}catch(e){}
  return out};
 V5.posterBlob148=function(P){return render(P,'sq','jpg',{})};
 V5.posterFb148=async function(){if(fbB147||!adminOK()||typeof sb==='undefined'||!sb||!sb.storage)return;var M=S.v51.fbImg148=S.v51.fbImg148||{},now=Date.now(),L0=V5.posters148().filter(function(x){return M[x.name]!==x.key&&!(fbF147[x.name]>now-6e5)});if(!L0.length)return;fbB147=1;
@@ -24448,22 +24454,23 @@ Object.assign(Z149,{clk:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 
 var zi=function(k,s){return '<svg viewBox="0 0 24 24" width="'+(s||28)+'" height="'+(s||28)+'" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">'+(Z149[k]||'')+'</svg>'};
 var zg=function(W,H){var t=120,c=t/2,r=t*0.29,R=t*0.41,f=function(n){return n.toFixed(1)};var d='M'+f(c-r)+' '+f(c-r)+'H'+f(c+r)+'V'+f(c+r)+'H'+f(c-r)+'Z M'+f(c)+' '+f(c-R)+'L'+f(c+R)+' '+f(c)+'L'+f(c)+' '+f(c+R)+'L'+f(c-R)+' '+f(c)+'Z';
  return '<svg class="z-pt" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="zp149" width="'+t+'" height="'+t+'" patternUnits="userSpaceOnUse"><path d="'+d+'" fill="none" stroke="#fff" stroke-width="1"/></pattern><radialGradient id="zm149" cx="78%" cy="18%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".55" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="zk149"><rect width="100%" height="100%" fill="url(#zm149)"/></mask></defs><rect width="100%" height="100%" fill="url(#zp149)" mask="url(#zk149)"/></svg>'};
-function poster149(P,fm){var X=P.poster148||{},W=1080,H=1080,I0=S.v51.inst||{},Hm=S.home||{},nA=I0.nameAr||'معهد التمهيد',nE=I0.nameEn||'At Tamhid Institute';
- var hd='<div class="z-hd"><div class="z-br"><div class="z-lg">'+logo('dark')+'</div></div><div class="z-tg"><span>'+e8(X.tagA||'')+'</span><i></i><span dir="ltr">'+e8(X.tagE||'')+'</span></div></div>';
+function poster149(P,fm){var X=P.poster148||{},W=1080,H=1080,Hm=S.home||{},en=X.lang==='en',op=function(t,c){return t?'<'+(c||'span')+'>'+e8(t)+'</'+(c||'span')+'>':''};
+ /* v153 — ملصق أحادي اللغة: نسخة عربية خالصة ونسخة إنجليزية خالصة (لا خلط بين اللغتين) */
+ var hd='<div class="z-hd"><div class="z-br"><div class="z-lg">'+logo('dark')+'</div></div><div class="z-tg"><span>'+e8(X.tagA||'')+'</span></div></div>';
  var ct=[Hm.p1?'<span>'+zi('ph',20)+'<bdi dir="ltr">'+e8(Hm.p1)+'</bdi></span>':'',Hm.em?'<span>'+zi('ml',20)+'<bdi dir="ltr">'+e8(Hm.em)+'</bdi></span>':''].join('');
- var ft='<div class="z-ft"><div class="z-cta"><b>'+e8(X.ctaA)+'</b><span dir="ltr">'+e8(X.ctaE)+'</span><em dir="ltr">'+zi('web',22)+e8(X.urlTxt||'attamhid.com')+'</em></div><div class="z-ct">'+ct+'</div><div class="z-qr"><img src="'+qr(X.url)+'" alt=""><span>'+e8(X.qA||'امسح الرمز')+'</span></div></div>';
+ var ft='<div class="z-ft"><div class="z-cta"><b>'+e8(X.ctaA)+'</b><em dir="ltr">'+zi('web',22)+e8(X.urlTxt||'attamhid.com')+'</em></div><div class="z-ct">'+ct+'</div><div class="z-qr"><img src="'+qr(X.url)+'" alt=""><span>'+e8(X.qA||(en?'Scan me':'امسح الرمز'))+'</span></div></div>';
  var mn='';
  if(X.t==='adm'){
   var bd='<div class="z-bd"><svg class="z-ring" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="zr149" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#5E8FE6"/></linearGradient></defs><circle cx="150" cy="150" r="138" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="2"/><circle cx="150" cy="150" r="120" fill="rgba(255,255,255,.06)" stroke="url(#zr149)" stroke-width="7" stroke-linecap="round" stroke-dasharray="640 114" transform="rotate(-90 150 150)"/></svg>'+
-   '<div class="z-bdi"><span class="z-up">منح دراسية تصل إلى</span><b dir="ltr">100<small>%</small></b><span class="z-fr">تبدأ من <bdi dir="ltr">20%</bdi></span></div><em class="z-be" dir="ltr">Scholarships 20% – 100%</em></div>';
-  var fx=(X.facts||[]).map(function(f){return '<div class="z-fc"><div class="z-fi">'+zi(f.ic,30)+'</div><div class="z-fb"><span>'+e8(f.la)+'</span><b>'+e8(f.va)+'</b><em dir="auto">'+e8(f.en)+'</em></div></div>'}).join('');
-  mn='<div class="z-mn z-adm"><div class="z-tx"><div class="z-kk"><i></i><span>'+e8(X.kA)+'</span><em dir="ltr">'+e8(X.kE)+'</em></div><h1>'+e8(X.tA)+'</h1><div class="z-pg">'+e8(X.pA)+'</div>'+(X.pE?'<div class="z-pe" dir="ltr">'+e8(X.pE)+'</div>':'')+'</div>'+bd+'</div><div class="z-fx">'+fx+'</div>';
+   '<div class="z-bdi"><span class="z-up">'+e8(X.bUp||'')+'</span><b dir="ltr">100<small>%</small></b><span class="z-fr">'+e8(X.bFr||'')+'</span></div></div>';
+  var fx=(X.facts||[]).map(function(f){return '<div class="z-fc"><div class="z-fi">'+zi(f.ic,30)+'</div><div class="z-fb"><span>'+e8(f.la)+'</span><b>'+e8(f.va)+'</b>'+op(f.sub,'em')+'</div></div>'}).join('');
+  mn='<div class="z-mn z-adm"><div class="z-tx"><div class="z-kk"><i></i><span>'+e8(X.kA)+'</span></div><h1>'+e8(X.tA)+'</h1><div class="z-pg">'+e8(X.pA)+'</div></div>'+bd+'</div><div class="z-fx">'+fx+'</div>';
  }else{
-  var L=String(X.tA||'').length,ts=L<=26?84:L<=48?70:L<=80?58:L<=120?50:44,ex=String(X.sA||'');
-  var dt='<div class="z-dt"><span class="z-dk">'+zi(X.ev?'ev':'nw',26)+e8(X.dLab||'')+'</span><b dir="ltr">'+e8(X.dD||'')+'</b><span class="z-dm">'+e8(X.dM||'')+'</span><span class="z-dy" dir="ltr">'+e8(X.dY||'')+'</span><em dir="ltr">'+e8(X.dE||'')+'</em></div>';
-  mn='<div class="z-mn z-nw"><div class="z-tx"><div class="z-kk z-kn"><span>'+e8(X.kA)+'</span><em dir="ltr">'+e8(X.kE)+'</em></div><h1 style="font-size:'+ts+'px">'+e8(X.tA)+'</h1>'+(X.tE?'<div class="z-pe" dir="ltr">'+e8(X.tE)+'</div>':'')+(ex?'<p class="z-ex">'+e8(ex)+'</p>':'')+'</div>'+dt+'</div>';
+  var Ln=String(X.tA||'').length,ts=Ln<=26?84:Ln<=48?70:Ln<=80?58:Ln<=120?50:44,ex=String(X.sA||'');if(en)ts=Math.round(ts*.9);
+  var dt='<div class="z-dt"><span class="z-dk">'+zi(X.ev?'ev':'nw',26)+e8(X.dLab||'')+'</span><b dir="ltr">'+e8(X.dD||'')+'</b><span class="z-dm">'+e8(X.dM||'')+'</span><span class="z-dy" dir="ltr">'+e8(X.dY||'')+'</span></div>';
+  mn='<div class="z-mn z-nw"><div class="z-tx"><div class="z-kk z-kn"><span>'+e8(X.kA)+'</span></div><h1 style="font-size:'+ts+'px">'+e8(X.tA)+'</h1>'+(ex?'<p class="z-ex">'+e8(ex)+'</p>':'')+'</div>'+dt+'</div>';
  }
- return '<div class="an68 pz149 z-'+(X.t||'nw')+'" data-ann67="1" dir="rtl" style="width:'+W+'px;height:'+H+'px;--k:1"><i class="z-bg"></i>'+zg(W,H)+'<i class="z-gl"></i><div class="z-in">'+hd+mn+'</div>'+ft+'</div>'}
+ return '<div class="an68 pz149 z-'+(X.t||'nw')+(en?' z-en':'')+'" data-ann67="1" dir="'+(en?'ltr':'rtl')+'" lang="'+(en?'en':'ar')+'" style="width:'+W+'px;height:'+H+'px;--k:1"><i class="z-bg"></i>'+zg(W,H)+'<i class="z-gl"></i><div class="z-in">'+hd+mn+'</div>'+ft+'</div>'}
 function annHTML(P,fm,o){if(P&&P.poster148)return poster149(P,fm);o=o||{};var C=V5.ann67cfg(),th=o.theme&&THEMES[o.theme]?o.theme:themeOf(P),K=I.kindOf(P),wn=V5.when67(P),MO=V5.spModes67,md=MO[P&&P.mode]?P.mode:(P&&P.url&&!P.place?'remote':'onsite'),sz=FM[fm]||FM.a4,Wd=sz[0],Hd=sz[1];
  var ty=C6.TITLES[P.ctype]||C6.TITLES.att,joinOK=!!P.url&&(o.reg||!+C.hideJoin),regOK=+P.selfReg!==0&&!C6.ended(P),kd=KD[K.id]||[K.ar,cap(K.en)];
  var u=fm==='a4'?1:fm==='sq'?1.36:1.78,m=Math.round(Math.min(Wd,Hd)*0.028);
@@ -27424,7 +27431,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v152';
+window.__BUILD__='v153';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -28027,6 +28034,19 @@ body .nav.h69>a:not(.h69-lg){transition:color .2s,background .2s}
 .zt.f-st .zt-q img{width:180px;height:180px}.zt.f-st .zt-cta b{font-size:52px}
 .zt.f-a4 .zt-pn{width:380px}.zt.f-a4 .zt-body{gap:30px}.zt.f-a4 .zt-by b{font-size:30px}.zt.f-a4 .zt-en{font-size:23px}.zt.f-a4 .zt-tp span{font-size:22px}.zt.f-a4 .zt-q img{width:160px;height:160px}
 .zt[data-tight] .zt-body{gap:14px}.zt[data-tight] .zt-tp{padding:10px 14px}.zt[data-tight] .zt-tp span{font-size:17px}.zt[data-tight="2"] .zt-pa em,.zt[data-tight="2"] .zt-tp span[dir=ltr]{display:none}.zt[data-tight="3"] .zt-en{font-size:17px}.zt[data-tight="3"] .zt-av{width:60px;height:60px}
+</style>
+<style id="css153">
+/* v153 — الملصق الإنجليزي (من اليسار إلى اليمين) */
+.pz149.z-en{direction:ltr;font-family:'Cairo','IBM Plex Sans Arabic',sans-serif}
+.pz149.z-en h1{letter-spacing:-1px}.pz149.z-en.z-adm h1{font-size:94px;line-height:1.05}
+.pz149.z-en .z-tg span{letter-spacing:.2em}
+.pz149.z-en .z-pg{font-family:'Cairo',sans-serif;font-size:29px}
+.pz149.z-en .z-fb b{font-family:'Cairo',sans-serif;font-size:20px}.pz149.z-en .z-fb em{font-size:13px}
+.pz149.z-en .z-up{font-size:17px;letter-spacing:.04em}.pz149.z-en .z-fr{font-size:17px}
+.pz149.z-en .z-ex{font-family:'Cairo',sans-serif;font-size:23px;line-height:1.65}
+.pz149.z-en .z-dm{font-size:30px}
+.pz149.z-en .z-cta b{letter-spacing:-.5px}
+.pz149 .z-fb em{font:500 13px/1.45 'Cairo','IBM Plex Sans Arabic',sans-serif;font-style:normal;color:#8EA6CF}
 </style>
 <style id="css146">
 /* v146 — ترقية بصرية موحّدة: الواجهة العامة والبوابات الداخلية (كحلي/أزرق/أبيض فقط) */
