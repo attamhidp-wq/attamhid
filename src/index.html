@@ -24093,7 +24093,23 @@ var fbK147=function(P){return [P.nameAr,P.nameEn,P.parentAr,P.start,P.end,P.plac
 V5.annFb147=async function(){if(fbB147||!adminOK()||typeof sb==='undefined'||!sb||!sb.storage)return;var now=Date.now(),L0=((S.v51&&S.v51.sp)||[]).filter(function(P){if(!P||P.deleted||P.aud!=='public'||String(P.fb)==='0'||!P.annNo)return false;var e=Date.parse(P.end||P.start||'');return e&&e>now-864e5&&P.annImgK!==fbK147(P)&&!(fbF147[P.id]>now-6e5)});if(!L0.length)return;fbB147=1;
  try{for(var n=0;n<L0.length&&n<2;n++){var P=L0[n],k=fbK147(P);try{var th=V5.annTheme68?V5.annTheme68(P):'',b=await render(P,'sq','jpg',th?{theme:th}:{});if(!b||!b.size)throw new Error('render');var path=String(P.id).replace(/[^\w.-]/g,'_')+'.jpg',r=await sb.storage.from('ann').upload(path,b,{upsert:true,contentType:'image/jpeg',cacheControl:'300'});if(r&&r.error)throw r.error;
    var u=sb.storage.from('ann').getPublicUrl(path);u=u&&u.data&&u.data.publicUrl;if(!u)throw new Error('url');P.annImg=u+'?v='+Date.now();P.annImgK=k;try{V5.touch(P)}catch(e){}try{save()}catch(e){}}catch(e){fbF147[P.id]=Date.now();try{console.warn('annFb147',e&&e.message||e)}catch(x){}}}}finally{fbB147=0}};
-try{GOH.post.push(function(){try{if(typeof me!=='undefined'&&me&&me.r==='admin')setTimeout(function(){V5.annFb147()},1800)}catch(e){}})}catch(e){}
+/* v148 — ملصقا القبول والأخبار: يُرسمان ويُرفعان باسم «adm-رقم البرنامج» و«news-رقم الخبر» فينشرهما الخادم مع منشور فيسبوك */
+var MA148=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],ME148=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var dA148=function(x){var d=new Date(String(x).length<=10?x+'T12:00':x);return isNaN(d)?'':d.getDate()+' '+MA148[d.getMonth()]+' '+d.getFullYear()+'م'},dE148=function(x){var d=new Date(String(x).length<=10?x+'T12:00':x);return isNaN(d)?'':d.getDate()+' '+ME148[d.getMonth()]+' '+d.getFullYear()};
+V5.posters148=function(){var out=[],now=Date.now();
+ try{var c=V5.reg75cfg&&V5.reg75cfg(),st=V5.regState75&&V5.regState75();if(c&&st&&st.open)Object.keys(c.progs||{}).forEach(function(k){var g=c.progs[k]||{};if(g.state!=='open')return;var p=(S.programs||[]).filter(function(x){return String(x.id)===String(k)})[0];if(!p||!(p.name||p.nameAr))return;var to=g.to||st.to||c.to||'',nA=p.name||p.nameAr,nE=p.nameEn||p.en||'';
+   var cards=[];if(to&&dA148(to))cards.push({k:'date',ic:'date',la:'آخر موعد للتقديم',le:'Application deadline',a1:dA148(to),e1:dE148(to)});
+   cards.push({k:'time',ic:'cert',la:'المنح الدراسية',le:'Scholarships',a1:'من 20% إلى 100%',a2:'بحسب استيفاء الشروط',e1:'20% to 100%',e2:'subject to conditions'});
+   cards.push({k:'mode',ic:'onsite',la:'شرط القبول',le:'Requirement',a1:'الثانوية العامة أو ما يعادلها',e1:'Secondary certificate',e2:'or its equivalent'});
+   out.push({name:'adm-'+k,key:['adm',nA,nE,to,g.stateAt||''].join('|'),P:{id:'adm-'+k,poster148:{kdA:'إعلان القبول',kdE:'ADMISSION',tA:'فُتح باب القبول والتسجيل',tE:'Admission is Now Open',sA:nA,sE:nE,cards:cards,stA:'منحة دعم المتميزين 50% لمن شارك في 10 برامج أو دورات قصيرة على الأقل ونشر شهاداتها',stE:'50% Excellence Support Scholarship for participants in at least 10 short programmes who shared their certificates',url:'https://attamhid.com/#/admission',qA:'للتقديم',qE:'Apply'}}})})}catch(e){}
+ try{(S.news||[]).forEach(function(n){if(!n||!n.title||n.deleted||String(n.fb)==='0')return;var t=+n.id>1e12?+n.id:Date.parse(n.date||'');if(!t||t<now-2*864e5)return;var ev=/فعالية|event/i.test(n.type||''),b=String(n.body||'').replace(/\s+/g,' ').trim();if(b.length>230)b=b.slice(0,228).replace(/\s+\S*$/,'')+'…';
+   var cards=[{k:'date',ic:'date',la:ev&&n.ev?'موعد الفعالية':'تاريخ النشر',le:ev&&n.ev?'Event date':'Published',a1:dA148(ev&&n.ev?n.ev:(n.date||new Date(t).toISOString().slice(0,10))),e1:dE148(ev&&n.ev?n.ev:(n.date||new Date(t).toISOString().slice(0,10)))}];
+   out.push({name:'news-'+n.id,key:['news',n.title,b,n.type,n.date,n.ev].join('|'),P:{id:'news-'+n.id,poster148:{kdA:ev?'فعالية':'أخبار المعهد',kdE:ev?'EVENT':'NEWS',tA:n.title,tE:n.titleEn||'',sA:b,long:1,cards:cards,url:'https://attamhid.com/#/news',qA:'للتفاصيل',qE:'Details'}}})})}catch(e){}
+ return out};
+V5.posterBlob148=function(P){return render(P,'sq','jpg',{})};
+V5.posterFb148=async function(){if(fbB147||!adminOK()||typeof sb==='undefined'||!sb||!sb.storage)return;var M=S.v51.fbImg148=S.v51.fbImg148||{},now=Date.now(),L0=V5.posters148().filter(function(x){return M[x.name]!==x.key&&!(fbF147[x.name]>now-6e5)});if(!L0.length)return;fbB147=1;
+ try{for(var n=0;n<L0.length&&n<3;n++){var x=L0[n];try{var b=await render(x.P,'sq','jpg',{});if(!b||!b.size)throw new Error('render');var r=await sb.storage.from('ann').upload(String(x.name).replace(/[^\w.-]/g,'_')+'.jpg',b,{upsert:true,contentType:'image/jpeg',cacheControl:'300'});if(r&&r.error)throw r.error;M[x.name]=x.key;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}catch(e){fbF147[x.name]=Date.now();try{console.warn('posterFb148',e&&e.message||e)}catch(z){}}}}finally{fbB147=0}};
+try{GOH.post.push(function(){try{if(typeof me!=='undefined'&&me&&me.r==='admin')setTimeout(function(){V5.annFb147().then(function(){return V5.posterFb148()},function(){return V5.posterFb148()})},1800)}catch(e){}})}catch(e){}
 H.ann67dl=async function(pid,fm,f,th){var P=I.progOf(pid);if(!P)return;th=th||(V5.annTheme68?V5.annTheme68(P):'');try{var b=await render(P,fm,f,th?{theme:th}:{}),nm='announcement-'+(P.annNo||P.id)+'-'+FN[fm]+(th?'-'+th:'')+'.'+f;try{await fsave(nm,b)}catch(e){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm;a.click()}try{aud(L('تنزيل إعلان برنامج قصير','Short-program announcement downloaded'),P.annNo||pid,FN[fm]+' · '+f+(th?' · '+th:''))}catch(e){}}catch(e){if(!e||e.code!=='declined')toast(L('تعذر التنزيل: ','Download failed: ')+((e&&e.message)||e))}};
 /* المعاينة: المقاسات الثلاثة مع أزرار التنزيل */
 H.ann67=function(pid){var P=I.progOf(pid);if(!P)return;ensure(P);var C=cfg(),TH=V5.annThemes68||null,th=V5.annTheme68?V5.annTheme68(P):'',oth=th==='dark'?'light':'dark';
@@ -24417,7 +24433,19 @@ function hrsE(n){n=+n;if(!(n>0))return '';return n+(n===1?' hour':' hours')}
 var DIG=function(s){return '<bdi dir="ltr">'+e8(s)+'</bdi>'};
 
 /* ---------- الإعلان ---------- */
-function annHTML(P,fm,o){o=o||{};var C=V5.ann67cfg(),th=o.theme&&THEMES[o.theme]?o.theme:themeOf(P),K=I.kindOf(P),wn=V5.when67(P),MO=V5.spModes67,md=MO[P&&P.mode]?P.mode:(P&&P.url&&!P.place?'remote':'onsite'),sz=FM[fm]||FM.a4,Wd=sz[0],Hd=sz[1];
+/* v148 — ملصق عام بنمط إعلانات البرامج نفسه (القبول والأخبار): لصورة منشور فيسبوك */
+function poster148(P,fm){var X=P.poster148,th='dark',sz=FM[fm]||FM.sq,Wd=sz[0],Hd=sz[1],u=fm==='a4'?1:fm==='sq'?1.36:1.78,m=Math.round(Math.min(Wd,Hd)*0.028),I0=S.v51.inst||{},Hm=S.home||{};
+ var hd='<div class="a8-g a8-g-hd"><div class="a8-an-lg">'+logo(th)+'</div><div class="a8-an-nm"><b>'+e8(I0.nameAr||'معهد التمهيد')+'</b><span dir="ltr">'+e8(I0.nameEn||'At Tamhid Institute')+'</span></div><div class="a8-an-bs">'+bsm()+'</div></div>';
+ var tt='<div class="a8-g a8-g-tt"><div class="a8-an-kd"><span>'+e8(X.kdA)+'</span><i></i><span dir="ltr">'+e8(X.kdE)+'</span></div><h1>'+e8(X.tA)+'</h1>'+(X.tE?'<h2 dir="ltr">'+e8(X.tE)+'</h2>':'')+
+  (X.sA||X.sE?'<div class="a8-an-tp"'+(X.long?' style="font-size:.92em;line-height:1.75"':'')+'>'+(X.sA?'<span>'+e8(X.sA)+'</span>':'')+(X.sE?'<span dir="ltr">'+e8(X.sE)+'</span>':'')+'</div>':'')+divider()+'</div>';
+ var C0=X.cards||[],cds=C0.length?'<div class="a8-g a8-g-cd"'+(C0.length<3?' style="grid-template-columns:repeat('+C0.length+',minmax(0,1fr));max-width:'+(C0.length===1?46:72)+'%;margin-inline:auto"':'')+'>'+C0.map(function(c){return '<div class="a8-cd a8-cd-'+c.k+'"><div class="a8-ch">'+ico(c.ic)+'<div class="a8-cl"><b>'+e8(c.la)+'</b><span dir="ltr">'+e8(c.le)+'</span></div></div><div class="a8-cb"><div class="a8-va"><b>'+e8(c.a1)+'</b>'+(c.a2?'<span>'+e8(c.a2)+'</span>':'')+'</div><div class="a8-ve" dir="ltr"><b>'+e8(c.e1)+'</b>'+(c.e2?'<span>'+e8(c.e2)+'</span>':'')+'</div></div></div>'}).join('')+'</div>':'';
+ var ct=X.stA?'<div class="a8-g a8-g-ct">'+ico('cert')+'<div class="a8-ctx"><b>'+e8(X.stA)+'</b>'+(X.stE?'<span dir="ltr">'+e8(X.stE)+'</span>':'')+'</div></div>':'';
+ var qrH=X.url?'<div class="a8-g a8-g-qr"><div class="a8-q"><div class="a8-qf"><img src="'+qr(X.url)+'" alt="QR"></div><b>'+e8(X.qA)+'</b><span dir="ltr">'+e8(X.qE)+'</span></div></div>':'';
+ var bt=ct||qrH?'<div class="a8-g a8-g-bt"'+(ct?'':' style="justify-content:center"')+'>'+ct+qrH+'</div>':'';
+ var ctc=[Hm.p1?DIG(Hm.p1):'',Hm.em?DIG(Hm.em):'',DIG('attamhid.com')].filter(Boolean).join('<i>·</i>');
+ var ft='<div class="a8-g a8-g-ft"><span class="a8-no">'+e8(I0.nameAr||'معهد التمهيد')+'</span><span class="a8-cx">'+ctc+'</span><span class="a8-no" dir="ltr">'+e8(I0.nameEn||'At Tamhid Institute')+'</span></div>';
+ return '<div class="an68 f-'+fm+' t-'+th+'" data-ann67="1" dir="rtl" style="width:'+Wd+'px;height:'+Hd+'px;--k:1"><i class="a8-an-bg"></i>'+pattern(Wd,Hd,Math.round(56*u))+frame(Wd,Hd,m,u)+'<div class="a8-an-in">'+hd+tt+cds+bt+ft+'</div></div>'}
+function annHTML(P,fm,o){if(P&&P.poster148)return poster148(P,fm);o=o||{};var C=V5.ann67cfg(),th=o.theme&&THEMES[o.theme]?o.theme:themeOf(P),K=I.kindOf(P),wn=V5.when67(P),MO=V5.spModes67,md=MO[P&&P.mode]?P.mode:(P&&P.url&&!P.place?'remote':'onsite'),sz=FM[fm]||FM.a4,Wd=sz[0],Hd=sz[1];
  var ty=C6.TITLES[P.ctype]||C6.TITLES.att,joinOK=!!P.url&&(o.reg||!+C.hideJoin),regOK=+P.selfReg!==0&&!C6.ended(P),kd=KD[K.id]||[K.ar,cap(K.en)];
  var u=fm==='a4'?1:fm==='sq'?1.36:1.78,m=Math.round(Math.min(Wd,Hd)*0.028);
  var place=String(P.place||'').trim(),pl=P.url&&V5.linkInfo67?(V5.linkInfo67(P.url).pl||''):'';if(/منصة أخرى|Other platform/.test(pl))pl='';
@@ -27349,7 +27377,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v147';
+window.__BUILD__='v148';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
