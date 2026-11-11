@@ -137,7 +137,7 @@ def dip_page(D):
     body = ('<p class="mu"><a href="/programs/">البرامج</a> › الدبلوم العام</p><article class="card"><span class="tag ok">البرنامج الرئيس</span><span class="tag">انتظام كامل</span><h1>%s</h1>'
             '<p>برنامج تأسيسي متكامل لغير الناطقين بالعربية، يبني مهارات القراءة والكتابة والاستماع والمحادثة والنحو والصرف، مع مقررات في القرآن الكريم والحديث والفقه والسيرة والتاريخ الإسلامي، وينتهي بمشروع تخرج.</p>'
             '<dl><dt>المدة</dt><dd>سنتان (أربعة فصول دراسية)</dd><dt>الساعات المعتمدة</dt><dd>%s ساعة</dd><dt>نظام الدراسة</dt><dd>انتظام كامل</dd><dt>لغة الدراسة</dt><dd>العربية</dd>%s<dt>الشهادة</dt><dd>درجة الدبلوم العام في اللغة العربية لغير الناطقين بها</dd></dl>'
-            '<a class="btn" href="/#/register">قدّم طلب الالتحاق</a><a class="btn s" href="/#/programs">تفاصيل أكثر على الموقع</a></article>') % (E(name), E(tot), ('<dt>الرسوم</dt><dd>%s</dd>' % E(D.get('fee'))) if D.get('fee') else '')
+            '<a class="btn" href="/#/register">قدّم طلب الالتحاق</a><a class="btn s" href="/#/programs">تفاصيل أكثر على الموقع</a></article>') % (E(name), E(tot), '<dt>المنح الدراسية</dt><dd>من 20% إلى 100% بحسب استيفاء الشروط</dd>')
     body += '<section class="card"><h2>الخطة الدراسية</h2>'
     for k in sorted(lv):
         h = sum(int(re.sub(r'\D', '', str(c.get('hrs') or 0)) or 0) for c in lv[k])

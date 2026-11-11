@@ -17113,7 +17113,7 @@ H.delC=function(id){var p=prog(U.pid),c=p&&(p.courses||[]).find(function(x){retu
 H.exam=function(cid){var p=courseProg(cid),c=p&&p.courses.find(function(x){return x.id==cid});if(!c)return;var e=(S.exams||[]).find(function(x){return x.courseId==cid});
  if(!e){e={id:Date.now(),title:'اختبار '+c.name,titleEn:c.nameEn?'Exam: '+c.nameEn:'',lang:'ar',subj:c.name,min:30,pub:false,q:[],courseId:cid,code:c.code||'',passPct:60};S.exams.push(e);save();aud(L('إنشاء اختبار لمقرر','Exam created for course'),cid,c.name)}
  xe=e.id;xq=null;tab='ex';flash='';go();scrollTo(0,0)};
-function feeSummary(p){var F=live(S.v51.fees).filter(function(x){return x.pid==p.id});if(!F.length)return p.fee||'';var a=F.map(function(x){return +x.amount||0}),cur=F[0].cur||'';return Math.min.apply(null,a)===Math.max.apply(null,a)?a[0]+' '+cur+' / '+L('فصل','term'):Math.min.apply(null,a)+'–'+Math.max.apply(null,a)+' '+cur}
+function feeSummary(p){return ''}
 V5.feeSummary=feeSummary;
 function pFees(p){var LV=+p.eng.levels||1,F=live(S.v51.fees).filter(function(x){return x.pid==p.id}).sort(function(a,b){return String(a.year).localeCompare(String(b.year))||String(a.term).localeCompare(String(b.term))});
  return '<p class="mu">'+L('الرسوم مرتبطة بالعام الدراسي والفصل (وتختلف من فصل لآخر).','Fees are linked to the academic year and term (and differ from term to term).')+'</p>'+T([L('العام الدراسي','Academic year'),L('الفصل','Term'),L('المستوى','Level'),L('المبلغ','Amount'),L('ملاحظات','Notes'),''],F.map(function(x){return '<tr><td dir="ltr">'+E(x.year)+'</td><td>'+E(x.term==='all'?L('كل فصل','Every term'):x.term)+'</td><td>'+E(x.level||L('الكل','All'))+'</td><td>'+E(x.amount)+' '+E(x.cur||'')+'</td><td>'+E(en()?(x.noteEn||x.noteAr||''):(x.noteAr||''))+'</td><td>'+bt(L('حذف','Delete'),"V51.h.delFee('"+x.id+"')",'d')+'</td></tr>'}))+
@@ -22816,18 +22816,18 @@ function e138(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){retu
 function tabPart(){return '<div id="pt138">'+tabPart0()+'</div>'}
 function tabPart0(){var cen=typeof me!=='undefined'&&me&&me.r==='admin'&&!me.unit&&!V5.imp64;if(!cen)return '<p class="mu">'+L('للإدارة المركزية فقط.','Central administration only.')+'</p>';
  if(!PT138.busy&&Date.now()-PT138.at>20000&&typeof sb!=='undefined'&&sb){PT138.busy=1;sb.rpc('v138_admin_list').then(function(r){PT138.busy=0;PT138.at=Date.now();PT138.d=r&&r.error?{error:r.error.message}:(r&&r.data)||[];var el=document.getElementById('pt138');if(el)el.outerHTML=tabPart()},function(){PT138.busy=0})}
- var D=PT138.d,h='<h2>'+L('المشاركون الزائرون','Visiting participants')+'</h2><p class="mu">'+L('حسابات الجمهور في البرامج القصيرة والدورات وورش العمل: يسجّل المشارك بياناته مرة واحدة، ويدخل ببريده وكلمة المرور، ويسجّل في أي برنامج بضغطة، ويجد شهاداته فور صدورها. تصلهم تلقائياً دعوات البرامج الجديدة وفتح التقديم والمنح وتحديثات المواعيد.','Public accounts for short programmes, courses and workshops: participants register their details once, sign in with email and password, register for any programme in one click and find their certificates as soon as they are issued. They automatically receive invitations to new programmes, admissions openings, scholarships and schedule updates.')+'</p>';
+ var D=PT138.d,h='<h2>'+L('المشاركون الزائرون','Visiting participants')+'</h2><p class="mu">'+L('كل من سجّل في البرامج القصيرة والدورات وورش العمل من الجمهور، بحساب أو بلا حساب. أصحاب الحسابات: يسجّل المشارك بياناته مرة واحدة، ويدخل ببريده وكلمة المرور، ويسجّل في أي برنامج بضغطة، ويجد شهاداته فور صدورها. تصلهم تلقائياً دعوات البرامج الجديدة وفتح التقديم والمنح وتحديثات المواعيد.','Everyone from the public who registered for short programmes, courses and workshops, with or without an account. Account holders register their details once, sign in with email and password, register for any programme in one click and find their certificates as soon as they are issued. They automatically receive invitations to new programmes, admissions openings, scholarships and schedule updates.')+'</p>';
  if(!D)return h+'<p class="mu">… '+L('جارٍ التحميل','Loading')+'</p>';if(D.error)return h+'<div class="msg er">'+e138(D.error)+'</div>';
  var q=PT138.q.toLowerCase(),A=D.filter(function(p){return !q||[p.email,p.data&&p.data.nameAr,p.data&&p.data.nameEn,p.data&&p.data.phone].join(' ').toLowerCase().indexOf(q)>-1});
  var act=D.filter(function(p){return p.confirmed_at}).length,sub=D.filter(function(p){return p.confirmed_at&&p.notify}).length,rg=D.reduce(function(a,p){return a+(+p.regs||0)},0),ce=D.reduce(function(a,p){return a+(+p.certs||0)},0);
- h+='<div class="k138">'+[[D.length,L('حسابات','Accounts')],[act,L('مفعّلة','Activated')],[sub,L('مشتركون في الإعلانات','Subscribed to announcements')],[rg,L('تسجيلات في البرامج','Programme registrations')],[ce,L('شهادات صادرة','Certificates issued')]].map(function(k){return '<div><b>'+k[0]+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>';
+ h+='<div class="k138">'+[[D.length,L('إجمالي المشاركين','All participants')],[D.filter(function(p){return !p.guest}).length,L('حسابات','Accounts')],[act,L('مفعّلة','Activated')],[D.filter(function(p){return p.guest}).length,L('مسجّلون بلا حساب','Registered without an account')],[sub,L('مشتركون في الإعلانات','Subscribed to announcements')],[rg,L('تسجيلات في البرامج','Programme registrations')],[ce,L('شهادات صادرة','Certificates issued')]].map(function(k){return '<div><b>'+k[0]+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>';
  h+='<div class="tbar" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"><input type="search" placeholder="'+L('ابحث بالاسم أو البريد أو الجوال…','Search by name, email or mobile…')+'" value="'+e138(PT138.q)+'" oninput="V51.h.pt138q(this.value)" style="flex:1;min-width:200px"><button class="btn s" onclick="V51.h.pt138csv()">'+L('تصدير CSV','Export CSV')+'</button><button class="btn s" onclick="V51.h.pt138r()">'+L('تحديث','Refresh')+'</button></div>';
- if(!A.length)return h+'<p class="mu">'+L('لا توجد حسابات بعد.','No accounts yet.')+'</p>';
+ if(!A.length)return h+'<p class="mu">'+L('لا يوجد مشاركون بعد.','No participants yet.')+'</p>';
  return h+'<div class="tw"><table class="v51t"><tr><th>'+L('المشارك','Participant')+'</th><th>'+L('البريد','Email')+'</th><th>'+L('الجوال','Mobile')+'</th><th>'+L('التسجيلات','Registrations')+'</th><th>'+L('الشهادات','Certificates')+'</th><th>'+L('الحالة','Status')+'</th><th>'+L('منذ','Since')+'</th></tr>'+
-  A.map(function(p){var d=p.data||{};return '<tr><td><b>'+e138(d.nameAr)+'</b><br><small dir="ltr">'+e138(d.nameEn)+'</small></td><td dir="ltr">'+e138(p.email)+'</td><td dir="ltr">'+e138(d.phone)+'</td><td>'+(+p.regs||0)+'</td><td>'+(+p.certs||0)+'</td><td>'+(p.confirmed_at?'<span class="tag ok">'+L('مفعّل','Active')+'</span>':'<span class="tag wn">'+L('بانتظار التفعيل','Awaiting activation')+'</span>')+(p.notify?'':' <span class="tag">'+L('أوقف الإعلانات','Announcements off')+'</span>')+'</td><td dir="ltr">'+e138(String(p.created_at||'').slice(0,10))+'</td></tr>'}).join('')+'</table></div>'}
+  A.map(function(p){var d=p.data||{};return '<tr><td><b>'+e138(d.nameAr)+'</b><br><small dir="ltr">'+e138(d.nameEn)+'</small></td><td dir="ltr">'+e138(p.email)+'</td><td dir="ltr">'+e138(d.phone)+'</td><td>'+(+p.regs||0)+'</td><td>'+(+p.certs||0)+'</td><td>'+(p.guest?'<span class="tag">'+L('مسجّل بلا حساب','No account')+'</span>':(p.confirmed_at?'<span class="tag ok">'+L('مفعّل','Active')+'</span>':'<span class="tag wn">'+L('بانتظار التفعيل','Awaiting activation')+'</span>')+(p.notify?'':' <span class="tag">'+L('أوقف الإعلانات','Announcements off')+'</span>'))+'</td><td dir="ltr">'+e138(String(p.created_at||'').slice(0,10))+'</td></tr>'}).join('')+'</table></div>'}
 H.pt138q=function(v){PT138.q=String(v||'');var el=document.getElementById('pt138');if(el){var a=document.activeElement,pos=a&&a.selectionStart;el.outerHTML=tabPart();var i=document.querySelector('#pt138 input[type=search]');if(i){i.focus();try{i.setSelectionRange(pos,pos)}catch(e){}}}};
 H.pt138r=function(){PT138.at=0;var el=document.getElementById('pt138');if(el)el.outerHTML=tabPart()};
-H.pt138csv=function(){var D=PT138.d;if(!Array.isArray(D)||!D.length)return;var c=function(x){return '"'+String(x==null?'':x).replace(/"/g,'""')+'"'};var rows=[['nameAr','nameEn','email','phone','sex','registrations','certificates','activated','announcements','since']].concat(D.map(function(p){var d=p.data||{};return [d.nameAr,d.nameEn,p.email,d.phone,d.sex,p.regs,p.certs,p.confirmed_at?'yes':'no',p.notify?'on':'off',String(p.created_at||'').slice(0,10)]}));
+H.pt138csv=function(){var D=PT138.d;if(!Array.isArray(D)||!D.length)return;var c=function(x){return '"'+String(x==null?'':x).replace(/"/g,'""')+'"'};var rows=[['nameAr','nameEn','email','phone','sex','registrations','certificates','activated','announcements','since']].concat(D.map(function(p){var d=p.data||{};return [d.nameAr,d.nameEn,p.email,d.phone,d.sex,p.regs,p.certs,p.guest?'guest':p.confirmed_at?'yes':'no',p.notify?'on':'off',String(p.created_at||'').slice(0,10)]}));
  var b=new Blob(['﻿'+rows.map(function(r){return r.map(c).join(',')}).join('\r\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='attamhid-participants.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
 try{[['v138p','المشاركون الزائرون','Visiting participants',tabPart]].forEach(function(x){V51TABS.push(x);TABLBL[x[1]]=x[0];TABLBL[x[2]]=x[0];SVC_ADMIN.push([x[0],x[1],x[2]])})}catch(e){console.error('v138 tabs',e)}
 
@@ -24630,7 +24630,7 @@ function dash(){var Sx=(S.students||[]).filter(function(s){return !s.deleted}),a
  try{var P=V5.plans65&&V5.plans65()['2026'];if(P&&!(P.dec67&&P.dec67.no))al.push([T('لم يُسجَّل قرار اعتماد الخطة الدراسية','The study plan approval decision is not recorded'),1,'v65p'])}catch(e){}
  var kp=function(n,l,t,c){return '<button type="button" class="kp '+(c||'')+'" onclick="tab=\''+t+'\';go()"><b>'+n+'</b><span>'+l+'</span></button>'};
  var o='<h3>'+T('لوحة البداية','Dashboard')+'</h3><div class="k69">'+kp(act,T('طالب منتظم','Regular students'),'st','ok')+kp(rq,T('طلب تسجيل جديد','New applications'),'req',rq?'wn':'')+kp(td,T('وثيقة صادرة اليوم','Documents issued today'),'ce')+kp(al.length,T('تنبيه','Alerts'),'v69h',al.length?'wn':'ok')+'</div>';
- o+='<h4>'+T('اختصارات','Shortcuts')+'</h4><div class="q69">'+[['req',T('مراجعة طلبات التسجيل','Review applications')],['ce',T('إصدار وثيقة','Issue a document')],['v67g',T('إدخال الدرجات','Enter grades')],['v60sp',T('البرامج القصيرة','Short programs')],['v64m',T('البريد الرسمي','Official mail')],['st',T('الطلاب','Students')]].filter(function(x){return typeof can!=='function'||can(x[0])}).map(function(x){return '<button type="button" class="btn s" onclick="tab=\''+x[0]+'\';go()">'+e9(x[1])+'</button>'}).join('')+'<button type="button" class="btn" onclick="V5gs()">'+ic('search',20)+'<span>'+T('البحث الشامل','Global search')+'</span></button></div>';
+ o+='<h4>'+T('اختصارات','Shortcuts')+'</h4><div class="q69">'+[['req',T('مراجعة طلبات التسجيل','Review applications')],['ce',T('إصدار وثيقة','Issue a document')],['v67g',T('إدخال الدرجات','Enter grades')],['v60sp',T('البرامج القصيرة','Short programs')],['v138p',T('المشاركون الزائرون','Visiting participants')],['v75r',T('بوابة القبول والتسجيل','Admission portal')],['v64m',T('البريد الرسمي','Official mail')],['st',T('الطلاب','Students')]].filter(function(x){return typeof can!=='function'||can(x[0])}).map(function(x){return '<button type="button" class="btn s" onclick="tab=\''+x[0]+'\';go()">'+e9(x[1])+'</button>'}).join('')+'<button type="button" class="btn" onclick="V5gs()">'+ic('search',20)+'<span>'+T('البحث الشامل','Global search')+'</span></button></div>';
  o+='<h4>'+T('التنبيهات','Alerts')+'</h4>'+(al.length?'<ul class="al69">'+al.map(function(a){return '<li><span>'+e9(a[0])+' <span class="tag wn">'+a[1]+'</span></span><button type="button" class="btn s" onclick="tab=\''+a[2]+'\';go()">'+T('فتح','Open')+'</button></li>'}).join('')+'</ul>':'<div class="em69">'+ic('bell',40)+'<p>'+T('لا توجد تنبيهات حالياً.','There are no alerts right now.')+'</p></div>');
  return o}
 V51TABS.unshift(['v69h','لوحة البداية','Dashboard',dash]);try{TABLBL['لوحة البداية']='v69h';TABLBL['Dashboard']='v69h';SVC_ADMIN.push(['v69h','لوحة البداية','Dashboard'])}catch(e){}
@@ -25500,11 +25500,14 @@ var pName=function(p,en){if(!p)return '';if(en)return (p.eng&&p.eng.nameEn)||p.n
 var stuOf=function(id){return (S.students||[]).find(function(s){return s.id==id})};
 var reqs=function(s){return (s&&Array.isArray(s.pay71))?s.pay71:[]};
 /* v72: الرسوم المقررة لكل فصل (6000 تاكا افتراضياً، قابلة للتعديل) والمنح بالنسبة المئوية: المستحق = المقرر × (100 − النسبة) ÷ 100 */
-var BASE=function(P){var F=(P&&P.pay71)||{};return +F.amount>0?+F.amount:6000};
-var CURP=function(P){return ((P&&P.pay71)||{}).cur||'BDT'};
+/* v142: رسوم مستقلة تماماً — التاكا لطلاب بنغلاديش فقط، والدولار للطلاب الدوليين فقط (بحسب الجنسية، أو بتصنيف الإدارة المركزية) */
+var INTL142=function(s){if(!s)return false;if(s.feeCls142==='intl')return true;if(s.feeCls142==='bd')return false;var n=String((s.nat||'')+' '+(s.natEn||'')).trim();if(!n)return false;return !/بنغال|بنجال|بنغلاد|بنجلاد|bangla|bengal|বাংলা/i.test(n)};V5.intl142=INTL142;
+var BASE=function(P,s){var F=(P&&P.pay71)||{};if(INTL142(s))return +F.intlAmount>0?+F.intlAmount:600;return +F.amount>0?+F.amount:6000};
+var CURP=function(P,s){var F=(P&&P.pay71)||{};if(INTL142(s))return F.intlCur||'USD';return F.cur||'BDT'};
+V5.fees142=function(P){return {bd:{amount:BASE(P,null),cur:CURP(P,null)},intl:{amount:BASE(P,{feeCls142:'intl'}),cur:CURP(P,{feeCls142:'intl'})}}};
 function schPct(s,term){var A=(s&&Array.isArray(s.sch72)?s.sch72:[]).filter(function(x){return x.st!=='void'});var t=A.filter(function(x){return x.scope==='term'&&x.term===term}).slice(-1)[0];if(t)return +t.pct||0;var g=A.filter(function(x){return x.scope==='program'&&(!x.prog||x.prog==s.prog)}).slice(-1)[0];return g?+g.pct||0:0}
-function dueOf(s,P,term){var b=BASE(P),pc=Math.max(0,Math.min(100,schPct(s,term)));return {base:b,pct:pc,due:Math.round(b*(100-pc))/100,cur:CURP(P)}}
-function recalc(s){var ch=0;reqs(s).forEach(function(r){if(r.st!=='req'&&r.st!=='notified')return;var P=progOf(r.prog),d=dueOf(s,P,r.term);if(r.amount!==d.due||r.pct!==d.pct||r.base!==d.base){r.base=d.base;r.pct=d.pct;r.amount=d.due;r.cur=d.cur;ch=1}});if(ch){try{touch(s)}catch(e){}}return ch}
+function dueOf(s,P,term){var b=BASE(P,s),pc=Math.max(0,Math.min(100,schPct(s,term)));return {base:b,pct:pc,due:Math.round(b*(100-pc))/100,cur:CURP(P,s),intl:INTL142(s)}}
+function recalc(s){var ch=0;reqs(s).forEach(function(r){if(r.st!=='req'&&r.st!=='notified')return;var P=progOf(r.prog),d=dueOf(s,P,r.term);if(r.amount!==d.due||r.pct!==d.pct||r.base!==d.base||r.cur!==d.cur){r.base=d.base;r.pct=d.pct;r.amount=d.due;r.cur=d.cur;ch=1}});if(ch){try{touch(s)}catch(e){}}return ch}
 V5.schPct72=schPct;V5.due72=dueOf;V5.recalc72=recalc;V5.fmt72=function(n,c){return fmt(n,c)};
 
 /* ---------- (1) التبرع لوقف المعهد ---------- */
@@ -25618,13 +25621,13 @@ function tabPay(){if(!central())return '<div class="msg er">'+L('اعتماد ا
   '<label class="v51ck" style="grid-column:1/-1"><input type="checkbox" name="gwon" value="1"'+(+c.gw.on?' checked':'')+'> '+L('تفعيل الدفع المباشر','Enable direct payment')+'</label><div style="grid-column:1/-1"><button class="btn">'+L('حفظ','Save')+'</button></div></form></details>';
  /* رسوم البرامج */
  o+='<div class="box"><h4>'+L('رسوم البرامج','Program fees')+'</h4>'+T([L('البرنامج','Program'),L('الدفع','Payment'),L('المبلغ','Amount'),L('المسجلون','Enrolled'),''],PR.map(function(p){var F=p.pay71||{},n=(S.students||[]).filter(function(s){return !s.deleted&&s.prog==p.id&&!/متخرج|منسحب|مفصول/.test(s.status||'')}).length;
-  return '<tr><td>'+e0(L(pName(p),pName(p,1)))+'</td><td>'+(+F.on?'<span class="tag ok">'+L('مفعّل','Enabled')+'</span>':'<span class="tag">'+L('غير مفعّل','Disabled')+'</span>')+'</td><td dir="ltr">'+(F.amount?e0(fmt(F.amount,F.cur)):'—')+'</td><td>'+n+'</td><td>'+bt(L('إعداد وطلب الدفع','Set up & request payment'),"V51.h.pay71prog('"+p.id+"')",'s')+'</td></tr>'}))+'</div>';
+  return '<tr><td>'+e0(L(pName(p),pName(p,1)))+'</td><td>'+(+F.on?'<span class="tag ok">'+L('مفعّل','Enabled')+'</span>':'<span class="tag">'+L('غير مفعّل','Disabled')+'</span>')+'</td><td dir="ltr">'+(F.amount?e0(fmt(F.amount,F.cur))+' · '+e0(fmt(F.intlAmount||600,F.intlCur||'USD')):'—')+'</td><td>'+n+'</td><td>'+bt(L('إعداد وطلب الدفع','Set up & request payment'),"V51.h.pay71prog('"+p.id+"')",'s')+'</td></tr>'}))+'</div>';
  if(STp.sel){var p=progOf(STp.sel);if(p){var F=p.pay71||{},tn=termNow(),SL=(S.students||[]).filter(function(s){return !s.deleted&&s.prog==p.id&&!/متخرج|منسحب|مفصول/.test(s.status||'')});
   o+='<div class="box" id="py71p"><h4>'+e0(L(pName(p),pName(p,1)))+'</h4><form class="v51g" onsubmit="return V51.h.pay71req(this,\''+p.id+'\')">'+
    '<label class="v51ck" style="grid-column:1/-1"><input type="checkbox" name="on" value="1"'+(+F.on?' checked':'')+'> '+L('تفعيل دفع الرسوم لهذا البرنامج (دون تفعيل لا يظهر الزر لأحد)','Enable fee payment for this program (without it the button is shown to no one)')+'</label>'+
-   fld(L('الرسوم المقررة لكل فصل دراسي','Set fee per semester'),inp('amount',F.amount||6000,'type="number" min="0" step="0.01" required dir="ltr"'))+fld(L('العملة','Currency'),sel('cur',CUR.map(function(x){return [x[0],L(CURN[x[0]][0]+' ('+x[0]+')',x[0])]}),F.cur||c.cur))+
+   fld(L('رسوم طلاب بنغلاديش لكل فصل دراسي','Fee for Bangladeshi students per semester'),inp('amount',F.amount||6000,'type="number" min="0" step="0.01" required dir="ltr"'))+fld(L('العملة (طلاب بنغلاديش)','Currency (Bangladeshi students)'),sel('cur',CUR.map(function(x){return [x[0],L(CURN[x[0]][0]+' ('+x[0]+')',x[0])]}),F.cur||c.cur))+fld(L('رسوم الطلاب الدوليين لكل فصل دراسي','Fee for international students per semester'),inp('intlAmount',F.intlAmount||600,'type="number" min="0" step="0.01" required dir="ltr"'))+fld(L('العملة (الطلاب الدوليون)','Currency (international students)'),sel('intlCur',CUR.map(function(x){return [x[0],L(CURN[x[0]][0]+' ('+x[0]+')',x[0])]}),F.intlCur||'USD'))+'<p class="mu" style="grid-column:1/-1">'+L('الرسمان مستقلان تماماً: يُحتسب لكل طالب رسمُ فئته وعملتُها تلقائياً بحسب جنسيته (بنغلاديش ← الرسم المحلي، غيرها ← الرسم الدولي)، ثم تُطبَّق المنحة بنسبتها. ويمكن تصنيف طالب بعينه يدوياً من الجدول أدناه.','The two fees are fully separate: each student is charged the fee and currency of their category automatically by nationality (Bangladesh → local fee, otherwise → international fee), then any scholarship percentage is applied. A specific student can be classified manually in the table below.')+'</p>'+
    fld(L('البيان (عربي)','Description (Arabic)'),inp('descAr',F.descAr||('رسوم '+(tn.ar||'الفصل الدراسي')),'required'),1)+fld(L('البيان (إنجليزي)','Description (English)'),inp('descEn',F.descEn||('Fees — '+(tn.en||'Semester')),'required dir="ltr"'),1)+
-   '<div style="grid-column:1/-1"><b>'+L('الطلاب المطلوب منهم الدفع','Students asked to pay')+'</b> <button type="button" class="btn s" onclick="this.form.querySelectorAll(\'[name=sids]\').forEach(function(x){x.checked=true})">'+L('تحديد الكل','Select all')+'</button><div class="py71l">'+SL.map(function(s){var has=reqs(s).some(function(r){return r.prog==p.id&&(r.st==='req'||r.st==='notified')});return '<label class="v51ck"><input type="checkbox" name="sids" value="'+e0(s.id)+'"'+(has?' disabled':'')+'> '+e0(s.name)+' <small class="mu" dir="ltr">'+e0(s.id)+'</small>'+(has?' <span class="tag">'+L('مطلوب مسبقاً','already requested')+'</span>':'')+'</label>'}).join('')+'</div></div>'+
+   '<div style="grid-column:1/-1"><b>'+L('الطلاب المطلوب منهم الدفع','Students asked to pay')+'</b> <button type="button" class="btn s" onclick="this.form.querySelectorAll(\'[name=sids]\').forEach(function(x){x.checked=true})">'+L('تحديد الكل','Select all')+'</button><div class="py71l">'+SL.map(function(s){var has=reqs(s).some(function(r){return r.prog==p.id&&(r.st==='req'||r.st==='notified')});return '<label class="v51ck"><input type="checkbox" name="sids" value="'+e0(s.id)+'"'+(has?' disabled':'')+'> '+e0(s.name)+' <small class="mu" dir="ltr">'+e0(s.id)+'</small> <span class="tag">'+(INTL142(s)?L('دولي','International'):L('بنغلاديش','Bangladesh'))+' · <span dir="ltr">'+e0(fmt(dueOf(s,p,tn.id).due,dueOf(s,p,tn.id).cur))+'</span></span>'+(has?' <span class="tag">'+L('مطلوب مسبقاً','already requested')+'</span>':'')+'</label>'}).join('')+'</div></div>'+'<details style="grid-column:1/-1"><summary>'+L('تصنيف فئة الرسوم لطالب بعينه','Classify the fee category of a specific student')+'</summary><div class="py71l">'+SL.map(function(s){return '<label>'+e0(s.name)+' <small class="mu" dir="ltr">'+e0(s.id)+'</small> <small class="mu">'+e0(s.nat||'—')+'</small> <select onchange="V51.h.fee142cls(\''+e0(s.id)+'\',this.value)"><option value="">'+L('تلقائي بحسب الجنسية','Automatic by nationality')+'</option><option value="bd"'+(s.feeCls142==='bd'?' selected':'')+'>'+L('طالب من بنغلاديش (تاكا)','Bangladeshi student (Taka)')+'</option><option value="intl"'+(s.feeCls142==='intl'?' selected':'')+'>'+L('طالب دولي (دولار)','International student (US dollar)')+'</option></select></label>'}).join('')+'</div></details>'+
    '<div style="grid-column:1/-1"><button class="btn">'+L('حفظ وطلب الدفع من المحددين','Save and request payment from the selected')+'</button></div></form></div>'}}
  /* الطلبات والاعتماد */
  o+='<div class="box"><h4>'+L('طلبات الدفع واعتماد الاكتمال','Payment requests and completion approval')+' ('+A.length+')</h4>'+(A.length?T([L('الطالب','Student'),L('البيان','Description'),L('المبلغ','Amount'),L('الحالة','Status'),''],A.slice(0,200).map(function(x){var r=x.r,s=x.s,st=STN[r.st]||STN.req;
@@ -25641,12 +25644,13 @@ H.pay71cfg=function(f){if(!central())return false;var c=cfg(),v=fv(f),b=JSON.str
 H.pay71prog=function(pid){STp.sel=pid;go();setTimeout(function(){var e=document.getElementById('py71p');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},120)};
 H.pay71req=function(f,pid){if(!central())return false;var p=progOf(pid);if(!p)return false;var v=fv(f),amt=+v.amount;if(!(amt>0)){toast(L('أدخل مبلغاً صحيحاً.','Enter a valid amount.'));return false}
  var da=String(v.descAr||'').trim(),de=String(v.descEn||'').trim();if(!da||!de){toast(L('البيان مطلوب باللغتين.','The description is required in both languages.'));return false}
- p.pay71={on:f.on.checked?1:0,amount:amt,cur:v.cur||cfg().cur,descAr:da,descEn:de,at:NOW(),by:who()};try{touch(p)}catch(e){}
+ p.pay71={on:f.on.checked?1:0,amount:amt,cur:v.cur||cfg().cur,intlAmount:+v.intlAmount>0?+v.intlAmount:600,intlCur:v.intlCur||'USD',descAr:da,descEn:de,at:NOW(),by:who()};try{touch(p)}catch(e){}
  var ids=[].slice.call(f.querySelectorAll('[name=sids]:checked:not(:disabled)')).map(function(x){return x.value}),tn=termNow(),n=0;
  if(ids.length&&!p.pay71.on){toast(L('فعّل الدفع للبرنامج أولاً، وإلا لا يظهر الزر للطلاب.','Enable payment for the program first; otherwise the button is not shown to students.'));return false}
  (S.students||[]).forEach(function(x){if(!x.deleted&&x.prog==p.id)recalc(x)});
- ids.forEach(function(id){var s=stuOf(id);if(!s)return;s.pay71=reqs(s).slice();var d72=dueOf(s,p,tn.id);s.pay71.push({id:rid(),prog:p.id,term:tn.id,termAr:tn.ar,termEn:tn.en,descAr:da,descEn:de,base:d72.base,pct:d72.pct,amount:d72.due,cur:p.pay71.cur,st:'req',reqAt:NOW(),reqBy:who()});try{touch(s)}catch(e){}n++});
+ ids.forEach(function(id){var s=stuOf(id);if(!s)return;s.pay71=reqs(s).slice();var d72=dueOf(s,p,tn.id);s.pay71.push({id:rid(),prog:p.id,term:tn.id,termAr:tn.ar,termEn:tn.en,descAr:da,descEn:de,base:d72.base,pct:d72.pct,amount:d72.due,cur:d72.cur,st:'req',reqAt:NOW(),reqBy:who()});try{touch(s)}catch(e){}n++});
  try{aud(L('تفعيل دفع الرسوم وطلبه من الطلاب','Fee payment enabled and requested from students'),pid,(p.pay71.on?'on':'off')+' · '+fmt(amt,p.pay71.cur)+' · '+n)}catch(e){}save();toast(L('حُفظ. طُلب الدفع من ','Saved. Payment requested from ')+n+L(' طالب.',' student(s).'));go();return false};
+H.fee142cls=function(sid,v){if(!central())return;var s=stuOf(sid);if(!s)return;s.feeCls142=v==='bd'||v==='intl'?v:'';recalc(s);try{touch(s)}catch(e){}try{aud(L('تصنيف فئة رسوم الطالب','Student fee category set'),sid,v||'auto')}catch(e){}save();toast(L('حُفظ التصنيف وتحدّث المستحق فوراً.','Category saved; the amount due was updated at once.'));go()};
 H.pay71void=function(sid,id){if(!central())return;var s=stuOf(sid),r=reqs(s).find(function(x){return x.id===id});if(!r||!confirm(L('إلغاء طلب الدفع؟ يختفي الزر من بوابة الطالب.','Cancel the payment request? The button disappears from the student portal.')))return;r.st='void';r.voidAt=NOW();try{touch(s)}catch(e){}try{aud(L('إلغاء طلب دفع','Payment request cancelled'),sid,id)}catch(e){}save();go()};
 H.pay71ok=function(sid,id){if(!central()){toast(L('اعتماد اكتمال الدفع من الإدارة المركزية فقط.','Payment completion is approved by the central administration only.'));return}var s=stuOf(sid),r=reqs(s).find(function(x){return x.id===id});if(!r)return;
  var h='<form class="v51g" onsubmit="return V51.h.pay71okS(this,\''+e0(sid)+'\',\''+e0(id)+'\')"><p style="grid-column:1/-1"><b>'+e0(s.name)+'</b> <span dir="ltr">'+e0(s.id)+'</span> — '+e0(r.descAr)+'</p>'+
@@ -25777,8 +25781,8 @@ V5.termMonths72=months;
 function tname(id){try{var t=V5.termById61(id);if(t){var n=V5.termNames61(t);return {ar:n.ar,en:n.en,t:t}}}catch(e){}return {ar:id||'',en:id||'',t:null}}
 function terms(){var o=[];try{var c=V5.curTerm61&&V5.curTerm61(),a=V5.admitTerm61&&V5.admitTerm61();[c,a].forEach(function(t){if(t&&!o.some(function(x){return x.id===t.id}))o.push(t)})}catch(e){}return o}
 var fmt=function(n,c){return V5.fmt72?V5.fmt72(n,c):n+' '+c};
-var base=function(P){var F=(P&&P.pay71)||{};return {amount:+F.amount>0?+F.amount:6000,cur:F.cur||'BDT'}};
-function feeLine(P){var b=base(P),t=null;try{t=V5.curTerm61()}catch(e){}var m=months(t);return L('الرسوم المقررة: ','Set fees: ')+'<b dir="ltr">'+e0(fmt(b.amount,b.cur))+'</b>'+L(' لكل فصل دراسي',' per semester')+(m?L(' (مدة الفصل نحو '+m+' أشهر)',' (a semester lasts about '+m+' months)'):'')}
+var base=function(P,s){var F=(P&&P.pay71)||{};if(V5.intl142&&V5.intl142(s))return {amount:+F.intlAmount>0?+F.intlAmount:600,cur:F.intlCur||'USD',intl:1};return {amount:+F.amount>0?+F.amount:6000,cur:F.cur||'BDT'}};
+function feeLine(P,s){var b=base(P,s),t=null;try{t=V5.curTerm61()}catch(e){}var m=months(t);return (s?(b.intl?L('فئة الرسوم: طالب دولي — ','Fee category: international student — '):L('فئة الرسوم: طالب من بنغلاديش — ','Fee category: Bangladeshi student — ')):'')+L('الرسوم المقررة: ','Set fees: ')+'<b dir="ltr">'+e0(fmt(b.amount,b.cur))+'</b>'+L(' لكل فصل دراسي',' per semester')+(m?L(' (مدة الفصل نحو '+m+' أشهر)',' (a semester lasts about '+m+' months)'):'')}
 V5.feeLine72=feeLine;
 function touchS(s){try{touch(s)}catch(e){}}
 function apply(s){try{V5.recalc72&&V5.recalc72(s)}catch(e){}}
@@ -25787,7 +25791,7 @@ function apply(s){try{V5.recalc72&&V5.recalc72(s)}catch(e){}}
 function seed(){if(!central())return;var P=progOf(typeof DIP!=='undefined'?DIP:1000);if(!P)return;var ch=0;
  if(!P.pay71){P.pay71={on:0,amount:6000,cur:'BDT',descAr:'الرسوم الدراسية المقررة للفصل الدراسي',descEn:'Set tuition fees for the semester',at:NOW(),by:'system'};ch=1}
  var t=null;try{t=V5.curTerm61()}catch(e){}var m=months(t),b=base(P),txt=b.amount.toLocaleString('en-US')+' '+L('تاكا بنغلاديشي لكل فصل دراسي','BDT per semester')+(m?L(' (نحو '+m+' أشهر)',' (about '+m+' months)'):'');
- if(P.fee72!==txt){P.fee72=txt;if(!P.fee||/تاكا|BDT|Taka/.test(String(P.fee))||!String(P.fee).trim())P.fee=b.amount.toLocaleString('en-US')+' '+(b.cur)+' / '+L('فصل','semester');ch=1}
+ if(P.fee72!==txt){P.fee72=txt;ch=1}if(P.fee){P.fee='';ch=1}
  if(ch){touchS(P);try{save()}catch(e){}}}
 try{GOH.post.push(function(){try{if(!seed.done&&central()){seed.done=1;seed()}}catch(e){}})}catch(e){}
 
@@ -25797,25 +25801,28 @@ try{GOH.post.push(function(){try{var f=document.querySelector('#app form[onsubmi
  if(!f.querySelector('.sn72')){var d=document.createElement('p');d.className='mu sn72';d.style.gridColumn='1/-1';d.textContent=L('يكون التسجيل والقبول على الرسوم المقررة. وبعد القبول يمكن للطالب تقديم طلب منحة دراسية لكل فصل من بوابته الطلابية وفق الشروط.','Registration and admission are at the set fees. After admission, a student may apply for a scholarship for each semester from the student portal, subject to the conditions.');var b=f.querySelector('button.btn:not([type=button])');if(b&&b.parentNode)b.parentNode.insertBefore(d,b);else f.appendChild(d)}}catch(e){}})}catch(e){}
 
 /* ---------- بوابة الطالب: الرسوم والمنح وطلب المنحة ---------- */
-function stuBox(s){var P=progOf(s.prog);if(!P)return '';var T=terms(),b=base(P);
+function stuBox(s){var P=progOf(s.prog);if(!P)return '';var T=terms(),b=base(P,s);
  var rows=T.map(function(t){var d=V5.due72?V5.due72(s,P,t.id):{base:b.amount,pct:0,due:b.amount,cur:b.cur},n=tname(t.id);
   return '<tr><td>'+e0(L(n.ar,n.en))+'<br><small class="mu">'+L('نحو ','about ')+months(t)+L(' أشهر',' months')+'</small></td><td dir="ltr">'+e0(fmt(d.base,d.cur))+'</td><td>'+(d.pct?'<span class="tag ok">'+d.pct+'%</span>':'—')+'</td><td dir="ltr"><b>'+e0(fmt(d.due,d.cur))+'</b></td></tr>'}).join('');
  var R=A(s,'schReq72').slice().reverse(),ST={pending:['قيد الدراسة','Under review',''],approved:['معتمد','Approved','ok'],rejected:['معتذر عنه','Declined','er']};
  var can=T.filter(function(t){return !A(s,'schReq72').some(function(r){return r.term===t.id&&r.st==='pending'})});
- return '<div class="box sc72" id="sc72"><h3>'+L('الرسوم الدراسية والمنح','Tuition fees and scholarships')+'</h3><p>'+feeLine(P)+'</p>'+
+ return '<div class="box sc72" id="sc72"><h3>'+L('الرسوم الدراسية والمنح','Tuition fees and scholarships')+'</h3><p>'+feeLine(P,s)+'</p>'+
   (rows?T_(['الفصل الدراسي','Semester'],['الرسوم المقررة','Set fee'],['المنحة','Scholarship'],['المستحق','Amount due'],rows):'')+
-  '<p class="mu">'+L('المنح بالنسبة المئوية من الرسوم المقررة، وتطبّقها الإدارة المركزية لكل فصل أو لكامل البرنامج، ويتحدث المستحق فوراً.','Scholarships are a percentage of the set fee, applied by the central administration per semester or for the whole program; the amount due updates immediately.')+'</p>'+
+  '<p class="mu">'+L('المنح من 20% إلى 100% من رسوم فئة الطالب، بحسب استيفاء الشروط والمعدل والتميز الدراسي، وتطبّقها الإدارة المركزية لكل فصل أو لكامل البرنامج، ويتحدث المستحق فوراً في كل موضع.','Scholarships range from 20% to 100% of the fee of the student’s category, according to the conditions, GPA and academic distinction; they are applied by the central administration per semester or for the whole program, and the amount due updates everywhere at once.')+'</p>'+
   (can.length?'<p>'+bt(L('تقديم طلب منحة دراسية','Apply for a scholarship'),'V51.h.sch72req()','')+'</p>':'')+
   (R.length?'<h4>'+L('طلبات المنح','Scholarship applications')+'</h4>'+R.map(function(r){var n=tname(r.term),st=ST[r.st]||ST.pending;return '<p>'+e0(L(n.ar,n.en))+' — <span class="tag '+st[2]+'">'+L(st[0],st[1])+'</span>'+(r.st==='approved'?' <b dir="ltr">'+r.pct+'%</b>':'')+(r.noteAr?'<br><small class="mu">'+e0(L(r.noteAr,r.noteEn||r.noteAr))+'</small>':'')+'</p>'}).join(''):'')+'</div>'}
 function T_(a,b,c,d,rows){return '<div class="tw"><table><tr><th>'+L(a[0],a[1])+'</th><th>'+L(b[0],b[1])+'</th><th>'+L(c[0],c[1])+'</th><th>'+L(d[0],d[1])+'</th></tr>'+rows+'</table></div>'}
 H.sch72req=function(){if(typeof me==='undefined'||!me||me.r!=='student')return;var s=stuOf(me.id);if(!registered(s)){toast(L('طلب المنحة متاح للطلاب المسجلين فقط.','Scholarship applications are for registered students only.'));return}
  var T=terms().filter(function(t){return !A(s,'schReq72').some(function(r){return r.term===t.id&&r.st==='pending'})});if(!T.length){toast(L('لديك طلب قيد الدراسة لهذا الفصل.','You already have a pending application for this semester.'));return}
  var h='<form class="v51g" onsubmit="return V51.h.sch72reqS(this)"><label style="grid-column:1/-1">'+L('الفصل الدراسي','Semester')+'<select name="term" required>'+T.map(function(t){var n=tname(t.id);return '<option value="'+e0(t.id)+'">'+e0(L(n.ar,n.en))+'</option>'}).join('')+'</select></label>'+
+  '<p class="msg" style="grid-column:1/-1">'+L('المنح من 20% إلى 100% بحسب استيفاء الشروط والمتطلبات، وقد تختلف النسبة بحسب المعدل والتميز الدراسي. يُشترط لطلب المنحة معدل 90 من 100 أو ما يعادله. ومنحة دعم المتميزين 50% لمن شارك في 10 برامج أو دورات قصيرة على الأقل ونشر شهاداتها. وعند الاعتماد يُحتسب المستحق تلقائياً فوراً.','Scholarships range from 20% to 100% according to the conditions and requirements, and the percentage may vary with GPA and academic distinction. A score of 90 out of 100 or its equivalent is required to apply. The 50% Excellence Support Scholarship is for those who took part in at least 10 short programmes or courses and shared their certificates. On approval the amount due is recalculated at once.')+'</p>'+
+  '<label>'+L('أساس الطلب','Basis of the application')+'<select name="basis" required><option value="merit">'+L('التفوق الدراسي (90 من 100 فأعلى أو ما يعادله)','Academic excellence (90/100 or above, or equivalent)')+'</option><option value="amb">'+L('دعم المتميزين 50% (10 برامج قصيرة ونشر شهاداتها)','Excellence support 50% (10 short programmes, certificates shared)')+'</option><option value="other">'+L('أساس آخر وفق الشروط','Another basis under the conditions')+'</option></select></label>'+
+  '<label>'+L('المعدل أو النسبة (من 100 أو ما يعادله)','Score or GPA (out of 100 or equivalent)')+'<input name="score" required maxlength="40" dir="ltr" placeholder="92 / 100"></label>'+
   '<label style="grid-column:1/-1">'+L('سبب الطلب ومسوّغاته (التفوق الدراسي، الحاجة، غير ذلك)','Reason and justification (academic excellence, need, other)')+'<textarea name="reason" rows="4" required maxlength="1000"></textarea></label>'+
   '<label class="v51ck" style="grid-column:1/-1"><input type="checkbox" name="ack" value="1" required> '+L('أقرّ بصحة ما ذكرت، وأعلم أن المنحة تُمنح وفق الشروط والمعايير المعتمدة وقرار الإدارة المركزية، وأن تقديم الطلب لا يعني قبوله.','I confirm the information is correct and understand that scholarships are granted under the approved conditions and the decision of the central administration, and that applying does not guarantee approval.')+'</label>'+
   '<div style="grid-column:1/-1"><button class="btn">'+L('إرسال الطلب','Submit the application')+'</button></div></form>';try{mdl(L('طلب منحة دراسية','Scholarship application'),h)}catch(e){}};
 H.sch72reqS=function(f){var s=stuOf(me&&me.id);if(!registered(s))return false;var v=fv(f),r=String(v.reason||'').trim();if(!v.term||r.length<10){toast(L('اكتب سبب الطلب (10 أحرف على الأقل).','Write the reason (at least 10 characters).'));return false}
- if(A(s,'schReq72').some(function(x){return x.term===v.term&&x.st==='pending'}))return false;s.schReq72=A(s,'schReq72').slice();s.schReq72.push({id:rid('SR'),term:v.term,reason:r.slice(0,1000),at:NOW(),st:'pending'});touchS(s);
+ if(A(s,'schReq72').some(function(x){return x.term===v.term&&x.st==='pending'}))return false;s.schReq72=A(s,'schReq72').slice();s.schReq72.push({id:rid('SR'),term:v.term,reason:r.slice(0,1000),basis:String(v.basis||''),score:String(v.score||'').slice(0,40),at:NOW(),st:'pending'});touchS(s);
  try{aud(L('طلب منحة دراسية من البوابة الطلابية','Scholarship application from the student portal'),s.id,v.term)}catch(e){}save();try{closeMdl()}catch(e){}toast(L('أُرسل طلبك، وستُبلَّغ بالقرار في بوابتك.','Your application was submitted; the decision will appear in your portal.'));go();return false};
 try{GOH.post.push(function(){try{if(!/^#\/student/.test(location.hash)||typeof me==='undefined'||!me||me.r!=='student')return;if(V5.perm&&!V5.perm('st.fees','students'))return;var app=document.getElementById('app');if(!app||app.querySelector('#sc72'))return;var s=stuOf(me.id);if(!registered(s))return;var h=stuBox(s);if(!h)return;
  var d=document.createElement('div');d.innerHTML=h;var ref=app.querySelector('#py71')||app.querySelector('.box');if(ref&&ref.parentNode)ref.parentNode.insertBefore(d.firstChild,ref.nextSibling);else app.appendChild(d.firstChild)}catch(e){console.warn('sc72',e)}})}catch(e){}
@@ -25827,12 +25834,12 @@ function adminBox(){if(!central())return '';var SL=(S.students||[]).filter(regis
  var T=terms(),opt=T.map(function(t){var n=tname(t.id);return '<option value="'+e0(t.id)+'">'+e0(L(n.ar,n.en))+'</option>'}).join('');
  var o='<div class="box" id="sc72a"><h4>'+L('المنح الدراسية','Scholarships')+'</h4><p class="mu">'+L('تُطبَّق المنح للطلاب المسجلين فقط، بنسبة مئوية من الرسوم المقررة، لفصل محدد أو لكامل البرنامج (منحة الفصل تتقدم على منحة البرنامج). يتحدث المستحق فوراً في زر الدفع وطلبات الدفع المفتوحة.','Scholarships apply to registered students only, as a percentage of the set fee, for a specific semester or the whole program (a semester scholarship overrides a program one). The amount due updates immediately in the pay button and open payment requests.')+'</p>';
  o+='<h5>'+L('طلبات المنح من البوابة الطلابية','Applications from the student portal')+' ('+pend.length+')</h5>'+(pend.length?'<div class="tw"><table><tr><th>'+L('الطالب','Student')+'</th><th>'+L('الفصل','Semester')+'</th><th>'+L('السبب','Reason')+'</th><th>'+L('القرار','Decision')+'</th></tr>'+pend.map(function(x){var n=tname(x.r.term);
-   return '<tr><td>'+e0(x.s.name)+'<br><small dir="ltr" class="mu">'+e0(x.s.id)+'</small></td><td>'+e0(L(n.ar,n.en))+'</td><td style="white-space:pre-wrap;max-width:320px">'+e0(x.r.reason)+'</td><td><span class="v51inl"><input type="number" min="1" max="100" step="1" id="p72_'+e0(x.r.id)+'" aria-label="'+e0(L('النسبة','Percentage'))+'" placeholder="%" style="width:80px"> '+bt(L('اعتماد','Approve'),"V51.h.sch72dec('"+e0(x.s.id)+"','"+e0(x.r.id)+"',1)",'')+' '+bt(L('اعتذار','Decline'),"V51.h.sch72dec('"+e0(x.s.id)+"','"+e0(x.r.id)+"',0)",'d')+'</span></td></tr>'}).join('')+'</table></div>':'<p class="mu">'+L('لا طلبات قيد الدراسة.','No pending applications.')+'</p>');
+   return '<tr><td>'+e0(x.s.name)+'<br><small dir="ltr" class="mu">'+e0(x.s.id)+'</small></td><td>'+e0(L(n.ar,n.en))+'</td><td style="white-space:pre-wrap;max-width:320px">'+(x.r.score?'<b>'+L('المعدل: ','Score: ')+'<span dir="ltr">'+e0(x.r.score)+'</span></b> · '+({merit:L('تفوق دراسي','Academic excellence'),amb:L('دعم المتميزين','Excellence support'),other:L('أساس آخر','Other basis')}[x.r.basis]||'')+'<br>':'')+e0(x.r.reason)+'</td><td><span class="v51inl"><input type="number" min="20" max="100" step="1" id="p72_'+e0(x.r.id)+'" aria-label="'+e0(L('النسبة','Percentage'))+'" placeholder="%" style="width:80px"> '+bt(L('اعتماد','Approve'),"V51.h.sch72dec('"+e0(x.s.id)+"','"+e0(x.r.id)+"',1)",'')+' '+bt(L('اعتذار','Decline'),"V51.h.sch72dec('"+e0(x.s.id)+"','"+e0(x.r.id)+"',0)",'d')+'</span></td></tr>'}).join('')+'</table></div>':'<p class="mu">'+L('لا طلبات قيد الدراسة.','No pending applications.')+'</p>');
  o+='<h5>'+L('تطبيق منحة يدوياً','Apply a scholarship manually')+'</h5><form class="v51g" onsubmit="return V51.h.sch72add(this)">'+
   '<label>'+L('الطالب (المسجَّل)','Student (registered)')+'<input name="sid" list="sl72" required dir="ltr" autocomplete="off"><datalist id="sl72">'+SL.map(function(s){return '<option value="'+e0(s.id)+'">'+e0(s.name)+'</option>'}).join('')+'</datalist></label>'+
   '<label>'+L('النطاق','Scope')+'<select name="scope"><option value="term">'+L('فصل دراسي محدد','A specific semester')+'</option><option value="program">'+L('كامل البرنامج','The whole program')+'</option></select></label>'+
   '<label>'+L('الفصل الدراسي (للنطاق الفصلي)','Semester (for semester scope)')+'<select name="term">'+opt+'</select></label>'+
-  '<label>'+L('نسبة المنحة (%)','Scholarship (%)')+'<input name="pct" type="number" min="1" max="100" step="1" required dir="ltr"></label>'+
+  '<label>'+L('نسبة المنحة (%)','Scholarship (%)')+'<input name="pct" type="number" min="20" max="100" step="1" required dir="ltr"></label>'+
   '<label style="grid-column:1/-1">'+L('الأساس أو الملاحظة (اختياري)','Basis or note (optional)')+'<input name="note" maxlength="200"></label><div style="grid-column:1/-1"><button class="btn">'+L('تطبيق المنحة','Apply the scholarship')+'</button></div></form>';
  o+='<h5>'+L('المنح السارية','Active scholarships')+' ('+act.length+')</h5>'+(act.length?'<div class="tw"><table><tr><th>'+L('الطالب','Student')+'</th><th>'+L('النطاق','Scope')+'</th><th>%</th><th>'+L('المستحق للفصل الحالي','Due for the current semester')+'</th><th></th></tr>'+act.map(function(y){var P=progOf(y.s.prog),t=terms()[0],d=V5.due72&&t?V5.due72(y.s,P,t.id):null,n=y.x.scope==='term'?tname(y.x.term):null;
    return '<tr><td>'+e0(y.s.name)+'<br><small dir="ltr" class="mu">'+e0(y.s.id)+'</small></td><td>'+(n?e0(L(n.ar,n.en)):L('كامل البرنامج','Whole program'))+'</td><td dir="ltr"><b>'+y.x.pct+'%</b></td><td dir="ltr">'+(d?e0(fmt(d.due,d.cur)):'—')+'</td><td>'+bt(L('إلغاء المنحة','Cancel'),"V51.h.sch72void('"+e0(y.s.id)+"','"+e0(y.x.id)+"')",'d')+'</td></tr>'}).join('')+'</table></div>':'<p class="mu">'+L('لا منح سارية.','No active scholarships.')+'</p>');
@@ -25842,10 +25849,10 @@ function grant(s,scope,term,pct,note,req){s.sch72=A(s,'sch72').slice();var x={id
 V5.grant72=grant;
 H.sch72add=function(f){if(!central()){toast(L('تطبيق المنح من الإدارة المركزية فقط.','Scholarships are applied by the central administration only.'));return false}var v=fv(f),s=stuOf(String(v.sid||'').trim()),pct=Math.round(+v.pct);
  if(!registered(s)){toast(L('المنح للطلاب المسجلين فقط؛ الرقم غير صحيح أو الطالب غير مسجَّل.','Scholarships are for registered students only; the number is invalid or the student is not registered.'));return false}
- if(!(pct>=1&&pct<=100)){toast(L('النسبة من 1 إلى 100.','The percentage must be 1–100.'));return false}if(v.scope==='term'&&!v.term){toast(L('اختر الفصل.','Choose the semester.'));return false}
+ if(!(pct>=20&&pct<=100)){toast(L('نسبة المنحة من 20 إلى 100.','The scholarship percentage must be 20–100.'));return false}if(v.scope==='term'&&!v.term){toast(L('اختر الفصل.','Choose the semester.'));return false}
  grant(s,v.scope==='program'?'program':'term',v.term,pct,String(v.note||'').trim());save();toast(L('طُبّقت المنحة وتحدّث المستحق فوراً.','Scholarship applied; the amount due was updated immediately.'));go();return false};
 H.sch72dec=function(sid,id,yes){if(!central())return;var s=stuOf(sid),r=A(s,'schReq72').find(function(x){return x.id===id});if(!r||r.st!=='pending')return;
- if(yes){var el=document.getElementById('p72_'+id),pct=Math.round(+(el&&el.value));if(!(pct>=1&&pct<=100)){toast(L('أدخل نسبة المنحة (1–100).','Enter the scholarship percentage (1–100).'));return}if(!registered(s)){toast(L('الطالب غير مسجَّل.','The student is not registered.'));return}
+ if(yes){var el=document.getElementById('p72_'+id),pct=Math.round(+(el&&el.value));if(!(pct>=20&&pct<=100)){toast(L('أدخل نسبة المنحة (20–100).','Enter the scholarship percentage (20–100).'));return}if(!registered(s)){toast(L('الطالب غير مسجَّل.','The student is not registered.'));return}
   grant(s,'term',r.term,pct,L('بناءً على طلب الطالب','At the student’s request'),r.id);r.st='approved';r.pct=pct}else{r.st='rejected';r.noteAr='اعتذرت الإدارة المركزية عن الطلب وفق الشروط والمعايير المعتمدة.';r.noteEn='The central administration declined the application under the approved conditions.'}
  r.decAt=NOW();r.decBy=who();touchS(s);try{aud(yes?L('اعتماد طلب منحة','Scholarship application approved'):L('الاعتذار عن طلب منحة','Scholarship application declined'),sid,r.term+(yes?' · '+r.pct+'%':''))}catch(e){}save();go()};
 H.sch72void=function(sid,id){if(!central())return;var s=stuOf(sid),x=A(s,'sch72').find(function(y){return y.id===id});if(!x||!confirm(L('إلغاء المنحة؟ يعود المستحق إلى الرسوم المقررة.','Cancel the scholarship? The amount due returns to the set fee.')))return;x.st='void';x.voidAt=NOW();x.voidBy=who();apply(s);touchS(s);try{aud(L('إلغاء منحة دراسية','Scholarship cancelled'),sid,x.pct+'%')}catch(e){}save();go()};
@@ -26453,17 +26460,18 @@ try{if(V5.checks74)V5.checks74.push(['docData','طلاب تنقصهم بيانا
 var MODES=[['auto','تلقائياً حسب أحداث «القبول» في التقويم الأكاديمي','Automatically by «Admission» events in the academic calendar'],['open','مفتوحة','Open'],['closed','مغلقة','Closed'],['sched','بموعد محدد للفتح والإغلاق','Scheduled opening and closing']];
 var dtl=function(x){return x?String(x).slice(0,16):''};
 function tabR(){if(!central())return '<div class="msg er">'+L('للإدارة المركزية فقط.','Central administration only.')+'</div>';var c=CFG(),st=state(),P=progs(),av=P.filter(function(p){return progOpen(p).ok});
- var stTxt=st.open&&av.length?'<div class="msg ok"><b>'+L('البوابة مفتوحة الآن','The portal is open now')+'</b> — '+L('البرامج المتاحة: ','Available programmes: ')+av.length+(st.to?' · '+L('تُغلق: ','Closes: ')+'<span dir="ltr">'+e5(fmt(st.to))+'</span>':'')+'</div>':'<div class="msg er"><b>'+L('البوابة مغلقة الآن','The portal is closed now')+'</b>'+(st.open&&!av.length?' — '+L('لا يوجد برنامج متاح للتسجيل.','no programme is available for registration.'):'')+(st.next?' · '+L('تُفتح: ','Opens: ')+'<span dir="ltr">'+e5(fmt(st.next))+'</span>':'')+'</div>';
+ var stTxt=st.open&&av.length?'<div class="msg ok"><b>'+L('البوابة مفتوحة الآن','The portal is open now')+'</b> — '+L('البرامج المتاحة: ','Available programmes: ')+av.length+(st.to?' · '+L('تُغلق: ','Closes: ')+'<span dir="ltr">'+e5(fmt(st.to))+'</span>':'')+'</div>':'<div class="msg er"><b>'+L('البوابة مغلقة الآن أمام العموم','The portal is closed to the public now')+'</b>'+(st.open&&!av.length?' — '+L('حالة البوابة «مفتوحة» لكن لم يُحدَّد أي برنامج مفتوح للتقديم. حدّد البرنامج في «البرامج المفتوحة للتقديم» أدناه ثم احفظ.','the portal status is “open” but no programme is marked open for applications. Tick the programme under “Programmes open for applications” below, then save.'):(!st.open&&st.why==='closed'?' — '+L('حالة البوابة «مغلقة».','the portal status is “closed”.'):!st.open&&st.why==='after'?' — '+L('انتهى موعد الإغلاق المحدد.','the closing time has passed.'):!st.open&&st.why==='cal'?' — '+L('لا توجد فترة قبول جارية في التقويم الأكاديمي.','there is no current admission period in the academic calendar.'):''))+(st.next?' · '+L('تُفتح: ','Opens: ')+'<span dir="ltr">'+e5(fmt(st.next))+'</span>':'')+'</div>';
  var h='<h3>'+L('إدارة بوابة التسجيل','Registration Portal Management')+'</h3><p class="mu">'+L('فتح البوابة وإغلاقها ومواعيدها، والبرامج المتاحة للتسجيل وتفاصيلها، ونصوص البوابة، وحقول نموذج البيانات. كل تغيير يظهر فوراً في صفحة التسجيل العامة ويُسجَّل في سجل التدقيق.','Open and close the portal and set its dates, choose the programmes available for registration and their details, edit the portal texts and the data form fields. Every change appears immediately on the public registration page and is logged in the audit trail.')+'</p>'+stTxt+
  '<form onsubmit="return V51.h.r75s(this)" data-fx69="1"><fieldset><legend>'+L('حالة البوابة','Portal status')+'</legend>'+MODES.map(function(m){return '<label style="display:flex;gap:8px;align-items:center;flex-direction:row"><input type="radio" name="mode" value="'+m[0]+'" style="width:auto"'+(c.mode===m[0]?' checked':'')+'> '+L(m[1],m[2])+'</label>'}).join('')+
  '<div class="g2"><label>'+L('تاريخ ووقت الفتح','Opening date and time')+'<input type="datetime-local" name="from" value="'+e5(dtl(c.from))+'"></label><label>'+L('تاريخ ووقت الإغلاق','Closing date and time')+'<input type="datetime-local" name="to" value="'+e5(dtl(c.to))+'"></label></div></fieldset>'+
+ '<fieldset><legend>'+L('البرامج المفتوحة للتقديم','Programmes open for applications')+'</legend><p class="mu">'+L('لا تظهر البوابة مفتوحة للعموم إلا إذا كانت حالتها مفتوحة وحُدِّد هنا برنامج واحد على الأقل. يُحفظ الكل بزر واحد ويظهر فوراً في الموقع.','The portal only appears open to the public when its status is open and at least one programme is ticked here. Everything is saved with one button and appears on the site at once.')+'</p>'+P.map(function(p){var o=c.progs[p.id]||{};return '<label style="display:flex;gap:8px;align-items:center;flex-direction:row"><input type="checkbox" name="po_'+p.id+'" value="1" style="width:auto"'+((o.state||'closed')==='open'?' checked':'')+'> '+e5(pnm(p))+'</label>'}).join('')+'</fieldset>'+
  '<fieldset><legend>'+L('نصوص البوابة','Portal texts')+'</legend><label>'+L('النص التعريفي بالعربية','Introduction (Arabic)')+'<textarea name="introAr">'+e5(c.introAr)+'</textarea></label><label>'+L('النص التعريفي بالإنجليزية','Introduction (English)')+'<textarea name="introEn" dir="ltr">'+e5(c.introEn)+'</textarea></label>'+
  '<label>'+L('رسالة الإغلاق بالعربية','Closed message (Arabic)')+'<textarea name="closedAr">'+e5(c.closedAr)+'</textarea></label><label>'+L('رسالة الإغلاق بالإنجليزية','Closed message (English)')+'<textarea name="closedEn" dir="ltr">'+e5(c.closedEn)+'</textarea></label></fieldset>'+
  '<button class="btn">'+L('حفظ حالة البوابة ونصوصها','Save portal status and texts')+'</button></form>';
  /* البرامج */
  h+='<h4>'+L('البرامج المتاحة للتسجيل','Programmes available for registration')+'</h4><p class="mu">'+L('فعّل البرنامج لإضافته إلى البوابة أو ألغِ تفعيله لإزالته منها. لكل برنامج موعد خاص اختياري، وعدد مقاعد (0 = بلا حد)، وفصل الالتحاق، وملاحظة تظهر للمتقدم.','Enable a programme to add it to the portal or disable it to remove it. Each programme has optional dates, seats (0 = unlimited), intake term and a note shown to applicants.')+'</p>'+
  P.map(function(p){var o=c.progs[p.id]||{},po=progOpen(p),on=isOn(p);var cnt=(S.requests||[]).filter(function(r){return r.prog==p.id}).length;
-  var badge=on?(po.ok?'<span class="tag ok">'+L('متاح الآن','Open now')+'</span>':'<span class="tag">'+({before:L('لم يبدأ موعده','Not started'),after:L('انتهى موعده','Ended'),full:L('اكتملت المقاعد','Full')}[po.why]||'')+'</span>'):'<span class="tag">'+L('غير مضاف إلى البوابة','Not on the portal')+'</span>';
+  on=((o.state||'closed')==='open');var badge=on?(po.ok?'<span class="tag ok">'+L('متاح الآن','Open now')+'</span>':'<span class="tag">'+({before:L('لم يبدأ موعده','Not started'),after:L('انتهى موعده','Ended'),full:L('اكتملت المقاعد','Full')}[po.why]||L('غير متاح','Unavailable'))+'</span>'):'<span class="tag">'+L('غير مضاف إلى البوابة','Not on the portal')+'</span>';
   return '<details class="v51box"'+(on?' open':'')+'><summary><b>'+e5(pnm(p))+'</b> '+badge+' <span class="mu">'+L('طلبات: ','Applications: ')+cnt+'</span></summary><form onsubmit="return V51.h.r75p(this,'+p.id+')" data-fx69="1">'+
    '<label style="display:flex;gap:8px;align-items:center;flex-direction:row"><input type="checkbox" name="open" value="1" style="width:auto"'+(on?' checked':'')+'> '+L('متاح للتسجيل في البوابة','Available for registration on the portal')+'</label>'+
    '<div class="g2"><label>'+L('بداية التسجيل في البرنامج','Programme registration opens')+'<input type="datetime-local" name="from" value="'+e5(dtl(o.from))+'"></label><label>'+L('نهاية التسجيل في البرنامج','Programme registration closes')+'<input type="datetime-local" name="to" value="'+e5(dtl(o.to))+'"></label>'+
@@ -26490,7 +26498,15 @@ H.r75s=function(f){if(!central())return false;var c=CFG(),v=fv(f);var m=String(v
  if(m==='sched'&&(!v.from||!v.to||v.from>=v.to)){toast(L('حدّد موعد فتح يسبق موعد الإغلاق.','Set an opening time before the closing time.'));return false}
  c.mode=m;c.from=v.from||'';c.to=v.to||'';['introAr','introEn','closedAr','closedEn'].forEach(function(k){c[k]=String(v[k]||'').trim()});
  try{var cal=S.v51.cal61;if(cal){cal.regLink=m==='auto'?1:0;V5.setTouch('cal61')}}catch(e){}
- touch();aud(L('تعديل حالة بوابة التسجيل','Registration portal status changed'),m,(c.from||'')+' → '+(c.to||''));save();toast(L('حُفظت إعدادات البوابة.','Portal settings saved.'));go();return false};
+ /* v142: البرامج المفتوحة تُحفظ مع حالة البوابة بزر واحد (كان الفصل بينهما سبب «التعديل لا يتحدث») */
+ var nOpen=0,blocked=0;progs().forEach(function(p){var el=f.elements['po_'+p.id];if(!el)return;var o=c.progs[p.id]=c.progs[p.id]||{},was=(o.state||'closed')==='open',want=!!el.checked;
+  if(want&&!was&&V5.p73st){try{var a=V5.p73st(p.id);if(p.eng&&p.eng.p73&&a&&a.st!=='approved'){blocked++;want=false}}catch(e){}}
+  if(want!==was){o.state=want?'open':'closed';o.stateAt=NOW();o.stateBy=(typeof me!=='undefined'&&me&&(me.name||me.id))||'';(o.hist=o.hist||[]).push({at:o.stateAt,by:o.stateBy,from:was?'open':'closed',to:o.state,seats:+o.seats||0});if(o.hist.length>40)o.hist=o.hist.slice(-40)}
+  p.eng=p.eng||{};if((+p.eng.open?1:0)!==(want?1:0)||want!==was){p.eng.open=want?1:0;p.u=NOW();try{V5.touchProg&&V5.touchProg(p)}catch(e){}}
+  if(want)nOpen++});
+ touch();aud(L('تعديل حالة بوابة التسجيل','Registration portal status changed'),m,(c.from||'')+' → '+(c.to||'')+' · '+nOpen);save();
+ var st2=state(),av2=progs().filter(function(p){return progOpen(p).ok}).length;
+ toast(blocked?L('لا يُفتح برنامج قبل اعتماد خطته.','A programme cannot open before its plan is approved.'):st2.open&&av2?L('حُفظ. البوابة مفتوحة الآن للعموم.','Saved. The portal is now open to the public.'):st2.open&&!av2?L('حُفظ، لكن البوابة لن تظهر مفتوحة: حدّد برنامجاً مفتوحاً للتقديم.','Saved, but the portal will not appear open: tick a programme open for applications.'):L('حُفظ. البوابة مغلقة الآن للعموم.','Saved. The portal is now closed to the public.'));go();return false};
 H.r75p=function(f,pid){if(!central())return false;var p=V5.prog(pid);if(!p)return false;var v=fv(f),c=CFG();if(v.from&&v.to&&v.from>=v.to){toast(L('موعد البداية يجب أن يسبق النهاية.','The start must be before the end.'));return false}
  if(v.open&&V5.p73st){try{var st=V5.p73st(p.id);if(p.eng&&p.eng.p73&&st&&st.st!=='approved'){toast(L('لا يُفتح البرنامج للتسجيل قبل اعتماد خطته.','A programme cannot open for registration before its plan is approved.'));return false}}catch(e){}}
  p.eng=p.eng||{};p.eng.open=v.open?1:0;p.u=NOW();var o0=c.progs[p.id]||{};c.progs[p.id]={state:v.open?'open':(o0.state==='open'?'closed':(o0.state||'closed')),stateAt:o0.stateAt,stateBy:o0.stateBy,from:v.from||'',to:v.to||'',seats:Math.max(0,+v.seats||0),termAr:String(v.termAr||'').trim(),termEn:String(v.termEn||'').trim(),noteAr:String(v.noteAr||'').trim(),noteEn:String(v.noteEn||'').trim()};
@@ -26523,11 +26539,12 @@ function migrate(){var n=0;try{n+=walk(S.home,0)}catch(e){}try{var I=S.v51&&S.v5
  try{n+=walk(S.v51&&S.v51.mail64,0)}catch(e){}return n}
 /* الرسوم الرسمية لكل برنامج */
 var fmt=function(a,c){try{return V5.fmt72?V5.fmt72(a,c):a+' '+c}catch(e){return a+' '+c}};
-function feeOf(p){if(!p)return null;var F=p.pay71||null,dip=(typeof DIP!=='undefined'&&p.id==DIP);if(!F&&!dip)return null;var a=F&&+F.amount>0?+F.amount:6000,c=(F&&F.cur)||'BDT';return {amount:a,cur:c}}
+function feeOf(p){if(!p)return null;var F=p.pay71||null,dip=(typeof DIP!=='undefined'&&p.id==DIP);if(!F&&!dip)return null;var a=F&&+F.amount>0?+F.amount:6000,c=(F&&F.cur)||'BDT';return {amount:a,cur:c,intlAmount:F&&+F.intlAmount>0?+F.intlAmount:600,intlCur:(F&&F.intlCur)||'USD'}}
 V5.fee77=feeOf;
-var feeTxt=function(f){return fmt(f.amount,f.cur)+' لكل فصل دراسي'};
-function syncFees(){var n=0;(S.programs||[]).forEach(function(p){var f=feeOf(p);if(!f)return;var t=feeTxt(f);if(p.fee!==t){p.fee=t;n++}});return n}
-V5.feeCtx77=function(){var o=[];try{var P=V5.p73?V5.p73().programs:[],pend=P.filter(function(p){return !(V5.p73st&&V5.p73st(p.id).st==='approved')}).map(function(p){return p.ar});var D=(S.programs||[]).find(function(p){return typeof DIP!=='undefined'&&p.id==DIP});o.push('البرامج المعتمدة المنشورة حالياً: '+(D?D.name:'الدبلوم العام في اللغة العربية لغير الناطقين بها - انتظام كامل')+(P.filter(function(p){return V5.p73st&&V5.p73st(p.id).st==='approved'}).map(function(p){return '، '+p.ar}).join(''))+'.');if(pend.length)o.push('برامج مقترحة بانتظار اعتماد رئيس المعهد بعد المراجعة (لا يُسجَّل فيها بعد): '+pend.join('؛ ')+'.')}catch(e){}(S.programs||[]).forEach(function(p){if(p.cancelled||p.deleted)return;var f=feeOf(p);if(!f)return;var e=(p.eng&&p.eng.nameEn)||'';o.push('الرسوم الرسمية المقررة لبرنامج «'+(p.name||'')+'»'+(e?' / '+e:'')+': '+f.amount.toLocaleString('en-US')+' '+(f.cur==='BDT'?'تاكا بنغلاديشي (BDT)':f.cur)+' لكل فصل دراسي. لا توجد رسوم بالدولار.')});return o};
+var feeTxt=function(f){return fmt(f.amount,f.cur)+' لكل فصل دراسي (طلاب بنغلاديش) · '+fmt(f.intlAmount,f.intlCur)+' لكل فصل دراسي (الطلاب الدوليون)'};
+/* v142: الرسوم لا تُنشر للعموم — تبقى في بوابة الإدارة المركزية وبوابة الطالب المقبول فقط */
+function syncFees(){var n=0;(S.programs||[]).forEach(function(p){var f=feeOf(p);if(!f)return;if(p.fee){p.fee='';n++}});return n}
+V5.feeCtx77=function(){var o=[];try{var P=V5.p73?V5.p73().programs:[],pend=P.filter(function(p){return !(V5.p73st&&V5.p73st(p.id).st==='approved')}).map(function(p){return p.ar});var D=(S.programs||[]).find(function(p){return typeof DIP!=='undefined'&&p.id==DIP});o.push('البرامج المعتمدة المنشورة حالياً: '+(D?D.name:'الدبلوم العام في اللغة العربية لغير الناطقين بها - انتظام كامل')+(P.filter(function(p){return V5.p73st&&V5.p73st(p.id).st==='approved'}).map(function(p){return '، '+p.ar}).join(''))+'.');if(pend.length)o.push('برامج مقترحة بانتظار اعتماد رئيس المعهد بعد المراجعة (لا يُسجَّل فيها بعد): '+pend.join('؛ ')+'.')}catch(e){}(S.programs||[]).forEach(function(p){if(p.cancelled||p.deleted)return;var f=feeOf(p);if(!f)return;var e=(p.eng&&p.eng.nameEn)||'';o.push('برنامج «'+(p.name||'')+'»'+(e?' / '+e:'')+': لا تُذكر مبالغ الرسوم للعموم إطلاقاً؛ تظهر الرسوم للطالب المقبول في بوابة الطالب بعد القبول النهائي فقط، فلا تذكر أي مبلغ ولا عملة. المنح الدراسية من 20% إلى 100% بحسب استيفاء الشروط والمعدل والتميز الدراسي، ومنحة دعم المتميزين 50% لمن شارك في 10 برامج أو دورات قصيرة على الأقل ونشر شهاداتها. شروط القبول: شهادة الثانوية العامة أو ما يعادلها. ولطلب المنحة: معدل 90 من 100 أو ما يعادله. القبول مستقل عن المنحة: تُطلب المنحة بعد القبول النهائي من بوابة الطالب بإجراء داخلي، ويُحتسب المستحق تلقائياً.')});return o};
 function tick(){var a=migrate(),b=syncFees();if((a||b)&&central()){try{save()}catch(e){}}}
 try{GOH.pre.push(function(){try{syncFees();migrate()}catch(e){}})}catch(e){}
 setTimeout(tick,0);setInterval(tick,6000);
@@ -26929,10 +26946,7 @@ try{GOH.post.push(function(){try{if(typeof me==='undefined'||!me||(me.r!=='stude
  [].slice.call(app.querySelectorAll('h3')).forEach(function(h){var t=h.textContent.trim();if(/^(النتائج والشهادات|وثائقي الصادرة|Results (and|&) certificates|My issued documents)$/i.test(t)){var b=h.nextElementSibling;if(b&&b.classList.contains('box')&&!b.id){b.style.display='none';h.style.display='none'}}})}catch(e){}})}catch(e){}
 
 /* ---------- (4) المراسلة الذكية المحلية: إجابات من البيانات الرسمية الحالية ---------- */
-function feeTxt(en){var d={base:6000,cur:'BDT'};try{var D=(S.programs||[]).find(function(p){return p.id==DIP});d=V5.due72?V5.due72({},D,''):d}catch(e){}
- var f=V5.fmt72?V5.fmt72(d.base,d.cur):d.base+' '+d.cur;
- return en?'The fee for the General Diploma in Arabic for Non-Native Speakers (full-time) is '+f+' per semester (Bangladeshi Taka). There are no fees in US dollars. Approved scholarships reduce the amount due by their percentage. The pay button appears only in the registered student’s portal when the administration requests payment.':
-  'رسوم الدبلوم العام في اللغة العربية لغير الناطقين بها (انتظام كامل) '+f+' لكل فصل دراسي (تاكا بنغلاديشي)، ولا توجد رسوم بالدولار. وتُخصم المنحة الدراسية المعتمدة بنسبتها من المستحق. ويظهر زر الدفع في بوابة الطالب المسجَّل فقط عندما تطلبه الإدارة.'}
+function feeTxt(en){return en?'Tuition fees are shown to admitted students in the student portal after final admission. Scholarships range from 20% to 100% according to the conditions, GPA and academic distinction; the Excellence Support Scholarship is 50% for those who took part in at least 10 short programmes or courses and shared their certificates. A scholarship is requested from the student portal after final admission (90/100 or equivalent required), and the amount due is recalculated automatically. Details: attamhid.com/#/admission':'تظهر الرسوم الدراسية للطالب المقبول في بوابة الطالب بعد القبول النهائي. والمنح الدراسية من 20% إلى 100% بحسب استيفاء الشروط والمعدل والتميز الدراسي؛ ومنحة دعم المتميزين 50% لمن شارك في 10 برامج أو دورات قصيرة على الأقل ونشر شهاداتها. تُطلب المنحة من بوابة الطالب بعد القبول النهائي (يُشترط 90 من 100 أو ما يعادله)، ويُحتسب المستحق تلقائياً. التفاصيل: attamhid.com/#/admission'}
 function payTxt(en){var M=V5.meth77?V5.meth77():[],c=V5.pay71cfg?V5.pay71cfg():{};var m=M.map(function(x){return (en?x.en:x.ar)+': '+x.num}).join(en?'; ':'؛ ');
  return en?'Payment: '+(m||'—')+'. If you face any problem, contact us on WhatsApp '+(c.wa||'')+' or the official email '+(c.em||'')+'. Payment options appear only inside “Pay now” (in the student portal) and “Donate to the endowment”.':
   'طريقة الدفع: '+(m||'—')+'. وإذا واجهتك أي مشكلة فتواصل عبر واتساب '+(c.wa||'')+' أو البريد الرسمي '+(c.em||'')+'. ولا تظهر خيارات الدفع إلا داخل «ادفع الآن» في بوابة الطالب، وداخل «تبرع لوقف المعهد».'}
@@ -27299,7 +27313,7 @@ H.sch126kind=function(el){var f=el.form;if(el.value==='full')f.pct.value=100;els
 H.sch126pick=function(el){var f=el.form,o=el.options[el.selectedIndex],p=o&&o.dataset.pct;if(el.value&&p!=null){f.pct.value=p;f.kind.value=+p>=100?'full':+p>0?'part':'paid';H.sch126calc(f)}};
 H.sch126save=function(f){try{if(typeof me==='undefined'||!me||me.r!=='admin'){toast(L('تطبيق المنح من الإدارة المركزية فقط.','Scholarships are applied by the central administration only.'));return false}
  var s=stu(f.sid.value);if(!s)return false;var kind=f.kind.value,pct=Math.max(0,Math.min(100,Math.round(+f.pct.value||0)));
- if(kind==='full')pct=100;if(kind==='paid')pct=0;if(kind==='part'&&!(pct>=1&&pct<=99)){toast(L('نسبة المنحة الجزئية من 1 إلى 99.','A partial scholarship must be 1–99%.'));return false}
+ if(kind==='full')pct=100;if(kind==='paid')pct=0;if(kind==='part'&&!(pct>=20&&pct<=99)){toast(L('نسبة المنحة الجزئية من 20 إلى 99.','A partial scholarship must be 20–99%.'));return false}
  var now=new Date().toISOString(),sch=f.schId.value?((S.v51&&S.v51.sch)||[]).find(function(x){return String(x.id)===f.schId.value}):null;
  s.sch72=(Array.isArray(s.sch72)?s.sch72:[]).slice();s.sch72.forEach(function(x){if(x.st!=='void'&&x.scope==='program'&&(!x.prog||x.prog==s.prog)){x.st='void';x.voidAt=now;x.voidBy='admin'}});
  if(pct>0){var x=V5.grant72(s,'program','',pct,String(f.note.value||'').trim());x.kind=kind;if(sch){x.schId=sch.id;x.nameAr=sch.nameAr||'';x.nameEn=sch.nameEn||''}s.sch51=sch?{schId:sch.id,res:'approved',from:now.slice(0,10)}:null}
@@ -27326,7 +27340,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v141';
+window.__BUILD__='v142';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -27472,27 +27486,151 @@ if(document.readyState==='complete')idle();else window.addEventListener('load',i
 try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async function(){try{await Promise.race([window.hydrate108(),new Promise(function(r){setTimeout(r,5000)})])}catch(e){}return _mb.apply(this,arguments)};try{mkBlob=window.mkBlob}catch(e){}}}catch(e){}
 })();
 </script>
+<style id="css142">
+/* v142 — القبول والرسوم والمنح */
+.adm142{max-width:1180px;margin:0 auto;display:grid;gap:22px}
+.hero142{position:relative;overflow:hidden;border-radius:22px;padding:44px 40px;color:#fff;background:radial-gradient(900px 380px at 85% -10%,rgba(47,95,179,.28),transparent 60%),linear-gradient(135deg,#0B1D40 0%,#12306B 55%,#1B4391 100%);box-shadow:0 24px 60px -28px rgba(11,29,64,.65)}
+.hero142:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 2px,transparent 2px 26px);pointer-events:none}
+.hero142>*{position:relative;z-index:1}
+.ey142{display:inline-block;font-size:13px;letter-spacing:.04em;font-weight:700;color:#BFD4F7;border:1px solid rgba(191,212,247,.45);border-radius:999px;padding:4px 14px;margin-bottom:14px}
+.hero142 h1{margin:0 0 10px;font-size:clamp(24px,3.4vw,38px);line-height:1.35;color:#fff}
+.hero142 p{margin:0 0 18px;color:#D6DEEE;font-size:16.5px;max-width:720px}
+.ch142{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:999px;padding:8px 16px;font-size:14.5px}
+.ch142 i{width:9px;height:9px;border-radius:50%;background:#9AA6C0;flex:none}
+.ch142.on i{background:#3DDC84;box-shadow:0 0 0 4px rgba(61,220,132,.22)}
+.bt142{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.hero142 .btn{background:#fff;color:#12306B!important;border-color:#fff;font-weight:700}
+.hero142 .btn.s{background:transparent;color:#fff!important;border-color:rgba(255,255,255,.5)}
+.g142{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.c142{background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:26px 26px 22px;box-shadow:0 10px 30px -22px rgba(16,32,63,.45);border-top:3px solid #12306B}
+.ol142.v{grid-template-columns:1fr 1fr}
+.c142.w{grid-column:1/-1}
+.c142 h2{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:20px;color:var(--tx)}
+.c142 h2 svg{color:#2F5FB3;flex:none}
+.c142 h3{margin:0 0 10px;font-size:16.5px;color:var(--tx)}
+.c142 p{color:var(--mu);margin:0 0 12px}
+.ul142{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ul142 li{display:flex;gap:10px;align-items:flex-start;color:var(--tx);line-height:1.75}
+.ul142 li svg{color:#1E8E57;flex:none;margin-top:5px}
+.ft142{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.ft142 th{background:#12306B;color:#fff;font-size:13.5px;padding:10px 12px;text-align:start}
+.ft142 td{padding:12px;border-top:1px solid var(--bd);vertical-align:middle;color:var(--tx)}
+.ft142 td small{display:block;color:var(--mu);font-size:12.5px;font-weight:400}
+.ft142 td[dir=ltr]{text-align:start;white-space:nowrap;font-variant-numeric:tabular-nums}
+.nt142{font-size:13.5px;margin-top:12px!important;padding:10px 12px;background:rgba(47,95,179,.1);border-inline-start:3px solid #2F5FB3;border-radius:8px;color:var(--tx)!important}
+.g2142{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;align-items:start}
+.hl142{background:linear-gradient(160deg,#0F2552,#1B4391);color:#fff;border-radius:16px;padding:22px}
+.hl142 h3{color:#BFD4F7}.hl142 p{color:#DCE4F3}
+.hl142 .nm142{font-size:22px;font-weight:800;color:#fff!important;margin:6px 0 2px!important;text-align:start}
+.hl142 small{display:block;color:#B9C6DE;font-size:12.5px;margin-bottom:14px}
+.hl142 .btn.s{background:transparent;border-color:rgba(255,255,255,.5);color:#fff!important}
+.ol142{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.ol142 li{counter-increment:s;position:relative;background:var(--bg2,rgba(18,48,107,.05));border:1px solid var(--bd);border-radius:14px;padding:44px 16px 16px}
+.ol142 li:before{content:counter(s);position:absolute;top:12px;inset-inline-start:14px;width:26px;height:26px;border-radius:50%;background:#12306B;color:#fff;font-weight:700;font-size:13.5px;display:grid;place-items:center}
+.ol142 li b{display:block;color:var(--tx);margin-bottom:4px}.ol142 li span{color:var(--mu);font-size:14px;line-height:1.7}
+.bn142{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;max-width:1180px;margin:18px auto 0;padding:14px 20px;border-radius:14px;text-decoration:none!important;background:linear-gradient(90deg,rgba(47,95,179,.16),rgba(47,95,179,.05));border:1px solid rgba(47,95,179,.55);color:var(--tx)!important}
+.bn142 .l{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.bn142 .l i{width:10px;height:10px;border-radius:50%;background:#1E8E57;box-shadow:0 0 0 4px rgba(30,142,87,.2);flex:none}
+.bn142 .l span{color:var(--mu);font-size:14.5px}.bn142 .r{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--pr)}
+.bn142:hover{border-color:#2F5FB3;box-shadow:0 10px 24px -18px rgba(16,32,63,.6)}
+.sm142{border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px;background:var(--bg2,rgba(18,48,107,.04))}
+.sm142 .t{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sm142 .ch142{background:var(--sf);border-color:var(--bd);color:var(--tx)}
+.sm142 .t a{display:inline-flex;gap:6px;align-items:center;font-weight:700}
+.sm142 p{margin:12px 0 0;color:var(--mu);font-size:14px}
+:root[data-theme="dark"] .ft142 th{background:#1B3566}
+:root[data-theme="dark"] .ol142 li:before{background:#3A63B8}
+[dir=ltr] .bn142 .r svg,[dir=ltr] .sm142 .t a svg{transform:scaleX(-1)}
+@media(max-width:860px){.g142,.g2142{grid-template-columns:1fr}.ol142{grid-template-columns:1fr 1fr}.hero142{padding:30px 22px;border-radius:18px}.c142{padding:20px 18px}}
+@media(max-width:480px){.ol142{grid-template-columns:1fr}.ft142 th,.ft142 td{padding:9px 8px;font-size:13.5px}}
+/* v142 — ترقية المظهر العام: طابع رسمي كحلي وذهبي، عناوين مزخرفة، بطاقات حيّة، ترويسات للبوابات، وحركة ظهور هادئة */
+.ft142 th{background:#12306B!important;color:#fff!important}
+.sm142 .tw,.adm142 .tw{display:block;width:100%}.ft142{width:100%!important;display:table!important;background:var(--sf)}
+body{background-image:radial-gradient(1200px 520px at 100% -120px,rgba(18,48,107,.07),transparent 60%),radial-gradient(900px 420px at 0 -160px,rgba(47,95,179,.08),transparent 60%);background-repeat:no-repeat}
+body .nav.h69>a.on,body .nav.h69>a[aria-current=page]{position:relative}
+body .nav.h69>a:not(.h69-lg){transition:color .2s,background .2s}
+/* الواجهة */
+.hero.h120{box-shadow:0 30px 70px -36px rgba(11,29,64,.75)}
+.hero.h120 .kick{color:#BFD4F7!important;letter-spacing:.03em}
+.hero.h120 h1{text-shadow:0 2px 18px rgba(0,0,0,.25)}
+.hero.h120 h1:after{content:"";display:block;width:96px;height:4px;border-radius:4px;margin-top:14px;background:linear-gradient(90deg,#8DB6FF,#D5E3FB)}
+#app .hero.h120 .cta a.btn.g{font-weight:800;box-shadow:0 14px 28px -14px rgba(0,0,0,.55)}
+.hero.h120 .cta .btn{transition:transform .2s,box-shadow .2s}
+.hero.h120 .cta .btn:hover{transform:translateY(-2px)}
+.hero.h120 .hc{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-color:rgba(191,212,247,.35)!important}
+.hero.h120 .hc>a{transition:transform .2s,box-shadow .2s}
+.hero.h120 .hc>a:hover{transform:translateX(-4px);box-shadow:0 12px 24px -16px rgba(0,0,0,.6)}
+[dir=ltr] .hero.h120 .hc>a:hover{transform:translateX(4px)}
+.st142h{display:inline-flex;align-self:flex-start;width:fit-content;max-width:100%;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 16px;padding:7px 15px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(191,212,247,.5);color:#fff!important;font-size:14px;text-decoration:none!important}
+.st142h i{width:9px;height:9px;border-radius:50%;background:#3DDC84;box-shadow:0 0 0 4px rgba(61,220,132,.22);animation:pl142 2.2s infinite}
+.st142h b{color:#D5E3FB}
+@keyframes pl142{50%{box-shadow:0 0 0 8px rgba(61,220,132,0)}}
+#fx77 .f{transition:transform .25s,background .25s}
+#fx77 .f:hover{transform:translateY(-3px)}
+#fx77 .f .ic{background:linear-gradient(160deg,#12306B,#2A56A8)!important;color:#fff!important}
+/* العناوين */
+.s120 .hd .ey{display:inline-flex;align-items:center;gap:8px;color:#2F5FB3!important;font-weight:800;letter-spacing:.02em}
+.s120 .hd .ey:before{content:"";width:22px;height:2px;border-radius:2px;background:#2F5FB3}
+.s120 .hd h2{position:relative;padding-bottom:14px}
+.s120 .hd h2:after{content:"";position:absolute;bottom:0;inset-inline-start:0;width:72px;height:3px;border-radius:3px;background:linear-gradient(90deg,#2F5FB3,#D5E3FB)}
+:root[data-theme="dark"] .s120 .hd .ey{color:#9DBCF2!important}
+/* البطاقات */
+.pc120,.wy120>div,.sp120>li,.spc138,.nwc138,.pt120>a,.c142{transition:transform .28s cubic-bezier(.2,.7,.2,1),box-shadow .28s,border-color .28s}
+.pc120:hover,.wy120>div:hover,.sp120>li:hover,.spc138:hover,.nwc138:hover,.pt120>a:hover{transform:translateY(-5px);box-shadow:0 24px 44px -28px rgba(11,29,64,.55)!important;border-color:rgba(47,95,179,.7)!important}
+.pc120{border-top:3px solid #2F5FB3!important}
+.wy120>div .i{background:linear-gradient(160deg,rgba(47,95,179,.22),rgba(47,95,179,.08))!important;color:#12306B!important;border:1px solid rgba(47,95,179,.4)}
+:root[data-theme="dark"] .wy120>div .i{color:#BFD4F7!important}
+.sp120>li .n{background:linear-gradient(160deg,#12306B,#2A56A8)!important;color:#fff!important;box-shadow:0 8px 16px -8px rgba(18,48,107,.7)}
+.btn{transition:transform .18s,box-shadow .18s,background .18s,border-color .18s}
+.btn:not(:disabled):active{transform:translateY(1px)}
+/* صفحات المحتوى: عنوان الصفحة */
+#app>h2:first-child{position:relative}
+/* ترويسة البوابات الداخلية */
+#app.adm69>h2:first-child,#app>h2:first-child:has(+nav.pn69),#app>h2:first-child:has(+.pn69){display:flex!important;align-items:center;gap:12px;width:auto!important;margin:6px 0 14px!important;padding:20px 26px!important;border:0!important;border-radius:16px;color:#fff!important;background:radial-gradient(700px 240px at 12% -40%,rgba(47,95,179,.2),transparent 60%),linear-gradient(135deg,#0B1D40 0%,#12306B 58%,#1D4797 100%)!important;box-shadow:0 20px 44px -30px rgba(11,29,64,.8);font-size:clamp(20px,2.4vw,26px)!important}
+#app.adm69>h2:first-child:before,#app>h2:first-child:has(+nav.pn69):before,#app>h2:first-child:has(+.pn69):before{content:"";width:6px;height:30px;border-radius:6px;background:linear-gradient(180deg,#D5E3FB,#2F5FB3);flex:none}
+#app.adm69>h2:first-child:after,#app>h2:first-child:has(+nav.pn69):after,#app>h2:first-child:has(+.pn69):after{display:none!important}
+#app.adm69>.tabs{box-shadow:0 14px 34px -28px rgba(11,29,64,.55)}
+#app.adm69>.tabs .sg69>b{color:#2F5FB3!important;letter-spacing:.02em}
+:root[data-theme="dark"] #app.adm69>.tabs .sg69>b{color:#9DBCF2!important}
+#app.adm69>.tabs .sg69>.btn:not(.s){background:linear-gradient(135deg,#12306B,#1D4797)!important;color:#fff!important;border-color:#12306B!important;box-shadow:0 10px 20px -14px rgba(18,48,107,.9)}
+#app.adm69>.tabs .sg69>.btn:not(.s) *{color:#fff!important}
+.k69 .kp{position:relative;overflow:hidden;transition:transform .22s,box-shadow .22s;background:linear-gradient(180deg,var(--sf),rgba(18,48,107,.035))!important}
+.k69 .kp:hover{transform:translateY(-3px);box-shadow:0 18px 32px -24px rgba(11,29,64,.6)}
+.k69 .kp:after{content:"";position:absolute;inset-inline-end:-22px;top:-22px;width:74px;height:74px;border-radius:50%;background:rgba(47,95,179,.14)}
+.q69 .btn{transition:transform .18s,border-color .18s,box-shadow .18s}
+.q69 .btn:hover{transform:translateY(-2px);border-color:#2F5FB3!important;box-shadow:0 12px 22px -18px rgba(11,29,64,.6)}
+.pn69{border-radius:14px!important;box-shadow:0 14px 30px -26px rgba(11,29,64,.6)!important}
+#app .box .tw>table th{background:rgba(18,48,107,.08);color:var(--tx)}
+#app .box .tw>table tr:nth-child(odd)>td{background:rgba(18,48,107,.022)}
+#app .box .tw>table tr:hover>td{background:rgba(47,95,179,.09)}
+:root[data-theme="dark"] #app .box .tw>table th{background:rgba(143,180,238,.14)}
+:root[data-theme="dark"] #app .box .tw>table tr:nth-child(odd)>td{background:rgba(255,255,255,.025)}
+/* حركة الظهور */
+.rv142{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv142.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv142{opacity:1!important;transform:none!important;transition:none!important}.st142h i{animation:none}.pc120:hover,.wy120>div:hover,.sp120>li:hover,.spc138:hover,.nwc138:hover{transform:none}}
+@media print{.rv142{opacity:1!important;transform:none!important}body{background-image:none}}
+</style>
 <style id="css138">
 /* v140 — تذييل رسمي، صفحات النماذج، شريط التنقل */
 #ft .ftc{display:grid!important;grid-template-columns:1.25fr 1fr 1.15fr 1fr;gap:28px 34px!important;align-items:start;padding-top:40px!important;padding-bottom:8px!important}
 #ft .ftr{display:block!important;min-width:0;flex:none!important}
 #ft .ftr>b,#ft .ftb140>b{display:block;color:#fff;font-size:15.5px;font-weight:700;margin-bottom:14px;padding-bottom:9px;position:relative}
-#ft .ftr>b:after{content:"";position:absolute;inset-inline-start:0;bottom:0;width:34px;height:2px;border-radius:2px;background:#C9A24A}
+#ft .ftr>b:after{content:"";position:absolute;inset-inline-start:0;bottom:0;width:34px;height:2px;border-radius:2px;background:#2F5FB3}
 #ft .ftb140{grid-row:span 2;min-width:0}
 #ft .ftb140 .nm{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-#ft .ftb140 .nm i{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(231,207,138,.45);color:#E7CF8A;font-style:normal;flex:none}
+#ft .ftb140 .nm i{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(231,207,138,.45);color:#BFD4F7;font-style:normal;flex:none}
 #ft .ftb140 .nm b{color:#fff;font-size:19px;line-height:1.3;margin:0;padding:0;display:block}#ft .ftb140 .nm small{display:block;color:#B9C4D4;font-size:12.5px;letter-spacing:.04em}
 #ft .ftb140 p{margin:0 0 16px;color:#C6D0DE;line-height:1.9;font-size:14px;max-width:34ch}
 #ft .ftb140 .act{display:flex;flex-wrap:wrap;gap:8px}
 #ft .ftq140{display:grid;gap:9px}
 #ft .ftq140 a{color:#D6DEEA!important;text-decoration:none!important;font-size:14.5px;display:inline-flex;align-items:center;gap:7px;width:fit-content;padding:0!important;background:none!important;border:0!important}
-#ft .ftq140 a:before{content:"";width:5px;height:5px;border-radius:50%;background:#C9A24A;flex:none}
+#ft .ftq140 a:before{content:"";width:5px;height:5px;border-radius:50%;background:#2F5FB3;flex:none}
 #ft .ftq140 a:hover{color:#fff!important;text-decoration:underline!important}
 #ft .ftl{display:flex;flex-wrap:wrap;gap:8px}
 #ft .ftr.con140 .ftl{display:grid;gap:8px;justify-items:start}
 #ft .hid140{display:none!important}
 #ft .b140{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
-#ft .b140:hover{background:rgba(255,255,255,.16)}#ft .b140.g{background:#C9A24A;border-color:#C9A24A;color:#14213d}#ft .b140.g:hover{background:#D9B663}
+#ft .b140:hover{background:rgba(255,255,255,.16)}#ft .b140.g{background:#fff;border-color:#fff;color:#12306B}#ft .b140.g:hover{background:#D9B663}
 #ft .ftr.soc140 .ftl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 #ft .ftr.soc140 .ftl .chip{justify-content:flex-start;min-width:0}
 #ft .ftr.soc140 .ftl .chip span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -27509,7 +27647,7 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 @media (min-width:1025px) and (max-width:1500px){.h69-ln a{padding-inline:9px!important;font-size:14.5px!important;white-space:nowrap}.h69-ln{gap:0!important}}
 /* v138 — بطاقات الإعلانات والأخبار وبوابة المشاركين */
 .acc138{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:20px;border-radius:16px;border:1px solid rgba(20,40,75,.18);background:linear-gradient(135deg,#F4F7FB,#EEF3FA);margin:12px 0}
-.acc138 .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:#14284B;color:#E7CF8A}
+.acc138 .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:#14284B;color:#BFD4F7}
 .acc138 h3{margin:0 0 6px;font-size:19px}.acc138 p{margin:0 0 14px;line-height:1.8;color:var(--mu,#4a5a70)}
 .acc138 .bt{display:flex;flex-wrap:wrap;gap:10px}.acc138 .bt .btn{text-decoration:none;padding:11px 20px;font-size:15px}
 .gst138{margin-top:16px;border-top:1px dashed var(--bd,#dfe4ea);padding-top:12px}.gst138 summary{cursor:pointer;font-weight:600;color:var(--pr,#14284B)}.gst138 form{margin-top:12px}
@@ -27527,12 +27665,12 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 .spc138 .hd138x{position:relative;display:grid;grid-template-columns:70px 1fr;gap:14px;align-items:start;padding:18px 18px 16px;color:#fff;background:linear-gradient(135deg,#14284B 0%,#1E3D6E 62%,#2A5189 100%);isolation:isolate}
 .spc138 .hd138x:after{content:"";position:absolute;inset:0;z-index:-1;opacity:.13;background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 1.4px);background-size:14px 14px;-webkit-mask-image:linear-gradient(to left,#000,transparent 75%);mask-image:linear-gradient(to left,#000,transparent 75%)}
 [dir=ltr] .spc138 .hd138x:after{-webkit-mask-image:linear-gradient(to right,#000,transparent 75%);mask-image:linear-gradient(to right,#000,transparent 75%)}
-.spc138 .hd138x:before{content:"";position:absolute;inset-inline:0;bottom:0;height:3px;background:linear-gradient(90deg,#C9A24A,#E7CF8A,#C9A24A)}
+.spc138 .hd138x:before{content:"";position:absolute;inset-inline:0;bottom:0;height:3px;background:linear-gradient(90deg,#2F5FB3,#BFD4F7,#2F5FB3)}
 .spc138 .dt138x{display:grid;justify-items:center;align-content:center;min-height:78px;padding:8px 4px;border-radius:12px;background:#fff;color:#14284B;line-height:1.05;box-shadow:0 6px 16px -8px rgba(0,0,0,.5)}
 .spc138 .dt138x b{font-size:28px;font-weight:800}.spc138 .dt138x span{font-size:12.5px;font-weight:700;margin-top:3px}.spc138 .dt138x small{font-size:11px;opacity:.65;margin-top:2px}
 .spc138 .ti138x{min-width:0}.spc138 .ch138x{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .spc138 .kd138x{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff}
-.spc138 .kd138x.o{background:rgba(201,162,74,.22);border-color:rgba(231,207,138,.5)}
+.spc138 .kd138x.o{background:rgba(47,95,179,.22);border-color:rgba(231,207,138,.5)}
 .spc138 h3,.spc138 h2{margin:0;color:#fff;font-size:18px;line-height:1.5;font-weight:800;overflow-wrap:anywhere}.spc138.big138x h2{font-size:24px}
 .spc138 .en138x{margin:4px 0 0;font-size:13px;opacity:.82;line-height:1.5;overflow-wrap:anywhere}
 .rb138{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#E8F5EE;color:#11643B}
@@ -27542,7 +27680,7 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 .spc138 .tp138x{margin:0 0 10px;font-weight:700;color:var(--tx,#14213d);line-height:1.7}
 .spc138 .mt138x{list-style:none;margin:0;padding:0;display:grid;gap:7px}
 .spc138 .mt138x li{display:flex;gap:9px;align-items:flex-start;color:var(--mu,#4a5a70);font-size:14px;line-height:1.55}.spc138 .mt138x svg{flex:none;color:#2A5189;margin-top:2px}
-.spc138 .cd138x{display:inline-flex;gap:6px;align-items:center;margin:12px 0 4px;padding:5px 11px;border-radius:8px;background:rgba(201,162,74,.14);color:#7A5A12;font-weight:700;font-size:13px}
+.spc138 .cd138x{display:inline-flex;gap:6px;align-items:center;margin:12px 0 4px;padding:5px 11px;border-radius:8px;background:rgba(47,95,179,.14);color:#7A5A12;font-weight:700;font-size:13px}
 .spc138 .ft138x{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 18px 16px;border-top:1px dashed var(--bd,#dfe4ea);margin-top:10px}
 .spc138 .ft138x .btn{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .spc138 .lk138x,.nwc138 .lk138x{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:9px;border:1px solid transparent;background:none;color:var(--pr,#14284B);font:inherit;font-size:13.5px;font-weight:600;text-decoration:none;cursor:pointer}
@@ -27558,12 +27696,12 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 /* الأخبار */
 .nwg138{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px;margin-top:14px}
 .nwc138{display:flex;flex-direction:column;background:var(--sf,#fff);border:1px solid var(--bd,#dfe4ea);border-radius:16px;overflow:hidden;box-shadow:0 8px 24px -16px rgba(20,40,75,.3);min-width:0}
-.nwc138 .hd138x{display:grid;grid-template-columns:62px 1fr;gap:13px;padding:16px 16px 6px;border-top:4px solid #2A5189}.nwc138.ev .hd138x{border-top-color:#C9A24A}
-.nwc138 .dt138x{display:grid;justify-items:center;align-content:center;min-height:70px;border-radius:12px;background:#EEF2F8;color:#14284B;line-height:1.05}.nwc138.ev .dt138x{background:#FBF3E1;color:#6B4E0E}
+.nwc138 .hd138x{display:grid;grid-template-columns:62px 1fr;gap:13px;padding:16px 16px 6px;border-top:4px solid #2A5189}.nwc138.ev .hd138x{border-top-color:#2F5FB3}
+.nwc138 .dt138x{display:grid;justify-items:center;align-content:center;min-height:70px;border-radius:12px;background:#EEF2F8;color:#14284B;line-height:1.05}.nwc138.ev .dt138x{background:#EEF3FC;color:#12306B}
 .nwc138 .dt138x b{font-size:24px;font-weight:800}.nwc138 .dt138x span{font-size:12px;font-weight:700;margin-top:3px}.nwc138 .dt138x small{font-size:11px;opacity:.65}
-.nwc138 .kd138x{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#2A5189;background:#EEF2F8;padding:3px 10px;border-radius:999px}.nwc138.ev .kd138x{color:#6B4E0E;background:#FBF3E1}
+.nwc138 .kd138x{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#2A5189;background:#EEF2F8;padding:3px 10px;border-radius:999px}.nwc138.ev .kd138x{color:#12306B;background:#EEF3FC}
 .nwc138 h3{margin:8px 0 4px;font-size:17px;line-height:1.55;color:var(--tx,#14213d);overflow-wrap:anywhere}
-.nwc138 .evd138x{display:flex;gap:6px;align-items:center;margin:4px 0 0;font-size:13px;color:#6B4E0E;font-weight:600}
+.nwc138 .evd138x{display:flex;gap:6px;align-items:center;margin:4px 0 0;font-size:13px;color:#12306B;font-weight:600}
 .nwc138 .bd138x{padding:6px 16px 4px;flex:1;color:var(--mu,#4a5a70);line-height:1.85;font-size:14.5px}.nwc138 .bd138x p{margin:6px 0;white-space:pre-line;overflow-wrap:anywhere}
 .nwc138 details summary{cursor:pointer;color:var(--pr,#14284B);font-weight:700;font-size:13.5px;list-style:none}.nwc138 details summary::-webkit-details-marker{display:none}.nwc138 details[open] summary{display:none}
 .nwc138 .ft138x{display:flex;gap:6px;padding:8px 12px 12px;border-top:1px dashed var(--bd,#dfe4ea);margin-top:8px}
@@ -27576,9 +27714,9 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 /* بوابة المشاركين */
 .pa138{margin:8px 0 24px}.pa138 .in138x{display:grid;grid-template-columns:1.05fr 1fr;gap:0;border-radius:20px;overflow:hidden;border:1px solid var(--bd,#dfe4ea);background:var(--sf,#fff);box-shadow:0 14px 40px -24px rgba(20,40,75,.45)}
 .pa138 .intro138x{padding:30px 28px;color:#fff;background:linear-gradient(150deg,#14284B,#22457A);position:relative}
-.pa138 .intro138x:after{content:"";position:absolute;inset-inline:0;bottom:0;height:4px;background:linear-gradient(90deg,#C9A24A,#E7CF8A,#C9A24A)}
-.pa138 .ey138x,.pp138 .ey138x{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.02em;color:#E7CF8A}.pp138 .ey138x{color:#9A7B2F}
-.pa138 h2{color:#fff;margin:8px 0 16px;font-size:24px;line-height:1.5}.pa138 ul{list-style:none;padding:0;margin:0;display:grid;gap:11px}.pa138 li{display:flex;gap:10px;align-items:flex-start;line-height:1.6}.pa138 li svg{flex:none;color:#E7CF8A;margin-top:3px}
+.pa138 .intro138x:after{content:"";position:absolute;inset-inline:0;bottom:0;height:4px;background:linear-gradient(90deg,#2F5FB3,#BFD4F7,#2F5FB3)}
+.pa138 .ey138x,.pp138 .ey138x{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.02em;color:#BFD4F7}.pp138 .ey138x{color:#9A7B2F}
+.pa138 h2{color:#fff;margin:8px 0 16px;font-size:24px;line-height:1.5}.pa138 ul{list-style:none;padding:0;margin:0;display:grid;gap:11px}.pa138 li{display:flex;gap:10px;align-items:flex-start;line-height:1.6}.pa138 li svg{flex:none;color:#BFD4F7;margin-top:3px}
 .pa138 .fm138x{padding:24px 26px}.pa138 .tb138x{display:flex;gap:4px;padding:4px;background:#EEF2F8;border-radius:12px;margin-bottom:18px}
 .pa138 .tb138x a{flex:1;text-align:center;padding:9px;border-radius:9px;text-decoration:none;color:#3D4C63;font-weight:700}.pa138 .tb138x a.on{background:#fff;color:#14284B;box-shadow:0 2px 6px rgba(20,40,75,.15)}
 .pa138 form label,.pp138 form label,.pa138s form label{display:block;margin-bottom:12px;font-weight:600;font-size:14px}
@@ -27590,8 +27728,8 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 .pp138 .ph138x h2{margin:4px 0 2px}.pp138 .ph138x .btn{display:inline-flex;align-items:center;gap:6px}
 .k138{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
 .k138>div{padding:14px;border-radius:14px;background:var(--sf,#fff);border:1px solid var(--bd,#dfe4ea);display:grid;gap:3px}.k138 b{font-size:24px;color:#14284B}.k138 span{color:var(--mu,#4a5a70);font-size:13px;line-height:1.5}
-.amb138{padding:14px 16px;border-radius:14px;background:rgba(201,162,74,.1);border:1px solid rgba(201,162,74,.35);margin-bottom:8px}.amb138 p{margin:8px 0 0;line-height:1.8}
-.amb138 .bar138x{height:10px;border-radius:99px;background:rgba(20,40,75,.1);overflow:hidden}.amb138 .bar138x i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#C9A24A,#E1C26E)}
+.amb138{padding:14px 16px;border-radius:14px;background:rgba(47,95,179,.1);border:1px solid rgba(47,95,179,.35);margin-bottom:8px}.amb138 p{margin:8px 0 0;line-height:1.8}
+.amb138 .bar138x{height:10px;border-radius:99px;background:rgba(20,40,75,.1);overflow:hidden}.amb138 .bar138x i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#2F5FB3,#8DB6FF)}
 .st138{margin:26px 0 10px;font-size:19px}
 .my138{display:grid;gap:10px}.my138 .it138x{display:grid;grid-template-columns:62px 1fr auto;gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--bd,#dfe4ea);border-radius:14px;background:var(--sf,#fff)}
 .my138 .dt138x{display:grid;justify-items:center;padding:8px 4px;border-radius:11px;background:#14284B;color:#fff;line-height:1.1}.my138 .dt138x b{font-size:21px}.my138 .dt138x span{font-size:11.5px}.my138 .dt138x small{font-size:10.5px;opacity:.7}
@@ -27606,8 +27744,8 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 .hc a.p138{border:1px solid rgba(231,207,138,.55)}
 :root[data-theme=dark] .spc138 .dt138x,:root[data-theme=dark] .nwc138 .dt138x{background:#E9EEF6}
 :root[data-theme=dark] .pa138 .tb138x{background:rgba(255,255,255,.06)}:root[data-theme=dark] .pa138 .tb138x a{color:#c9d3e3}:root[data-theme=dark] .pa138 .tb138x a.on{background:#22457A;color:#fff}
-:root[data-theme=dark] .pp138 .ph138x{background:rgba(255,255,255,.04)}:root[data-theme=dark] .k138 b{color:#E7CF8A}:root[data-theme=dark] .inv138{background:rgba(255,255,255,.06);color:inherit}
-:root[data-theme=dark] .spc138 .mt138x svg{color:#9DB6DD}:root[data-theme=dark] .spc138 .cd138x{color:#E7CF8A}:root[data-theme=dark] .nwc138 .kd138x{background:rgba(255,255,255,.08);color:#C9D7EE}
+:root[data-theme=dark] .pp138 .ph138x{background:rgba(255,255,255,.04)}:root[data-theme=dark] .k138 b{color:#BFD4F7}:root[data-theme=dark] .inv138{background:rgba(255,255,255,.06);color:inherit}
+:root[data-theme=dark] .spc138 .mt138x svg{color:#9DB6DD}:root[data-theme=dark] .spc138 .cd138x{color:#BFD4F7}:root[data-theme=dark] .nwc138 .kd138x{background:rgba(255,255,255,.08);color:#C9D7EE}
 @media (max-width:760px){.pa138 .in138x{grid-template-columns:1fr}.pa138 .intro138x{padding:22px 20px}.pa138 .fm138x{padding:20px 18px}.g2138x{grid-template-columns:1fr}
  .my138 .it138x{grid-template-columns:56px 1fr}.my138 .ac138x{grid-column:1/-1;justify-content:flex-start}
  .spg138,.nwg138{grid-template-columns:1fr}.spc138 .hd138x{grid-template-columns:60px 1fr;padding:16px}.spc138.big138x h2{font-size:20px}}
@@ -27790,6 +27928,27 @@ function ft140(){try{var f=document.getElementById('ft');if(!f)return;var c=f.qu
  try{var wa=null,em=null;c.querySelectorAll('.ftr').forEach(function(r){if(r===q||r===soc)return;if(r.querySelector('a[href^="https://wa.me"]'))wa=r;else if(r.querySelector('a[href^="mailto:"]'))em=r});if(wa&&em){em.querySelectorAll('.ftl>*').forEach(function(x){wa.querySelector('.ftl').appendChild(x)});em.remove();var hb=wa.querySelector('b');if(hb)hb.textContent=L('تواصل معنا','Contact us');wa.classList.add('con140')}}catch(e){}
  move();setTimeout(move,1200);setTimeout(move,4000);try{if(typeof trn==='function')trn(f)}catch(e){}}catch(e){console.warn('ft140',e)}}
 try{GOH.post.push(ft140)}catch(e){}setTimeout(ft140,800);setTimeout(ft140,2500);
+/* v142 — صفحة «القبول والرسوم والمنح»: الشروط، الرسوم بفئتيها، المنح، وخطوات الإجراء */
+var DIP142=1000;
+function st142(){var o={open:false,to:''};try{var D=(S.programs||[]).find(function(p){return p.id==DIP142}),s=V5.regState75?V5.regState75():{open:false},po=D&&V5.progOpen75?V5.progOpen75(D):{ok:false};o.open=!!(s.open&&po.ok);var a=[s.to,po.to].filter(Boolean).sort();o.to=a[0]||'';o.next=s.next||po.next||''}catch(e){}return o}
+function dt142(x){if(!x)return '';var d=new Date(x);if(isNaN(d))return String(x);var bn=document.documentElement.lang==='bn';if(bn)return d.getDate().toString().replace(/\d/g,function(c){return '০১২৩৪৫৬৭৮৯'[c]})+' '+['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'][d.getMonth()]+' '+String(d.getFullYear()).replace(/\d/g,function(c){return '০১২৩৪৫৬৭৮৯'[c]});var M=isEn()?['January','February','March','April','May','June','July','August','September','October','November','December']:['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];return d.getDate()+' '+M[d.getMonth()]+' '+d.getFullYear()}
+function chip142(){var s=st142();return s.open?'<span class="ch142 on"><i></i>'+L('القبول مفتوح الآن','Admission is open now')+(s.to?' · '+L('آخر موعد: ','Deadline: ')+'<b>'+e0(dt142(s.to))+'</b>':'')+'</span>':'<span class="ch142"><i></i>'+L('القبول مغلق حالياً','Admission is currently closed')+(s.next?' · '+L('يُفتح: ','Opens: ')+'<b>'+e0(dt142(s.next))+'</b>':'')+'</span>'}
+function li142(a){return '<ul class="ul142">'+a.map(function(x){return '<li>'+ic('check',17)+'<span>'+x+'</span></li>'}).join('')+'</ul>'}
+V.admission=function(){var s=st142();
+ return '<section class="adm142"><div class="hero142"><span class="ey142">'+L('القبول والتسجيل','Admission & registration')+'</span><h1>'+L('الدبلوم العام في اللغة العربية لغير الناطقين بها','General Diploma in Arabic for Non-Native Speakers')+'</h1><p>'+L('سنتان · 4 فصول دراسية · 80 ساعة معتمدة. القبول متاح لجميع الطلاب من داخل بنغلاديش وخارجها.','Two years · 4 semesters · 80 credit hours. Admission is open to all students, from Bangladesh and abroad.')+'</p>'+chip142()+'<div class="bt142">'+(s.open?'<a class="btn" href="#/register">'+L('قدّم طلب الالتحاق','Apply for admission')+'</a>':'')+'<a class="btn s" href="#/track">'+L('متابعة طلب القبول','Track an application')+'</a></div></div>'+
+ '<div class="g142"><article class="c142"><h2>'+ic('check',20)+L('شروط القبول ومتطلباته','Admission requirements')+'</h2>'+li142([L('الحصول على شهادة الثانوية العامة أو ما يعادلها.','A general secondary school certificate or its equivalent.'),L('تعبئة طلب الالتحاق ببيانات صحيحة مطابقة للوثيقة الرسمية (الهوية أو جواز السفر).','A completed application with correct details matching the official document (ID or passport).'),L('إرسال المستندات المطلوبة إلى بريد المعهد: صورة الشهادة، وصورة الهوية أو الجواز، وصورة شخصية.','The required documents sent to the Institute email: certificate copy, ID or passport copy, and a personal photo.'),L('أداء اختبار تحديد المستوى، والمقابلة عند الطلب.','The placement test, and an interview when requested.'),L('الالتزام بأنظمة المعهد ولوائحه وتقويمه الأكاديمي.','Commitment to the Institute’s regulations and academic calendar.')])+'</article>'+
+ '<article class="c142"><h2>'+ic('link',20)+L('خطوات الالتحاق','How to join')+'</h2><ol class="ol142 v"><li><b>'+L('طلب الالتحاق','Application')+'</b><span>'+L('يقدّم الطالب طلبه ويتابعه برقم الطلب.','The student applies and tracks the application by its number.')+'</span></li><li><b>'+L('القبول النهائي','Final admission')+'</b><span>'+L('يصدر القبول النهائي ويُفتح للطالب حسابه في بوابة الطالب، وفيها تظهر له الرسوم المقررة.','Final admission is issued and the student’s portal account is opened; the set fees appear there.')+'</span></li><li><b>'+L('طلب المنحة','Scholarship application')+'</b><span>'+L('إجراء داخلي من بوابة الطالب بعد القبول النهائي.','An internal procedure from the student portal after final admission.')+'</span></li><li><b>'+L('احتساب تلقائي','Automatic calculation')+'</b><span>'+L('عند الاعتماد تُطبَّق المنحة فوراً ويتحدث المستحق في بوابة الطالب والإدارة والإفادات.','On approval the scholarship is applied at once and the amount due updates in the student portal, the administration and official statements.')+'</span></li></ol></article>'+
+ '<article class="c142 w"><h2>'+ic('award',20)+L('المنح الدراسية: من 20% إلى 100%','Scholarships: from 20% to 100%')+'</h2><p>'+L('تُمنح المنح بنسبة من 20% إلى 100% من الرسوم بحسب استيفاء الشروط والمتطلبات، وقد تختلف النسبة بحسب المعدل والتميز الدراسي.','Scholarships are awarded at 20% to 100% of the fees according to the conditions and requirements met; the percentage may vary with GPA and academic distinction.')+'</p><div class="g2142"><div><h3>'+L('شروط طلب المنحة','Conditions for applying')+'</h3>'+li142([L('الحصول على القبول النهائي في البرنامج أولاً.','Final admission to the programme first.'),L('معدل 90 من 100 أو ما يعادله من المقاييس الأخرى.','A score of 90 out of 100, or its equivalent on other scales.'),L('تقديم الطلب من بوابة الطالب لكل فصل دراسي، مع بيان الأساس والمسوّغات.','An application from the student portal for each semester, stating the basis and justification.'),L('المحافظة على الانتظام والمستوى الدراسي لاستمرار المنحة.','Maintaining attendance and academic standing for the scholarship to continue.')])+'</div><div class="hl142"><h3>'+L('منحة دعم المتميزين 50%','Excellence Support Scholarship — 50%')+'</h3><p>'+L('لمن سبقت له المشاركة في 10 برامج أو دورات قصيرة على الأقل في المعهد ونشر شهاداتها.','For those who previously took part in at least 10 short programmes or courses at the Institute and shared their certificates.')+'</p><a class="btn s" href="#/programs#sp138">'+L('تصفّح البرامج القصيرة','Browse short programmes')+'</a></div></div></article>'+
+ '<article class="c142 w nt142b"><h2>'+ic('link',20)+L('القبول وطلب المنحة إجراءان مستقلان','Admission and the scholarship application are separate')+'</h2><p>'+L('يصدر القبول أولاً، ثم يطلب الطالب المنحة من بوابته بإجراء داخلي بعد القبول النهائي. وعند اعتمادها تُحتسب تلقائياً وفوراً، ويتحدث المستحق في كل موضع: بوابة الإدارة المركزية، والجهة، وبوابة الطالب، والإفادات.','Admission is issued first; the student then applies for a scholarship from the portal through an internal procedure after final admission. Once approved it is applied automatically and at once, and the amount due updates everywhere: the central administration, the department, the student portal and official statements.')+'</p></article></div></section>'};
+/* شريط القبول في الرئيسية + ملخص في صفحة التسجيل + رابط في التذييل */
+try{var _h142=V[''];var home142=function(){var h=_h142.apply(this,arguments);try{var s=st142();if(s.open&&h.indexOf('bn142')<0){var b='<a class="bn142" href="#/admission"><span class="l"><i></i><b>'+L('القبول مفتوح في الدبلوم العام','Admission is open for the General Diploma')+'</b><span>'+(s.to?L('آخر موعد للتقديم: ','Application deadline: ')+e0(dt142(s.to))+' · ':'')+L('منح من 20% إلى 100%','Scholarships from 20% to 100%')+'</span></span><span class="r">'+L('شروط القبول والمنح','Requirements & scholarships')+' '+ic('arrow',16)+'</span></a>';var i=h.indexOf('<section class="s120"');if(i>0)h=h.slice(0,i)+b+h.slice(i)}}catch(e){}return h};V['']=home142;V.portals=home142}catch(e){}
+try{GOH.post.push(function(){try{var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(k==='register'||k==='reg'){var f=document.querySelector('#app form[onsubmit*="reg("]');if(f&&!document.querySelector('.sm142')){var d=document.createElement('div');d.className='sm142';d.innerHTML='<div class="t">'+chip142()+'<a href="#/admission">'+L('شروط القبول والمنح بالتفصيل','Full requirements & scholarships')+' '+ic('arrow',15)+'</a></div><p>'+L('يُشترط للقبول شهادة الثانوية العامة أو ما يعادلها. والمنح من 20% إلى 100% تُطلب بعد القبول النهائي من بوابة الطالب (يُشترط 90 من 100 أو ما يعادله)، ويُحتسب المستحق تلقائياً.','Admission requires a general secondary certificate or its equivalent. Scholarships of 20%–100% are requested after final admission from the student portal (90/100 or equivalent required), and the amount due is calculated automatically.')+'</p>';var box=f.parentElement;box.insertBefore(d,box.firstChild);try{if(typeof trn==='function')trn(d)}catch(e){}}}
+ var q=document.querySelector('#ft .ftq140');if(q&&!q.querySelector('.a142')){var a=document.createElement('a');a.className='a142';a.href='#/admission';a.textContent=L('القبول والمنح الدراسية','Admission & scholarships');q.insertBefore(a,q.children[3]||null)}}catch(e){}})}catch(e){}
+/* v142 — حركة ظهور هادئة للأقسام + شارة حالة القبول في الواجهة */
+var io142=null;function rv142(){try{if(!('IntersectionObserver' in window)||(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches))return;if(!io142)io142=new IntersectionObserver(function(E){E.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io142.unobserve(x.target)}})},{rootMargin:'0px 0px -6% 0px',threshold:.06});
+ document.querySelectorAll('#app>.s120,#app .sps138,#app .nwp138').forEach(function(e){if(e.dataset.rv)return;e.dataset.rv=1;var r=e.getBoundingClientRect();if(r.top<innerHeight*.92)return;e.classList.add('rv142');io142.observe(e)});
+ setTimeout(function(){document.querySelectorAll('.rv142:not(.in)').forEach(function(e){var r=e.getBoundingClientRect();if(r.top<innerHeight)e.classList.add('in')})},1500)}catch(e){}}
+try{GOH.post.push(function(){setTimeout(rv142,60);try{var hl=document.querySelector('#app .hero.h120 .hl');if(hl&&!hl.querySelector('.st142h')){var s=st142();if(s.open){var a=document.createElement('a');a.className='st142h';a.href='#/admission';a.innerHTML='<i></i>'+L('القبول مفتوح الآن','Admission is open now')+(s.to?' · '+L('آخر موعد: ','Deadline: ')+'<b>'+e0(dt142(s.to))+'</b>':'');var k=hl.querySelector('.kick');hl.insertBefore(a,k?k.nextSibling:hl.firstChild);try{if(typeof trn==='function')trn(a)}catch(e){}}}}catch(e){}})}catch(e){}
 /* شريط «مستجدات المعهد» */
 /* التحميل */
 setTimeout(function(){loadPU().then(function(p){if(p)rerender();else hdrFix()})},1200);
