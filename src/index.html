@@ -22703,8 +22703,8 @@ GOH.post.push(function(){try{if(typeof me!=='undefined'&&me&&me.r==='admin')spBu
 var OPEN135=['قيد المراجعة','قائمة الانتظار','جديد'];
 var nid135=function(x){return String(x||'').toUpperCase().replace(/[\s\-\/]/g,'')};
 /* منع تكرار الطلب بالرقم نفسه ما دام له طلب مفتوح أو قبول */
-setTimeout(function(){try{var _r=W.reg;if(!_r||_r.__135)return;var nr=function(f){var el=f&&f.querySelector&&f.querySelector('[name=pid]'),k=nid135(el&&el.value);if(!el||k.length<5||f.dataset.d135==='1'||!hasSb()||(typeof me!=='undefined'&&me&&me.r==='admin'))return _r.apply(this,arguments);
- var self=this,args=arguments;sb.rpc('v135_dup_check',{nid:k}).then(function(x){var d=x&&x.data;var M={pending:L('لديك طلب التحاق قيد المراجعة بهذا الرقم، ولا يمكن تقديم طلب جديد حتى تصدر نتيجته. تابع طلبك من «متابعة الطلب».','You already have an application under review with this ID number; a new one cannot be submitted until its result is out. Follow it from “Track application”.'),admitted:L('سبق قبولك بهذا الرقم. سجّل الدخول إلى بوابة الطالب.','You have already been admitted with this ID number. Please sign in to the student portal.'),student:L('هذا الرقم مسجّل لطالب قائم في المعهد. سجّل الدخول إلى بوابة الطالب.','This ID number belongs to a current student of the Institute. Please sign in to the student portal.')};
+setTimeout(function(){try{var _r=W.reg;if(!_r||_r.__135)return;var nr=function(f){var el=f&&f.querySelector&&f.querySelector('[name=pid]'),k=nid135(el&&el.value),fe=f&&f.querySelector&&f.querySelector('[name=email]'),fp=f&&f.querySelector&&f.querySelector('[name=phone]'),em=fe?String(fe.value||'').trim():'',pn=fp?String(fp.value||'').trim():'';if((k.length<5&&!em&&!pn)||f.dataset.d135==='1'||!hasSb()||(typeof me!=='undefined'&&me&&me.r==='admin'))return _r.apply(this,arguments);
+ var self=this,args=arguments;sb.rpc('v155_dup_check',{nid:k,email:em,phone:pn}).then(function(x){var d=x&&x.data;var M={pending:L('لديك طلب التحاق قيد المراجعة بالبيانات نفسها (رقم الهوية أو البريد أو الجوال)، ولا يمكن تقديم طلب جديد حتى تصدر نتيجته. تابع طلبك من «متابعة الطلب».','You already have an application under review with the same details (ID number, email or phone); a new one cannot be submitted until its result is out. Follow it from “Track application”.'),admitted:L('سبق قبولك بهذه البيانات. سجّل الدخول إلى بوابة الطالب.','You have already been admitted with these details. Please sign in to the student portal.'),student:L('هذه البيانات مسجّلة لطالب قائم في المعهد. سجّل الدخول إلى بوابة الطالب.','These details belong to a current student of the Institute. Please sign in to the student portal.')};
   if(d&&M[d]){try{out('<div class="msg er">'+M[d]+'</div>')}catch(e){}tst(M[d]);return}f.dataset.d135='1';try{_r.apply(self,args)}finally{setTimeout(function(){delete f.dataset.d135},1500)}},function(){f.dataset.d135='1';try{_r.apply(self,args)}finally{delete f.dataset.d135}});return false};nr.__135=1;W.reg=nr;try{reg=nr}catch(e){}}catch(e){console.error('v135 reg',e)}},0);
 /* إنهاء الفرز: رفض كل غير المقبولين في المجموعة لعدم توفر مقاعد، وإبلاغهم بالفصل القادم */
 H.adm135open=function(key){var d=document.getElementById('adm135_'+key.replace(/\W/g,'_'));if(d){d.hidden=!d.hidden;return}};
@@ -27432,7 +27432,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v154';
+window.__BUILD__='v155';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
