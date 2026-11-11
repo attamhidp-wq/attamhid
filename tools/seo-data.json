@@ -155,7 +155,7 @@
 {
 "id": "SP-mw7fxy76vcq3",
 "data": {
-"u": "2026-11-10T23:27:43.995Z",
+"u": "2026-11-11T14:31:42.791Z",
 "at": "2026-11-08T06:18:06.306Z",
 "by": "admin",
 "id": "SP-mw7fxy76vcq3",
@@ -175,10 +175,12 @@
 "regTo": "2026-11-13T18:41",
 "start": "2026-11-12T19:30",
 "tzOff": -180,
+"annImg": "https://ttuelhswxyjbjdnydmns.supabase.co/storage/v1/object/public/ann/SP-mw7fxy76vcq3.jpg?v=1794407502791",
 "annUpd": "2026-11-10T23:27:43.974Z",
 "minAtt": "",
 "nameAr": "المعنى والاستدلال: قراءة في منوال عبد القاهر الجرجاني في ضوء نظرية المناسبة",
 "nameEn": "Meaning and Reasoning: A Reading of Abd al-Qahir al-Jurjani's Methodology in Light of the Theory of Relevance",
+"annImgK": "المعنى والاستدلال: قراءة في منوال عبد القاهر الجرجاني في ضوء نظرية المناسبة|Meaning and Reasoning: A Reading of Abd al-Qahir al-Jurjani's Methodology in Light of the Theory of Relevance|اللسانيات التداولية في وقراءة التراث اللغوي العربي|2026-11-12T19:30|2026-11-12T20:30||remote|1|د. خالد محمد بهجات الحاج علي|المدرب|2||dark|18202600001",
 "autoIss": 1,
 "confirm": 0,
 "meet136": {
@@ -206,7 +208,7 @@
 {
 "id": "SP-L1792335113821",
 "data": {
-"u": "2026-11-10T07:36:21.645Z",
+"u": "2026-11-11T14:31:44.667Z",
 "at": "2026-11-10T01:44:55.649Z",
 "by": "v125",
 "id": "SP-L1792335113821",
@@ -223,9 +225,11 @@
 "hours": 4,
 "start": "2026-11-15T00:00",
 "tzOff": -180,
+"annImg": "https://ttuelhswxyjbjdnydmns.supabase.co/storage/v1/object/public/ann/SP-L1792335113821.jpg?v=1794407504667",
 "legacy": "1792335113821",
 "nameAr": "أساسيات البحث العلمي",
 "nameEn": "Fundamentals of Scientific Research",
+"annImgK": "أساسيات البحث العلمي|Fundamentals of Scientific Research|أساسيات ومبادئ|2026-11-15T00:00|2026-11-15T23:59|||0|أ. محمد سماع بالله|المشرف|4|مجاني||18202600002",
 "autoIss": 0,
 "confirm": 0,
 "passPct": 60,
@@ -244,7 +248,7 @@
 {
 "id": "SP-L1792350463325",
 "data": {
-"u": "2026-11-10T07:36:21.708Z",
+"u": "2026-11-11T14:32:22.860Z",
 "at": "2026-11-10T01:44:55.649Z",
 "by": "v125",
 "id": "SP-L1792350463325",
@@ -261,9 +265,11 @@
 "hours": 6,
 "start": "2026-11-30T00:00",
 "tzOff": -180,
+"annImg": "https://ttuelhswxyjbjdnydmns.supabase.co/storage/v1/object/public/ann/SP-L1792350463325.jpg?v=1794407542860",
 "legacy": "1792350463325",
 "nameAr": "الريادة في البحث والنشر العلمي",
 "nameEn": "Leadership in Research and Scholarly Publishing",
+"annImgK": "الريادة في البحث والنشر العلمي|Leadership in Research and Scholarly Publishing|الريادة في توظيف الأدوات ضمن مجالات بحثية وعلمية|2026-11-30T00:00|2026-11-30T23:59|||0|أ. عبد الله المسرور بن منير الإسلام|المشرف|6|مجاني||18202600003",
 "autoIss": 0,
 "confirm": 0,
 "passPct": 60,
