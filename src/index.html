@@ -24096,15 +24096,15 @@ V5.annFb147=async function(){if(fbB147||!adminOK()||typeof sb==='undefined'||!sb
 /* v148 — ملصقا القبول والأخبار: يُرسمان ويُرفعان باسم «adm-رقم البرنامج» و«news-رقم الخبر» فينشرهما الخادم مع منشور فيسبوك */
 var MA148=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],ME148=['January','February','March','April','May','June','July','August','September','October','November','December'];
 var dA148=function(x){var d=new Date(String(x).length<=10?x+'T12:00':x);return isNaN(d)?'':d.getDate()+' '+MA148[d.getMonth()]+' '+d.getFullYear()+'م'},dE148=function(x){var d=new Date(String(x).length<=10?x+'T12:00':x);return isNaN(d)?'':d.getDate()+' '+ME148[d.getMonth()]+' '+d.getFullYear()};
-V5.posters148=function(){var out=[],now=Date.now();
+V5.posters148=function(){var out=[],now=Date.now(),MD=function(x){var d=new Date(String(x).length<=10?x+'T12:00':x);return isNaN(d)?null:d};
  try{var c=V5.reg75cfg&&V5.reg75cfg(),st=V5.regState75&&V5.regState75();if(c&&st&&st.open)Object.keys(c.progs||{}).forEach(function(k){var g=c.progs[k]||{};if(g.state!=='open')return;var p=(S.programs||[]).filter(function(x){return String(x.id)===String(k)})[0];if(!p||!(p.name||p.nameAr))return;var to=g.to||st.to||c.to||'',nA=p.name||p.nameAr,nE=p.nameEn||p.en||'';
-   var cards=[];if(to&&dA148(to))cards.push({k:'date',ic:'date',la:'آخر موعد للتقديم',le:'Application deadline',a1:dA148(to),e1:dE148(to)});
-   cards.push({k:'time',ic:'cert',la:'المنح الدراسية',le:'Scholarships',a1:'من 20% إلى 100%',a2:'بحسب استيفاء الشروط',e1:'20% to 100%',e2:'subject to conditions'});
-   cards.push({k:'mode',ic:'onsite',la:'شرط القبول',le:'Requirement',a1:'الثانوية العامة أو ما يعادلها',e1:'Secondary certificate',e2:'or its equivalent'});
-   out.push({name:'adm-'+k,key:['adm',nA,nE,to,g.stateAt||''].join('|'),P:{id:'adm-'+k,poster148:{kdA:'إعلان القبول',kdE:'ADMISSION',tA:'فُتح باب القبول والتسجيل',tE:'Admission is Now Open',sA:nA,sE:nE,cards:cards,stA:'منحة دعم المتميزين 50% لمن شارك في 10 برامج أو دورات قصيرة على الأقل ونشر شهاداتها',stE:'50% Excellence Support Scholarship for participants in at least 10 short programmes who shared their certificates',url:'https://attamhid.com/#/admission',qA:'للتقديم',qE:'Apply'}}})})}catch(e){}
- try{(S.news||[]).forEach(function(n){if(!n||!n.title||n.deleted||String(n.fb)==='0')return;var t=+n.id>1e12?+n.id:Date.parse(n.date||'');if(!t||t<now-2*864e5)return;var ev=/فعالية|event/i.test(n.type||''),b=String(n.body||'').replace(/\s+/g,' ').trim();if(b.length>230)b=b.slice(0,228).replace(/\s+\S*$/,'')+'…';
-   var cards=[{k:'date',ic:'date',la:ev&&n.ev?'موعد الفعالية':'تاريخ النشر',le:ev&&n.ev?'Event date':'Published',a1:dA148(ev&&n.ev?n.ev:(n.date||new Date(t).toISOString().slice(0,10))),e1:dE148(ev&&n.ev?n.ev:(n.date||new Date(t).toISOString().slice(0,10)))}];
-   out.push({name:'news-'+n.id,key:['news',n.title,b,n.type,n.date,n.ev].join('|'),P:{id:'news-'+n.id,poster148:{kdA:ev?'فعالية':'أخبار المعهد',kdE:ev?'EVENT':'NEWS',tA:n.title,tE:n.titleEn||'',sA:b,long:1,cards:cards,url:'https://attamhid.com/#/news',qA:'للتفاصيل',qE:'Details'}}})})}catch(e){}
+   var facts=[];if(to&&dA148(to))facts.push({ic:'cal',la:'آخر موعد للتقديم',va:dA148(to),en:'Deadline · '+dE148(to)});
+   facts.push({ic:'cap',la:'شرط القبول',va:'الثانوية العامة أو ما يعادلها',en:'Secondary certificate or equivalent'});
+   facts.push({ic:'star',la:'منحة دعم المتميزين',va:'بنسبة 50%',en:'لمن شارك في 10 برامج قصيرة على الأقل ونشر شهاداتها'});
+   out.push({name:'adm-'+k,key:['adm149',nA,nE,to,g.stateAt||''].join('|'),P:{id:'adm-'+k,poster148:{t:'adm',tagA:'إعلان قبول',tagE:'ADMISSION',kA:'باب القبول مفتوح الآن',kE:'NOW OPEN',tA:'القبول والتسجيل',pA:String(nA).replace(/\s+-\s+/g,'، '),pE:String(nE).replace(/\s+-\s+/g,' · '),facts:facts,ctaA:'قدّم طلبك الآن',ctaE:'Apply online',urlTxt:'attamhid.com/#/admission',url:'https://attamhid.com/#/admission',qA:'للتقديم'}}})})}catch(e){}
+ try{(S.news||[]).forEach(function(n){if(!n||!n.title||n.deleted||String(n.fb)==='0')return;var t=+n.id>1e12?+n.id:Date.parse(n.date||'');if(!t||t<now-2*864e5)return;var ev=/فعالية|event/i.test(n.type||''),b=String(n.body||'').replace(/\s+/g,' ').trim();if(b.length>260)b=b.slice(0,258).replace(/\s+\S*$/,'')+'…';
+   var ds=ev&&n.ev?n.ev:(n.date||new Date(t).toISOString().slice(0,10)),d=MD(ds);
+   out.push({name:'news-'+n.id,key:['news149',n.title,b,n.type,n.date,n.ev].join('|'),P:{id:'news-'+n.id,poster148:{t:'nw',ev:ev,tagA:ev?'فعالية':'خبر',tagE:ev?'EVENT':'NEWS',kA:ev?'فعاليات المعهد':'أخبار المعهد',kE:ev?'Institute events':'Institute news',tA:n.title,tE:n.titleEn||'',sA:b,dLab:ev?'موعد الفعالية':'تاريخ النشر',dD:d?String(d.getDate()):'',dM:d?MA148[d.getMonth()]:'',dY:d?d.getFullYear()+'':'',dE:d?ME148[d.getMonth()]:'',ctaA:ev?'التفاصيل والتسجيل':'اقرأ الخبر كاملاً',ctaE:ev?'Details & registration':'Read the full story',urlTxt:'attamhid.com/#/news',url:'https://attamhid.com/#/news',qA:'للتفاصيل'}}})})}catch(e){}
  return out};
 V5.posterBlob148=function(P){return render(P,'sq','jpg',{})};
 V5.posterFb148=async function(){if(fbB147||!adminOK()||typeof sb==='undefined'||!sb||!sb.storage)return;var M=S.v51.fbImg148=S.v51.fbImg148||{},now=Date.now(),L0=V5.posters148().filter(function(x){return M[x.name]!==x.key&&!(fbF147[x.name]>now-6e5)});if(!L0.length)return;fbB147=1;
@@ -24433,19 +24433,28 @@ function hrsE(n){n=+n;if(!(n>0))return '';return n+(n===1?' hour':' hours')}
 var DIG=function(s){return '<bdi dir="ltr">'+e8(s)+'</bdi>'};
 
 /* ---------- الإعلان ---------- */
-/* v148 — ملصق عام بنمط إعلانات البرامج نفسه (القبول والأخبار): لصورة منشور فيسبوك */
-function poster148(P,fm){var X=P.poster148,th='dark',sz=FM[fm]||FM.sq,Wd=sz[0],Hd=sz[1],u=fm==='a4'?1:fm==='sq'?1.36:1.78,m=Math.round(Math.min(Wd,Hd)*0.028),I0=S.v51.inst||{},Hm=S.home||{};
- var hd='<div class="a8-g a8-g-hd"><div class="a8-an-lg">'+logo(th)+'</div><div class="a8-an-nm"><b>'+e8(I0.nameAr||'معهد التمهيد')+'</b><span dir="ltr">'+e8(I0.nameEn||'At Tamhid Institute')+'</span></div><div class="a8-an-bs">'+bsm()+'</div></div>';
- var tt='<div class="a8-g a8-g-tt"><div class="a8-an-kd"><span>'+e8(X.kdA)+'</span><i></i><span dir="ltr">'+e8(X.kdE)+'</span></div><h1>'+e8(X.tA)+'</h1>'+(X.tE?'<h2 dir="ltr">'+e8(X.tE)+'</h2>':'')+
-  (X.sA||X.sE?'<div class="a8-an-tp"'+(X.long?' style="font-size:.92em;line-height:1.75"':'')+'>'+(X.sA?'<span>'+e8(X.sA)+'</span>':'')+(X.sE?'<span dir="ltr">'+e8(X.sE)+'</span>':'')+'</div>':'')+divider()+'</div>';
- var C0=X.cards||[],cds=C0.length?'<div class="a8-g a8-g-cd"'+(C0.length<3?' style="grid-template-columns:repeat('+C0.length+',minmax(0,1fr));max-width:'+(C0.length===1?46:72)+'%;margin-inline:auto"':'')+'>'+C0.map(function(c){return '<div class="a8-cd a8-cd-'+c.k+'"><div class="a8-ch">'+ico(c.ic)+'<div class="a8-cl"><b>'+e8(c.la)+'</b><span dir="ltr">'+e8(c.le)+'</span></div></div><div class="a8-cb"><div class="a8-va"><b>'+e8(c.a1)+'</b>'+(c.a2?'<span>'+e8(c.a2)+'</span>':'')+'</div><div class="a8-ve" dir="ltr"><b>'+e8(c.e1)+'</b>'+(c.e2?'<span>'+e8(c.e2)+'</span>':'')+'</div></div></div>'}).join('')+'</div>':'';
- var ct=X.stA?'<div class="a8-g a8-g-ct">'+ico('cert')+'<div class="a8-ctx"><b>'+e8(X.stA)+'</b>'+(X.stE?'<span dir="ltr">'+e8(X.stE)+'</span>':'')+'</div></div>':'';
- var qrH=X.url?'<div class="a8-g a8-g-qr"><div class="a8-q"><div class="a8-qf"><img src="'+qr(X.url)+'" alt="QR"></div><b>'+e8(X.qA)+'</b><span dir="ltr">'+e8(X.qE)+'</span></div></div>':'';
- var bt=ct||qrH?'<div class="a8-g a8-g-bt"'+(ct?'':' style="justify-content:center"')+'>'+ct+qrH+'</div>':'';
- var ctc=[Hm.p1?DIG(Hm.p1):'',Hm.em?DIG(Hm.em):'',DIG('attamhid.com')].filter(Boolean).join('<i>·</i>');
- var ft='<div class="a8-g a8-g-ft"><span class="a8-no">'+e8(I0.nameAr||'معهد التمهيد')+'</span><span class="a8-cx">'+ctc+'</span><span class="a8-no" dir="ltr">'+e8(I0.nameEn||'At Tamhid Institute')+'</span></div>';
- return '<div class="an68 f-'+fm+' t-'+th+'" data-ann67="1" dir="rtl" style="width:'+Wd+'px;height:'+Hd+'px;--k:1"><i class="a8-an-bg"></i>'+pattern(Wd,Hd,Math.round(56*u))+frame(Wd,Hd,m,u)+'<div class="a8-an-in">'+hd+tt+cds+bt+ft+'</div></div>'}
-function annHTML(P,fm,o){if(P&&P.poster148)return poster148(P,fm);o=o||{};var C=V5.ann67cfg(),th=o.theme&&THEMES[o.theme]?o.theme:themeOf(P),K=I.kindOf(P),wn=V5.when67(P),MO=V5.spModes67,md=MO[P&&P.mode]?P.mode:(P&&P.url&&!P.place?'remote':'onsite'),sz=FM[fm]||FM.a4,Wd=sz[0],Hd=sz[1];
+/* v149 — ملصقات القبول والأخبار: تصميم مستقل عالي الجودة (كحلي/أزرق/أبيض)، تخطيط تحريري، شارة منح، بطاقات حقائق، وشريط تقديم أبيض برمز QR */
+var Z149={cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',cap:'<path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.7V16c0 1.4 2.5 3 5.5 3s5.5-1.6 5.5-3v-4.3M21.5 9.5v5"/>',star:'<path d="m12 3.5 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/>',ph:'<path d="M5 4h3.5l1.6 4-2.2 1.4a11 11 0 0 0 5.7 5.7l1.4-2.2 4 1.6V18a2 2 0 0 1-2 2A15.5 15.5 0 0 1 3 6a2 2 0 0 1 2-2z"/>',ml:'<rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="m3.5 7 8.5 6 8.5-6"/>',web:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5S9.4 5.9 12 3.5z"/>',nw:'<path d="M5 4.5h11.5v15H6.5A1.5 1.5 0 0 1 5 18z"/><path d="M16.5 8.5H19v9.5a1.5 1.5 0 0 1-3 0M8 8.5h5.5M8 12h5.5M8 15.5h3.5"/>',ev:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="m9.5 15 1.8 1.8 3.4-3.6"/>'};
+var zi=function(k,s){return '<svg viewBox="0 0 24 24" width="'+(s||28)+'" height="'+(s||28)+'" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">'+(Z149[k]||'')+'</svg>'};
+var zg=function(W,H){var t=120,c=t/2,r=t*0.29,R=t*0.41,f=function(n){return n.toFixed(1)};var d='M'+f(c-r)+' '+f(c-r)+'H'+f(c+r)+'V'+f(c+r)+'H'+f(c-r)+'Z M'+f(c)+' '+f(c-R)+'L'+f(c+R)+' '+f(c)+'L'+f(c)+' '+f(c+R)+'L'+f(c-R)+' '+f(c)+'Z';
+ return '<svg class="z-pt" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="zp149" width="'+t+'" height="'+t+'" patternUnits="userSpaceOnUse"><path d="'+d+'" fill="none" stroke="#fff" stroke-width="1"/></pattern><radialGradient id="zm149" cx="78%" cy="18%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".55" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="zk149"><rect width="100%" height="100%" fill="url(#zm149)"/></mask></defs><rect width="100%" height="100%" fill="url(#zp149)" mask="url(#zk149)"/></svg>'};
+function poster149(P,fm){var X=P.poster148||{},W=1080,H=1080,I0=S.v51.inst||{},Hm=S.home||{},nA=I0.nameAr||'معهد التمهيد',nE=I0.nameEn||'At Tamhid Institute';
+ var hd='<div class="z-hd"><div class="z-br"><div class="z-lg">'+logo('dark')+'</div></div><div class="z-tg"><span>'+e8(X.tagA||'')+'</span><i></i><span dir="ltr">'+e8(X.tagE||'')+'</span></div></div>';
+ var ct=[Hm.p1?'<span>'+zi('ph',20)+'<bdi dir="ltr">'+e8(Hm.p1)+'</bdi></span>':'',Hm.em?'<span>'+zi('ml',20)+'<bdi dir="ltr">'+e8(Hm.em)+'</bdi></span>':''].join('');
+ var ft='<div class="z-ft"><div class="z-cta"><b>'+e8(X.ctaA)+'</b><span dir="ltr">'+e8(X.ctaE)+'</span><em dir="ltr">'+zi('web',22)+e8(X.urlTxt||'attamhid.com')+'</em></div><div class="z-ct">'+ct+'</div><div class="z-qr"><img src="'+qr(X.url)+'" alt=""><span>'+e8(X.qA||'امسح الرمز')+'</span></div></div>';
+ var mn='';
+ if(X.t==='adm'){
+  var bd='<div class="z-bd"><svg class="z-ring" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="zr149" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#5E8FE6"/></linearGradient></defs><circle cx="150" cy="150" r="138" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="2"/><circle cx="150" cy="150" r="120" fill="rgba(255,255,255,.06)" stroke="url(#zr149)" stroke-width="7" stroke-linecap="round" stroke-dasharray="640 114" transform="rotate(-90 150 150)"/></svg>'+
+   '<div class="z-bdi"><span class="z-up">منح دراسية تصل إلى</span><b dir="ltr">100<small>%</small></b><span class="z-fr">تبدأ من <bdi dir="ltr">20%</bdi></span></div><em class="z-be" dir="ltr">Scholarships 20% – 100%</em></div>';
+  var fx=(X.facts||[]).map(function(f){return '<div class="z-fc"><div class="z-fi">'+zi(f.ic,30)+'</div><div class="z-fb"><span>'+e8(f.la)+'</span><b>'+e8(f.va)+'</b><em dir="auto">'+e8(f.en)+'</em></div></div>'}).join('');
+  mn='<div class="z-mn z-adm"><div class="z-tx"><div class="z-kk"><i></i><span>'+e8(X.kA)+'</span><em dir="ltr">'+e8(X.kE)+'</em></div><h1>'+e8(X.tA)+'</h1><div class="z-pg">'+e8(X.pA)+'</div>'+(X.pE?'<div class="z-pe" dir="ltr">'+e8(X.pE)+'</div>':'')+'</div>'+bd+'</div><div class="z-fx">'+fx+'</div>';
+ }else{
+  var L=String(X.tA||'').length,ts=L<=26?84:L<=48?70:L<=80?58:L<=120?50:44,ex=String(X.sA||'');
+  var dt='<div class="z-dt"><span class="z-dk">'+zi(X.ev?'ev':'nw',26)+e8(X.dLab||'')+'</span><b dir="ltr">'+e8(X.dD||'')+'</b><span class="z-dm">'+e8(X.dM||'')+'</span><span class="z-dy" dir="ltr">'+e8(X.dY||'')+'</span><em dir="ltr">'+e8(X.dE||'')+'</em></div>';
+  mn='<div class="z-mn z-nw"><div class="z-tx"><div class="z-kk z-kn"><span>'+e8(X.kA)+'</span><em dir="ltr">'+e8(X.kE)+'</em></div><h1 style="font-size:'+ts+'px">'+e8(X.tA)+'</h1>'+(X.tE?'<div class="z-pe" dir="ltr">'+e8(X.tE)+'</div>':'')+(ex?'<p class="z-ex">'+e8(ex)+'</p>':'')+'</div>'+dt+'</div>';
+ }
+ return '<div class="an68 pz149 z-'+(X.t||'nw')+'" data-ann67="1" dir="rtl" style="width:'+W+'px;height:'+H+'px;--k:1"><i class="z-bg"></i>'+zg(W,H)+'<i class="z-gl"></i><div class="z-in">'+hd+mn+'</div>'+ft+'</div>'}
+function annHTML(P,fm,o){if(P&&P.poster148)return poster149(P,fm);o=o||{};var C=V5.ann67cfg(),th=o.theme&&THEMES[o.theme]?o.theme:themeOf(P),K=I.kindOf(P),wn=V5.when67(P),MO=V5.spModes67,md=MO[P&&P.mode]?P.mode:(P&&P.url&&!P.place?'remote':'onsite'),sz=FM[fm]||FM.a4,Wd=sz[0],Hd=sz[1];
  var ty=C6.TITLES[P.ctype]||C6.TITLES.att,joinOK=!!P.url&&(o.reg||!+C.hideJoin),regOK=+P.selfReg!==0&&!C6.ended(P),kd=KD[K.id]||[K.ar,cap(K.en)];
  var u=fm==='a4'?1:fm==='sq'?1.36:1.78,m=Math.round(Math.min(Wd,Hd)*0.028);
  var place=String(P.place||'').trim(),pl=P.url&&V5.linkInfo67?(V5.linkInfo67(P.url).pl||''):'';if(/منصة أخرى|Other platform/.test(pl))pl='';
@@ -27377,7 +27386,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v148';
+window.__BUILD__='v149';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -27784,6 +27793,68 @@ body .nav.h69>a:not(.h69-lg){transition:color .2s,background .2s}
 @media (max-width:760px){.pa138 .in138x{grid-template-columns:1fr}.pa138 .intro138x{padding:22px 20px}.pa138 .fm138x{padding:20px 18px}.g2138x{grid-template-columns:1fr}
  .my138 .it138x{grid-template-columns:56px 1fr}.my138 .ac138x{grid-column:1/-1;justify-content:flex-start}
  .spg138,.nwg138{grid-template-columns:1fr}.spc138 .hd138x{grid-template-columns:60px 1fr;padding:16px}.spc138.big138x h2{font-size:20px}}
+</style>
+<style id="css149">
+/* v149 — ملصقات القبول والأخبار */
+.pz149{position:relative;overflow:hidden;box-sizing:border-box;direction:rtl;text-align:start;color:#fff;background:#0B1B3D;font-family:'IBM Plex Sans Arabic','Cairo','Noto Naskh Arabic',sans-serif;--lg1:#FFFFFF;--lg2:#AFC8F2;--tx:#DCE6F7}
+.pz149 *{box-sizing:border-box}
+.pz149 .z-bg{position:absolute;inset:0;background:radial-gradient(760px 560px at 100% 0,rgba(64,118,214,.55),transparent 62%),radial-gradient(620px 520px at 0 72%,rgba(30,74,160,.45),transparent 65%),linear-gradient(160deg,#0C1F48 0%,#0B1B3D 46%,#081530 100%)}
+.pz149 .z-pt{position:absolute;inset:0;opacity:.085}
+.pz149 .z-gl{position:absolute;left:-180px;top:330px;width:620px;height:620px;border-radius:50%;border:1px solid rgba(175,200,242,.10);box-shadow:0 0 0 70px rgba(175,200,242,.025),0 0 0 140px rgba(175,200,242,.02)}
+.pz149 .z-in{position:absolute;inset:0 0 196px 0;padding:58px 66px 0;display:flex;flex-direction:column}
+.pz149 .z-hd{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-bottom:26px;border-bottom:1px solid rgba(175,200,242,.22)}
+.pz149 .z-br{display:flex;align-items:center;gap:18px}
+.pz149 .z-lg{width:290px;height:82px;display:flex;align-items:center;justify-content:flex-start}.pz149 .z-lg svg,.pz149 .z-lg img{width:100%;height:100%;object-fit:contain}
+.pz149 .z-nm{display:flex;flex-direction:column;gap:2px;line-height:1.2}.pz149 .z-nm b{font:700 27px 'Cairo','IBM Plex Sans Arabic',sans-serif;color:#fff}.pz149 .z-nm span{font:600 13.5px 'Cairo',sans-serif;letter-spacing:.2em;color:#AFC8F2;text-transform:uppercase}
+.pz149 .z-tg{display:flex;align-items:center;gap:12px;padding:10px 20px;border-radius:999px;border:1px solid rgba(175,200,242,.4);background:rgba(255,255,255,.06);font:600 17px 'Cairo',sans-serif;color:#DCE6F7}
+.pz149 .z-tg i{width:5px;height:5px;border-radius:50%;background:#AFC8F2}.pz149 .z-tg span[dir=ltr]{letter-spacing:.22em;font-size:14px}
+.pz149 .z-mn{flex:1;display:flex;align-items:center;gap:44px;min-height:0}
+.pz149 .z-tx{flex:1;min-width:0}
+.pz149 .z-kk{display:inline-flex;align-items:center;gap:12px;margin-bottom:18px;padding:9px 18px 9px 20px;border-radius:999px;background:rgba(61,220,132,.12);border:1px solid rgba(61,220,132,.45);font:700 21px 'Cairo',sans-serif;color:#E9FFF2}
+.pz149 .z-kk i{width:12px;height:12px;border-radius:50%;background:#3DDC84;box-shadow:0 0 0 6px rgba(61,220,132,.22)}
+.pz149 .z-kk em{font:600 13px 'Cairo',sans-serif;font-style:normal;letter-spacing:.24em;color:#9FE8BF}
+.pz149 .z-kn{background:rgba(175,200,242,.1);border-color:rgba(175,200,242,.45);color:#fff}.pz149 .z-kn em{color:#AFC8F2}
+.pz149 h1{margin:0;font:700 104px/1.12 'Cairo','IBM Plex Sans Arabic',sans-serif;color:#fff;letter-spacing:-.5px;text-shadow:0 6px 30px rgba(0,0,0,.25)}
+.pz149.z-adm h1{font-size:112px;color:#fff}
+.pz149 .z-pg{margin-top:20px;padding-inline-start:20px;border-inline-start:4px solid #5E8FE6;font:600 31px/1.5 'IBM Plex Sans Arabic','Cairo',sans-serif;color:#DCE6F7}
+.pz149 .z-pe{margin-top:10px;font:500 18px/1.45 'Cairo',sans-serif;letter-spacing:.04em;color:#9DB6DD}
+.pz149 .z-adm .z-pe{padding-inline-start:24px}
+.pz149 .z-bd{position:relative;flex:none;width:330px;height:372px}
+.pz149 .z-ring{position:absolute;left:0;top:0;width:330px;height:330px}
+.pz149 .z-bdi{position:absolute;left:0;top:0;width:330px;height:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.pz149 .z-up{font:600 18px 'Cairo',sans-serif;color:#C9DAF8;margin-top:8px}
+.pz149 .z-bdi b{font:700 96px/1 'Cairo',sans-serif;color:#fff;margin:4px 0 10px;letter-spacing:-2px}.pz149 .z-bdi b small{font-size:46px;margin-inline-start:2px;color:#AFC8F2}
+.pz149 .z-fr{font:700 19px 'Cairo',sans-serif;color:#fff;padding:5px 16px;border-radius:999px;background:rgba(94,143,230,.35)}
+.pz149 .z-be{position:absolute;left:0;right:0;bottom:0;text-align:center;font:600 13px 'Cairo',sans-serif;font-style:normal;letter-spacing:.2em;color:#9DB6DD;text-transform:uppercase}
+.pz149 .z-fx{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:34px}
+.pz149 .z-fc{display:flex;gap:14px;align-items:flex-start;padding:20px 18px;border-radius:20px;background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.04));border:1px solid rgba(175,200,242,.24)}
+.pz149 .z-fi{flex:none;width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(150deg,#3A6FD0,#1C3F8A);box-shadow:0 10px 20px -10px rgba(0,0,0,.6)}
+.pz149 .z-fb{display:flex;flex-direction:column;gap:4px;min-width:0}
+.pz149 .z-fb span{font:600 15.5px 'Cairo',sans-serif;color:#AFC8F2}
+.pz149 .z-fb b{font:700 21px/1.4 'IBM Plex Sans Arabic','Cairo',sans-serif;color:#fff}
+.pz149 .z-fb em{font:500 13px/1.45 'Cairo','IBM Plex Sans Arabic',sans-serif;font-style:normal;color:#8EA6CF;letter-spacing:.02em}
+.pz149 .z-ft{position:absolute;left:0;right:0;bottom:0;height:196px;display:flex;align-items:center;gap:30px;padding:0 66px;background:#fff;color:#0B1B3D}
+.pz149 .z-ft:before{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:linear-gradient(90deg,#1C3F8A,#5E8FE6,#1C3F8A)}
+.pz149 .z-cta{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.pz149 .z-cta b{font:700 44px/1.15 'Cairo',sans-serif;color:#0B1B3D}
+.pz149 .z-cta>span{font:600 15px 'Cairo',sans-serif;letter-spacing:.2em;color:#3A6FD0;text-transform:uppercase}
+.pz149 .z-cta em{display:inline-flex;align-items:center;gap:8px;margin-top:8px;font:700 21px 'Cairo',sans-serif;font-style:normal;color:#1C3F8A;align-self:flex-start;direction:ltr}
+.pz149 .z-ct{display:flex;flex-direction:column;gap:10px;padding-inline:28px;border-inline:1px solid #DCE4F2;font:600 17px 'Cairo',sans-serif;color:#33476E}
+.pz149 .z-ct span{display:flex;align-items:center;gap:10px}.pz149 .z-ct svg{color:#3A6FD0;flex:none}
+.pz149 .z-qr{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px}
+.pz149 .z-qr img{width:132px;height:132px;padding:6px;border-radius:14px;border:2px solid #0B1B3D;background:#fff}
+.pz149 .z-qr span{font:700 15px 'Cairo',sans-serif;color:#0B1B3D}
+/* الأخبار */
+.pz149 .z-nw{align-items:center;gap:48px}
+.pz149.z-nw h1{line-height:1.3}
+.pz149 .z-ex{margin:24px 0 0;font:500 24px/1.85 'IBM Plex Sans Arabic',sans-serif;color:#C9D6EE;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.pz149 .z-dt{flex:none;width:250px;padding:30px 20px 28px;border-radius:26px;background:#fff;color:#0B1B3D;text-align:center;display:flex;flex-direction:column;align-items:center;box-shadow:0 30px 60px -30px rgba(0,0,0,.7);position:relative;overflow:hidden}
+.pz149 .z-dt:before{content:"";position:absolute;inset:0 0 auto 0;height:10px;background:linear-gradient(90deg,#1C3F8A,#5E8FE6)}
+.pz149 .z-dk{display:flex;align-items:center;gap:8px;font:700 17px 'Cairo',sans-serif;color:#3A6FD0;margin-top:6px}
+.pz149 .z-dt b{font:700 132px/1 'Cairo',sans-serif;color:#0B1B3D;margin:12px 0 4px}
+.pz149 .z-dm{font:700 34px 'Cairo',sans-serif;color:#0B1B3D}
+.pz149 .z-dy{font:600 22px 'Cairo',sans-serif;color:#5A6E94;margin-top:2px}
+.pz149 .z-dt em{margin-top:10px;font:600 13px 'Cairo',sans-serif;font-style:normal;letter-spacing:.24em;text-transform:uppercase;color:#8A9BBB}
 </style>
 <style id="css146">
 /* v146 — ترقية بصرية موحّدة: الواجهة العامة والبوابات الداخلية (كحلي/أزرق/أبيض فقط) */
