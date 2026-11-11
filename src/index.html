@@ -22814,17 +22814,17 @@ function x158load(){if(X158.busy||!hasSb()||Date.now()-X158.at<20000)return;X158
 function xLen158(t){var n=0;for(var ch of t){var c=ch.codePointAt(0);n+=(c<=0x10FF||(c>=0x2000&&c<=0x200D)||(c>=0x2010&&c<=0x201F)||(c>=0x2032&&c<=0x2037))?1:2}return n}
 function lk158(it,sc){return String(it.link||'https://attamhid.com/').replace(/\?src=[a-z]+/,'').replace('https://attamhid.com/#','https://attamhid.com/?src='+sc+'#').replace(/^https:\/\/attamhid\.com\/?$/,'https://attamhid.com/?src='+sc)}
 function fullText158(it,sc){var lk=lk158(it,sc);var m=String(it.msg||'').replace(/https:\/\/attamhid\.com\/[^\s]*/g,lk);if(m.indexOf(lk)<0)m=m.trim()+'\n\n'+lk;return m.trim()}
-var CH158={tg:'https://t.me/tamhidinistitute',wa:'https://whatsapp.com/channel/0029Vb6EMup545uqepoSZO15'};
+var CH158={fb:'https://www.facebook.com/profile.php?id=397227446812481',ig:'https://www.instagram.com/at.tamhid.inistitute/',tg:'https://t.me/tamhidinistitute',wa:'https://whatsapp.com/channel/0029Vb6EMup545uqepoSZO15'};
 function xText158(it){var lk=lk158(it,'x');
  var body=String(it.msg||'').split('\n').filter(function(l){return !/https?:\/\//.test(l)&&!/^\s*(للتسجيل|التفاصيل|Register|Details|Apply|قدّم)\s*:?\s*$/i.test(l)}).join('\n').replace(/\n{3,}/g,'\n\n').trim(),max=280-24-1;
  if(xLen158(body)>max){var ls=body.split('\n');while(ls.length>1&&xLen158(ls.join('\n'))>max)ls.pop();body=ls.join('\n').trim()}if(xLen158(body)>max){var out='';for(var ch of body){if(xLen158(out+ch)>max-1)break;out+=ch}body=out.replace(/\s+\S*$/,'').trim()+'…'}
  return body+'\n'+lk}
-function x158(){x158load();var L0=X158.list;var h='<div class="box" id="x158"><h4 style="margin-top:0">'+L('النشر على X وتلغرام وواتساب','Post on X, Telegram and WhatsApp')+' '+tag(L('مجاني — بضغطة','Free — one click'),'ok')+'</h4><p class="mu">'+L('<b>X:</b> تُفتح نافذة التغريد والنص والرابط جاهزان. <b>تلغرام وواتساب:</b> يُنسخ النص كاملاً وتُفتح قناة المعهد. وفي كل الحالات يُنزَّل الملصق تلقائياً: أرفق الصورة، والصق النص تحتها، ثم انشر.','<b>X:</b> the composer opens with text and link ready. <b>Telegram &amp; WhatsApp:</b> the full text is copied and the Institute channel opens. In every case the poster downloads automatically: attach the image, paste the text as its caption, and post.')+'</p>';
+function x158(){x158load();var L0=X158.list;var h='<div class="box" id="x158"><h4 style="margin-top:0">'+L('النشر اليدوي بضغطة: فيسبوك وإنستغرام وX وتلغرام وواتساب','One-click manual posting: Facebook, Instagram, X, Telegram, WhatsApp')+' '+tag(L('مجاني — بضغطة','Free — one click'),'ok')+'</h4><p class="mu">'+L('فيسبوك وإنستغرام يُنشر فيهما تلقائياً؛ وزرّاهما هنا احتياط إذا تعذّر النشر الآلي. <b>X:</b> تُفتح نافذة التغريد والنص والرابط جاهزان. <b>فيسبوك وإنستغرام وتلغرام وواتساب:</b> يُنسخ النص كاملاً وتُفتح صفحة المعهد أو قناته. وفي كل الحالات يُنزَّل الملصق تلقائياً: أرفق الصورة، والصق النص تحتها، ثم انشر.','Facebook and Instagram are posted automatically; their buttons here are a fallback. <b>X:</b> the composer opens with text and link ready. <b>Facebook, Instagram, Telegram &amp; WhatsApp:</b> the full text is copied and the Institute page or channel opens. In every case the poster downloads automatically: attach the image, paste the text as its caption, and post.')+'</p>';
  if(!L0)return h+'<p class="mu">'+L('جارٍ التحميل…','Loading…')+'</p></div>';
  if(!L0.length)return h+'<p class="mu">'+L('لا توجد إعلانات حالية للنشر.','No current announcements to post.')+'</p></div>';
  var KN={sp:['برنامج قصير','Short programme'],adm:['قبول','Admission'],news:['خبر','News']};
  return h+T([L('الإعلان','Announcement'),L('اللغة','Language'),''],L0.map(function(it,i){var k=/^adm/.test(it.kind)?'adm':/^news/.test(it.kind)?'news':it.kind==='sp'?'sp':'news',first=String(it.msg||'').split('\n').filter(function(l){return l.trim()})[1]||String(it.msg||'').split('\n')[0]||'';
-  return '<tr><td><span class="tag">'+L(KN[k][0],KN[k][1])+'</span> '+esc((function(t){return t.length>55?t.slice(0,53).replace(/\s+\S*$/,'')+'…':t})(first.replace(/[«»]/g,'').trim()))+'</td><td>'+(it.lg==='en'?'English':'العربية')+'</td><td style="min-width:200px"><button class="btn s" onclick="V51.h.x158go('+i+')">X</button> <button class="btn s" onclick="V51.h.x158go('+i+',\'tg\')">'+L('تلغرام','Telegram')+'</button> <button class="btn s" onclick="V51.h.x158go('+i+',\'wa\')">'+L('واتساب','WhatsApp')+'</button></td></tr>'}))+'</div>'}
+  return '<tr><td><span class="tag">'+L(KN[k][0],KN[k][1])+'</span> '+esc((function(t){return t.length>55?t.slice(0,53).replace(/\s+\S*$/,'')+'…':t})(first.replace(/[«»]/g,'').trim()))+'</td><td>'+(it.lg==='en'?'English':'العربية')+'</td><td style="min-width:240px"><button class="btn s" onclick="V51.h.x158go('+i+',\'fb\')">'+L('فيسبوك','Facebook')+'</button> <button class="btn s" onclick="V51.h.x158go('+i+',\'ig\')">'+L('إنستغرام','Instagram')+'</button> <button class="btn s" onclick="V51.h.x158go('+i+')">X</button> <button class="btn s" onclick="V51.h.x158go('+i+',\'tg\')">'+L('تلغرام','Telegram')+'</button> <button class="btn s" onclick="V51.h.x158go('+i+',\'wa\')">'+L('واتساب','WhatsApp')+'</button></td></tr>'}))+'</div>'}
 V5.xText158=xText158;V5.fullText158=fullText158;V5.x158box=function(l){X158.list=l;X158.at=Date.now();return x158()};
 H.x158go=function(i,ch){var it=(X158.list||[])[i];if(!it)return;ch=ch||'x';
  if(ch==='x')window.open('https://x.com/intent/post?text='+encodeURIComponent(xText158(it)),'_blank','noopener');
@@ -27506,7 +27506,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v160';
+window.__BUILD__='v161';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
