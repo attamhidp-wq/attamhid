@@ -1612,7 +1612,7 @@ s.gr[c.id]={rel:1,relDate:today(),score:num,gl:base[1],pts:base[2],ok:st?st=='ا
 save();audit4('تعديل درجات يدوي',s.id,n+' مقرر — المعدل التراكمي '+f2(calc(s).gpa));flash='حُفظت الدرجات. المعدل التراكمي: '+f2(calc(s).gpa)+' من 5.00';go();return false};
 
 /* ---------- السجل الأكاديمي: مقررات الدبلوم فقط ---------- */
-window.seeRec=function(id){const s=S.students.find(x=>x.id==id);if(!s)return;const V0=me&&me.r=='student',D=P(DIP),l0=s.lvl||1,rg=crs().filter(c=>window.tmCount(s,c)),k=calc(s,0,V0),R=rcfg(),wk=Math.max(16,+R.weeks||16);
+window.seeRec=function(id){const s=S.students.find(x=>x.id==id);if(!s)return;const V0=me&&me.r=='student',D=P(DIP),l0=window.startLv156?startLv156(s):(s.lvl||1),rg=crs().filter(c=>window.tmCount(s,c)),k=calc(s,0,V0),R=rcfg(),wk=Math.max(16,+R.weeks||16);
 const T=(h,r,n)=>`<table><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${r.join('')||`<tr><td colspan="${h.length}">${n}</td></tr>`}</table>`;
 const SEM=R.sem;
 const lv=[1,2,3,4].map(l=>{const L=rg.filter(c=>c.term==l).sort((a,b)=>String(a.code).localeCompare(String(b.code))),q=calc(s,l,V0);
@@ -3290,7 +3290,7 @@ window.gradElig=function(s){
  if(!s)return{ok:0,why:'الطالب غير موجود'};
  if(+s.prog!==DIP)return{ok:0,why:'غير مسجَّل رسمياً في برنامج الدبلوم العام'};
  if(s.status!=='متخرج')return{ok:0,why:'لم تُعتمد حالة التخرج رسمياً من لوحة الإدارة'};
- const l0=s.lvl||1,miss=crs().filter(c=>c.term>=l0).filter(c=>{if(!(s.reg||[]).includes(c.id))return true;const g=(s.gr||{})[c.id];return!(g&&g.fin&&g.ok&&g.rel)});
+ const l0=window.startLv156?startLv156(s):(s.lvl||1),miss=crs().filter(c=>c.term>=l0).filter(c=>{if(!(s.reg||[]).includes(c.id))return true;const g=(s.gr||{})[c.id];return!(g&&g.fin&&g.ok&&g.rel)});
  if(miss.length)return{ok:0,why:'لم تُستكمل متطلبات البرنامج الأكاديمية ('+miss.length+' مقرراً غير مجتاز أو غير منشور)'};
  if(S.certs.some(c=>c.type==='dgrad'&&c.sid==s.id&&!c.revoked))return{ok:0,why:'صدرت له وثيقة تخرج سارية'};
  return{ok:1}};
@@ -19335,7 +19335,7 @@ function checkStudent(s,o){o=o||{};var p=prog(s.prog)||prog(DIP)||{},need=+((p.e
  if(!a)add('فصل القبول غير محدد في التقويم','Admission semester not set in the calendar');
  var id=o.id||s.id;if(!isNew(id))add('الرقم الأكاديمي بغير الصيغة المعتمدة (9 خانات)','Student ID not in the approved 9-digit format');else if(a&&id.slice(0,5)!==a.id.replace('-',''))add('سنة/فصل القبول في الرقم لا تطابق فصل القبول','Admission year/semester in the ID does not match the admission semester');
  if(grad){if(!g)add('فصل التخرج غير محدد','Graduation semester not set');if(!gd)add('تاريخ التخرج غير مُدخل','Graduation date missing');else if(g&&gd<g.end)add('تاريخ التخرج قبل نهاية آخر فصل درسه الطالب','Graduation date is before the end of the last semester attended');
-  if(a&&g){var n=R.indexOf(g)-R.indexOf(a)+1;if(n<need)add('عدد الفصول المكتملة ('+n+') أقل من متطلبات البرنامج ('+need+')','Completed semesters ('+n+') fewer than required ('+need+')');if(n>need&&!o.allowMore)add('عدد الفصول ('+n+') أكثر من خطة البرنامج ('+need+')','Semesters ('+n+') exceed the program plan ('+need+')')}}
+  if(a&&g){var n=R.indexOf(g)-R.indexOf(a)+1;need=Math.max(1,need-((window.startLv156?startLv156(s):1)-1));if(n<need)add('عدد الفصول المكتملة ('+n+') أقل من متطلبات البرنامج ('+need+')','Completed semesters ('+n+') fewer than required ('+need+')');if(n>need&&!o.allowMore)add('عدد الفصول ('+n+') أكثر من خطة البرنامج ('+need+')','Semesters ('+n+') exceed the program plan ('+need+')')}}
  if(a){var lv=lastLevel(s),l0=o.lvl!=null?+o.lvl:(s.lvl||1),tl=R[R.indexOf(a)+(lv-l0)];if(!tl)add('مقررات في فصل خارج التقويم','Courses fall in a semester outside the calendar');else if(g&&grad&&R.indexOf(tl)>R.indexOf(g))add('مقررات بعد فصل التخرج','Courses after the graduation semester')}
  return iss}
 V5.checkStudent61=checkStudent;
@@ -22846,6 +22846,46 @@ H.pt138r=function(){PT138.at=0;var el=document.getElementById('pt138');if(el)el.
 H.pt138csv=function(){var D=PT138.d;if(!Array.isArray(D)||!D.length)return;var c=function(x){return '"'+String(x==null?'':x).replace(/"/g,'""')+'"'};var rows=[['nameAr','nameEn','email','phone','sex','registrations','certificates','activated','announcements','since']].concat(D.map(function(p){var d=p.data||{};return [d.nameAr,d.nameEn,p.email,d.phone,d.sex,p.regs,p.certs,p.guest?'guest':p.confirmed_at?'yes':'no',p.notify?'on':'off',String(p.created_at||'').slice(0,10)]}));
  var b=new Blob(['﻿'+rows.map(function(r){return r.map(c).join(',')}).join('\r\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='attamhid-participants.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
 try{[['v138p','المشاركون الزائرون','Visiting participants',tabPart]].forEach(function(x){V51TABS.push(x);TABLBL[x[1]]=x[0];TABLBL[x[2]]=x[0];SVC_ADMIN.push([x[0],x[1],x[2]])})}catch(e){console.error('v138 tabs',e)}
+/* ===================== v156: التسكين الجماعي في المستويات ===================== */
+/* يُسكَّن الطلاب المحددون دفعة واحدة في المستوى الذي توصي به لجنة الاختبار، وتُسجَّل لهم مقررات ذلك المستوى آلياً، ويُكتب سبب التسكين في سجلهم.
+   مستوى البداية يُحفظ مستقلاً (pl.lv) عن المستوى الحالي، فتحتسب الأهلية للتخرج من مستوى البداية فما بعده مع الترقيات اللاحقة */
+var LV156=['','الأول','الثاني','الثالث','الرابع'],LE156=['','first','second','third','fourth'],PL156={prog:'',term:'',all:0};
+var esc156=function(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var plScore156=function(s){var p=s.pl||{};if(p.score!=null&&p.score!=='')return +p.score;if(s.placementScore!=null&&s.placementScore!=='')return +s.placementScore;return null};
+var plSug156=function(s){var p=s.pl||{};if(+p.lv)return +p.lv;if(+s.suggestedLevel)return +s.suggestedLevel;var sc=plScore156(s);return sc==null?1:sc>90?4:sc>80?3:sc>70?2:1};
+var hasGr156=function(s){return Object.keys(s.gr||{}).some(function(k){var g=s.gr[k];return g&&(g.fin||g.score!=null&&g.score!=='')})};
+var pc156=function(p){try{return (V5.pCourses?V5.pCourses(p):(p.courses||[]))||[]}catch(e){return p.courses||[]}};
+function tabPl156(){var Ps=(S.programs||[]).filter(function(p){return !p.deleted&&pc156(p).length}),pid=PL156.prog||String((Ps.find(function(p){return String(p.id)==='1000'})||Ps[0]||{}).id||'');PL156.prog=pid;
+ var p=Ps.find(function(x){return String(x.id)===pid})||{},mx=+((p.eng||{}).levels)||4;
+ var St=(S.students||[]).filter(function(s){return !s.deleted&&String(s.prog)===pid&&s.status!=='متخرج'&&s.status!=='منسحب'&&s.status!=='مفصول'});
+ var terms=[];St.forEach(function(s){var t=s.admTerm||'';if(terms.indexOf(t)<0)terms.push(t)});terms.sort().reverse();
+ var L0=St.filter(function(s){return (!PL156.term||(s.admTerm||'')===PL156.term)&&(PL156.all||!hasGr156(s))});
+ var opt=function(v,cur){var o='';for(var i=1;i<=mx;i++)o+='<option value="'+i+'"'+(i===cur?' selected':'')+'>'+L('المستوى '+LV156[i],'Level '+i)+'</option>';return o};
+ var rows=L0.map(function(s){var sc=plScore156(s),sg=plSug156(s),st=(s.pl&&+s.pl.lv)?L('مُسكَّن في المستوى '+LV156[+s.pl.lv],'Placed in level '+s.pl.lv):L('بانتظار التسكين','Awaiting placement');
+  return '<tr><td><input type="checkbox" name="pl156" value="'+esc156(s.id)+'"></td><td dir="ltr">'+esc156(s.id)+'</td><td>'+esc156(s.name)+'</td><td dir="ltr">'+esc156(s.admTerm||'—')+'</td><td>'+(sc==null?'—':'<b>'+sc+'</b> / 100')+'</td><td>'+L('المستوى '+LV156[sg],'Level '+sg)+'</td><td><select data-pl156="'+esc156(s.id)+'">'+opt(sg,sg)+'</select></td><td>'+L('الحالي: ','Current: ')+(+s.lvl||1)+' · '+st+(hasGr156(s)?' · <span class="tag">'+L('له درجات','has grades')+'</span>':'')+'</td></tr>'}).join('');
+ return '<div class="box"><h3>'+L('التسكين الجماعي في المستويات','Bulk level placement')+'</h3><p class="mu">'+L('حدّد الطلاب واختر لكل منهم المستوى الذي أوصت به لجنة الاختبار (المقترح محسوب من درجة اختبار تحديد المستوى). عند التنفيذ: يُسكَّن الطالب في المستوى، وتُسجَّل له مقررات ذلك المستوى آلياً، وتُحذف مقررات المستويات الأخرى غير المرصودة، ويُكتب سبب التسكين في سجله الأكاديمي، ويُعفى من المستويات السابقة، ثم يتابع بالترقية المعتادة حتى التخرج.','Select students and choose for each the level recommended by the test committee (the suggestion is computed from the placement test score). On apply: the student is placed in that level, its courses are registered automatically, ungraded courses of other levels are removed, the placement reason is written to the academic record, earlier levels are exempted, and the student continues with normal promotion until graduation.')+'</p>'+
+  '<div class="v51g" style="align-items:end"><label>'+L('البرنامج','Programme')+'<select onchange="V51.h.pl156f(\'prog\',this.value)">'+Ps.map(function(x){return '<option value="'+esc156(x.id)+'"'+(String(x.id)===pid?' selected':'')+'>'+esc156(L(x.name||x.nameAr,x.nameEn||x.name))+'</option>'}).join('')+'</select></label>'+
+  '<label>'+L('فصل القبول','Admission semester')+'<select onchange="V51.h.pl156f(\'term\',this.value)"><option value="">'+L('الكل','All')+'</option>'+terms.map(function(t){return '<option value="'+esc156(t)+'"'+(t===PL156.term?' selected':'')+'>'+esc156(t||'—')+'</option>'}).join('')+'</select></label>'+
+  '<label class="v51ck"><input type="checkbox" '+(PL156.all?'checked':'')+' onchange="V51.h.pl156f(\'all\',this.checked?1:0)"> '+L('إظهار من لهم درجات مرصودة أيضاً','Also show students with recorded grades')+'</label></div>'+
+  (L0.length?'<div class="tw"><table><tr><th><input type="checkbox" onchange="[].forEach.call(document.querySelectorAll(\'input[name=pl156]\'),function(x){x.checked=this.checked},this)"></th><th>'+L('الرقم','ID')+'</th><th>'+L('الطالب','Student')+'</th><th>'+L('فصل القبول','Adm. sem.')+'</th><th>'+L('درجة الاختبار','Test score')+'</th><th>'+L('المقترح','Suggested')+'</th><th>'+L('مستوى التسكين','Placement level')+'</th><th>'+L('الحالة','Status')+'</th></tr>'+rows+'</table></div>':'<p class="mu">'+L('لا طلاب في هذا التصفية.','No students in this filter.')+'</p>')+
+  '<div class="v51g" style="align-items:end;margin-top:12px"><label>'+L('تعيين مستوى واحد لكل المحددين (اختياري)','Set one level for all selected (optional)')+'<select id="pl156all"><option value="">—</option>'+opt(0,0)+'</select></label>'+
+  '<label style="grid-column:1/-1">'+L('سبب التسكين (يُكتب في السجل الأكاديمي)','Placement reason (written to the academic record)')+'<textarea id="pl156why" rows="2">'+L('بناءً على نتيجة اختبار تحديد المستوى وتوصية لجنة الاختبار','Based on the placement test result and the recommendation of the test committee')+'</textarea></label>'+
+  '<div style="grid-column:1/-1"><button class="btn" onclick="V51.h.pl156go()">'+L('تسكين المحددين وتسجيل مقررات المستوى','Place selected & register level courses')+'</button></div></div></div>'}
+H.pl156f=function(k,v){PL156[k]=v;if(k==='prog')PL156.term='';go()};
+H.pl156go=function(){var ids=[].slice.call(document.querySelectorAll('input[name=pl156]:checked')).map(function(x){return x.value});if(!ids.length){toast(L('حدّد طالباً واحداً على الأقل.','Select at least one student.'));return}
+ var all=+((document.getElementById('pl156all')||{}).value||0),why=String((document.getElementById('pl156why')||{}).value||'').trim(),p=(S.programs||[]).find(function(x){return String(x.id)===String(PL156.prog)})||{},C=pc156(p).filter(function(c){return !c.legacy});
+ var plan=ids.map(function(id){var s=(S.students||[]).find(function(x){return x.id==id}),sel=document.querySelector('select[data-pl156="'+String(id).replace(/"/g,'')+'"]');return {s:s,lv:all||+(sel&&sel.value)||1}}).filter(function(x){return x.s});
+ var g=plan.filter(function(x){return hasGr156(x.s)});
+ if(!confirm(L('تسكين ','Place ')+plan.length+L(' طالباً وتسجيل مقررات مستوياتهم؟',' students and register their level courses?')+(g.length?L('\n\nتنبيه: '+g.length+' منهم لهم درجات مرصودة؛ لن تُحذف مقرراتهم المرصودة.','\n\nNote: '+g.length+' have recorded grades; graded courses are kept.'):'')))return;
+ var n=0,today=new Date().toISOString().slice(0,10);
+ plan.forEach(function(x){var s=x.s,lv=x.lv,sc=plScore156(s),gr=s.gr||{};
+  var keep=(s.reg||[]).filter(function(cid){var c=C.find(function(k){return k.id==cid});if(!c)return true;var q=gr[cid];return (+c.term||1)===lv||(q&&(q.fin||q.score!=null&&q.score!==''))});
+  C.filter(function(c){return (+c.term||1)===lv}).forEach(function(c){if(keep.indexOf(c.id)<0)keep.push(c.id)});
+  var rA='سُكِّن في المستوى '+LV156[lv]+(sc!=null?' (درجة اختبار تحديد المستوى: '+sc+' من 100)':'')+' '+(why||'بناءً على نتيجة اختبار تحديد المستوى وتوصية لجنة الاختبار')+(lv>1?'، وأُعفي من المستويات السابقة.':'، بالخطة الكاملة.');
+  s.reg=keep;s.lvl=lv;s.suggestedLevel=s.suggestedLevel||lv;s.pl=Object.assign({},s.pl||{},{score:sc,lv:lv,reason:rA,date:today,by:'committee',at:new Date().toISOString()});s.regAt64=new Date().toISOString();if(s.admTerm)s.regTerm64=s.admTerm;s.u=new Date().toISOString();
+  try{aud(L('تسكين في مستوى (جماعي)','Level placement (bulk)'),s.id,L('المستوى ','Level ')+lv+' · '+rA)}catch(e){}n++});
+ try{save()}catch(e){}toast(L('سُكِّن ','Placed ')+n+L(' طالباً وسُجّلت مقررات مستوياتهم.',' students and registered their level courses.'));go()};
+try{[['v156pl','التسكين في المستويات','Level placement',tabPl156]].forEach(function(x){V51TABS.push(x);TABLBL[x[1]]=x[0];TABLBL[x[2]]=x[0];SVC_ADMIN.push([x[0],x[1],x[2]])})}catch(e){console.error('v156 tabs',e)}
 
 /* ===================== التسجيل في القائمة ===================== */
 try{[['v131s','أحوال القيد والإنذار الأكاديمي','Enrolment status & warnings',tabSt],['v131p','الترقية بين المستويات','Level promotion',tabPr],['v131c','المحتوى التعليمي للمقررات','Course learning content',tabLk],['v131t','المدربون والمحاضرون','Trainers & lecturers',tabTr]].forEach(function(x){V51TABS.push(x);TABLBL[x[1]]=x[0];TABLBL[x[2]]=x[0];SVC_ADMIN.push([x[0],x[1],x[2]])})}catch(e){console.error('v131 tabs',e)}
@@ -24639,7 +24679,7 @@ H.dr69=function(on){drawer(!!on)};W.V5gs=function(){V5.gsOpen69&&V5.gsOpen69()};
 var SECT=[
  ['home','الرئيسية','Overview','home',['v69h','v112i','dash']],
  ['aca','الشؤون الأكاديمية','Academic Affairs','book',['v112d','v51p','pr','v65p','cr','cal','tf','v93s','v64a','ex','v65b','v67b','v77g','v67g','apv','v60sp','v131t','v138p','v66d','v131c']],
- ['adm','القبول والتسجيل','Admissions & Registration','users',['v112a','req','v75r','v77a','st','v119c','v131s','v131p','v74p','v115g']],
+ ['adm','القبول والتسجيل','Admissions & Registration','users',['v112a','req','v75r','v77a','st','v156pl','v119c','v131s','v131p','v74p','v115g']],
  ['fin','الإدارة المالية','Finance','doc',['v120f','v71p']],
  ['doc','الوثائق','Documents','doc',['ce','dr','v98g','v51d','v64c','v51s','v64q','v67n','v75n']],
  ['com','التواصل والمحتوى','Communication & Content','chat',['v64m','fb','v77h','nw','lb','pt']],
@@ -24654,7 +24694,7 @@ var HUB=[
  ['hGrade','الدرجات والمزامنة','Grades & Sync',['v67g','apv']],
  ['hSp','البرامج القصيرة والدورات','Short Programmes & Courses',['v60sp','v131t','v138p','v66d']],
  ['hAdm','القبول ومراجعة الطلبات','Admissions & Applications',['v112a','req','v75r','v77a']],
- ['hStu','الطلاب والخريجون','Students & Alumni',['st','v119c','v131s','v131p','v74p','v115g']],
+ ['hStu','الطلاب والخريجون','Students & Alumni',['st','v156pl','v119c','v131s','v131p','v74p','v115g']],
  ['hFin','الإدارة المالية ووسائل الدفع','Finance & Payment Methods',['v120f','v71p']],
  ['hDoc','الشهادات والوثائق الصادرة','Issued Documents',['ce','dr','v98g']],
  ['hDes','تصميم الوثائق والبطاقات','Document & Card Design',['v51d','v64c','v51s','v64q']],
@@ -27432,7 +27472,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v155';
+window.__BUILD__='v156';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -28396,6 +28436,8 @@ function in146(){try{var a=document.getElementById('app');if(!a)return;var k=loc
 try{GOH.post.push(in146);in146()}catch(e){}
 /* v147 — ترحيل محلي: «شهادة التزكية» صارت «خطاب التوصية» في النسخ المحفوظة في الجهاز */
 try{(function(){var X=S.v51||{},ch=0;if(X.mail64){var j=JSON.stringify(X.mail64);if(j.indexOf('التزكية')>=0||/testimonial/i.test(j)){X.mail64=JSON.parse(j.split('شهادة التزكية').join('خطاب التوصية').replace(/graduate testimonial/gi,'letter of recommendation').replace(/testimonial/gi,'letter of recommendation'));ch=1}}(S.certs||[]).forEach(function(c){if(c&&c.rec_kind==='تزكية تخرج'){c.rec_kind='توصية تخرج';ch=1}});if(ch)try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}})()}catch(e){}
+/* v156 — مستوى البداية بالتسكين (مستقل عن المستوى الحالي بعد الترقيات) */
+window.startLv156=function(s){if(!s)return 1;var p=s.pl;if(p&&+p.lv)return +p.lv;if(p&&(p.reason||p.score!=null))return +s.lvl||1;return 1};
 /* شريط «مستجدات المعهد» */
 /* التحميل */
 setTimeout(function(){loadPU().then(function(p){if(p)rerender();else hdrFix()})},1200);
