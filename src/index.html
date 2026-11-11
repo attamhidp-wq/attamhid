@@ -17531,8 +17531,10 @@ async function fontCSS(){if(FCSS!=null)return FCSS;var out='',fam=/Amiri|Noto Na
      out+=bl.replace(m[0],'url(data:font/woff2;base64,'+btoa(bin)+')')+'\n'}catch(e){}}}}catch(e){}
  FCSS=out;return out}
 var cssOf52=function(){return window.__styleTexts().filter(function(t){return /\.g5\b/.test(t)}).join('\n')};
+async function inl158(el){var ims=[].slice.call(el.querySelectorAll('img'));await Promise.all(ims.map(async function(im){var u=im.getAttribute('src')||'';if(!u||/^data:/i.test(u))return;try{var r=await fetch(new URL(u,location.href).href,{cache:'force-cache'});if(!r.ok)return;var b=await r.blob();var d=await new Promise(function(ok,no){var f=new FileReader();f.onload=function(){ok(f.result)};f.onerror=no;f.readAsDataURL(b)});im.setAttribute('src',d);im.removeAttribute('srcset');im.removeAttribute('loading')}catch(e){}}));return el}
+V5.inl158=inl158;
 async function fo52(h){var t=document.createElement('template');t.innerHTML=h;var el=t.content.querySelector('.g5');if(!el)throw new Error('no g5');
- var xs=new XMLSerializer().serializeToString(el),css=cssOf52()+'\n'+(await fontCSS()),W0=1123,H0=794,sc=3508/1123;
+ await inl158(el);var xs=new XMLSerializer().serializeToString(el),css=cssOf52()+'\n'+(await fontCSS()),W0=1123,H0=794,sc=3508/1123;
  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.round(W0*sc)+'" height="'+Math.round(H0*sc)+'" viewBox="0 0 '+W0+' '+H0+'"><foreignObject x="0" y="0" width="'+W0+'" height="'+H0+'"><div xmlns="http://www.w3.org/1999/xhtml" style="width:'+W0+'px;height:'+H0+'px"><style><![CDATA['+css.replace(/<\/style/gi,'').replace(/\]\]>/g,']] >')+']]></style>'+xs+'</div></foreignObject></svg>';
  var im=new Image();await new Promise(function(ok,no){im.onload=ok;im.onerror=function(){no(new Error('svg image'))};im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)});
  try{await im.decode()}catch(e){}var cv=document.createElement('canvas');cv.width=3508;cv.height=2480;var x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);x.drawImage(im,0,0,cv.width,cv.height);cv.toDataURL('image/png').length;return cv}
@@ -17540,7 +17542,7 @@ V5.fo52=fo52;
 /* نفس المحرّك الأصلي لكل الوثائق الرسمية A4 (السجل الأكاديمي، الخطابات…): صفحة صفحة بدقة 300 DPI */
 var FCSSALL=null;async function fontCSSAll(){if(FCSSALL!=null)return FCSSALL;var keep=FCSS;FCSS=null;var fam0=null;try{FCSSALL=await (async function(){var out='';var links=[].slice.call(document.querySelectorAll('link[rel=stylesheet]')).map(function(l){return l.href}).filter(function(u){return /fonts\.googleapis\.com/.test(u)});
  for(var i=0;i<links.length;i++){try{var r=await fetch(links[i]);if(!r.ok)continue;var css=await r.text(),bl=css.match(/@font-face\s*{[^}]*}/g)||[];for(var j=0;j<bl.length;j++){var m=/url\(([^)]+)\)/.exec(bl[j]);if(!m)continue;try{var fr=await fetch(m[1].replace(/["']/g,''));if(!fr.ok)continue;var u8=new Uint8Array(await fr.arrayBuffer()),bin='';for(var k=0;k<u8.length;k+=32768)bin+=String.fromCharCode.apply(null,u8.subarray(k,k+32768));out+=bl[j].replace(m[0],'url(data:font/woff2;base64,'+btoa(bin)+')')+'\n'}catch(e){}}}catch(e){}}return out})()}catch(e){FCSSALL=''}FCSS=keep;return FCSSALL}
-async function foEl(el,W0,H0,css,outW){var xs=new XMLSerializer().serializeToString(el),sc=outW/W0;
+async function foEl(el,W0,H0,css,outW){await inl158(el);var xs=new XMLSerializer().serializeToString(el),sc=outW/W0;
  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.round(W0*sc)+'" height="'+Math.round(H0*sc)+'" viewBox="0 0 '+W0+' '+H0+'"><foreignObject x="0" y="0" width="'+W0+'" height="'+H0+'"><div xmlns="http://www.w3.org/1999/xhtml" class="tmw" data-d14="1" style="width:'+W0+'px;height:'+H0+'px;position:relative;direction:rtl"><style><![CDATA['+css.replace(/<\/style/gi,'').replace(/\]\]>/g,']] >')+']]></style>'+xs+'</div></foreignObject></svg>';
  var im=new Image();await new Promise(function(ok,no){im.onload=ok;im.onerror=function(){no(new Error('svg image'))};im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)});try{await im.decode()}catch(e){}
  var cv=document.createElement('canvas');cv.width=Math.round(W0*sc);cv.height=Math.round(H0*sc);var x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);x.drawImage(im,0,0,cv.width,cv.height);cv.toDataURL('image/jpeg',.5).length;return cv}
@@ -17559,7 +17561,7 @@ var _dl=W.dl;W.dl=async function(f){if(typeof cur==='string'&&/data-d14/.test(cu
 var _mk=W.mkBlob;if(typeof _mk==='function')W.mkBlob=async function(h,f){if(/data-d14/.test(h||'')&&!/class="g5[" ]/.test(h||'')&&f!=='svg'){try{return f==='pdf'?await pdf14(h):await img14(h,f)}catch(e){console.warn('v52 d14 batch → html2canvas',e)}}if(/class="g5[" ]/.test(h||'')&&f!=='svg'){if(f==='pdf')return pdf52(h);var cv=await canvas52(h);return await new Promise(function(r){cv.toBlob(r,f==='jpg'?'image/jpeg':'image/png',.95)})}return _mk.apply(this,arguments)};
 V5.print52=function(){if(typeof cur!=='string'||!/class="g5[" ]/.test(cur))return;var css=window.__styleTexts().filter(function(t){return /\.g5|@font-face/.test(t)}).join('\n'),
  fl=[].slice.call(document.querySelectorAll('link[rel=stylesheet]')).map(function(l){return '<link rel="stylesheet" href="'+l.href+'">'}).join(''),w=window.open('','_blank');if(!w){toast(L('اسمح بالنوافذ المنبثقة للطباعة','Allow pop-ups to print'));return}
- w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+E(curN)+'</title>'+fl+'<style>'+css+'@page{size:A4 landscape;margin:0}html,body{margin:0;padding:0;background:#fff}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}.g5{zoom:1;transform:none;margin:0;page-break-after:avoid}</style></head><body>'+cur+'<script>document.fonts.ready.then(function(){setTimeout(function(){print()},300)})<\/script></body></html>');w.document.close()};
+ w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+E(curN)+'</title>'+fl+'<base href="'+location.href.split('#')[0].replace(/[^\/]*$/,'')+'">'+'<style>'+css+'@page{size:A4 landscape;margin:0}html,body{margin:0;padding:0;background:#fff}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}.g5{zoom:1;transform:none;margin:0;page-break-after:avoid}</style></head><body>'+cur+'<script>Promise.all([document.fonts.ready].concat([].slice.call(document.images).map(function(i){return i.complete?0:new Promise(function(r){i.onload=i.onerror=r})}))).then(function(){setTimeout(function(){print()},600)})<\/script></body></html>');w.document.close()};
 var _show2=W.show;W.show=function(h,n){var r=_show2.apply(this,arguments);try{if(typeof h==='string'&&/class="g5[" ]/.test(h)){var mb=document.getElementById('mb');if(mb&&!mb.querySelector('[data-p52]'))mb.insertAdjacentHTML('afterbegin','<button class="btn" data-p52="1" onclick="V51.print52()">'+L('طباعة / PDF متجه (خطوط مضمَّنة)','Print / vector PDF (embedded fonts)')+'</button>')}}catch(e){}return r};
 
 /* --- لا تُعدَّل الوثيقة الصادرة إلا بإصدار نسخة جديدة موثقة --- */
@@ -20982,7 +20984,7 @@ async function render(h,f){var w=document.createElement('div');w.style.cssText='
   if(f==='pdf'){var J=window.jspdf.jsPDF,d=new J({orientation:'l',unit:'mm',format:[85.6,53.98]});d.setProperties({title:'At Tamhid ID card',creator:'At Tamhid v64'});d.addImage(cv.toDataURL('image/png'),'PNG',0,0,85.6,53.98,undefined,'FAST');return d.output('blob')}
   return await new Promise(function(r){cv.toBlob(r,'image/png')})}finally{w.remove()}}
 /* رسم أصلي من المتصفح (يحفظ تشكيل العربية) بدقة 2024 × 1276 (≈600 DPI) مع زوايا شفافة */
-async function fo(el){var css=(V5.allCss52?V5.allCss52():'')+'\n'+(V5.fontCSSAll52?await V5.fontCSSAll52():'');var xs=new XMLSerializer().serializeToString(el),sc=2;
+async function fo(el){if(V5.inl158)await V5.inl158(el);var css=(V5.allCss52?V5.allCss52():'')+'\n'+(V5.fontCSSAll52?await V5.fontCSSAll52():'');var xs=new XMLSerializer().serializeToString(el),sc=2;
  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+CW*sc+'" height="'+CH*sc+'" viewBox="0 0 '+CW+' '+CH+'"><foreignObject x="0" y="0" width="'+CW+'" height="'+CH+'"><div xmlns="http://www.w3.org/1999/xhtml" style="width:'+CW+'px;height:'+CH+'px;direction:rtl"><style><![CDATA['+css.replace(/<\/style/gi,'').replace(/\]\]>/g,']] >')+']]></style>'+xs+'</div></foreignObject></svg>';
  var im=new Image();await new Promise(function(ok,no){im.onload=ok;im.onerror=function(){no(new Error('svg image'))};im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)});try{await im.decode()}catch(e){}
  var cv=document.createElement('canvas');cv.width=CW*sc;cv.height=CH*sc;var x=cv.getContext('2d');x.drawImage(im,0,0,cv.width,cv.height);cv.toDataURL('image/png').length;return cv}
@@ -27262,6 +27264,11 @@ V5.banks81={hide:hide,persist:persist,cache:cache,fp:fp};
 var _s=W.save;if(typeof _s==='function'){W.save=function(){if(S!==lastS||KEYS.some(function(k){var d=Object.getOwnPropertyDescriptor(S,k);return d&&d.enumerable}))hide();var r=_s.apply(this,arguments);persist();return r};try{save=W.save}catch(e){}}
 setInterval(function(){try{if(S!==lastS||KEYS.some(function(k){var d=Object.getOwnPropertyDescriptor(S,k);return d&&d.enumerable}))hide();if(V5.banksReady81!==false)persist()}catch(e){}},2000);
 })();
+
+/* v158: تحميل مكتبة PDF قبل التصدير (لا يخرج ملف فارغ)، والطباعة على الجوال تُحوَّل إلى PDF عالي الدقة */
+try{(function(){var W=window;var _d=W.dl;W.dl=async function(f){if((f==='pdf'||f==='jpg'||f==='png')&&W.libs69){try{await W.libs69.load('pdf');await W.libs69.load('h2c')}catch(e){}}return _d.apply(this,arguments)};
+ var _m=W.mkBlob;if(typeof _m==='function')W.mkBlob=async function(h,f){if(W.libs69){try{await W.libs69.load('pdf');await W.libs69.load('h2c')}catch(e){}}return _m.apply(this,arguments)};
+ var _p=V5.print52;V5.print52=function(){var mob=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)||(matchMedia&&matchMedia('(pointer:coarse)').matches&&innerWidth<900);if(mob){return W.dl('pdf')}return _p.apply(this,arguments)}})()}catch(e){}
 </script>
 <script>
 /* =====================================================================
@@ -27475,7 +27482,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v157';
+window.__BUILD__='v158';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
