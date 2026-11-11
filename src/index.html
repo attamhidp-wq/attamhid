@@ -589,7 +589,24 @@ a.pc:hover,a.pc:focus-visible{transform:translateY(-3px);box-shadow:0 8px 24px #
 <style id="css113">#app.adm69>.tabs .hm69{display:none!important}#app.adm69>.tabs .hb69{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}#app.adm69>.tabs .hb69 small{font-size:11px;min-width:20px;padding:0 6px;border-radius:99px;background:var(--bd);color:var(--mu);text-align:center;line-height:18px}
 .hs69{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 10px;margin:0 0 4px;border-bottom:1px solid var(--bd);scrollbar-width:thin}.hs69 .btn{white-space:nowrap;flex:0 0 auto;min-height:38px}</style>
 <style id="css118">.b118{height:7px;border-radius:4px;background:var(--bd);overflow:hidden;margin-top:4px;min-width:60px}.b118 i{display:block;height:100%}.g118 td{vertical-align:top;min-width:110px}.t118{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:5px 7px;margin:2px 0}.t118 b{display:block;font-size:.88rem}.t118 small{color:var(--mu)}#an118 .kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}#an118 .kp>div{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:10px 12px}#an118 .kp b{display:block;font-size:1.4rem;color:var(--pr)}#an118 .kp span{font-size:.8rem;color:var(--mu)}#an118 .an-h{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}#an118 .wrap{overflow-x:auto}#an118 .fn{margin:0 0 10px}</style>
-</head>
+<style id="css161">
+.pz149.z-st .z-in{inset:0 0 330px 0;padding:120px 66px 0}
+.pz149.z-st .z-hd{padding-bottom:34px}
+.pz149.z-st .z-mn{flex-direction:column;align-items:stretch;justify-content:center;gap:26px;padding:70px 0 10px}
+.pz149.z-st.z-adm h1,.pz149.z-st .z-adm h1{font-size:120px}
+.pz149.z-st .z-pg{font-size:40px;margin-top:28px}
+.pz149.z-st .z-kk{font-size:26px;margin-bottom:30px}
+.pz149.z-st .z-bd{align-self:center;margin:0}
+.pz149.z-st .z-tx{flex:none}
+.pz149.z-st .z-fx{grid-template-columns:1fr;gap:20px;margin-bottom:60px}
+.pz149.z-st .z-fc{padding:22px 26px;align-items:center}
+.pz149.z-st .z-fb span{font-size:24px!important}.pz149.z-st .z-fb b{font-size:32px!important}.pz149.z-st .z-fb em{font-size:20px!important}
+.pz149.z-st .z-ex{font-size:34px;line-height:1.6}
+.pz149.z-st .z-dt{align-self:flex-start;position:relative;margin-top:30px}
+.pz149.z-st .z-ft{height:330px;padding:0 66px;gap:36px}
+.pz149.z-st .z-cta b{font-size:52px}
+.pz149.z-st .z-qr img{width:190px;height:190px}
+</style></head>
 <body>
 <header><div class="nav" id="nav" role="navigation" aria-label="التنقل الرئيسي"></div></header>
 <main id="app"></main>
@@ -24172,11 +24189,14 @@ async function render(P,fm,f,o){var h=annHTML(P,fm,o),sz=FM[fm],w=document.creat
 V5.annBlob67=render;
 var FN={a4:'A4',sq:'square-1080',st:'story-1080x1920'};
 /* v147 — صورة الإعلان لمنشور فيسبوك: يرسمها متصفح الإدارة (المربع 1080) ويرفعها إلى مخزن عام، فينشرها الخادم مع المنشور بدل الرابط المجرد */
-var fbK147=function(P){return ['v154',P.nameAr,P.nameEn,P.parentAr,P.start,P.end,P.place,P.mode,P.url?1:0,P.trainerAr,P.trainerTitleAr,P.hours,P.fee,P.annTheme,P.annNo].join('|')},fbB147=0,fbF147={};
+var fbK147=function(P){return ['v161',P.nameAr,P.nameEn,P.parentAr,P.start,P.end,P.place,P.mode,P.url?1:0,P.trainerAr,P.trainerTitleAr,P.hours,P.fee,P.annTheme,P.annNo].join('|')},fbB147=0,fbF147={};
+/* v161: نسخة طولية 1080×1920 تُرفع باسم «…-st.jpg» فينشرها الخادم قصةً في إنستغرام */
+async function st161(P,base,th){var o=th?{theme:th}:{};var b=await render(P,'st','jpg',o);if(b&&b.size)await sb.storage.from('ann').upload(base+'-st.jpg',b,{upsert:true,contentType:'image/jpeg',cacheControl:'300'});if(P.nameEn){var oe=th?{theme:th,lang:'en'}:{lang:'en'},be=await render(P,'st','jpg',oe);if(be&&be.size)await sb.storage.from('ann').upload(base+'-en-st.jpg',be,{upsert:true,contentType:'image/jpeg',cacheControl:'300'})}}
 V5.annFb147=async function(){if(fbB147||!adminOK()||typeof sb==='undefined'||!sb||!sb.storage)return;var now=Date.now(),L0=((S.v51&&S.v51.sp)||[]).filter(function(P){if(!P||P.deleted||P.aud!=='public'||String(P.fb)==='0'||!P.annNo)return false;var e=Date.parse(P.end||P.start||'');return e&&e>now-864e5&&P.annImgK!==fbK147(P)&&!(fbF147[P.id]>now-6e5)});if(!L0.length)return;fbB147=1;
  try{for(var n=0;n<L0.length&&n<2;n++){var P=L0[n],k=fbK147(P);try{var th=V5.annTheme68?V5.annTheme68(P):'',b=await render(P,'sq','jpg',th?{theme:th}:{});if(!b||!b.size)throw new Error('render');var path=String(P.id).replace(/[^\w.-]/g,'_')+'.jpg',r=await sb.storage.from('ann').upload(path,b,{upsert:true,contentType:'image/jpeg',cacheControl:'300'});if(r&&r.error)throw r.error;
    var u=sb.storage.from('ann').getPublicUrl(path);u=u&&u.data&&u.data.publicUrl;if(!u)throw new Error('url');
    if(P.nameEn){var oe=th?{theme:th,lang:'en'}:{lang:'en'},be=await render(P,'sq','jpg',oe),pe=String(P.id).replace(/[^\w.-]/g,'_')+'-en.jpg',re=await sb.storage.from('ann').upload(pe,be,{upsert:true,contentType:'image/jpeg',cacheControl:'300'});if(re&&re.error)throw re.error;var ue=sb.storage.from('ann').getPublicUrl(pe);ue=ue&&ue.data&&ue.data.publicUrl;if(ue)P.annImgEn=ue+'?v='+Date.now()}
+   try{await st161(P,String(P.id).replace(/[^\w.-]/g,'_'),th)}catch(e){}
    P.annImg=u+'?v='+Date.now();P.annImgK=k;try{V5.touch(P)}catch(e){}try{save()}catch(e){}}catch(e){fbF147[P.id]=Date.now();try{console.warn('annFb147',e&&e.message||e)}catch(x){}}}}finally{fbB147=0}};
 /* v148 — ملصقا القبول والأخبار: يُرسمان ويُرفعان باسم «adm-رقم البرنامج» و«news-رقم الخبر» فينشرهما الخادم مع منشور فيسبوك */
 var MA148=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],ME148=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -24194,7 +24214,7 @@ V5.posters148=function(){var out=[],now=Date.now(),MD=function(x){var d=new Date
  return out};
 V5.posterBlob148=function(P){return render(P,'sq','jpg',{})};
 V5.posterFb148=async function(){if(fbB147||!adminOK()||typeof sb==='undefined'||!sb||!sb.storage)return;var M=S.v51.fbImg148=S.v51.fbImg148||{},now=Date.now(),L0=V5.posters148().filter(function(x){return M[x.name]!==x.key&&!(fbF147[x.name]>now-6e5)});if(!L0.length)return;fbB147=1;
- try{for(var n=0;n<L0.length&&n<3;n++){var x=L0[n];try{var b=await render(x.P,'sq','jpg',{});if(!b||!b.size)throw new Error('render');var r=await sb.storage.from('ann').upload(String(x.name).replace(/[^\w.-]/g,'_')+'.jpg',b,{upsert:true,contentType:'image/jpeg',cacheControl:'300'});if(r&&r.error)throw r.error;M[x.name]=x.key;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}catch(e){fbF147[x.name]=Date.now();try{console.warn('posterFb148',e&&e.message||e)}catch(z){}}}}finally{fbB147=0}};
+ try{for(var n=0;n<L0.length&&n<3;n++){var x=L0[n];try{var b=await render(x.P,'sq','jpg',{});if(!b||!b.size)throw new Error('render');var r=await sb.storage.from('ann').upload(String(x.name).replace(/[^\w.-]/g,'_')+'.jpg',b,{upsert:true,contentType:'image/jpeg',cacheControl:'300'});if(r&&r.error)throw r.error;try{var bs=await render(x.P,'st','jpg',{});if(bs&&bs.size)await sb.storage.from('ann').upload(String(x.name).replace(/[^\w.-]/g,'_')+'-st.jpg',bs,{upsert:true,contentType:'image/jpeg',cacheControl:'300'})}catch(e){}M[x.name]=x.key;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}catch(e){fbF147[x.name]=Date.now();try{console.warn('posterFb148',e&&e.message||e)}catch(z){}}}}finally{fbB147=0}};
 try{GOH.post.push(function(){try{if(typeof me!=='undefined'&&me&&me.r==='admin')setTimeout(function(){V5.annFb147().then(function(){return V5.posterFb148()},function(){return V5.posterFb148()})},1800)}catch(e){}})}catch(e){}
 H.ann67dl=async function(pid,fm,f,th,lg){var P=I.progOf(pid);if(!P)return;th=th||(V5.annTheme68?V5.annTheme68(P):'');try{var oo=th?{theme:th}:{};if(lg==='en')oo.lang='en';var b=await render(P,fm,f,oo),nm='announcement-'+(P.annNo||P.id)+'-'+FN[fm]+(th?'-'+th:'')+(lg==='en'?'-en':'')+'.'+f;try{await fsave(nm,b)}catch(e){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm;a.click()}try{aud(L('تنزيل إعلان برنامج قصير','Short-program announcement downloaded'),P.annNo||pid,FN[fm]+' · '+f+(th?' · '+th:''))}catch(e){}}catch(e){if(!e||e.code!=='declined')toast(L('تعذر التنزيل: ','Download failed: ')+((e&&e.message)||e))}};
 /* المعاينة: المقاسات الثلاثة مع أزرار التنزيل */
@@ -24525,7 +24545,7 @@ Object.assign(Z149,{clk:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 
 var zi=function(k,s){return '<svg viewBox="0 0 24 24" width="'+(s||28)+'" height="'+(s||28)+'" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">'+(Z149[k]||'')+'</svg>'};
 var zg=function(W,H){var t=120,c=t/2,r=t*0.29,R=t*0.41,f=function(n){return n.toFixed(1)};var d='M'+f(c-r)+' '+f(c-r)+'H'+f(c+r)+'V'+f(c+r)+'H'+f(c-r)+'Z M'+f(c)+' '+f(c-R)+'L'+f(c+R)+' '+f(c)+'L'+f(c)+' '+f(c+R)+'L'+f(c-R)+' '+f(c)+'Z';
  return '<svg class="z-pt" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="zp149" width="'+t+'" height="'+t+'" patternUnits="userSpaceOnUse"><path d="'+d+'" fill="none" stroke="#fff" stroke-width="1"/></pattern><radialGradient id="zm149" cx="78%" cy="18%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".55" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="zk149"><rect width="100%" height="100%" fill="url(#zm149)"/></mask></defs><rect width="100%" height="100%" fill="url(#zp149)" mask="url(#zk149)"/></svg>'};
-function poster149(P,fm){var X=P.poster148||{},W=1080,H=1080,Hm=S.home||{},en=X.lang==='en',op=function(t,c){return t?'<'+(c||'span')+'>'+e8(t)+'</'+(c||'span')+'>':''};
+function poster149(P,fm){var X=P.poster148||{},W=1080,H=fm==='st'?1920:1080,Hm=S.home||{},en=X.lang==='en',op=function(t,c){return t?'<'+(c||'span')+'>'+e8(t)+'</'+(c||'span')+'>':''};
  /* v153 — ملصق أحادي اللغة: نسخة عربية خالصة ونسخة إنجليزية خالصة (لا خلط بين اللغتين) */
  var hd='<div class="z-hd"><div class="z-br"><div class="z-lg">'+logo('dark')+'</div></div><div class="z-tg"><span>'+e8(X.tagA||'')+'</span></div></div>';
  var ct=[Hm.p1?'<span>'+zi('ph',20)+'<bdi dir="ltr">'+e8(Hm.p1)+'</bdi></span>':'',Hm.em?'<span>'+zi('ml',20)+'<bdi dir="ltr">'+e8(Hm.em)+'</bdi></span>':''].join('');
@@ -24537,11 +24557,11 @@ function poster149(P,fm){var X=P.poster148||{},W=1080,H=1080,Hm=S.home||{},en=X.
   var fx=(X.facts||[]).map(function(f){return '<div class="z-fc"><div class="z-fi">'+zi(f.ic,30)+'</div><div class="z-fb"><span>'+e8(f.la)+'</span><b>'+e8(f.va)+'</b>'+op(f.sub,'em')+'</div></div>'}).join('');
   mn='<div class="z-mn z-adm"><div class="z-tx"><div class="z-kk"><i></i><span>'+e8(X.kA)+'</span></div><h1>'+e8(X.tA)+'</h1><div class="z-pg">'+e8(X.pA)+'</div></div>'+bd+'</div><div class="z-fx">'+fx+'</div>';
  }else{
-  var Ln=String(X.tA||'').length,ts=Ln<=26?84:Ln<=48?70:Ln<=80?58:Ln<=120?50:44,ex=String(X.sA||'');if(en)ts=Math.round(ts*.9);
+  var Ln=String(X.tA||'').length,ts=Ln<=26?84:Ln<=48?70:Ln<=80?58:Ln<=120?50:44,ex=String(X.sA||'');if(en)ts=Math.round(ts*.9);if(fm==='st')ts=Math.round(ts*1.3);
   var dt='<div class="z-dt"><span class="z-dk">'+zi(X.ev?'ev':'nw',26)+e8(X.dLab||'')+'</span><b dir="ltr">'+e8(X.dD||'')+'</b><span class="z-dm">'+e8(X.dM||'')+'</span><span class="z-dy" dir="ltr">'+e8(X.dY||'')+'</span></div>';
   mn='<div class="z-mn z-nw"><div class="z-tx"><div class="z-kk z-kn"><span>'+e8(X.kA)+'</span></div><h1 style="font-size:'+ts+'px">'+e8(X.tA)+'</h1>'+(ex?'<p class="z-ex">'+e8(ex)+'</p>':'')+'</div>'+dt+'</div>';
  }
- return '<div class="an68 pz149 z-'+(X.t||'nw')+(en?' z-en':'')+'" data-ann67="1" dir="'+(en?'ltr':'rtl')+'" lang="'+(en?'en':'ar')+'" style="width:'+W+'px;height:'+H+'px;--k:1"><i class="z-bg"></i>'+zg(W,H)+'<i class="z-gl"></i><div class="z-in">'+hd+mn+'</div>'+ft+'</div>'}
+ return '<div class="an68 pz149 z-'+(X.t||'nw')+(en?' z-en':'')+(fm==='st'?' z-st':'')+'" data-ann67="1" dir="'+(en?'ltr':'rtl')+'" lang="'+(en?'en':'ar')+'" style="width:'+W+'px;height:'+H+'px;--k:1"><i class="z-bg"></i>'+zg(W,H)+'<i class="z-gl"></i><div class="z-in">'+hd+mn+'</div>'+ft+'</div>'}
 function annHTML(P,fm,o){if(P&&P.poster148)return poster149(P,fm);o=o||{};var C=V5.ann67cfg(),th=o.theme&&THEMES[o.theme]?o.theme:themeOf(P),K=I.kindOf(P),wn=V5.when67(P),MO=V5.spModes67,md=MO[P&&P.mode]?P.mode:(P&&P.url&&!P.place?'remote':'onsite'),sz=FM[fm]||FM.a4,Wd=sz[0],Hd=sz[1];
  var ty=C6.TITLES[P.ctype]||C6.TITLES.att,joinOK=!!P.url&&(o.reg||!+C.hideJoin),regOK=+P.selfReg!==0&&!C6.ended(P),kd=KD[K.id]||[K.ar,cap(K.en)];
  var u=fm==='a4'?1:fm==='sq'?1.36:1.78,m=Math.round(Math.min(Wd,Hd)*0.028);
@@ -27506,7 +27526,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v161';
+window.__BUILD__='v162';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};

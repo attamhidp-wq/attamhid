@@ -122,6 +122,20 @@ def sp_page(P, now):
         {'@type': 'BreadcrumbList', 'itemListElement': [{'@type': 'ListItem', 'position': 1, 'name': 'معهد التمهيد', 'item': SITE + '/'}, {'@type': 'ListItem', 'position': 2, 'name': 'البرامج', 'item': SITE + '/programs/'}, {'@type': 'ListItem', 'position': 3, 'name': nameAr}]}]}
     ld['@graph'][0]['offers'] = {a: b for a, b in ld['@graph'][0]['offers'].items() if b is not None}
     ld['@graph'][0] = {a: b for a, b in ld['@graph'][0].items() if b is not None}
+    # v161: عقدة «فعالية» ليظهر البرنامج بتاريخه في نتائج Google وقسم الفعاليات
+    if P.get('start'):
+        ev = {'@type': 'EducationEvent', 'name': nameAr, 'alternateName': nameEn or None, 'description': desc, 'url': SITE + path, 'inLanguage': 'ar',
+              'startDate': iso(P.get('start'), P), 'endDate': iso(P.get('end') or P.get('start'), P),
+              'eventStatus': 'https://schema.org/EventScheduled',
+              'eventAttendanceMode': 'https://schema.org/OnlineEventAttendanceMode' if remote else 'https://schema.org/OfflineEventAttendanceMode',
+              'location': {'@type': 'VirtualLocation', 'url': SITE + '/#/sp/' + pid} if remote else {'@type': 'Place', 'name': P.get('place') or 'معهد التمهيد', 'address': {'@type': 'PostalAddress', 'addressCountry': 'BD'}},
+              'organizer': {'@type': 'EducationalOrganization', 'name': 'معهد التمهيد', 'alternateName': 'At Tamhid Institute', 'url': SITE + '/'},
+              'performer': {'@type': 'Person', 'name': tr_en or P.get('trainerAr')} if (P.get('trainerAr') or tr_en) else None,
+              'image': [u for u in [P.get('annImg'), P.get('annImgEn')] if isinstance(u, str) and u.startswith('https://')] or [SITE + '/img/app-512-v132.png'],
+              'isAccessibleForFree': True if free else None,
+              'offers': {'@type': 'Offer', 'url': SITE + '/#/sp/' + pid, 'price': 0, 'priceCurrency': 'BDT', 'availability': 'https://schema.org/InStock' if can_reg else 'https://schema.org/SoldOut', 'validFrom': iso(P.get('annAt') or P.get('start'), P)[:10] or None} if free else None}
+        if ev['offers']: ev['offers'] = {a: b for a, b in ev['offers'].items() if b is not None}
+        ld['@graph'].insert(1, {a: b for a, b in ev.items() if b is not None})
     title = '%s — %s | معهد التمهيد' % (nameAr, k[0])
     return path, page(path, title, desc, body, ld)
 
