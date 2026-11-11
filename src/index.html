@@ -24,7 +24,7 @@ html.b71[data-theme="dark"]::after{filter:brightness(0) invert(1)}html.b71[data-
 @keyframes br129{0%{transform:scaleX(.08);opacity:.3}50%{transform:scaleX(1);opacity:.9}100%{transform:scaleX(.08);opacity:.3}}
 @media (prefers-reduced-motion:reduce){html.b71::after,html.b71::before{animation:none}}</style>
 <script>/* v157: مصدر الزائر (أول مصدر خلال 30 يوماً) لمعرفة مصدر المتقدمين */try{(function(){var q=new URLSearchParams(location.search),v=(q.get('src')||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,20),r=document.referrer||'',k='src157',o=null;try{o=JSON.parse(localStorage.getItem(k)||'null')}catch(e){}
-if(!v&&r&&!/attamhid\.com/.test(r))v=/facebook\.|fb\.com|m\.me/.test(r)?'fb':/(^|\/\/|\.)(t\.co|x\.com|twitter\.com)\//.test(r)?'x':/instagram\./.test(r)?'ig':/google\.|bing\.|yahoo\.|duckduckgo/.test(r)?'search':/whatsapp|wa\.me/.test(r)?'wa':'ref';
+if(!v&&r&&!/attamhid\.com/.test(r))v=/facebook\.|fb\.com|m\.me/.test(r)?'fb':/(^|\/\/|\.)(t\.co|x\.com|twitter\.com)\//.test(r)?'x':/instagram\./.test(r)?'ig':/google\.|bing\.|yahoo\.|duckduckgo/.test(r)?'search':/whatsapp|wa\.me/.test(r)?'wa':/t\.me\/|telegram\./.test(r)?'tg':'ref';
 if(v&&(!o||Date.now()-o.at>2592e6))localStorage.setItem(k,JSON.stringify({s:v,at:Date.now()}))})()}catch(e){}</script>
 <script id="boot71s">
 /* v130: نص كل أوراق الأنماط (المضمّنة والملفات) لتصدير الوثائق */window.__styleTexts=function(){var o=[];[].slice.call(document.querySelectorAll('style,link[rel=stylesheet]')).forEach(function(x){if(x.tagName==='STYLE'){o.push(x.textContent);return}try{var sh=x.sheet;if(sh&&x.href&&x.href.indexOf(location.origin)===0)o.push([].slice.call(sh.cssRules).map(function(r){return r.cssText}).join('\n'))}catch(e){}});return o};
@@ -22812,21 +22812,26 @@ function tabInteg(){return '<div id="ig136">'+tabInteg0()+(central()?x158():'')+
 var X158={list:null,busy:0,at:0};
 function x158load(){if(X158.busy||!hasSb()||Date.now()-X158.at<20000)return;X158.busy=1;sb.rpc('v158_x_feed').then(function(r){X158.busy=0;X158.at=Date.now();X158.list=(r&&r.data)||[];igRe()},function(){X158.busy=0})}
 function xLen158(t){var n=0;for(var ch of t){var c=ch.codePointAt(0);n+=(c<=0x10FF||(c>=0x2000&&c<=0x200D)||(c>=0x2010&&c<=0x201F)||(c>=0x2032&&c<=0x2037))?1:2}return n}
-function xText158(it){var lk=String(it.link||'https://attamhid.com/').replace(/\?src=[a-z]+/,'').replace('https://attamhid.com/#','https://attamhid.com/?src=x#').replace(/^https:\/\/attamhid\.com\/?$/,'https://attamhid.com/?src=x');
+function lk158(it,sc){return String(it.link||'https://attamhid.com/').replace(/\?src=[a-z]+/,'').replace('https://attamhid.com/#','https://attamhid.com/?src='+sc+'#').replace(/^https:\/\/attamhid\.com\/?$/,'https://attamhid.com/?src='+sc)}
+function fullText158(it,sc){var lk=lk158(it,sc);var m=String(it.msg||'').replace(/https:\/\/attamhid\.com\/[^\s]*/g,lk);if(m.indexOf(lk)<0)m=m.trim()+'\n\n'+lk;return m.trim()}
+var CH158={tg:'https://t.me/tamhidinistitute',wa:'https://whatsapp.com/channel/0029Vb6EMup545uqepoSZO15'};
+function xText158(it){var lk=lk158(it,'x');
  var body=String(it.msg||'').split('\n').filter(function(l){return !/https?:\/\//.test(l)&&!/^\s*(للتسجيل|التفاصيل|Register|Details|Apply|قدّم)\s*:?\s*$/i.test(l)}).join('\n').replace(/\n{3,}/g,'\n\n').trim(),max=280-24-1;
  if(xLen158(body)>max){var ls=body.split('\n');while(ls.length>1&&xLen158(ls.join('\n'))>max)ls.pop();body=ls.join('\n').trim()}if(xLen158(body)>max){var out='';for(var ch of body){if(xLen158(out+ch)>max-1)break;out+=ch}body=out.replace(/\s+\S*$/,'').trim()+'…'}
  return body+'\n'+lk}
-function x158(){x158load();var L0=X158.list;var h='<div class="box" id="x158"><h4 style="margin-top:0">'+L('النشر على X (تويتر)','Post on X (Twitter)')+' '+tag(L('مجاني — يدوي بضغطة','Free — one-click manual'),'ok')+'</h4><p class="mu">'+L('اضغط «انشر على X»: تُفتح نافذة التغريد في حساب المعهد والنص والرابط جاهزان، ويُنزَّل الملصق في الوقت نفسه. أرفق الصورة المنزّلة ثم اضغط «نشر».','Press “Post on X”: the post composer opens in the Institute account with the text and link ready, and the poster downloads at the same time. Attach the downloaded image, then press “Post”.')+'</p>';
+function x158(){x158load();var L0=X158.list;var h='<div class="box" id="x158"><h4 style="margin-top:0">'+L('النشر على X وتلغرام وواتساب','Post on X, Telegram and WhatsApp')+' '+tag(L('مجاني — بضغطة','Free — one click'),'ok')+'</h4><p class="mu">'+L('<b>X:</b> تُفتح نافذة التغريد والنص والرابط جاهزان. <b>تلغرام وواتساب:</b> يُنسخ النص كاملاً وتُفتح قناة المعهد. وفي كل الحالات يُنزَّل الملصق تلقائياً: أرفق الصورة، والصق النص تحتها، ثم انشر.','<b>X:</b> the composer opens with text and link ready. <b>Telegram &amp; WhatsApp:</b> the full text is copied and the Institute channel opens. In every case the poster downloads automatically: attach the image, paste the text as its caption, and post.')+'</p>';
  if(!L0)return h+'<p class="mu">'+L('جارٍ التحميل…','Loading…')+'</p></div>';
  if(!L0.length)return h+'<p class="mu">'+L('لا توجد إعلانات حالية للنشر.','No current announcements to post.')+'</p></div>';
  var KN={sp:['برنامج قصير','Short programme'],adm:['قبول','Admission'],news:['خبر','News']};
  return h+T([L('الإعلان','Announcement'),L('اللغة','Language'),''],L0.map(function(it,i){var k=/^adm/.test(it.kind)?'adm':/^news/.test(it.kind)?'news':it.kind==='sp'?'sp':'news',first=String(it.msg||'').split('\n').filter(function(l){return l.trim()})[1]||String(it.msg||'').split('\n')[0]||'';
-  return '<tr><td><span class="tag">'+L(KN[k][0],KN[k][1])+'</span> '+esc(first.replace(/[«»]/g,'').slice(0,90))+'</td><td>'+(it.lg==='en'?'English':'العربية')+'</td><td><button class="btn s" onclick="V51.h.x158go('+i+')">'+L('انشر على X','Post on X')+'</button></td></tr>'}))+'</div>'}
-V5.xText158=xText158;V5.x158box=function(l){X158.list=l;X158.at=Date.now();return x158()};
-H.x158go=function(i){var it=(X158.list||[])[i];if(!it)return;var w=window.open('https://x.com/intent/post?text='+encodeURIComponent(xText158(it)),'_blank','noopener');
+  return '<tr><td><span class="tag">'+L(KN[k][0],KN[k][1])+'</span> '+esc((function(t){return t.length>55?t.slice(0,53).replace(/\s+\S*$/,'')+'…':t})(first.replace(/[«»]/g,'').trim()))+'</td><td>'+(it.lg==='en'?'English':'العربية')+'</td><td style="min-width:200px"><button class="btn s" onclick="V51.h.x158go('+i+')">X</button> <button class="btn s" onclick="V51.h.x158go('+i+',\'tg\')">'+L('تلغرام','Telegram')+'</button> <button class="btn s" onclick="V51.h.x158go('+i+',\'wa\')">'+L('واتساب','WhatsApp')+'</button></td></tr>'}))+'</div>'}
+V5.xText158=xText158;V5.fullText158=fullText158;V5.x158box=function(l){X158.list=l;X158.at=Date.now();return x158()};
+H.x158go=function(i,ch){var it=(X158.list||[])[i];if(!it)return;ch=ch||'x';
+ if(ch==='x')window.open('https://x.com/intent/post?text='+encodeURIComponent(xText158(it)),'_blank','noopener');
+ else{var tx=fullText158(it,ch);try{navigator.clipboard.writeText(tx).then(function(){tst(L('نُسخ النص — الصقه تحت الصورة في القناة.','Text copied — paste it as the image caption in the channel.'))},function(){prompt(L('انسخ النص:','Copy the text:'),tx)})}catch(e){}window.open(CH158[ch],'_blank','noopener')}
  (async function(){try{if(it.kind==='sp'){var pid=String(it.id).replace(/^sp/,'').replace(/(ar|en)$/,'');await H.ann67dl(pid,'sq','jpg',undefined,it.lg==='en'?'en':undefined);return}
   if(it.img){var r=await fetch(it.img,{cache:'no-store'});if(!r.ok)throw new Error(r.status);await fsave('attamhid-'+String(it.kind).replace(/\W/g,'')+(it.lg==='en'?'-en':'')+'.jpg',await r.blob())}}catch(e){tst(L('تعذّر تنزيل الملصق: ','Could not download the poster: ')+((e&&e.message)||e))}})();
- try{aud(L('فتح النشر على X','Opened X post composer'),it.id,it.kind)}catch(e){}};
+ try{aud(L('نشر يدوي على ','Manual post to ')+ch,it.id,it.kind)}catch(e){}};
 function tabInteg0(){if(!central())return '<p class="mu">'+L('للإدارة المركزية فقط.','Central administration only.')+'</p>';igLoad();var m=IG.meet,f=IG.fb;if(!m&&!f)return '<h3>'+L('التكاملات','Integrations')+'</h3><div class="sk129"><i style="width:60%"></i><i style="width:80%"></i></div>';
  var h='<h3>'+L('التكاملات','Integrations')+'</h3>';
  h+='<div class="box"><h4 style="margin-top:0">Google Meet '+(m&&m.url?tag(L('مربوط','Connected'),'ok'):tag(L('غير مربوط','Not connected'),'wn'))+'</h4><p class="mu">'+L('عند ربطه يُنشأ تلقائياً رابط Google Meet لمدة ساعة لكل برنامج قصير «عن بُعد» لا رابط له، ويُضاف إلى البرنامج وإلى التذكيرات. يعمل من حساب المعهد في Google، دون أي كلمة مرور هنا.','Once connected, a one-hour Google Meet link is created automatically for every online short programme without a link, and added to the programme and its reminders. It runs from the Institute’s Google account, with no password stored here.')+'</p>'+
@@ -27501,7 +27506,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v159';
+window.__BUILD__='v160';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -28485,7 +28490,7 @@ function nwEn157(){try{[].forEach.call(document.querySelectorAll('form[onsubmit^
   lab.insertAdjacentHTML('afterend','<label>'+L('العنوان بالإنجليزية (اختياري — لمنشور فيسبوك الإنجليزي)','English title (optional — for the English Facebook post)')+'<input name="titleEn" dir="ltr" value="'+e0(x.titleEn||'')+'"></label><label>'+L('النص بالإنجليزية (اختياري)','English text (optional)')+'<textarea name="bodyEn" dir="ltr" rows="4">'+e0(x.bodyEn||'')+'</textarea></label>')})}catch(e){}}
 try{GOH.post.push(nwEn157)}catch(e){}
 /* v157 — مصدر المتقدم: يُحفظ مع طلب الالتحاق، وتعرض الإدارة توزيع المتقدمين حسب المصدر */
-var SRC157={fb:['فيسبوك','Facebook'],x:['X (تويتر)','X (Twitter)'],ig:['إنستغرام','Instagram'],qr:['رمز QR في الملصقات','Poster QR code'],search:['محركات البحث','Search engines'],wa:['واتساب','WhatsApp'],mail:['البريد','Email'],ref:['مواقع أخرى','Other websites'],direct:['مباشر / غير معروف','Direct / unknown']};
+var SRC157={fb:['فيسبوك','Facebook'],x:['X (تويتر)','X (Twitter)'],ig:['إنستغرام','Instagram'],qr:['رمز QR في الملصقات','Poster QR code'],search:['محركات البحث','Search engines'],wa:['واتساب','WhatsApp'],tg:['تلغرام','Telegram'],mail:['البريد','Email'],ref:['مواقع أخرى','Other websites'],direct:['مباشر / غير معروف','Direct / unknown']};
 function src157(){try{var o=JSON.parse(localStorage.getItem('src157')||'null');return o&&o.s||'direct'}catch(e){return 'direct'}}
 function srcTag157(){try{[].forEach.call(document.querySelectorAll('#app form[onsubmit*="reg("]'),function(f){if(f.querySelector('[name=src157]'))return;var i=document.createElement('input');i.type='hidden';i.name='src157';i.value=src157();f.appendChild(i)});
  if(typeof me!=='undefined'&&me&&me.r==='admin'&&typeof tab!=='undefined'&&tab==='req'&&!document.getElementById('src157')){var R=(S.requests||[]).filter(function(r){return !r.deleted}),C={};R.forEach(function(r){var k=SRC157[r.src157]?r.src157:'direct';C[k]=(C[k]||0)+1});
