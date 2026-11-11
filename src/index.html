@@ -24103,10 +24103,12 @@ async function render(P,fm,f,o){var h=annHTML(P,fm,o),sz=FM[fm],w=document.creat
 V5.annBlob67=render;
 var FN={a4:'A4',sq:'square-1080',st:'story-1080x1920'};
 /* v147 — صورة الإعلان لمنشور فيسبوك: يرسمها متصفح الإدارة (المربع 1080) ويرفعها إلى مخزن عام، فينشرها الخادم مع المنشور بدل الرابط المجرد */
-var fbK147=function(P){return [P.nameAr,P.nameEn,P.parentAr,P.start,P.end,P.place,P.mode,P.url?1:0,P.trainerAr,P.trainerTitleAr,P.hours,P.fee,P.annTheme,P.annNo].join('|')},fbB147=0,fbF147={};
+var fbK147=function(P){return ['v154',P.nameAr,P.nameEn,P.parentAr,P.start,P.end,P.place,P.mode,P.url?1:0,P.trainerAr,P.trainerTitleAr,P.hours,P.fee,P.annTheme,P.annNo].join('|')},fbB147=0,fbF147={};
 V5.annFb147=async function(){if(fbB147||!adminOK()||typeof sb==='undefined'||!sb||!sb.storage)return;var now=Date.now(),L0=((S.v51&&S.v51.sp)||[]).filter(function(P){if(!P||P.deleted||P.aud!=='public'||String(P.fb)==='0'||!P.annNo)return false;var e=Date.parse(P.end||P.start||'');return e&&e>now-864e5&&P.annImgK!==fbK147(P)&&!(fbF147[P.id]>now-6e5)});if(!L0.length)return;fbB147=1;
  try{for(var n=0;n<L0.length&&n<2;n++){var P=L0[n],k=fbK147(P);try{var th=V5.annTheme68?V5.annTheme68(P):'',b=await render(P,'sq','jpg',th?{theme:th}:{});if(!b||!b.size)throw new Error('render');var path=String(P.id).replace(/[^\w.-]/g,'_')+'.jpg',r=await sb.storage.from('ann').upload(path,b,{upsert:true,contentType:'image/jpeg',cacheControl:'300'});if(r&&r.error)throw r.error;
-   var u=sb.storage.from('ann').getPublicUrl(path);u=u&&u.data&&u.data.publicUrl;if(!u)throw new Error('url');P.annImg=u+'?v='+Date.now();P.annImgK=k;try{V5.touch(P)}catch(e){}try{save()}catch(e){}}catch(e){fbF147[P.id]=Date.now();try{console.warn('annFb147',e&&e.message||e)}catch(x){}}}}finally{fbB147=0}};
+   var u=sb.storage.from('ann').getPublicUrl(path);u=u&&u.data&&u.data.publicUrl;if(!u)throw new Error('url');
+   if(P.nameEn){var oe=th?{theme:th,lang:'en'}:{lang:'en'},be=await render(P,'sq','jpg',oe),pe=String(P.id).replace(/[^\w.-]/g,'_')+'-en.jpg',re=await sb.storage.from('ann').upload(pe,be,{upsert:true,contentType:'image/jpeg',cacheControl:'300'});if(re&&re.error)throw re.error;var ue=sb.storage.from('ann').getPublicUrl(pe);ue=ue&&ue.data&&ue.data.publicUrl;if(ue)P.annImgEn=ue+'?v='+Date.now()}
+   P.annImg=u+'?v='+Date.now();P.annImgK=k;try{V5.touch(P)}catch(e){}try{save()}catch(e){}}catch(e){fbF147[P.id]=Date.now();try{console.warn('annFb147',e&&e.message||e)}catch(x){}}}}finally{fbB147=0}};
 /* v148 — ملصقا القبول والأخبار: يُرسمان ويُرفعان باسم «adm-رقم البرنامج» و«news-رقم الخبر» فينشرهما الخادم مع منشور فيسبوك */
 var MA148=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],ME148=['January','February','March','April','May','June','July','August','September','October','November','December'];
 var dA148=function(x){var d=new Date(String(x).length<=10?x+'T12:00':x);return isNaN(d)?'':d.getDate()+' '+MA148[d.getMonth()]+' '+d.getFullYear()+'م'},dE148=function(x){var d=new Date(String(x).length<=10?x+'T12:00':x);return isNaN(d)?'':d.getDate()+' '+ME148[d.getMonth()]+' '+d.getFullYear()};
@@ -24125,11 +24127,11 @@ V5.posterBlob148=function(P){return render(P,'sq','jpg',{})};
 V5.posterFb148=async function(){if(fbB147||!adminOK()||typeof sb==='undefined'||!sb||!sb.storage)return;var M=S.v51.fbImg148=S.v51.fbImg148||{},now=Date.now(),L0=V5.posters148().filter(function(x){return M[x.name]!==x.key&&!(fbF147[x.name]>now-6e5)});if(!L0.length)return;fbB147=1;
  try{for(var n=0;n<L0.length&&n<3;n++){var x=L0[n];try{var b=await render(x.P,'sq','jpg',{});if(!b||!b.size)throw new Error('render');var r=await sb.storage.from('ann').upload(String(x.name).replace(/[^\w.-]/g,'_')+'.jpg',b,{upsert:true,contentType:'image/jpeg',cacheControl:'300'});if(r&&r.error)throw r.error;M[x.name]=x.key;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}catch(e){fbF147[x.name]=Date.now();try{console.warn('posterFb148',e&&e.message||e)}catch(z){}}}}finally{fbB147=0}};
 try{GOH.post.push(function(){try{if(typeof me!=='undefined'&&me&&me.r==='admin')setTimeout(function(){V5.annFb147().then(function(){return V5.posterFb148()},function(){return V5.posterFb148()})},1800)}catch(e){}})}catch(e){}
-H.ann67dl=async function(pid,fm,f,th){var P=I.progOf(pid);if(!P)return;th=th||(V5.annTheme68?V5.annTheme68(P):'');try{var b=await render(P,fm,f,th?{theme:th}:{}),nm='announcement-'+(P.annNo||P.id)+'-'+FN[fm]+(th?'-'+th:'')+'.'+f;try{await fsave(nm,b)}catch(e){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm;a.click()}try{aud(L('تنزيل إعلان برنامج قصير','Short-program announcement downloaded'),P.annNo||pid,FN[fm]+' · '+f+(th?' · '+th:''))}catch(e){}}catch(e){if(!e||e.code!=='declined')toast(L('تعذر التنزيل: ','Download failed: ')+((e&&e.message)||e))}};
+H.ann67dl=async function(pid,fm,f,th,lg){var P=I.progOf(pid);if(!P)return;th=th||(V5.annTheme68?V5.annTheme68(P):'');try{var oo=th?{theme:th}:{};if(lg==='en')oo.lang='en';var b=await render(P,fm,f,oo),nm='announcement-'+(P.annNo||P.id)+'-'+FN[fm]+(th?'-'+th:'')+(lg==='en'?'-en':'')+'.'+f;try{await fsave(nm,b)}catch(e){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm;a.click()}try{aud(L('تنزيل إعلان برنامج قصير','Short-program announcement downloaded'),P.annNo||pid,FN[fm]+' · '+f+(th?' · '+th:''))}catch(e){}}catch(e){if(!e||e.code!=='declined')toast(L('تعذر التنزيل: ','Download failed: ')+((e&&e.message)||e))}};
 /* المعاينة: المقاسات الثلاثة مع أزرار التنزيل */
 H.ann67=function(pid){var P=I.progOf(pid);if(!P)return;ensure(P);var C=cfg(),TH=V5.annThemes68||null,th=V5.annTheme68?V5.annTheme68(P):'',oth=th==='dark'?'light':'dark';
  var dl=function(fm,t){return ['pdf','jpg','png'].map(function(f){return '<button class="btn s" onclick="V51.h.ann67dl(\''+P.id+'\',\''+fm+'\',\''+f+'\''+(t?',\''+t+'\'':'')+')">'+f.toUpperCase()+'</button>'}).join(' ')};
- var pv=function(fm,label){var sz=FM[fm],s=Math.min(330/sz[0],460/sz[1]);return '<div class="an67pv"><div class="fr" style="width:'+Math.round(sz[0]*s)+'px;height:'+Math.round(sz[1]*s)+'px"><div style="transform:scale('+s.toFixed(4)+');transform-origin:top right;width:'+sz[0]+'px;height:'+sz[1]+'px">'+annHTML(P,fm)+'</div></div><b>'+label+'</b><p>'+dl(fm,th)+'</p>'+(TH?'<p class="mu" style="margin:0">'+L('النمط '+TH[oth][0]+': ','The '+TH[oth][1]+' style: ')+dl(fm,oth)+'</p>':'')+'</div>'};
+ var pv=function(fm,label){var sz=FM[fm],s=Math.min(330/sz[0],460/sz[1]);return '<div class="an67pv"><div class="fr" style="width:'+Math.round(sz[0]*s)+'px;height:'+Math.round(sz[1]*s)+'px"><div style="transform:scale('+s.toFixed(4)+');transform-origin:top right;width:'+sz[0]+'px;height:'+sz[1]+'px">'+annHTML(P,fm)+'</div></div><b>'+label+'</b><p>'+dl(fm,th)+'</p>'+(TH?'<p class="mu" style="margin:0">'+L('النمط '+TH[oth][0]+': ','The '+TH[oth][1]+' style: ')+dl(fm,oth)+'</p>':'')+(P.nameEn?'<p class="mu" style="margin:4px 0 0">'+L('النسخة الإنجليزية: ','English version: ')+['pdf','jpg','png'].map(function(f){return '<button class="btn s" onclick="V51.h.ann67dl(\''+P.id+'\',\''+fm+'\',\''+f+'\',\''+th+'\',\'en\')">'+f.toUpperCase()+'</button>'}).join(' ')+'</p>':'')+'</div>'};
  var set=TH&&adminOK()?'<div class="an68set"><span><b>'+L('نمط الإعلان لهذا البرنامج: ','Announcement style for this program: ')+'</b><span class="seg">'+Object.keys(TH).map(function(k){return '<button type="button" class="'+(k===th?'on':'')+'" onclick="V51.h.ann68th(\''+P.id+'\',\''+k+'\')">'+L(TH[k][0],TH[k][1])+'</button>'}).join('')+'</span></span>'+
   '<span><b>'+L('صورة المحاضر (اختيارية): ','Lecturer photo (optional): ')+'</b>'+(P.trPhoto&&P.trPhotoOk?'<img src="'+P.trPhoto+'" alt="" style="width:34px;height:34px;border-radius:50%;vertical-align:middle;object-fit:cover"> <small class="mu">'+L('بموافقة مسجّلة','consent recorded')+'</small> <button class="btn s" onclick="V51.h.ann68phx(\''+P.id+'\')">'+L('حذف الصورة','Remove photo')+'</button>':'<label class="v51ck"><input type="checkbox" id="ph68ok"> '+L('أقرّ بموافقة صاحب الصورة على استخدامها في الإعلان','I confirm the owner consents to its use in the announcement')+'</label> <input type="file" accept="image/*" onchange="V51.h.ann68ph(this,\''+P.id+'\')">')+'</span></div>':'';
  mdl(L('الإعلان / Announcement','Announcement')+' — '+e7(L(P.nameAr,P.nameEn))+' <bdi dir="ltr">'+e7(P.annNo||'')+'</bdi>','<p class="mu">'+L('يُنشأ الإعلان تلقائياً من بيانات البرنامج ويتحدث مع أي تعديل. لا يُكتب أي رابط؛ رموز QR فقط.','The announcement is generated from the program data and updates with every edit. No link is written; QR codes only.')+'</p>'+set+
@@ -24509,28 +24511,27 @@ function annHTML(P,fm,o){if(P&&P.poster148)return poster149(P,fm);o=o||{};var C=
   '<i class="a8-an-bg"></i>'+pattern(Wd,Hd,Math.round(56*u))+frame(Wd,Hd,m,u)+
   '<div class="a8-an-in">'+hd+tt+by+cds+bt+ft+'</div></div>'}
 /* v151 — إعلانات البرامج القصيرة بالتصميم الجديد (تخطيط واحد بعرض 1080 يُصغَّر لصيغة A4) */
-function annZ(P,fm,o){o=o||{};var C=V5.ann67cfg(),th=o.theme&&THEMES[o.theme]?o.theme:themeOf(P),K=I.kindOf(P),wn=V5.when67(P),MO=V5.spModes67,md=MO[P&&P.mode]?P.mode:(P&&P.url&&!P.place?'remote':'onsite'),sz=FM[fm]||FM.a4,Wd=sz[0],Hd=sz[1],sc=Wd/1080,H=Math.round(Hd/sc);
- var joinOK=!!P.url&&(o.reg||!+C.hideJoin),regOK=+P.selfReg!==0&&!C6.ended(P),kd=KD[K.id]||[K.ar,cap(K.en)],I0=S.v51.inst||{},Hm=S.home||{},no=String(P.annNo||'');
- var place=String(P.place||'').trim(),pl=P.url&&V5.linkInfo67?(V5.linkInfo67(P.url).pl||''):'';if(/منصة أخرى|Other platform/.test(pl))pl='';
- var tpA=String(P.topicAr||'').trim(),tpE=String(P.topicEn||'').trim(),paA=String(P.parentAr||'').trim(),paE=String(P.parentEn||'').trim(),trA=String(P.trainerAr||'').trim(),trE=String(P.trainerEn||'').trim(),lec=K.id==='lec'||K.id==='sem',ph=P.trPhoto&&P.trPhotoOk?P.trPhoto:'';
- var MA=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],ME=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'],d0=new Date(String(P.start||'').slice(0,10)+'T12:00'),okD=!isNaN(d0);
- var tA=String(P.nameAr||''),Ln=tA.length,st=fm!=='sq',ts=Ln<=24?(st?92:78):Ln<=44?(st?78:64):Ln<=70?(st?66:54):Ln<=100?(st?56:46):(st?48:40);
- /* اللوحة الجانبية: الشعار، النوع، التاريخ، الوقت، الحضور */
- var pn='<aside class="zt-pn"><div class="zt-lg">'+logo('dark')+'</div><div class="zt-kd"><b>'+e8(kd[0])+'</b><span dir="ltr">'+e8(String(kd[1]).toUpperCase())+'</span></div>'+
-  '<div class="zt-dt">'+(wn?'<span class="zt-wd">'+e8(wn.dayA)+'<em dir="ltr">'+e8(String(wn.dayE||'').toUpperCase())+'</em></span>':'')+(okD?'<b dir="ltr">'+d0.getDate()+'</b><span class="zt-my">'+MA[d0.getMonth()]+' '+d0.getFullYear()+'<em dir="ltr">'+ME[d0.getMonth()]+' '+d0.getFullYear()+'</em></span>':'<b>—</b>')+(wn&&wn.hjA?'<span class="zt-hj">'+e8(wn.hjA)+'</span>':'')+'</div>'+
-  '<div class="zt-rw">'+(wn?wn.Z.map(function(z,i){return '<div class="zt-tm'+(i?' zt-tm2':'')+'">'+(i?'':zi('clk',24))+'<b dir="ltr">'+e8(z.ar)+'</b><span>'+e8(z.zA)+'</span></div>'}).join(''):'')+
-  '<div class="zt-md">'+zi(md==='onsite'?'pin':md==='remote'?'scr':'hyb',24)+'<b>'+e8(MO[md][0])+'</b>'+(md!=='onsite'&&pl?'<span>'+DIG(pl)+'</span>':'')+(md!=='remote'&&place?'<span>'+e8(place)+'</span>':'')+'</div></div></aside>';
- /* المتن */
- var ctA=P.ctype==='par'?'شهادة مشاركة':P.ctype==='cmp'?'شهادة اجتياز':'شهادة حضور',hA=hrsA(P.hours),fee=/مجان|free/i.test(String(P.fee||''));
- var chips='<div class="zt-cp"><span>'+zi('crt',20)+ctA+' معتمدة</span>'+(hA?'<span>'+zi('clk',20)+e8(hA)+'</span>':'')+(fee?'<span class="zt-fr">مجاناً · <i dir="ltr">Free</i></span>':'')+'</div>';
- var by=trA||trE?'<div class="zt-by"><div class="zt-av">'+(ph?'<img src="'+ph+'" alt="">':zi('usr',38))+'</div><div><span>'+(lec?'يلقيها':'يقدّمها')+'</span><b>'+e8(trA)+'</b>'+(trE?'<i dir="ltr">'+e8(trE)+'</i>':'')+'</div></div>':'';
- var qs=[];if(regOK)qs.push([I.regURL(P.id),'امسح للتسجيل','Scan to register']);if(joinOK)qs.push([P.url,'امسح للانضمام','Scan to join']);
- var nt=P.url&&!joinOK?'<div class="zt-nt">يُرسل رابط الانضمام للمسجلين عبر البريد وبوابتهم</div>':'';
+function annZ(P,fm,o){o=o||{};var en=o.lang==='en',T=function(a,b){return en?b:a},C=V5.ann67cfg(),th=o.theme&&THEMES[o.theme]?o.theme:themeOf(P),K=I.kindOf(P),wn=V5.when67(P),MO=V5.spModes67,md=MO[P&&P.mode]?P.mode:(P&&P.url&&!P.place?'remote':'onsite'),sz=FM[fm]||FM.a4,Wd=sz[0],Hd=sz[1],sc=Wd/1080,H=Math.round(Hd/sc);
+ /* v154 — نسختان منفصلتان: عربية خالصة وإنجليزية خالصة */
+ var joinOK=!!P.url&&(o.reg||!+C.hideJoin),regOK=+P.selfReg!==0&&!C6.ended(P),kd=KD[K.id]||[K.ar,cap(K.en)],Hm=S.home||{},no=String(P.annNo||'');
+ var place=String(en?(P.placeEn||P.place||''):(P.place||'')).trim(),pl=P.url&&V5.linkInfo67?(V5.linkInfo67(P.url).pl||''):'';if(/منصة أخرى|Other platform/.test(pl))pl='';
+ var tp=String(T(P.topicAr,P.topicEn)||'').trim(),pa=String(T(P.parentAr,P.parentEn)||'').trim(),tr=String(T(P.trainerAr,P.trainerEn)||'').trim(),lec=K.id==='lec'||K.id==='sem',ph=P.trPhoto&&P.trPhotoOk?P.trPhoto:'';
+ var MA=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],ME=['January','February','March','April','May','June','July','August','September','October','November','December'],d0=new Date(String(P.start||'').slice(0,10)+'T12:00'),okD=!isNaN(d0);
+ var tA=String(T(P.nameAr,P.nameEn||P.nameAr)||''),Ln=tA.length,st=fm!=='sq',ts=Ln<=24?(st?92:78):Ln<=44?(st?78:64):Ln<=70?(st?66:54):Ln<=100?(st?56:46):(st?48:40);if(en)ts=Math.round(ts*.88);
+ var pn='<aside class="zt-pn"><div class="zt-lg">'+logo('dark')+'</div><div class="zt-kd"><b>'+e8(T(kd[0],kd[1]))+'</b></div>'+
+  '<div class="zt-dt">'+(wn?'<span class="zt-wd">'+e8(T(wn.dayA,wn.dayE))+'</span>':'')+(okD?'<b dir="ltr">'+d0.getDate()+'</b><span class="zt-my">'+T(MA[d0.getMonth()],ME[d0.getMonth()])+' '+d0.getFullYear()+'</span>':'<b>—</b>')+(!en&&wn&&wn.hjA?'<span class="zt-hj">'+e8(wn.hjA)+'</span>':'')+'</div>'+
+  '<div class="zt-rw">'+(wn?wn.Z.map(function(z,i){return '<div class="zt-tm'+(i?' zt-tm2':'')+'">'+(i?'':zi('clk',24))+'<b dir="ltr">'+e8(T(z.ar,z.en||z.ar))+'</b><span>'+e8(T(z.zA,z.zE))+'</span></div>'}).join(''):'')+
+  '<div class="zt-md">'+zi(md==='onsite'?'pin':md==='remote'?'scr':'hyb',24)+'<b>'+e8(T(MO[md][0],MO[md][1]))+'</b>'+(md!=='onsite'&&pl?'<span>'+(en?e8(pl):DIG(pl))+'</span>':'')+(md!=='remote'&&place?'<span>'+e8(place)+'</span>':'')+'</div></div></aside>';
+ var ct=T(P.ctype==='par'?'شهادة مشاركة معتمدة':P.ctype==='cmp'?'شهادة اجتياز معتمدة':'شهادة حضور معتمدة',P.ctype==='par'?'Certified participation certificate':P.ctype==='cmp'?'Certified completion certificate':'Certified attendance certificate'),hA=en?hrsE(P.hours):hrsA(P.hours),fee=/مجان|free/i.test(String(P.fee||''));
+ var chips='<div class="zt-cp"><span>'+zi('crt',20)+e8(ct)+'</span>'+(hA?'<span>'+zi('clk',20)+e8(hA)+'</span>':'')+(fee?'<span class="zt-fr">'+T('مجاناً','Free')+'</span>':'')+'</div>';
+ var by=tr?'<div class="zt-by"><div class="zt-av">'+(ph?'<img src="'+ph+'" alt="">':zi('usr',38))+'</div><div><span>'+T(lec?'يلقيها':'يقدّمها','Presented by')+'</span><b>'+e8(tr)+'</b></div></div>':'';
+ var qs=[];if(regOK)qs.push([I.regURL(P.id),T('امسح للتسجيل','Scan to register')]);if(joinOK)qs.push([P.url,T('امسح للانضمام','Scan to join')]);
+ var nt=P.url&&!joinOK?'<div class="zt-nt">'+T('يُرسل رابط الانضمام للمسجلين عبر البريد وبوابتهم','The join link is sent to registrants by email and in their portal')+'</div>':'';
  var cx=[Hm.p1?'<span><bdi dir="ltr">'+e8(Hm.p1)+'</bdi></span>':'',Hm.em?'<span><bdi dir="ltr">'+e8(Hm.em)+'</bdi></span>':'','<span><bdi dir="ltr">attamhid.com</bdi></span>'].join('<i>·</i>');
- var ft='<div class="zt-ft"><div class="zt-qs">'+qs.map(function(q){return '<div class="zt-q"><img src="'+qr(q[0])+'" alt=""><b>'+q[1]+'</b><span dir="ltr">'+q[2]+'</span></div>'}).join('')+'</div><div class="zt-cta"><b>'+(regOK?'سجّل الآن':'معهد التمهيد')+'</b><span dir="ltr">'+(regOK?'REGISTER NOW':'AT TAMHID INSTITUTE')+'</span>'+(no?'<em>رقم الإعلان <bdi dir="ltr">'+e8(no)+'</bdi></em>':'')+'</div></div>';
- var mn='<main class="zt-mn"><div class="zt-body">'+(paA||paE?'<div class="zt-pa"><i></i><span>'+(paA?'ضمن '+e8(paA):'')+'</span>'+(paE?'<em dir="ltr">Part of '+e8(paE)+'</em>':'')+'</div>':'<div class="zt-pa"><i></i><span>'+e8(I0.nameAr||'معهد التمهيد')+'</span></div>')+
-  '<h1 style="font-size:'+ts+'px">'+e8(tA)+'</h1>'+(P.nameEn?'<div class="zt-en" dir="ltr">'+e8(P.nameEn)+'</div>':'')+(tpA||tpE?'<div class="zt-tp">'+(tpA?'<span>'+e8(tpA)+'</span>':'')+(tpE?'<span dir="ltr">'+e8(tpE)+'</span>':'')+'</div>':'')+by+chips+nt+'</div>'+ft+'<div class="zt-cx">'+cx+'</div></main>';
- return '<div class="an68 zt f-'+fm+' t-'+th+'" data-ann67="1" data-z151="1" data-pid="'+e8(P.id)+'"'+(o.reg?' data-reg="1"':'')+' dir="rtl" style="width:'+Wd+'px;height:'+Hd+'px;--k:1"><div class="zt-sc" style="width:1080px;height:'+H+'px;transform:scale('+sc+')">'+pn+mn+'</div></div>'}
+ var ft='<div class="zt-ft"><div class="zt-qs">'+qs.map(function(q){return '<div class="zt-q"><img src="'+qr(q[0])+'" alt=""><b>'+q[1]+'</b></div>'}).join('')+'</div><div class="zt-cta"><b>'+(regOK?T('سجّل الآن','Register now'):T('معهد التمهيد','At Tamhid Institute'))+'</b>'+(no?'<em>'+T('رقم الإعلان','Announcement No.')+' <bdi dir="ltr">'+e8(no)+'</bdi></em>':'')+'</div></div>';
+ var mn='<main class="zt-mn"><div class="zt-body"><div class="zt-pa"><i></i><span>'+(pa?e8(T('ضمن ','Part of ')+pa):e8(T('معهد التمهيد','At Tamhid Institute')))+'</span></div>'+
+  '<h1 style="font-size:'+ts+'px">'+e8(tA)+'</h1>'+(tp?'<div class="zt-tp"><span>'+e8(tp)+'</span></div>':'')+by+chips+nt+'</div>'+ft+'<div class="zt-cx">'+cx+'</div></main>';
+ return '<div class="an68 zt f-'+fm+' t-'+th+(en?' zt-en':'')+'" data-ann67="1" data-z151="1" data-pid="'+e8(P.id)+'"'+(o.reg?' data-reg="1"':'')+' dir="'+(en?'ltr':'rtl')+'" lang="'+(en?'en':'ar')+'" style="width:'+Wd+'px;height:'+Hd+'px;--k:1"><div class="zt-sc" style="width:1080px;height:'+H+'px;transform:scale('+sc+')">'+pn+mn+'</div></div>'}
 var annOld151=annHTML;annHTML=function(P,fm,o){if(P&&P.poster148)return poster149(P,fm);if(o&&o.old151)return annOld151(P,fm,o);try{return annZ(P,fm,o)}catch(e){try{console.warn('annZ',e)}catch(x){}return annOld151(P,fm,o)}};
 /* ملاءمة: يُصغَّر العنوان ثم المسافات حتى يتسع المحتوى دون تداخل */
 function fitZ(el){var b=el.querySelector('.zt-body')||el.querySelector('.zp-body'),inn=el.querySelector('.zt-body')?el.querySelector('.zt-body').parentNode:el.querySelector('.z-in'),h1=el.querySelector('.zt-body h1')||el.querySelector('.zp-tt h1');if(el.querySelector('.zt-body')){var fs0=parseFloat(h1.style.fontSize)||60,k=0,ov=function(){return inn.scrollHeight>inn.clientHeight+1};el.removeAttribute('data-tight');while(ov()&&k<34){if(fs0>36){fs0-=2;h1.style.fontSize=fs0+'px'}else el.setAttribute('data-tight',(+el.getAttribute('data-tight')||0)+1+'');k++;if(+el.getAttribute('data-tight')>3)break}return}if(!b||!inn||!h1)return;el.removeAttribute('data-tight');var fs=parseFloat(h1.style.fontSize)||70,n=0,cs=getComputedStyle(inn),av=function(){return inn.clientHeight-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0)};
@@ -27431,7 +27432,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v153';
+window.__BUILD__='v154';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -28047,6 +28048,17 @@ body .nav.h69>a:not(.h69-lg){transition:color .2s,background .2s}
 .pz149.z-en .z-dm{font-size:30px}
 .pz149.z-en .z-cta b{letter-spacing:-.5px}
 .pz149 .z-fb em{font:500 13px/1.45 'Cairo','IBM Plex Sans Arabic',sans-serif;font-style:normal;color:#8EA6CF}
+</style>
+<style id="css154">
+.an68.zt.zt-en{direction:ltr;font-family:'Cairo','IBM Plex Sans Arabic',sans-serif}
+.zt.zt-en .zt-pn:after{left:auto;right:-1px;background:radial-gradient(circle at 100% 50%,var(--pg) 10px,transparent 11px) 0 0/22px 44px repeat-y}
+.zt.zt-en.f-st .zt-pn:after{left:0;right:0;background:radial-gradient(circle at 50% 100%,var(--pg) 10px,transparent 11px) 0 0/44px 22px repeat-x}
+.zt.zt-en.f-st .zt-kd{left:auto;right:60px}
+.zt.zt-en h1{letter-spacing:-.5px;line-height:1.18}
+.zt.zt-en .zt-tp span{font-family:'Cairo',sans-serif}
+.zt.zt-en .zt-kd b{letter-spacing:.02em}
+.zt.zt-en .zt-my{font-size:28px}
+.zt.f-sq .zt-body{justify-content:center}
 </style>
 <style id="css146">
 /* v146 — ترقية بصرية موحّدة: الواجهة العامة والبوابات الداخلية (كحلي/أزرق/أبيض فقط) */
