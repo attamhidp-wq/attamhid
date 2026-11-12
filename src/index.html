@@ -18320,6 +18320,17 @@ var HS54=52,HT54=28,HSM54=84,GAP54=10,FIN54=208,END54=178;
 function pc67(x){return (Math.round(x*100)/100).toFixed(2)}V5.pc67=pc67;
 function blockH(n,withSum,hr){return HS54+HT54+n*hr+(withSum?HSM54:0)+GAP54}
 
+/* v167: ضمان قاطع لعدم تداخل النصوص — بعد تحميل الخطوط فعلياً تُقاس كل خلية نصية في المتصفح نفسه،
+   وإذا زاد عرض النص على المساحة المتاحة له صُغِّر خطه (وخطوط ما بداخله) بالنسبة نفسها حتى يتسع تماماً. */
+function fit167(root){if(!root||!root.querySelectorAll)return;
+ var Q=root.querySelectorAll('.g9-ha>div,.g9-he>div,.g9-ti .t,.g9-ti .te,.g9-sd .r>span,.g9-th>div,.g9-tr>div,.g9-tr .nm b,.g9-tr .nm i,.g9-sh span,.g9-sth>div,.g9-sr>div,.g9-fin .hd,.g9-fin .fr>div,.g9-sc td,.g9-sc th,.g9-ft .l1>span,.g9-ft .k,.g9-end .ln span,.g9-sg>div,.g9-none');
+ [].forEach.call(Q,function(el){for(var k=0;k<12;k++){var pw=el.parentElement?el.parentElement.clientWidth:0,cw=el.clientWidth,have=Math.min(cw>0?cw:1e9,pw>0&&el.matches('.g9-ti .t,.g9-ti .te')?pw:1e9),need=el.scrollWidth;
+  if(!(have<1e9)||need<=have+0.5)break;var r=Math.max(0.5,Math.min(0.97,have/need*0.97));
+  [el].concat([].slice.call(el.querySelectorAll('*'))).forEach(function(n){var z=parseFloat(getComputedStyle(n).fontSize);if(z)n.style.fontSize=(z*r).toFixed(2)+'px'})}})}
+V5.fit167=fit167;
+(function(){var run=function(){try{document.querySelectorAll('.g9-doc').forEach(function(d){fit167(d)})}catch(e){}},pend=0,sch=function(){if(pend)return;pend=1;requestAnimationFrame(function(){pend=0;(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(run)})};
+ try{new MutationObserver(function(m){for(var i=0;i<m.length;i++){var a=m[i].addedNodes;for(var j=0;j<a.length;j++){var n=a[j];if(n.nodeType===1&&(n.classList.contains('g9-doc')||n.querySelector&&n.querySelector('.g9-doc'))){sch();return}}}}).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}
+ try{document.fonts&&document.fonts.addEventListener&&document.fonts.addEventListener('loadingdone',sch)}catch(e){}})();
 function gen54tr(o){var T=tr54(),K=T.colors,s=o.s||{},p=o.p||prog(s.prog)||prog(DIP)||{eng:{}},e=p.eng||{},O=(typeof org56==='function'?org56(p):{}),
  land=T.orient!=='portrait',W=land?1123:794,H=land?794:1123,M=15*(1123/297),cw=W-2*M,
  RC=compile((o.pairs)||[]),TT=function(x){return applyText(String(x||''),RC)},
@@ -18344,8 +18355,9 @@ function gen54tr(o){var T=tr54(),K=T.colors,s=o.s||{},p=o.p||prog(s.prog)||prog(
  var R=[[['الاسم',E(s.name||'—'),'Name',E(s.nameEn||'—')],['الرقم الأكاديمي',nb(WD(s.id||'—')),'Student ID',E(WD(s.id||'—'))]],
   [['الجنسية',E(s.nat||'—'),'Nationality',E(s.natEn||'—')],['رقم الهوية',nb(s.pid||'—'),'ID No.',E(s.pid||'—')]],
   [['البرنامج',E(IND(pnA)),'Program',E(pnE)]],
-  [[O.unitOn?'الكلية / القسم':'القسم',E(IND(uA2||'—')),O.unitOn?'Faculty / Department':'Department',E(uE2||'—')],['سنة الميلاد',by?E(IND(by))+'م':'—','Year of Birth',by?E(by):'—']]];
- var ex=[];if(O.specOn&&O.specAr)ex.push(['التخصص',E(O.specAr),'Specialization',E(O.specEn||'')]);if(O.clsOn&&O.clsNo)ex.push([O.clsLabelAr||'تصنيف التخصص/المستوى',nb(O.clsNo),O.clsLabelEn||'Program / Level classification',E(O.clsNo)]);if(ex.length)R.push(ex);
+  [[O.unitOn?'الكلية / القسم':'القسم',E(IND(uA2||'—')),O.unitOn?'Faculty / Department':'Department',E(uE2||'—')]]];
+ /* v167: القسم في سطر كامل حتى لا يُقطع نصه؛ وسنة الميلاد مع التخصص */
+ var yb=['سنة الميلاد',by?E(IND(by))+'م':'—','Year of Birth',by?E(by):'—'],ex=[];if(O.specOn&&O.specAr)ex.push(['التخصص',E(O.specAr),'Specialization',E(O.specEn||'')]);ex.push(yb);if(O.clsOn&&O.clsNo)ex.push([O.clsLabelAr||'تصنيف التخصص/المستوى',nb(O.clsNo),O.clsLabelEn||'Program / Level classification',E(O.clsNo)]);for(var xi=0;xi<ex.length;xi+=2)R.push(ex.slice(xi,xi+2));
  var hw2=(iw-30)/2,sdLH=Math.round(11.5*PT*(land?1.32:1.26)),cg=14,c1=(hw2-cg)*0.57,c2=hw2-cg-c1,sdA='',sdE='';
  var WS=function(r){return r.length>1?[c1,c2]:[hw2]},zA=11.5*PT,zE=11*PT;
   R.forEach(function(r){var ws=WS(r);if(r.length<2)return;r.forEach(function(c,k){zA=Math.min(zA,fitPx(c[0]+': '+TX53(c[1]),AF,ws[k]-4,11.5*PT,8.5*PT));zE=Math.min(zE,fitPx(c[2]+': '+TX53(c[3]),EF,ws[k]-4,11*PT,7.5*PT))})});
@@ -18443,7 +18455,7 @@ var _gtr=GEN.gtr;GEN.gtr=function(c,ctx){if(c.prog==DIP||!c.prog){V5.trC=c;try{r
 
 /* --- التصدير: كل صفحة على حدة بدقة 300 DPI، وPDF متعدد الصفحات بالاتجاه الصحيح --- */
 async function pages54(h){var w=document.createElement('div');w.style.cssText='position:fixed;left:-6000px;top:0';w.innerHTML=h;document.body.appendChild(w);
- try{await document.fonts.ready;var P=[].slice.call(w.querySelectorAll('.g9p')),css=allCss()+'\n'+(await fontCSSAll()),out=[];
+ try{await document.fonts.ready;try{V5.fit167(w)}catch(e){}var P=[].slice.call(w.querySelectorAll('.g9p')),css=allCss()+'\n'+(await fontCSSAll()),out=[];
   for(var i=0;i<P.length;i++){var land=!P[i].classList.contains('pt'),W0=land?1123:794,H0=land?794:1123;
    var host=document.createElement('div');host.className='g9-doc';host.setAttribute('style',w.firstElementChild.getAttribute('style'));host.setAttribute('dir','rtl');host.appendChild(P[i].cloneNode(true));
    out.push({cv:await foEl(host,W0,H0,css,land?3508:2480),land:land})}return out}finally{w.remove()}}
@@ -18452,7 +18464,7 @@ async function pdf54(h){var cs=await pages54(h),J=window.jspdf.jsPDF,d=null;cs.f
 async function img54(h,f,only){var cs=await pages54(h);if(only!=null)cs=[cs[only]];var W1=Math.max.apply(null,cs.map(function(x){return x.cv.width})),H1=cs.reduce(function(a,x){return a+x.cv.height},0),cv=document.createElement('canvas');cv.width=W1;cv.height=H1;var x=cv.getContext('2d'),y=0;cs.forEach(function(c){x.drawImage(c.cv,0,y);y+=c.cv.height});
  return await new Promise(function(r){cv.toBlob(r,f==='jpg'?'image/jpeg':'image/png',.95)})}
 V5.pdf54=pdf54;V5.img54=img54;V5.pages54=pages54;
-var _dl54=W.dl;W.dl=async function(f){if(typeof cur==='string'&&/class="g9-doc"/.test(cur)&&f!=='svg'){try{var b=f==='pdf'?await pdf54(cur):await img54(cur,f);await fsave(curN+'.'+f,b)}catch(e){if(!e||e.code!=='declined')toast(L('تعذر التنزيل: ','Download failed: ')+((e&&e.message)||e))}return}return _dl54.apply(this,arguments)};
+var _dl54=W.dl;W.dl=async function(f){if(typeof cur==='string'&&/class="g9-doc"/.test(cur)&&f!=='svg'){try{if(f==='pdf')await fsave(curN+'.pdf',await pdf54(cur));else{/* v167: كل صفحة صورة مستقلة، لا تُدمج الصفحات في صورة واحدة */var cs=await pages54(cur);for(var i=0;i<cs.length;i++){var b=await new Promise(function(r){cs[i].cv.toBlob(r,f==='jpg'?'image/jpeg':'image/png',.95)});await fsave(curN+(cs.length>1?'-p'+(i+1):'')+'.'+f,b)}}}catch(e){if(!e||e.code!=='declined')toast(L('تعذر التنزيل: ','Download failed: ')+((e&&e.message)||e))}return}return _dl54.apply(this,arguments)};
 var _mk54=W.mkBlob;if(typeof _mk54==='function')W.mkBlob=async function(h,f){if(/class="g9-doc"/.test(h||'')&&f!=='svg')return f==='pdf'?pdf54(h):img54(h,f);return _mk54.apply(this,arguments)};
 
 /* --- البيانات الناقصة عند تعديل سجل رسمي صادر --- */
@@ -18726,9 +18738,9 @@ function data59(c){if(c.type==='appt'||(c.type==='intro'&&!(S.students||[]).some
 /* الفصل من التقويم الأكاديمي بالصيغة الموحدة: «الفصل الدراسي الأول من العام الدراسي …» */
 function cal61T(s,k){try{var t=k==='adm'?(V5.admTerm61&&V5.admTerm61(s)):null;if(!t&&V5.curTerm61)t=V5.curTerm61();if(!t)return {};var N=V5.termNames61(t);return {ar:N.ar,en:N.en,start:t.start}}catch(e){return {}}}
 /* v77: بيانات إفادة المستحق المالي من الرسوم المقررة والمنح (آلياً وفورياً) */
-function fin59(c,D){var st=D.st||{},P=prog(c.prog||st.prog)||prog(DIP)||{},T=null;try{T=V5.curTerm61&&V5.curTerm61()}catch(x){}var tid=c.term||(T&&T.id)||'',N={ar:'',en:''};try{var tt=V5.termById61&&V5.termById61(tid);if(tt)N=V5.termNames61(tt)}catch(x){}
+function fin59(c,D){var st=D.st||{},P=prog(c.prog||st.prog)||prog(DIP)||{},T=null;try{T=V5.curTerm61&&V5.curTerm61()}catch(x){}var tid=c.term||(T&&T.id)||'',N={ar:'',en:''};try{var t0=V5.termById61&&V5.termById61(tid),tf=V5.feeTerm167?V5.feeTerm167(st,t0||T):t0;if(tf)tid=tf.id}catch(x){}try{var tt=V5.termById61&&V5.termById61(tid);if(tt)N=V5.termNames61(tt)}catch(x){}
  var d=V5.due72?V5.due72(st,P,tid):{base:6000,pct:0,due:6000,cur:'BDT'},f=function(n){return V5.fmt72?V5.fmt72(n,d.cur):n+' '+d.cur};
- var due=c.amt?String(c.amt):f(d.due);return {tAr:N.ar||term59(c.term||''),tEn:N.en||'',base:f(d.base),pct:+d.pct||0,due:due,off:(+d.pct>0&&!c.amt)?f(Math.round((d.base-d.due)*100)/100):'',kAr:+d.pct>=100?'منحة كاملة':(+d.pct>0?'منحة جزئية':''),kEn:+d.pct>=100?'Full scholarship':(+d.pct>0?'Partial scholarship':'')}}
+ var due=c.amt?String(c.amt):f(d.due);return {tAr:N.ar||term59(tid||c.term||''),tEn:N.en||'',base:f(d.base),pct:+d.pct||0,due:due,off:(+d.pct>0&&!c.amt)?f(Math.round((d.base-d.due)*100)/100):'',kAr:+d.pct>=100?'منحة كاملة':(+d.pct>0?'منحة جزئية':''),kEn:+d.pct>=100?'Full scholarship':(+d.pct>0?'Partial scholarship':'')}}
 function rows59(c,D){if(c.type==='appt'){var A=D.A,TY={perm:['دائم','Permanent'],contract:['متعاقد','Contract'],part:['جزئي','Part-time'],visit:['زائر','Visiting']}[A.type]||[A.type||'',''],un=D.k==='staff'?(typeof unitName==='function'?unitName(D.o.unitId):''):(A.dept||''),unE=D.k==='staff'?(typeof unitName==='function'?unitName(D.o.unitId,true):''):(A.deptEn||en59(A.dept||'')),dd=function(x){return x?dmy(x)+' م':''};
   return [['الاسم',D.name,D.nameEn,'Name'],['الجنسية',D.nat,D.natEn,'Nationality'],['رقم الهوية',D.pid,'','ID No.'],['المؤهل',A.qual||'',A.qualEn||en59(A.qual||''),'Qualification'],['التخصص',A.spec||'',A.specEn||en59(A.spec||''),'Specialization'],
    [D.k==='faculty'?'الرتبة العلمية':'المسمى الوظيفي',D.k==='faculty'?(A.rank||''):(A.title||D.o.title||''),D.k==='faculty'?(A.rankEn||en59(A.rank||'')):(A.titleEn||en59(A.title||D.o.title||'')),D.k==='faculty'?'Academic Rank':'Job Title'],
@@ -19292,6 +19304,9 @@ function termAt(s,l){var a=admTermOf(s);if(!a)return null;var R=regTerms(),i=R.i
 function lastLevel(s){var p=prog(s.prog)||prog(DIP)||{},Cs=(p.courses||[]).filter(function(c){return !c.legacy});var L=Cs.filter(function(c){var g=(s.gr||{})[c.id];return (s.reg||[]).indexOf(c.id)>-1||(g&&g.fin)}).map(function(c){return +c.term||1});return L.length?Math.max.apply(null,L):(s.lvl||1)}
 function gradTermOf(s){if(s.gradTerm){var t=termById(s.gradTerm);if(t)return t}return termAt(s,lastLevel(s))}
 V5.admTerm61=admTermOf;V5.termAt61=termAt;V5.gradTerm61=gradTermOf;
+/* v167: فصل الرسوم للطالب = الفصل المطلوب، ولا يسبق أبداً فصلَ قبوله (المقبول في الفصل الثاني لا تُحسب عليه رسوم الفصل الأول) */
+V5.feeTerm167=function(s,t){try{var a=admTermOf(s);if(a&&(!t||a.start>t.start))return a}catch(e){}return t||null};
+V5.feeTerms167=function(s,T){var a=null;try{a=admTermOf(s)}catch(e){}if(!a)return T||[];var o=(T||[]).filter(function(t){return t&&t.start>=a.start});return o.length?o:[a]};
 function compat(t){var N=termNames(t);return {sem:t.n,id:t.id,name:N.ar,nameEn:N.en,year:N.yearAr,yearEn:N.yearEn,hy:N.hy,gy:N.gy,from:t.start,to:t.end,weeks:Math.round((Date.parse(t.end)-Date.parse(t.start))/6048e5)}}
 var _s48=window.semOf48;window.semOf48=function(s,l){try{var t=termAt(s,l);if(t)return compat(t)}catch(e){}return _s48?_s48.apply(this,arguments):null};
 window.termInfo36=function(){var t=curTerm61();return t?compat(t):null};window.curTerm=function(){var t=curTerm61();return t?termNames(t).ar:''};
@@ -25687,7 +25702,7 @@ var CURP=function(P,s){var F=(P&&P.pay71)||{};if(INTL142(s))return F.intlCur||'U
 V5.fees142=function(P){return {bd:{amount:BASE(P,null),cur:CURP(P,null)},intl:{amount:BASE(P,{feeCls142:'intl'}),cur:CURP(P,{feeCls142:'intl'})}}};
 function schPct(s,term){var A=(s&&Array.isArray(s.sch72)?s.sch72:[]).filter(function(x){return x.st!=='void'});var t=A.filter(function(x){return x.scope==='term'&&x.term===term}).slice(-1)[0];if(t)return +t.pct||0;var g=A.filter(function(x){return x.scope==='program'&&(!x.prog||x.prog==s.prog)}).slice(-1)[0];return g?+g.pct||0:0}
 function dueOf(s,P,term){var b=BASE(P,s),pc=Math.max(0,Math.min(100,schPct(s,term)));return {base:b,pct:pc,due:Math.round(b*(100-pc))/100,cur:CURP(P,s),intl:INTL142(s)}}
-function recalc(s){var ch=0;reqs(s).forEach(function(r){if(r.st!=='req'&&r.st!=='notified')return;var P=progOf(r.prog),d=dueOf(s,P,r.term);if(r.amount!==d.due||r.pct!==d.pct||r.base!==d.base||r.cur!==d.cur){r.base=d.base;r.pct=d.pct;r.amount=d.due;r.cur=d.cur;ch=1}});if(ch){try{touch(s)}catch(e){}}return ch}
+function recalc(s){var ch=0;reqs(s).forEach(function(r){if(r.st!=='req'&&r.st!=='notified')return;try{var f7=V5.feeTerm167&&V5.feeTerm167(s,V5.termById61(r.term));if(f7&&f7.id!==r.term){var n7=V5.termNames61(f7);r.term=f7.id;r.termAr=n7.ar;r.termEn=n7.en;ch=1}}catch(e){}var P=progOf(r.prog),d=dueOf(s,P,r.term);if(r.amount!==d.due||r.pct!==d.pct||r.base!==d.base||r.cur!==d.cur){r.base=d.base;r.pct=d.pct;r.amount=d.due;r.cur=d.cur;ch=1}});if(ch){try{touch(s)}catch(e){}}return ch}
 V5.schPct72=schPct;V5.due72=dueOf;V5.recalc72=recalc;V5.fmt72=function(n,c){return fmt(n,c)};
 
 /* ---------- (1) التبرع لوقف المعهد ---------- */
@@ -25825,10 +25840,10 @@ H.pay71prog=function(pid){STp.sel=pid;go();setTimeout(function(){var e=document.
 H.pay71req=function(f,pid){if(!central())return false;var p=progOf(pid);if(!p)return false;var v=fv(f),amt=+v.amount;if(!(amt>0)){toast(L('أدخل مبلغاً صحيحاً.','Enter a valid amount.'));return false}
  var da=String(v.descAr||'').trim(),de=String(v.descEn||'').trim();if(!da||!de){toast(L('البيان مطلوب باللغتين.','The description is required in both languages.'));return false}
  p.pay71={on:f.on.checked?1:0,amount:amt,cur:v.cur||cfg().cur,intlAmount:+v.intlAmount>0?+v.intlAmount:600,intlCur:v.intlCur||'USD',descAr:da,descEn:de,at:NOW(),by:who()};try{touch(p)}catch(e){}
- var ids=[].slice.call(f.querySelectorAll('[name=sids]:checked:not(:disabled)')).map(function(x){return x.value}),tn=termNow(),n=0;
+ var ids=[].slice.call(f.querySelectorAll('[name=sids]:checked:not(:disabled)')).map(function(x){return x.value}),tn0=termNow(),n=0;
  if(ids.length&&!p.pay71.on){toast(L('فعّل الدفع للبرنامج أولاً، وإلا لا يظهر الزر للطلاب.','Enable payment for the program first; otherwise the button is not shown to students.'));return false}
  (S.students||[]).forEach(function(x){if(!x.deleted&&x.prog==p.id)recalc(x)});
- ids.forEach(function(id){var s=stuOf(id);if(!s)return;s.pay71=reqs(s).slice();var d72=dueOf(s,p,tn.id);s.pay71.push({id:rid(),prog:p.id,term:tn.id,termAr:tn.ar,termEn:tn.en,descAr:da,descEn:de,base:d72.base,pct:d72.pct,amount:d72.due,cur:d72.cur,st:'req',reqAt:NOW(),reqBy:who()});try{touch(s)}catch(e){}n++});
+ ids.forEach(function(id){var s=stuOf(id);if(!s)return;var tn=tn0;try{var t1=V5.feeTerm167(s,V5.termById61(tn0.id));if(t1&&t1.id!==tn0.id){var n1=V5.termNames61(t1);tn={id:t1.id,ar:n1.ar,en:n1.en}}}catch(e){}if(reqs(s).some(function(r){return r.term===tn.id&&r.prog==p.id&&r.st!=='void'}))return;s.pay71=reqs(s).slice();var d72=dueOf(s,p,tn.id);s.pay71.push({id:rid(),prog:p.id,term:tn.id,termAr:tn.ar,termEn:tn.en,descAr:da,descEn:de,base:d72.base,pct:d72.pct,amount:d72.due,cur:d72.cur,st:'req',reqAt:NOW(),reqBy:who()});try{touch(s)}catch(e){}n++});
  try{aud(L('تفعيل دفع الرسوم وطلبه من الطلاب','Fee payment enabled and requested from students'),pid,(p.pay71.on?'on':'off')+' · '+fmt(amt,p.pay71.cur)+' · '+n)}catch(e){}save();toast(L('حُفظ. طُلب الدفع من ','Saved. Payment requested from ')+n+L(' طالب.',' student(s).'));go();return false};
 H.fee142cls=function(sid,v){if(!central())return;var s=stuOf(sid);if(!s)return;s.feeCls142=v==='bd'||v==='intl'?v:'';recalc(s);try{touch(s)}catch(e){}try{aud(L('تصنيف فئة رسوم الطالب','Student fee category set'),sid,v||'auto')}catch(e){}save();toast(L('حُفظ التصنيف وتحدّث المستحق فوراً.','Category saved; the amount due was updated at once.'));go()};
 H.pay71void=function(sid,id){if(!central())return;var s=stuOf(sid),r=reqs(s).find(function(x){return x.id===id});if(!r||!confirm(L('إلغاء طلب الدفع؟ يختفي الزر من بوابة الطالب.','Cancel the payment request? The button disappears from the student portal.')))return;r.st='void';r.voidAt=NOW();try{touch(s)}catch(e){}try{aud(L('إلغاء طلب دفع','Payment request cancelled'),sid,id)}catch(e){}save();go()};
@@ -25981,7 +25996,7 @@ try{GOH.post.push(function(){try{var f=document.querySelector('#app form[onsubmi
  if(!f.querySelector('.sn72')){var d=document.createElement('p');d.className='mu sn72';d.style.gridColumn='1/-1';d.textContent=L('يكون التسجيل والقبول على الرسوم المقررة. وبعد القبول يمكن للطالب تقديم طلب منحة دراسية لكل فصل من بوابته الطلابية وفق الشروط.','Registration and admission are at the set fees. After admission, a student may apply for a scholarship for each semester from the student portal, subject to the conditions.');var b=f.querySelector('button.btn:not([type=button])');if(b&&b.parentNode)b.parentNode.insertBefore(d,b);else f.appendChild(d)}}catch(e){}})}catch(e){}
 
 /* ---------- بوابة الطالب: الرسوم والمنح وطلب المنحة ---------- */
-function stuBox(s){var P=progOf(s.prog);if(!P)return '';var T=terms(),b=base(P,s);
+function stuBox(s){var P=progOf(s.prog);if(!P)return '';var T=V5.feeTerms167?V5.feeTerms167(s,terms()):terms(),b=base(P,s);
  var rows=T.map(function(t){var d=V5.due72?V5.due72(s,P,t.id):{base:b.amount,pct:0,due:b.amount,cur:b.cur},n=tname(t.id);
   return '<tr><td>'+e0(L(n.ar,n.en))+'<br><small class="mu">'+L('نحو ','about ')+months(t)+L(' أشهر',' months')+'</small></td><td dir="ltr">'+e0(fmt(d.base,d.cur))+'</td><td>'+(d.pct?'<span class="tag ok">'+d.pct+'%</span>':'—')+'</td><td dir="ltr"><b>'+e0(fmt(d.due,d.cur))+'</b></td></tr>'}).join('');
  var R=A(s,'schReq72').slice().reverse(),ST={pending:['قيد الدراسة','Under review',''],approved:['معتمد','Approved','ok'],rejected:['معتذر عنه','Declined','er']};
@@ -25993,7 +26008,7 @@ function stuBox(s){var P=progOf(s.prog);if(!P)return '';var T=terms(),b=base(P,s
   (R.length?'<h4>'+L('طلبات المنح','Scholarship applications')+'</h4>'+R.map(function(r){var n=tname(r.term),st=ST[r.st]||ST.pending;return '<p>'+e0(L(n.ar,n.en))+' — <span class="tag '+st[2]+'">'+L(st[0],st[1])+'</span>'+(r.st==='approved'?' <b dir="ltr">'+r.pct+'%</b>':'')+(r.noteAr?'<br><small class="mu">'+e0(L(r.noteAr,r.noteEn||r.noteAr))+'</small>':'')+'</p>'}).join(''):'')+'</div>'}
 function T_(a,b,c,d,rows){return '<div class="tw"><table><tr><th>'+L(a[0],a[1])+'</th><th>'+L(b[0],b[1])+'</th><th>'+L(c[0],c[1])+'</th><th>'+L(d[0],d[1])+'</th></tr>'+rows+'</table></div>'}
 H.sch72req=function(){if(typeof me==='undefined'||!me||me.r!=='student')return;var s=stuOf(me.id);if(!registered(s)){toast(L('طلب المنحة متاح للطلاب المسجلين فقط.','Scholarship applications are for registered students only.'));return}
- var T=terms().filter(function(t){return !A(s,'schReq72').some(function(r){return r.term===t.id&&r.st==='pending'})});if(!T.length){toast(L('لديك طلب قيد الدراسة لهذا الفصل.','You already have a pending application for this semester.'));return}
+ var T=(V5.feeTerms167?V5.feeTerms167(s,terms()):terms()).filter(function(t){return !A(s,'schReq72').some(function(r){return r.term===t.id&&r.st==='pending'})});if(!T.length){toast(L('لديك طلب قيد الدراسة لهذا الفصل.','You already have a pending application for this semester.'));return}
  var h='<form class="v51g" onsubmit="return V51.h.sch72reqS(this)"><label style="grid-column:1/-1">'+L('الفصل الدراسي','Semester')+'<select name="term" required>'+T.map(function(t){var n=tname(t.id);return '<option value="'+e0(t.id)+'">'+e0(L(n.ar,n.en))+'</option>'}).join('')+'</select></label>'+
   '<p class="msg" style="grid-column:1/-1">'+L('المنح من 20% إلى 100% بحسب استيفاء الشروط والمتطلبات، وقد تختلف النسبة بحسب المعدل والتميز الدراسي. يُشترط لطلب المنحة معدل 90 من 100 أو ما يعادله. ومنحة دعم المتميزين 50% لمن شارك في 10 برامج أو دورات قصيرة على الأقل ونشر شهاداتها. وعند الاعتماد يُحتسب المستحق تلقائياً فوراً.','Scholarships range from 20% to 100% according to the conditions and requirements, and the percentage may vary with GPA and academic distinction. A score of 90 out of 100 or its equivalent is required to apply. The 50% Excellence Support Scholarship is for those who took part in at least 10 short programmes or courses and shared their certificates. On approval the amount due is recalculated at once.')+'</p>'+
   '<label>'+L('أساس الطلب','Basis of the application')+'<select name="basis" required><option value="merit">'+L('التفوق الدراسي (90 من 100 فأعلى أو ما يعادله)','Academic excellence (90/100 or above, or equivalent)')+'</option><option value="amb">'+L('دعم المتميزين 50% (10 برامج قصيرة ونشر شهاداتها)','Excellence support 50% (10 short programmes, certificates shared)')+'</option><option value="other">'+L('أساس آخر وفق الشروط','Another basis under the conditions')+'</option></select></label>'+
@@ -27526,7 +27541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v166';
+window.__BUILD__='v167';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
