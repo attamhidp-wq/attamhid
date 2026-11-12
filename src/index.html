@@ -18160,7 +18160,7 @@ function ros55(r,C){var P=function(R,k,d,n,rot){var s='';for(var i=0;i<=n;i++){v
  return '<svg xmlns="http://www.w3.org/2000/svg" width="'+2*r+'" height="'+2*r+'" viewBox="0 0 '+2*r+' '+2*r+'"><circle cx="'+r+'" cy="'+r+'" r="'+(r-.5)+'" fill="'+C.bg1+'" stroke="'+C.navy+'" stroke-width=".9"/><circle cx="'+r+'" cy="'+r+'" r="'+(r-3)+'" fill="none" stroke="'+C.frame+'" stroke-width=".5"/>'+g+'<circle cx="'+r+'" cy="'+r+'" r="'+(r*.16).toFixed(2)+'" fill="'+C.navy+'"/><circle cx="'+r+'" cy="'+r+'" r="'+(r*.08).toFixed(2)+'" fill="'+C.bg1+'"/></svg>'}
 var ROS55={};
 /* إعدادات «الجهة المانحة» لكل برنامج، مع قيم افتراضية للدبلوم العام (قسم اللغة العربية) */
-var ORG0={award:'cert',unitOn:0,unitType:'college',unitAr:'',unitEn:'',deptOn:1,deptAr:'قسم الدراسات اللغوية والترجمة',deptEn:'the Department of Linguistic Studies and Translation',specOn:1,specAr:'الإعداد اللغوي',specEn:'Language Skills',clsOn:0,clsLabelAr:'تصنيف التخصص/المستوى',clsLabelEn:'Program / Level classification',clsNo:''};
+var ORG0={award:'cert',unitOn:0,unitType:'college',unitAr:'',unitEn:'',deptOn:1,deptAr:'قسم الدراسات اللغوية والترجمة',deptEn:'the Department of Linguistic Studies and Translation',specOn:1,specAr:'الإعداد اللغوي',specEn:'Language Preparation',clsOn:0,clsLabelAr:'تصنيف التخصص/المستوى',clsLabelEn:'Program / Level classification',clsNo:''};
 function org56(p){var e=(p&&p.eng)||{},o=e.org,r=o?Object.assign({},ORG0,o):(p&&p.id==DIP?Object.assign({},ORG0):Object.assign({},ORG0,{deptOn:0}));
  /* v113: اسم القسم في الشهادة يتبع سجل القسم الأكاديمي التابع له البرنامج مباشرة */
  try{var u=e.unitId&&V5.unit&&V5.unit(e.unitId);if(u&&!u.deleted&&u.academic&&u.type==='department'&&r.deptOn){r.deptAr=u.nameAr||r.deptAr;var ne=String(u.nameEn||'').trim();if(ne)r.deptEn=/^the\s/i.test(ne)?ne:'the '+ne}}catch(x){}
@@ -27526,7 +27526,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v165';
+window.__BUILD__='v166';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -28504,14 +28504,16 @@ try{GOH.post.push(in146);in146()}catch(e){}
 try{(function(){var X=S.v51||{},ch=0;if(X.mail64){var j=JSON.stringify(X.mail64);if(j.indexOf('التزكية')>=0||/testimonial/i.test(j)){X.mail64=JSON.parse(j.split('شهادة التزكية').join('خطاب التوصية').replace(/graduate testimonial/gi,'letter of recommendation').replace(/testimonial/gi,'letter of recommendation'));ch=1}}(S.certs||[]).forEach(function(c){if(c&&c.rec_kind==='تزكية تخرج'){c.rec_kind='توصية تخرج';ch=1}});if(ch)try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}})()}catch(e){}
 /* v162 — الاسم المعتمد: «دبلوم عام في اللغة العربية لغير الناطقين بها» / «Diploma in Arabic for Non-Native Speakers» بلا «انتظام كامل» ولا «General» — ترحيل النسخ المحفوظة في الجهاز */
 var REN162=[[/الدبلوم العام في اللغة العربية لغير الناطقين بها(\s*[-–—،,·]\s*انتظام كامل|\s*\(انتظام كامل\)|\s*بانتظام كامل)?/g,'دبلوم عام في اللغة العربية لغير الناطقين بها'],[/دبلوم عام في اللغة العربية لغير الناطقين بها(\s*[-–—،,·]\s*انتظام كامل|\s*\(انتظام كامل\)|\s*بانتظام كامل)/g,'دبلوم عام في اللغة العربية لغير الناطقين بها'],[/\(انتظام كامل،\s*/g,'('],[/الدبلوم العام\s*[–-]\s*انتظام كامل/g,'دبلوم عام في اللغة العربية لغير الناطقين بها'],
- [/General Diploma in Arabic Language for Non-Native Speakers(\s*[-–—,·]\s*[Ff]ull-time|\s*\([Ff]ull-time\))?/g,'Diploma in Arabic for Non-Native Speakers'],[/General Diploma in Arabic for Non-Native Speakers(\s*[-–—,·]\s*[Ff]ull-time|\s*\([Ff]ull-time\))?/g,'Diploma in Arabic for Non-Native Speakers'],[/Diploma in Arabic for Non-Native Speakers(\s*[-–—,·]\s*[Ff]ull-time|\s*\([Ff]ull-time\))/g,'Diploma in Arabic for Non-Native Speakers'],[/General Diploma\s*[–-]\s*Full-time/g,'Diploma in Arabic for Non-Native Speakers'],[/Diploma of General Arabic Language for Non-Native Speakers/g,'Diploma in Arabic for Non-Native Speakers'],[/Diploma in Arabic Language for Non-Native Speakers/g,'Diploma in Arabic for Non-Native Speakers'],[/General Diploma/g,'Diploma'],[/Language Preparation/g,'Language Skills']];
-var RX162=/Language Preparation|انتظام كامل|[Ff]ull-time|General Diploma|الدبلوم العام في اللغة العربية|General Arabic Language|Arabic Language for Non/;
+ [/General Diploma in Arabic Language for Non-Native Speakers(\s*[-–—,·]\s*[Ff]ull-time|\s*\([Ff]ull-time\))?/g,'Diploma in Arabic for Non-Native Speakers'],[/General Diploma in Arabic for Non-Native Speakers(\s*[-–—,·]\s*[Ff]ull-time|\s*\([Ff]ull-time\))?/g,'Diploma in Arabic for Non-Native Speakers'],[/Diploma in Arabic for Non-Native Speakers(\s*[-–—,·]\s*[Ff]ull-time|\s*\([Ff]ull-time\))/g,'Diploma in Arabic for Non-Native Speakers'],[/General Diploma\s*[–-]\s*Full-time/g,'Diploma in Arabic for Non-Native Speakers'],[/Diploma of General Arabic Language for Non-Native Speakers/g,'Diploma in Arabic for Non-Native Speakers'],[/Diploma in Arabic Language for Non-Native Speakers/g,'Diploma in Arabic for Non-Native Speakers'],[/General Diploma/g,'Diploma']];
+var RX162=/انتظام كامل|[Ff]ull-time|General Diploma|الدبلوم العام في اللغة العربية|General Arabic Language|Arabic Language for Non/;
 window.ren162=function(t){t=String(t==null?'':t);REN162.forEach(function(r){t=t.replace(r[0],r[1])});return t};
 var mt162=0;function walk162(o,d){var c=0;if(!o||typeof o!=='object'||d>12)return 0;Object.keys(o).forEach(function(k){var v=o[k];if(typeof v==='string'){if(RX162.test(v)){var w=ren162(v);if(w!==v){o[k]=w;c++}}}else if(v&&typeof v==='object')c+=walk162(v,d+1)});return c}
 function mig162(){var n=Date.now();if(n-mt162<20000)return;mt162=n;try{var ch=0;Object.keys(S).forEach(function(k){var v=S[k];if(!v||typeof v!=='object')return;if(!RX162.test(JSON.stringify(v)))return;if(walk162(v,0))ch=1});
   if(ch){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}}catch(e){}}
 try{mig162()}catch(e){}try{GOH.pre.push(mig162)}catch(e){}
 window.mig162=function(){mt162=0;mig162()};
+/* v166 — التخصص: الإعداد اللغوي / Language Preparation (إرجاع ما رحّله v165 في النسخ المحلية) */
+try{(S.programs||[]).forEach(function(p){var o=p&&p.eng&&p.eng.org;if(o&&o.specEn==='Language Skills'){o.specEn='Language Preparation';try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}})}catch(e){}
 /* v156 — مستوى البداية بالتسكين (مستقل عن المستوى الحالي بعد الترقيات) */
 window.startLv156=function(s){if(!s)return 1;var p=s.pl;if(p&&+p.lv)return +p.lv;if(p&&(p.reason||p.score!=null))return +s.lvl||1;return 1};
 /* v157 — العنوان والنص بالإنجليزية للأخبار (يُنشر بهما منشور فيسبوك إنجليزي مستقل بملصقه) */
