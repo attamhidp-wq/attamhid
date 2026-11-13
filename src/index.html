@@ -26,8 +26,61 @@ html.b71[data-theme="dark"]::after{filter:brightness(0) invert(1)}html.b71[data-
 <script>/* v157: مصدر الزائر (أول مصدر خلال 30 يوماً) لمعرفة مصدر المتقدمين */try{(function(){var q=new URLSearchParams(location.search),v=(q.get('src')||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,20),r=document.referrer||'',k='src157',o=null;try{o=JSON.parse(localStorage.getItem(k)||'null')}catch(e){}
 if(!v&&r&&!/attamhid\.com/.test(r))v=/facebook\.|fb\.com|m\.me/.test(r)?'fb':/(^|\/\/|\.)(t\.co|x\.com|twitter\.com)\//.test(r)?'x':/instagram\./.test(r)?'ig':/google\.|bing\.|yahoo\.|duckduckgo/.test(r)?'search':/whatsapp|wa\.me/.test(r)?'wa':/t\.me\/|telegram\./.test(r)?'tg':'ref';
 if(v&&(!o||Date.now()-o.at>2592e6))localStorage.setItem(k,JSON.stringify({s:v,at:Date.now()}))})()}catch(e){}</script>
+<script id="font170">/* v170: خط موحّد للموقع والوثائق كلها (العرض والتنزيل سواء) + منع تداخل النصوص من أصله.
+ السبب الجذري للمشكلتين: الوثائق تُقاس وتُصمَّم بخطوط Google (أميري/الرقعة/Tinos)، لكن ملف التنزيل يُرسم في صورة SVG لا تستطيع
+ جلب تلك الخطوط، أو على جهاز لم تُحمَّل فيه بعد؛ فيُرسم النص بخط بديل أعرض من الخط الذي قيس به → خط قبيح وتداخل النصوص.
+ الحل:
+ - خط واحد لكل شيء: «Sakkal Majalla» حيث هو مثبّت في الجهاز، وإلا خط نسخ مضمَّن ذاتياً في الموقع (Scheherazade New، رخصة OFL).
+   مقاييس الأسطر موحّدة للمصدرين (ascent/descent-override) فلا يختلف ارتفاع السطر بينهما.
+ - لا قياس ولا تنزيل قبل تحميل الخط، وقياسات اللوحة (canvas) تستعمل الخط نفسه.
+ - كل ملف يُنزَّل يحمل بيانات الخط داخله (data URI) فيُرسم بالخط نفسه على أي جهاز.
+ - فحص أخير قبل كل تنزيل وبعد كل عرض: سطر يفيض عن عرضه يُصغَّر، وكتلة نص تتداخل مع ما تحتها (التوقيع/الختم/الرموز) تُصغَّر حتى تنفصل. */
+(function(){var W=window,D=document,FAM='TamhidFont',FILES={400:'tmh-400-v170.woff',700:'tmh-700-v170.woff'};
+ function u(f){try{return new URL('fonts/'+f,D.baseURI).href}catch(e){return 'fonts/'+f}}
+ var M="font-style:normal;font-display:block;ascent-override:110%;descent-override:55%;line-gap-override:0%;";
+ var LOC={400:"local('Sakkal Majalla'),local('SakkalMajalla')",700:"local('Sakkal Majalla Bold'),local('SakkalMajalla-Bold')"},RNG={400:'1 549',700:'550 1000'};
+ function face(w,src){return "@font-face{font-family:'"+FAM+"';font-weight:"+RNG[w]+";"+M+"src:"+LOC[w]+","+src+"}"}
+ var STACK="'"+FAM+"','Hind Siliguri',serif";
+ /* القاعدة الموحّدة بمحدِّد لا يعتمد على عنصر html، فتعمل داخل صور SVG المصدَّرة أيضاً */
+ var RULE=":root{--tmh:"+STACK+"}*:not(code):not(pre):not(kbd):not(samp),*::before,*::after{font-family:"+STACK+"!important}"+
+  /* السطران المتراكبان (عربي فوق إنجليزي) في خلايا السجل الأكاديمي: تباعد يمنع تلامس حروف السطرين */
+  ".g9p .g9-tr .nm b,.g9p .g9-sct tr.m td b{line-height:1.32!important}.g9p .g9-tr .nm i,.g9p .g9-sct tr.m td i{line-height:1.18!important}.g9p .g9-sr .l b{line-height:1.8!important;display:block;margin-top:-2px}.g9p .g9-sr .l i{line-height:1.05!important;display:block}";
+ var SCREEN=face(400,"url('"+u(FILES[400])+"') format('woff')")+face(700,"url('"+u(FILES[700])+"') format('woff')")+RULE;
+ W.__tmhRule=RULE;
+ var st=D.createElement('style');st.id='font170css';st.textContent=SCREEN;(D.head||D.documentElement).appendChild(st);
+ try{[400,700].forEach(function(w){var l=D.createElement('link');l.rel='preload';l.as='font';l.type='font/woff';l.crossOrigin='anonymous';l.href=u(FILES[w]);D.head.appendChild(l)})}catch(e){}
+ /* كل نص يُرسم أو يُقاس على لوحة canvas يستعمل الخط الموحّد */
+ try{var P=CanvasRenderingContext2D.prototype,d=Object.getOwnPropertyDescriptor(P,'font');if(d&&d.set&&!P.__f170){P.__f170=1;Object.defineProperty(P,'font',{configurable:true,enumerable:d.enumerable,get:d.get,set:function(v){v=String(v==null?'':v);var m=/^(.*?\d*\.?\d+(?:px|pt|em|rem|%|vw|vh)(?:\s*\/\s*\S+)?\s+)(.+)$/i.exec(v);d.set.call(this,m?m[1]+"'"+FAM+"',serif":v)}})}}catch(e){}
+ /* أنماط التصدير: الخط مضمَّن بياناتٍ داخل الملف نفسه */
+ var EX=null;W.__tmhExport=function(){if(!EX)EX=Promise.all([400,700].map(function(w){return fetch(u(FILES[w]),{cache:'force-cache'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.arrayBuffer()}).then(function(b){var s='',a=new Uint8Array(b);for(var i=0;i<a.length;i+=32768)s+=String.fromCharCode.apply(null,a.subarray(i,i+32768));return face(w,"url(data:font/woff;base64,"+btoa(s)+") format('woff')")})})).then(function(f){return f.join('\n')+'\n'+RULE},function(e){EX=null;console.warn('font170 export',e);return RULE});return EX};
+ var RD=null;W.__font170=function(){if(!RD){var L=Promise.all(['400','700'].map(function(w){return D.fonts.load(w+" 20px '"+FAM+"'",'معهد التمهيد At Tamhid 0123')})).then(function(){return D.fonts.ready});RD=Promise.race([L,new Promise(function(r){setTimeout(r,8000)})]).catch(function(){}).then(function(){W.__font170ok=1})}return RD};
+ var PG='.tmp,.pg4,.cert3,.g5,.g9p,.c64,.an67,.an68';W.__pg170=PG;
+ function cs(e){return getComputedStyle(e)}
+ function hasC(e){return e.tagName==='IMG'||e.tagName==='CANVAS'||/\S/.test(e.textContent||'')||!!e.querySelector('img,canvas')}
+ function box(e){if(e.tagName==='IMG'||e.tagName==='CANVAS')return e.getBoundingClientRect();var r=D.createRange();r.selectNodeContents(e);var b=r.getBoundingClientRect();return (b.width||b.height)?b:e.getBoundingClientRect()}
+ /* سطر لا يلتف ويفيض عن عرض صندوقه: يُصغَّر خطه وخط ما بداخله حتى يتسع */
+ function fitW(p){var L=p.querySelectorAll('*');for(var i=0;i<L.length;i++){var e=L[i];if(!e.clientWidth||e.scrollWidth<=e.clientWidth+1)continue;var c=cs(e);if(!/nowrap|pre/.test(c.whiteSpace)||c.overflowX==='auto'||c.overflowX==='scroll'||!hasC(e))continue;
+  for(var k=0;k<6&&e.scrollWidth>e.clientWidth+1;k++){var f=Math.max(.6,Math.min(.98,e.clientWidth/e.scrollWidth));[e].concat([].slice.call(e.querySelectorAll('*'))).forEach(function(x){var z=parseFloat(cs(x).fontSize);if(z)x.style.fontSize=(z*f).toFixed(2)+'px'})}}}
+ /* كتلتان موضوعتان في الصفحة: إن فاض محتوى العليا على السفلى تُصغَّر العليا (من أعلاها) حتى تنفصل */
+ function blocks(p){var pb=p.getBoundingClientRect(),A=pb.width*pb.height,o=[];[].slice.call(p.querySelectorAll('*')).forEach(function(e){var c=cs(e);if(c.position!=='absolute'&&c.position!=='fixed')return;
+  if(c.display==='none'||c.visibility==='hidden'||+c.opacity<.6||!hasC(e))return;var b=box(e);if(!b.width||!b.height||b.width*b.height>A*.6)return;o.push(e)});return o.filter(function(e){for(var a=e.parentElement;a&&a!==p;a=a.parentElement){if(o.indexOf(a)>=0)return false}return true})}
+ function hit(a,b){var x=box(a),y=box(b);return x.top<y.top-2&&Math.min(x.right,y.right)-Math.max(x.left,y.left)>4&&x.bottom>y.top+1}
+ function fitV(p){var B=blocks(p);for(var i=0;i<B.length;i++){var a=B[i];if(!/\S/.test(a.textContent||''))continue;var bad=function(){return B.some(function(b){return b!==a&&!a.contains(b)&&!b.contains(a)&&hit(a,b)})};if(!bad())continue;
+  var t0=a.dataset.f170t!=null?a.dataset.f170t:(cs(a).transform==='none'?'':cs(a).transform);a.dataset.f170t=t0;a.style.transformOrigin='top center';for(var s=.98;s>=.76&&bad();s-=.02)a.style.transform=(t0?t0+' ':'')+'scale('+s.toFixed(2)+')'}}
+ function fit(root){if(!root||!root.querySelectorAll)return;var L=[].slice.call(root.querySelectorAll(PG));if(root.matches&&root.matches(PG))L.unshift(root);L.forEach(function(p){if(!p.getBoundingClientRect().width)return;try{fitW(p);fitV(p);p.dataset.f170=1}catch(e){}})}
+ W.__fit170=fit;
+ /* قبل كل تنزيل عبر html2canvas: انتظار الخط ثم الفحص — مهما كانت الدالة التي تستدعيه */
+ function wrap(f){if(typeof f!=='function'||f.__f170)return f;var w=function(el){var self=this,a=arguments;return W.__font170().then(function(){try{fit(el)}catch(e){}return f.apply(self,a)})};w.__f170=1;for(var k in f){try{w[k]=f[k]}catch(e){}}return w}
+ var cur=wrap(W.html2canvas);try{Object.defineProperty(W,'html2canvas',{configurable:true,get:function(){return cur},set:function(v){cur=wrap(v)}})}catch(e){}
+ /* قبل كل تصدير عبر صورة SVG: تُفحص الوثيقة وهي معروضة فعلاً (وإن كانت خارج الصفحة تُركَّب مؤقتاً للقياس) */
+ try{var XS=XMLSerializer.prototype,ser=XS.serializeToString;XS.serializeToString=function(n){try{if(n&&n.nodeType===1&&(n.matches(PG)||n.querySelector(PG))){if(n.isConnected)fit(n);else{var par=n.parentNode,nx=n.nextSibling,h=D.createElement('div');h.className='tmw';h.style.cssText='position:fixed;left:-9000px;top:0;direction:rtl';h.appendChild(n);D.body.appendChild(h);try{fit(n)}finally{if(par)par.insertBefore(n,nx);else h.removeChild(n);h.remove()}}}}catch(e){}return ser.call(this,n)}}catch(e){}
+ /* بعد تحميل الخط: يُعاد عرض الصفحة إن كان فيها وثيقة قيست بخط آخر، ثم يُفحص كل ما يُعرض */
+ var T=0,run=function(){clearTimeout(T);T=setTimeout(function(){if(!W.__font170ok)return;var L=D.querySelectorAll(PG);for(var i=0;i<L.length;i++){if(!L[i].dataset.f170)fit(L[i])}},180)};
+ W.__font170().then(function(){try{var a=D.activeElement;if(D.querySelector('#app '+PG.split(',').join(',#app '))&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))&&typeof W.go==='function')W.go()}catch(e){}run();W.__tmhExport()});
+ try{new MutationObserver(run).observe(D.documentElement,{childList:true,subtree:true})}catch(e){}
+})();</script>
 <script id="boot71s">
-/* v130: نص كل أوراق الأنماط (المضمّنة والملفات) لتصدير الوثائق */window.__styleTexts=function(){var o=[];[].slice.call(document.querySelectorAll('style,link[rel=stylesheet]')).forEach(function(x){if(x.tagName==='STYLE'){o.push(x.textContent);return}try{var sh=x.sheet;if(sh&&x.href&&x.href.indexOf(location.origin)===0)o.push([].slice.call(sh.cssRules).map(function(r){return r.cssText}).join('\n'))}catch(e){}});return o};
+/* v130: نص كل أوراق الأنماط (المضمّنة والملفات) لتصدير الوثائق */window.__styleTexts=function(){var o=[];[].slice.call(document.querySelectorAll('style,link[rel=stylesheet]')).forEach(function(x){if(x.tagName==='STYLE'){o.push(x.id==='font170css'?(window.__tmhRule||''):x.textContent);return}try{var sh=x.sheet;if(sh&&x.href&&x.href.indexOf(location.origin)===0)o.push([].slice.call(sh.cssRules).map(function(r){return r.cssText}).join('\n'))}catch(e){}});return o};
 window.__bx69=function(t){var b=t&&t.nextElementSibling;while(b&&!(b.classList&&b.classList.contains('box')))b=b.nextElementSibling;return b||(t&&t.nextElementSibling)};/* v71: لا يُعرض شيء قبل اكتمال الإقلاع — يمنع ظهور الشكل السابق أو الأزرار للحظة */(function(){var d=document.documentElement;d.classList.add('b71');try{var t=localStorage.getItem('tth');if(t==='dark'||t==='light')d.setAttribute('data-theme',t);else if(matchMedia('(prefers-color-scheme:dark)').matches)d.setAttribute('data-theme','dark')}catch(e){}var SI=window.setInterval;window.setInterval=function(f,t){if(typeof f!=='function')return SI.apply(window,arguments);var a=[].slice.call(arguments,2);return SI.call(window,function(){var p=window.__bg71;window.__bg71=1;try{return f.apply(this,a)}finally{window.__bg71=p}},t)};var off=function(){d.classList.remove('b71')};window.__boot71off=off;document.addEventListener('DOMContentLoaded',function(){requestAnimationFrame(function(){requestAnimationFrame(off)})});setTimeout(off,9000)})();</script>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Reem+Kufi:wght@600;700&family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Cairo:wght@400;600;700&family=Scheherazade+New:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700&family=Almarai:wght@400;700;800&family=Markazi+Text:wght@400;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 <script id="lazy69">/* v69 (الأداء): مكتبات التصدير (PDF والصور وExcel) تُحمَّل بعد عرض الصفحة لا قبلها؛ أي استدعاء مبكر ينتظرها تلقائياً أو يطلب إعادة المحاولة */
@@ -715,7 +768,7 @@ let cur='',curN='doc';
 function show(h,n){cur=h;curN=n;$('#mb').innerHTML=`<button class="btn" onclick="dl('pdf')">PDF</button><button class="btn" onclick="dl('png')">PNG</button><button class="btn" onclick="dl('jpg')">JPG</button><button class="btn" onclick="dl('svg')">SVG</button><button class="btn s" onclick="$('#mod').style.display='none'">إغلاق</button>`;$('#pvw').innerHTML=h;$('#mod').style.display='block';{const w=$('#pvw');w.style.setProperty('--z',1);w.style.setProperty('--z',Math.min(1,(w.clientWidth-4)/w.firstElementChild.offsetWidth))}}
 async function dl(f){const w=document.createElement('div');w.style.cssText='position:fixed;left:-3000px;top:0';w.innerHTML=cur;document.body.appendChild(w);
 try{const el=w.firstElementChild;let blob;
-if(f=='svg'){const css=window.__styleTexts().join('\n'),W=el.offsetWidth,H=el.offsetHeight;
+if(f=='svg'){const css=window.__styleTexts().join('\n')+'\n'+(window.__tmhExport?await window.__tmhExport():''),W=el.offsetWidth,H=el.offsetHeight;
 blob=new Blob([`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml"><style><![CDATA[${css}]]></style>${new XMLSerializer().serializeToString(el)}</div></foreignObject></svg>`],{type:'image/svg+xml'})}
 else{await document.fonts.ready;const cv=await html2canvas(el,{scale:3,backgroundColor:'#fff',useCORS:true});
 if(f=='pdf'){const{jsPDF}=window.jspdf;const d=new jsPDF({orientation:cv.width>cv.height?'l':'p',unit:'px',format:[cv.width/3,cv.height/3]});d.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,cv.width/3,cv.height/3);blob=d.output('blob')}
@@ -17561,7 +17614,7 @@ async function fo52(h){var t=document.createElement('template');t.innerHTML=h;va
  try{await im.decode()}catch(e){}var cv=document.createElement('canvas');cv.width=3508;cv.height=2480;var x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);x.drawImage(im,0,0,cv.width,cv.height);cv.toDataURL('image/png').length;return cv}
 V5.fo52=fo52;
 /* نفس المحرّك الأصلي لكل الوثائق الرسمية A4 (السجل الأكاديمي، الخطابات…): صفحة صفحة بدقة 300 DPI */
-var FCSSALL=null;async function fontCSSAll(){if(FCSSALL!=null)return FCSSALL;var keep=FCSS;FCSS=null;var fam0=null;try{FCSSALL=await (async function(){var out='';var links=[].slice.call(document.querySelectorAll('link[rel=stylesheet]')).map(function(l){return l.href}).filter(function(u){return /fonts\.googleapis\.com/.test(u)});
+var FCSSALL=null;async function fontCSSAll(){/* v170: الخط الموحّد مضمَّن بياناتٍ في كل ملف مصدَّر */if(window.__tmhExport){await window.__font170();return await window.__tmhExport()}if(FCSSALL!=null)return FCSSALL;var keep=FCSS;FCSS=null;var fam0=null;try{FCSSALL=await (async function(){var out='';var links=[].slice.call(document.querySelectorAll('link[rel=stylesheet]')).map(function(l){return l.href}).filter(function(u){return /fonts\.googleapis\.com/.test(u)});
  for(var i=0;i<links.length;i++){try{var r=await fetch(links[i]);if(!r.ok)continue;var css=await r.text(),bl=css.match(/@font-face\s*{[^}]*}/g)||[];for(var j=0;j<bl.length;j++){var m=/url\(([^)]+)\)/.exec(bl[j]);if(!m)continue;try{var fr=await fetch(m[1].replace(/["']/g,''));if(!fr.ok)continue;var u8=new Uint8Array(await fr.arrayBuffer()),bin='';for(var k=0;k<u8.length;k+=32768)bin+=String.fromCharCode.apply(null,u8.subarray(k,k+32768));out+=bl[j].replace(m[0],'url(data:font/woff2;base64,'+btoa(bin)+')')+'\n'}catch(e){}}}catch(e){}}return out})()}catch(e){FCSSALL=''}FCSS=keep;return FCSSALL}
 async function foEl(el,W0,H0,css,outW){await inl158(el);var xs=new XMLSerializer().serializeToString(el),sc=outW/W0;
  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.round(W0*sc)+'" height="'+Math.round(H0*sc)+'" viewBox="0 0 '+W0+' '+H0+'"><foreignObject x="0" y="0" width="'+W0+'" height="'+H0+'"><div xmlns="http://www.w3.org/1999/xhtml" class="tmw" data-d14="1" style="width:'+W0+'px;height:'+H0+'px;position:relative;direction:rtl"><style><![CDATA['+css.replace(/<\/style/gi,'').replace(/\]\]>/g,']] >')+']]></style>'+xs+'</div></foreignObject></svg>';
@@ -17989,8 +18042,7 @@ H.saveP=(function(prev){return function(f){var p=prog(U.pid);if(p){var e=p.eng=p
 CLBL.accent=['اللمسة الذهبية / الثانوية (العنوان والفواصل والزخارف)','Accent (title, dividers, ornaments)'];
 var _tInst53=tabByKey('v51i')[3];
 tabByKey('v51i')[3]=function(){var I=S.v51.inst,fp=(I.font&&I.font.preset)||FONT_DEF,ff=I.font||{},bs=I.basmala||'ruqaa',mg=(I.cert&&I.cert.margin)||15;
- var x='<hr><h3>'+L('خط شهادة التخرج','Graduation certificate font')+'</h3><form onsubmit="return V51.h.saveFont53(this)"><div class="v51g">'+fld(L('الخط','Font'),'<select name="preset">'+Object.keys(FONTS53).map(function(k){return '<option value="'+k+'"'+(k===fp?' selected':'')+'>'+E(L(FONTS53[k].n[0],FONTS53[k].n[1]))+'</option>'}).join('')+'</select>')+
-  fld(L('خط مخصص: اسم العائلة العربية','Custom: Arabic family name'),inp('ar',ff.ar||'','dir="ltr"'))+fld(L('خط مخصص: اسم العائلة الإنجليزية','Custom: English family name'),inp('en',ff.en||'','dir="ltr"'))+fld(L('خط مخصص: رابط ملف CSS للخط المرخّص (https)','Custom: CSS URL of the licensed font (https)'),inp('css',ff.css||'','dir="ltr"'))+'</div>'+
+ var x='<hr><h3>'+L('الخط','Font')+'</h3><form onsubmit="return V51.h.saveFont53(this)"><div class="v51g">'+'<p class="mu" style="grid-column:1/-1">'+L('خط الموقع والوثائق كلها موحّد: «Sakkal Majalla» (وعلى الأجهزة التي لا يوجد فيها: خط نسخ مضمَّن في الموقع بالمقاييس نفسها)، ويُضمَّن في كل ملف يُنزَّل.','One font for the whole site and all documents: Sakkal Majalla (on devices without it, an embedded Naskh font with the same metrics), embedded in every downloaded file.')+'</p><input type="hidden" name="preset" value="'+E(fp)+'"><input type="hidden" name="ar" value="'+E(ff.ar||'')+'"><input type="hidden" name="en" value="'+E(ff.en||'')+'"><input type="hidden" name="css" value="'+E(ff.css||'')+'">'+'</div>'+
   '<h4>'+L('البسملة','Basmala')+'</h4><div class="v51g">'+fld(L('الشكل','Style'),'<select name="basmala"><option value="ruqaa"'+(bs==='ruqaa'?' selected':'')+'>'+L('خط الرقعة (متجه)','Ruqaa (vector)')+'</option><option value="thuluth"'+(bs==='thuluth'?' selected':'')+'>'+L('تركيب بأسلوب الثلث (متجه)','Thuluth-style composition (vector)')+'</option><option value="naskh"'+(bs==='naskh'?' selected':'')+'>'+L('نسخ ممتد (متجه)','Extended Naskh (vector)')+'</option><option value="custom"'+(bs==='custom'?' selected':'')+'>'+L('ملف مرفوع (SVG/PNG من خطاط)','Uploaded file (SVG/PNG from a calligrapher)')+'</option></select>')+fld(L('رفع ملف البسملة','Upload basmala file'),'<input type="file" name="bsf" accept=".svg,image/svg+xml,image/png">')+'</div>'+
   '<h4>'+L('الهامش','Margin')+'</h4><div class="v51g">'+fld(L('الهامش من حافة الورقة إلى المحتوى (ملم، لا يقل عن 15)','Margin from page edge to content (mm, at least 15)'),inp('margin',mg,'type="number" min="15" max="25" step="0.5" dir="ltr"'))+'</div>'+
   '<p><button class="btn">'+L('حفظ','Save')+'</button> '+bt(L('معاينة شهادة التخرج','Preview graduation certificate'),"V51.h.preview('dgrad')")+' '+bt(L('معاينة بشبكة الأبعاد','Preview with layout grid'),"V51.grid53=1;V51.h.preview('dgrad');setTimeout(function(){V51.grid53=0},50)")+'</p></form>'+
@@ -18234,7 +18286,7 @@ function gen55(c,ctx,opt){opt=opt||{};var g=live53(c),C=Object.assign({},COL55,(
 V5.gen55=gen55;gen54=gen55;gen53=gen55;gen52=gen55;V5.gen54=gen55;V5.gen53=gen55;V5.gen52=gen55;
 GEN.dgrad=function(c,ctx){return is52(c)?gen55(c,ctx):null};GEN.ggrad=function(c,ctx){return gen55(c,ctx)};
 /* فونتات التصدير */
-var _fc55=fontCSS;fontCSS=async function(){var keep=S.v51.inst.font;S.v51.inst.font={preset:'custom',ar:'Amiri',arH:'Aref Ruqaa',en:'Tinos',enH:'PT Sans Narrow'};try{var a=await _fc55();var k2=S.v51.inst.font;S.v51.inst.font={preset:'custom',ar:'Scheherazade New',arH:'Scheherazade New',en:'Arimo',enH:'Arimo'};var b=await _fc55();return a+'\n'+b}finally{S.v51.inst.font=keep}};
+var _fc55=fontCSS;fontCSS=async function(){/* v170 */if(window.__tmhExport){await window.__font170();return await window.__tmhExport()}var keep=S.v51.inst.font;S.v51.inst.font={preset:'custom',ar:'Amiri',arH:'Aref Ruqaa',en:'Tinos',enH:'PT Sans Narrow'};try{var a=await _fc55();var k2=S.v51.inst.font;S.v51.inst.font={preset:'custom',ar:'Scheherazade New',arH:'Scheherazade New',en:'Arimo',enH:'Arimo'};var b=await _fc55();return a+'\n'+b}finally{S.v51.inst.font=keep}};
 
 /* --- واجهة البرنامج: «شهادة التخرج — الجهة المانحة» (للمستقبل: كلية/معهد، تخصص، تصنيف، صيغة المنح) --- */
 pInfo=(function(prev){return function(p){var h=prev(p),O=org56(p),t=function(n,v,ex){return inp(n,v||'',ex||'')};
@@ -27545,7 +27597,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v169';
+window.__BUILD__='v170';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};

@@ -83,7 +83,7 @@ json.dump({'cur': files, 'prev': prev if set(prev) != set(files) else (json.load
 # v132: عامل الخدمة (تطبيق قابل للتثبيت يعمل دون اتصال): يُولَّد بإصدار البناء وقائمة الملفات الحالية
 try:
     bv = re.search(r"__BUILD__='(v\d+)'", src).group(1)
-    pre = files + ['i18n-bn.js?v=' + bv, 'manifest.webmanifest', 'img/app-192-v132.png', 'img/logom-243bc940.webp', 'img/logo-a8d46018.webp', 'img/favicon-512aae70.png']
+    pre = files + ['i18n-bn.js?v=' + bv, 'manifest.webmanifest', 'img/app-192-v132.png', 'img/logom-243bc940.webp', 'img/logo-a8d46018.webp', 'img/favicon-512aae70.png', 'fonts/tmh-400-v170.woff', 'fonts/tmh-700-v170.woff']
     tpl = open(os.path.join(R, 'tools/sw.tpl.js'), encoding='utf-8').read()
     open(os.path.join(R, 'sw.js'), 'w', encoding='utf-8', newline='').write(tpl.replace('__V__', bv + '-' + hashlib.sha256(''.join(files).encode()).hexdigest()[:8]).replace('__PRE__', json.dumps(pre)))
 except Exception as e:
