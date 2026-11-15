@@ -71,7 +71,9 @@ window.__bx69=function(t){var b=t&&t.nextElementSibling;while(b&&!(b.classList&&
 (function(){var U={h2c:'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',pdf:'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',xls:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'},P={},ok={};
  function load(k){if(P[k])return P[k];P[k]=new Promise(function(res,rej){var s=document.createElement('script');s.src=U[k];s.async=true;s.onload=function(){ok[k]=1;if(k==='h2c'){try{H0.real=window.html2canvas;window.html2canvas=H0;window.__logoGuard&&window.__logoGuard.wrap&&window.__logoGuard.wrap()}catch(e){}}res()};s.onerror=function(){P[k]=null;rej(new Error('lib '+k))};document.head.appendChild(s)});return P[k]}
  function msg(){var en=document.documentElement.lang==='en';try{toast(en?'Preparing the export tool… please try again in a moment.':'جارٍ تجهيز أداة التنزيل… أعد المحاولة بعد لحظة.')}catch(e){}}
- var H0=function(el,o){var self=this;return Promise.all([load('h2c'),load('pdf')]).then(function(){return H0.real.call(self,el,o)})};
+ /* v172: كل تنزيل يمرّ أولاً برسم المتصفح الأصلي (SVG) بالخطوط المضمَّنة — يحفظ الخط واتصال الحروف العربية كما على الشاشة؛ html2canvas احتياط فقط */
+ var H0=function(el,o){var self=this,old=function(){return Promise.all([load('h2c'),load('pdf')]).then(function(){return H0.real.call(self,el,o)})};
+  if(window.__foCanvas&&!(o&&o.__h2c))return window.__foCanvas(el,o).catch(function(e){console.warn('v172 fo → html2canvas',e);return old()});return old()};
  window.html2canvas=H0;
  var stub=function(k,name){return new Proxy({},{get:function(t,p){if(p==='__lazy69')return 1;if(p===Symbol.toPrimitive||p==='then')return undefined;load(k);msg();throw new Error(name+' loading')}})};
  window.jspdf=stub('pdf','jsPDF');window.XLSX=stub('xls','XLSX');
@@ -17610,6 +17612,21 @@ async function pages14(h){var w=document.createElement('div');w.style.cssText='p
 async function pdf14(h){var cs=await pages14(h);if(!cs.length)throw new Error('no pages');var J=window.jspdf.jsPDF,d=new J({orientation:'portrait',unit:'mm',format:'a4',compress:true});cs.forEach(function(cv,i){if(i)d.addPage('a4','portrait');d.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,210,297)});return d.output('blob')}
 async function img14(h,f){var cs=await pages14(h),W1=cs[0].width,H1=cs.reduce(function(a,c){return a+c.height},0),cv=document.createElement('canvas');cv.width=W1;cv.height=H1;var x=cv.getContext('2d'),y=0;cs.forEach(function(c){x.drawImage(c,0,y);y+=c.height});return await new Promise(function(r){cv.toBlob(r,f==='jpg'?'image/jpeg':'image/png',.95)})}
 V5.pdf14=pdf14;V5.fontCSSAll52=fontCSSAll;V5.allCss52=allCss;
+/* v172: محرّك رسم موحَّد لكل الوثائق (الشهادات والخطابات والإفادات والقوالب القديمة): نسخة من العنصر داخل SVG بأنماط الموقع
+   والخطوط مضمَّنة بياناتٍ، فيرسمها المتصفح نفسه كما يعرضها — لا تفرّق حروف، ولا خط بديل، ولا اتساع يسبّب التداخل. */
+W.__foCanvas=async function(el,o){o=o||{};var sc=+o.scale||1;try{await document.fonts.ready}catch(e){}if(W.__font170){try{await W.__font170()}catch(e){}}
+ var r=el.getBoundingClientRect(),W0=Math.ceil(el.offsetWidth||r.width),H0=Math.ceil(el.offsetHeight||r.height);if(!W0||!H0)throw new Error('fo size');
+ await inl158(el);var css=allCss()+'\n'+(await fontCSSAll())+'\n[data-fo172]{margin:0!important}';
+ var q=function(v){return String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')},op='',cl='';
+ for(var a=el.parentElement;a&&a!==document.body&&a!==document.documentElement;a=a.parentElement){var at='';
+  [].slice.call(a.attributes).forEach(function(x){if(/^(class|id|dir|lang|data-[\w-]+)$/.test(x.name))at+=' '+x.name+'="'+q(x.value)+'"';else if(x.name==='style'){var v=(x.value.match(/--[\w-]+\s*:[^;]+/g)||[]).join(';');if(v)at+=' style="'+q(v)+'"'}});
+  op='<div'+at+'>'+op;cl+='</div>'}
+ el.setAttribute('data-fo172','1');var xs;try{xs=new XMLSerializer().serializeToString(el)}finally{el.removeAttribute('data-fo172')}
+ var dir=getComputedStyle(el).direction||'rtl',oW=Math.round(W0*sc),oH=Math.round(H0*sc);
+ var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+oW+'" height="'+oH+'" viewBox="0 0 '+W0+' '+H0+'"><foreignObject x="0" y="0" width="'+W0+'" height="'+H0+'"><div xmlns="http://www.w3.org/1999/xhtml" style="width:'+W0+'px;height:'+H0+'px;position:relative;direction:'+dir+';margin:0;padding:0"><style><![CDATA['+css.replace(/<\/style/gi,'').replace(/\]\]>/g,']] >')+']]></style>'+op+xs+cl+'</div></foreignObject></svg>';
+ var im=new Image();await new Promise(function(ok,no){im.onload=ok;im.onerror=function(){no(new Error('fo svg'))};im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)});try{await im.decode()}catch(e){}
+ var cv=document.createElement('canvas');cv.width=oW;cv.height=oH;var x=cv.getContext('2d');if(o.backgroundColor!==null){x.fillStyle=o.backgroundColor||'#fff';x.fillRect(0,0,oW,oH)}x.drawImage(im,0,0,oW,oH);
+ x.getImageData(0,0,1,1);return cv};
 async function canvas52(h){try{return await fo52(h)}catch(e){console.warn('v52 foreignObject → html2canvas',e)}return await h2c52(h)}
 async function h2c52(h){var w=document.createElement('div');w.style.cssText='position:fixed;left:-4000px;top:0';w.innerHTML=h;document.body.appendChild(w);
  try{await document.fonts.ready;var el=w.querySelector('.g5')||w.firstElementChild;var ims=[].slice.call(el.querySelectorAll('img')).filter(function(i){return /^data:image\/svg/.test(i.getAttribute('src')||'')});for(var q=0;q<ims.length;q++){try{var I=await loadIm(ims[q].src),c2=document.createElement('canvas');c2.width=(I.naturalWidth||300)*3;c2.height=(I.naturalHeight||300)*3;c2.getContext('2d').drawImage(I,0,0,c2.width,c2.height);ims[q].src=c2.toDataURL('image/png')}catch(e){}}return await html2canvas(el,{scale:3508/1123,backgroundColor:'#ffffff',useCORS:true,logging:false})}finally{w.remove()}}
@@ -27582,7 +27599,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v171';
+window.__BUILD__='v172';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
