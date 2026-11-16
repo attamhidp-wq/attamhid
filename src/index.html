@@ -19726,7 +19726,7 @@ function thanks60(c){var f=(S.faculty||[]).find(function(x){return x.id==c.uid||
  var dA='وذلك بتاريخ '+digA(SPCORE.hD(dt))+'هـ الموافق '+digA(SPCORE.gD(dt))+'م، '+(M?'سائلين الله لها دوام التوفيق والسداد.':'سائلين الله له دوام التوفيق والسداد.'),
      dE='issued on '+SPCORE.hD(dt)+' AH, corresponding to '+SPCORE.gD(dt)+' AD, wishing '+(M?'her':'him')+' continued success.';
  var R=[['c','يتقدم '+instAr+' بخالص الشكر وعظيم التقدير إلى:',instEn+' extends its sincere thanks and deep appreciation to:'],['n',nm,ne]];
- if(ra||re)R.push(['p',ra,re]);R.push(['t',txA+'،',txE+','],['d',dA,dE]);
+ if(ra||re)R.push(['p',ra,re]);R.push(['t',String(txA).replace(/[\s.،,؛]+$/,'')+'،',String(txE).replace(/[\s.,;]+$/,'')+','],['d',dA,dE]);
  var sg=[];try{sg=resolveSigners('thanks')||[]}catch(e){}
  var se=[];try{se=(resolveSeals('thanks')||[]).map(function(s){return imgOf(typeof s==='string'?s:s&&s.img)}).filter(Boolean)}catch(e){}
  var miss=[];if(!String(nm).trim())miss.push({ar:'الاسم بالعربية',en:'Arabic name'});if(!String(ne).trim())miss.push({ar:'الاسم بالإنجليزية',en:'English name'});
@@ -28177,7 +28177,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v193';
+window.__BUILD__='v194';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
