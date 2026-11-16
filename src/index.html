@@ -19395,7 +19395,7 @@ function medal183(c,a){var st='',i,R=58,r=26,pts=[];for(i=0;i<16;i++){var an=Mat
   '<path d="M-58 70 L-92 190 L-62 172 L-44 204 L-14 92Z" fill="'+a+'"/><path d="M58 70 L92 190 L62 172 L44 204 L14 92Z" fill="'+c+'"/>'+
   '<circle r="118" fill="#fff" stroke="'+c+'" stroke-width="3"/>'+tk+'<circle r="86" fill="'+c+'"/><circle r="78" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1" stroke-dasharray="2 4"/>'+
   '<polygon points="'+pts.join(' ')+'" fill="'+a+'"/><path d="M-13 1 L-4 11 L15 -11" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
-function render183(o){var v=o.v||'att',K=K183[v]||K183.att,R=o.rows,TI=o.TI||['شهادة','Certificate'],miss=o.miss||[],sg=(o.sg||[]).slice(0,3),se=o.se||[];
+function render183(o){var v=o.v||'att',K=K183[v]||K183.att,R=o.rows,TI=o.TI||['شهادة','Certificate'],miss=(/^\d{11}$/.test(String(o.rec||''))?[]:(o.miss||[])),sg=(o.sg||[]).slice(0,3),se=o.se||[];
  var LG='';try{LG=logoT()||LOGO}catch(e){LG=typeof LOGO!=='undefined'?LOGO:''}var LGW=window.LOGO2||'';
  var bd=function(x){return esc6(x).replace(/([0-9٠-٩]{1,2}\/[0-9٠-٩]{1,2}\/[0-9٠-٩]{4})/g,'<span style="white-space:nowrap">$1</span>')};
  var tw=String(TI[0]).trim().split(/\s+/),t1=tw.shift()||'',t2=tw.join(' ');var ew=String(TI[1]).trim(),em=/^(Certificate)\s+(.*)$/i.exec(ew),e1=em?em[1]:'',e2=em?em[2]:ew;
@@ -28177,7 +28177,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v192';
+window.__BUILD__='v193';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -29278,6 +29278,8 @@ body #app .lb185>.box .tx185 p{font:400 15px/1.9 'IBM Plex Sans Arabic',sans-ser
 @media (max-width:760px){html body #app .lb185>.box.lc185,body #app .lb185.one185>.box.lc185{grid-template-columns:1fr!important}body #app .lb185>.box.lc185 .md185{min-height:0;aspect-ratio:16/9}body #app .nwg138>.nwc138:first-child .md185{aspect-ratio:16/8}
  html.mb185on #toast,html.mb185on .toast,html.mb185on [class*=toast]{bottom:88px!important}
  html.mb185on footer{padding-bottom:12px}}
+
+.cm183 .k3-r .e:empty,.cm183 .k3-hn .e:empty,.cm183 .k3-hn .ce:empty,.cm183 .k3-sg .ne:empty,.cm183 .k3-sg .te:empty{display:none}
 </style>
 <script>
 /* v138 — بوابة المشاركين الزائرين (حساب واحد بالبريد وكلمة المرور، تسجيل بضغطة، الشهادات فور صدورها)
