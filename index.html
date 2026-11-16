@@ -36,7 +36,9 @@ if(v&&(!o||Date.now()-o.at>2592e6))localStorage.setItem(k,JSON.stringify({s:v,at
 (function(){var U={h2c:'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',pdf:'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',xls:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'},P={},ok={};
  function load(k){if(P[k])return P[k];P[k]=new Promise(function(res,rej){var s=document.createElement('script');s.src=U[k];s.async=true;s.onload=function(){ok[k]=1;if(k==='h2c'){try{H0.real=window.html2canvas;window.html2canvas=H0;window.__logoGuard&&window.__logoGuard.wrap&&window.__logoGuard.wrap()}catch(e){}}res()};s.onerror=function(){P[k]=null;rej(new Error('lib '+k))};document.head.appendChild(s)});return P[k]}
  function msg(){var en=document.documentElement.lang==='en';try{toast(en?'Preparing the export tool… please try again in a moment.':'جارٍ تجهيز أداة التنزيل… أعد المحاولة بعد لحظة.')}catch(e){}}
- var H0=function(el,o){var self=this;return Promise.all([load('h2c'),load('pdf')]).then(function(){return H0.real.call(self,el,o)})};
+ /* v172: كل تنزيل يمرّ أولاً برسم المتصفح الأصلي (SVG) بالخطوط المضمَّنة — يحفظ الخط واتصال الحروف العربية كما على الشاشة؛ html2canvas احتياط فقط */
+ var H0=function(el,o){var self=this,old=function(){return Promise.all([load('h2c'),load('pdf')]).then(function(){return H0.real.call(self,el,o)})};
+  if(window.__foCanvas&&!(o&&o.__h2c))return window.__foCanvas(el,o).catch(function(e){console.warn('v172 fo → html2canvas',e);return old()});return old()};
  window.html2canvas=H0;
  var stub=function(k,name){return new Proxy({},{get:function(t,p){if(p==='__lazy69')return 1;if(p===Symbol.toPrimitive||p==='then')return undefined;load(k);msg();throw new Error(name+' loading')}})};
  window.jspdf=stub('pdf','jsPDF');window.XLSX=stub('xls','XLSX');
@@ -99,7 +101,7 @@ window.hydrate108=function(){if(P)return P;var fs={};window.__IH108.forEach(func
  P=Promise.all(Object.keys(fs).map(function(f){return fetch(B+f,{cache:'force-cache'}).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){return new Promise(function(ok){var fr=new FileReader();fr.onload=function(){ok(fr.result)};fr.onerror=function(){ok(null)};fr.readAsDataURL(b)})}).then(function(d){if(!d||!/^data:image\//.test(d))return;window.__IHD108[f]=d;window.__IH108.forEach(function(x){if(x[0]===f)try{x[1](d)}catch(e){}})}).catch(function(){})})).then(function(){window.__IH108ok=1});return P};
 })();
 </script>
-<script charset="utf-8" src="js/s04-3a0595db93.js"></script>
+<script charset="utf-8" src="js/s04-60c8ad10c5.js"></script>
 <script charset="utf-8" src="js/s05-140ee3d9b9.js"></script>
 <link rel="stylesheet" href="js/c39-a3c33a7382.css">
 <script charset="utf-8" src="js/s06-e3d7d84888.js"></script>
@@ -366,8 +368,8 @@ window.exSub=w;try{exSub=w}catch(e){}
 <script id="v50" charset="utf-8" src="js/v50-ade442a794.js"></script>
 
 <script>window.__JSQR="js/jsqr-fbca081d05.js"</script>
-<link rel="stylesheet" id="v51css" href="js/v51css-4c86545a30.css">
-<script id="v51" charset="utf-8" src="js/v51-59c608c059.js"></script>
+<link rel="stylesheet" id="v51css" href="js/v51css-3c900ff16a.css">
+<script id="v51" charset="utf-8" src="js/v51-0bd52c08be.js"></script>
 <script charset="utf-8" src="js/s33-cc369a53f6.js"></script>
 <style>/* v86: مكانة الشعار في شهادة التخرج */.g8-lg{height:80px!important;max-width:160px!important;margin:6px auto 2px!important}.sp6-lg{left:461px!important}.sp6-lg{top:18px!important}.cert3 .mn{position:relative}.cert3 .mlg92{position:absolute;top:14px;left:50%;transform:translateX(-50%);height:66px;width:auto;object-fit:contain;z-index:2}.cert3 .mn{padding-top:84px!important}.cert3 .sb .lg{display:none!important}.l59-hc{left:317px!important;width:160px!important}.l59-lg{max-width:150px!important;max-height:76px!important}.sp6-lg img{max-height:60px!important;max-width:118px!important}.sp6-wm{left:391px!important}.g9-sth,.g9-sr{grid-template-columns:14% 1.2fr 1.2fr 1.2fr 1fr 1fr!important}.g9-sth>div:nth-child(2) b,.g9-sth>div:nth-child(3) b,.g9-sth>div:nth-child(4) b{font-size:11.5px!important}.g8-wml{opacity:.06!important}</style>
 <script>(function(){try{var im=new Image();im.onload=function(){if(im.naturalWidth&&im.naturalHeight)window.LGAR89=im.naturalWidth/im.naturalHeight};im.src=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}window.LGAR89=1600/431})();window.LOGOS=IMG108('logos-a2f6204d.webp');window.LOGOM=IMG108('logom-243bc940.webp');IMGH108('logos-a2f6204d.webp',function(v){window.LOGOS=v});IMGH108('logom-243bc940.webp',function(v){window.LOGOM=v});</script>
@@ -441,7 +443,7 @@ try{GOH.post.push(function(){if(on)requestAnimationFrame(hide)})}catch(e){}
  try{delete X.p73}catch(e){}
  X.p123=1;try{save()}catch(e){}}catch(e){console.warn('v123',e)}})();
 </script>
-<script charset="utf-8" src="js/s34-c75eba95ce.js"></script>
+<script charset="utf-8" src="js/s34-ab15385862.js"></script>
 <script>
 /* v121 — اعتماد الاسم الرسمي «معهد التمهيد» في النسخ المحلية المحفوظة (مرة واحدة) */
 (function(){try{if(typeof S==='undefined'||!S)return;var X=S.v51=S.v51||{};if(X.n126)return;
@@ -451,7 +453,7 @@ function walk(o,d){if(!o||typeof o!=='object'||d>12||seen.has(o))return;seen.add
 walk(S,0);X.n121=1;X.n126=1;try{save()}catch(e){}if(n)console.info('v121 rename',n)}catch(e){console.warn('v121 rename',e)}})();
 try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A valid graduation certificate has already been issued','الصورة ✓':'Photo ✓','+ صورة':'+ Photo','معاينة — غير معتمدة':'Preview — not approved'})}catch(e){}
 </script>
-<script charset="utf-8" src="js/s35-d8735f9ff9.js"></script>
+<script charset="utf-8" src="js/s35-4263971b29.js"></script>
 <script charset="utf-8" src="js/s36-37835501c9.js"></script>
 <script>
 /* v100: شريط «جارٍ تحميل أحدث البيانات» أثناء التحميل الخلفي بعد الدخول */
@@ -498,6 +500,6 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 .zt.f-sq .zt-body{justify-content:center}
 </style>
 <link rel="stylesheet" id="css146" href="js/css146-32fc03f973.css">
-<script charset="utf-8" src="js/s37-0886fa5331.js"></script>
+<script charset="utf-8" src="js/s37-cf6b2c7896.js"></script>
 </body>
 </html>
