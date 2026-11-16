@@ -64,6 +64,17 @@ if(v&&(!o||Date.now()-o.at>2592e6))localStorage.setItem(k,JSON.stringify({s:v,at
  try{new MutationObserver(run).observe(D.documentElement,{childList:true,subtree:true})}catch(e){}
 })();</script>
 <script id="boot71s">
+/* v175: كشف آلي لأعطال المتصفح — يُرسل الخطأ (بلا أي بيانات شخصية أو كلمات مرور) إلى سجل الإدارة ليُعالَج من أصله */
+(function(){var U='https://ttuelhswxyjbjdnydmns.supabase.co/rest/v1/v175_errs',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0dWVsaHN3eHlqYmpkbnlkbW5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NDk3MDYsImV4cCI6MjEwNzUyNTcwNn0.tkO2kZLHpKbgPx_II4cepqCVftjjG46oseR6aGGCbPA',n=0,seen={};
+ function send(kind,msg,src){try{msg=String(msg||'').slice(0,1400);src=String(src||'').slice(0,560);var k=kind+'|'+msg.slice(0,120);if(seen[k]||n>=8)return;seen[k]=1;n++;
+  var role='';try{role=(typeof me!=='undefined'&&me&&me.r)||''}catch(e){}
+  var b=JSON.stringify({build:String(window.__BUILD__||''),kind:String(kind).slice(0,28),msg:msg,src:src,hash:String(location.hash||'').replace(/[?&](p|p2|password|email|pass|token)=[^&#]*/gi,'').slice(0,110),role:String(role).slice(0,18),ua:String(navigator.userAgent||'').slice(0,290)});
+  fetch(U,{method:'POST',headers:{'Content-Type':'application/json','apikey':K,'Authorization':'Bearer '+K,'Prefer':'return=minimal'},body:b,keepalive:true}).catch(function(){})}catch(e){}}
+ window.__rep175=send;
+ window.addEventListener('error',function(ev){try{var t=ev.target;if(t&&t!==window&&(t.tagName==='SCRIPT'||t.tagName==='LINK')){send('load',(t.src||t.href||'').slice(0,300),'');return}
+  if(ev.message&&!/^Script error\.?$/.test(ev.message)&&!/ loading$/.test(ev.message))send('error',ev.message,(ev.filename||'').replace(/^https?:\/\/[^/]+\//,'')+':'+(ev.lineno||0)+':'+(ev.colno||0)+(ev.error&&ev.error.stack?' | '+String(ev.error.stack).split('\n').slice(1,4).join(' < ').replace(/https?:\/\/[^/]+\//g,''):''))}catch(e){}},true);
+ window.addEventListener('unhandledrejection',function(ev){try{var r=ev.reason,m=r&&(r.message||String(r))||'';if(/ loading$|AbortError|Failed to fetch|NetworkError|Load failed/i.test(m))return;send('reject',m,r&&r.stack?String(r.stack).split('\n').slice(1,4).join(' < ').replace(/https?:\/\/[^/]+\//g,''):'')}catch(e){}});
+})();
 /* v130: نص كل أوراق الأنماط (المضمّنة والملفات) لتصدير الوثائق */window.__styleTexts=function(){var o=[];[].slice.call(document.querySelectorAll('style,link[rel=stylesheet]')).forEach(function(x){if(x.tagName==='STYLE'){o.push(x.id==='font170css'?(window.__tmhRule||''):x.textContent);return}try{var sh=x.sheet;if(sh&&x.href&&x.href.indexOf(location.origin)===0)o.push([].slice.call(sh.cssRules).map(function(r){return r.cssText}).join('\n'))}catch(e){}});return o};
 window.__bx69=function(t){var b=t&&t.nextElementSibling;while(b&&!(b.classList&&b.classList.contains('box')))b=b.nextElementSibling;return b||(t&&t.nextElementSibling)};/* v71: لا يُعرض شيء قبل اكتمال الإقلاع — يمنع ظهور الشكل السابق أو الأزرار للحظة */(function(){var d=document.documentElement;d.classList.add('b71');try{var t=localStorage.getItem('tth');if(t==='dark'||t==='light')d.setAttribute('data-theme',t);else if(matchMedia('(prefers-color-scheme:dark)').matches)d.setAttribute('data-theme','dark')}catch(e){}var SI=window.setInterval;window.setInterval=function(f,t){if(typeof f!=='function')return SI.apply(window,arguments);var a=[].slice.call(arguments,2);return SI.call(window,function(){var p=window.__bg71;window.__bg71=1;try{return f.apply(this,a)}finally{window.__bg71=p}},t)};var off=function(){d.classList.remove('b71')};window.__boot71off=off;document.addEventListener('DOMContentLoaded',function(){requestAnimationFrame(function(){requestAnimationFrame(off)})});setTimeout(off,9000)})();</script>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Reem+Kufi:wght@600;700&family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Cairo:wght@400;600;700&family=Scheherazade+New:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700&family=Almarai:wght@400;700;800&family=Markazi+Text:wght@400;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -27582,7 +27593,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v174';
+window.__BUILD__='v175';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -28592,6 +28603,8 @@ setTimeout(function(){loadPU().then(function(p){if(p)rerender();else hdrFix()})}
 try{GOH.post.push(function(){hdrFix();var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(k==='me'&&PU&&Date.now()-PST.at>60000)loadPU(1).then(rerender)})}catch(e){}
 try{if(hasSb()&&sb.auth.onAuthStateChange)sb.auth.onAuthStateChange(function(ev){if(ev==='SIGNED_OUT'){if(PU){PU=null;V5.p138=null}}})}catch(e){}
 })();
+/* v175: فحص ذاتي بعد اكتمال التحميل — يبلّغ إن غابت دالة أساسية (مثل معالج الدخول الحديث) */
+try{setTimeout(function(){try{var bad=[];if(typeof window.loginAny!=='function'||String(window.loginAny).indexOf('digitsLatin')<0)bad.push('loginAny');['go','certHTML','mkBlob','dl','fv','toast','mdl'].forEach(function(f){if(typeof window[f]!=='function')bad.push(f)});if(typeof V51==='undefined'||!V51.h)bad.push('V51.h');if(typeof sb==='undefined'||!sb)bad.push('sb');if(bad.length&&window.__rep175)window.__rep175('selfcheck','missing: '+bad.join(','),'')}catch(e){}},4000)}catch(e){}
 </script>
 </body>
 </html>
