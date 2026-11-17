@@ -2588,7 +2588,7 @@ V.register=()=>head('تسجيل طالب جديد')+`<div class="box"><p class="
 const _vp=V.placement;V.placement=()=>{let h=_vp();const r=plReq();if(r&&plFresh==r.id&&r.secret&&0)h=`<div class="msg"><b>احتفظ بالرمز السري لمراجعة طلبك:</b> <span dir="ltr" style="font:700 1.2rem monospace">${A(r.secret)}</span><br>تراجع حالة طلبك ونتيجتك لاحقاً من «مراجعة الطلب واستعلام الحالة» برقم الطلب <b dir="ltr">${A(r.id)}</b> وهذا الرمز.</div>`+h;return h};
 
 /* ---------- 3) مراجعة الطلب واستعلام الحالة ---------- */
-V.review=()=>head('مراجعة الطلب واستعلام الحالة')+`<div class="box narrow"><form onsubmit="return revGo(this)"><label>رقم الطلب / السجل<input name="n" required dir="ltr" placeholder="REQ-XXXXXXXX" autocomplete="off"></label><button class="btn">استعلام</button></form><div id="out"></div></div>`;
+V.review=()=>head('مراجعة الطلب واستعلام الحالة')+`<div class="box narrow"><form onsubmit="return revGo(this)"><label>رقم الطلب / السجل<input name="n" required dir="ltr" placeholder="REQ-XXXXXXXX" autocomplete="off"></label><label>البريد الإلكتروني المسجّل في الطلب أو الرمز السري<input name="v" required dir="ltr" autocomplete="off" placeholder="name@example.com"></label><button class="btn">استعلام</button></form><div id="out"></div></div>`;
 V.track=V.review;
 const revView=r=>{const p=typeof plOf=='function'?plOf(r):null,L=r.sid?S.certs.filter(c=>c.type=='acc'&&c.sid==r.sid&&!c.revoked):[];
  const lv=p&&p.score!=null?`${p.score} / 100${p.lv&&typeof PLN!='undefined'?' — المستوى المقترح: '+A(PLN[p.lv]||p.lv):''}`:'لم يؤدِّ الاختبار بعد';
@@ -19643,7 +19643,7 @@ function spInfo(P){var K=kindOf(P);return '<div class="sp6-card"><div class="k">
  '<p>'+L('الموعد','Date')+': <bdi dir="ltr">'+esc6(fmtD(P))+'</bdi> · '+L('الساعات','Hours')+': '+esc6(P.hours)+(P.trainerAr?' · '+L('المدرب','Trainer')+': '+esc6(L(P.trainerAr,P.trainerEn||P.trainerAr)):'')+(P.place?' · '+esc6(P.place):'')+'</p></div>'}
 function okBox60(){return '<div class="msg ok" style="font-size:1.05em;padding:16px"><b style="font-size:1.15em">✓ '+L('تم تسجيلك بنجاح','You have been registered successfully')+'</b><br>'+L('سُجّلت بياناتك في البرنامج. تتواصل معك إدارة المعهد عبر بريدك المسجَّل، وتصلك الشهادة بالبريد بعد انتهاء البرنامج.','Your details have been recorded. The Institute will contact you at your registered email, and your certificate will be emailed after the programme ends.')+'</div>'}
 V.sp=function(){var id=location.hash.split('/')[2]||'',P=progOf(id);
- if(!P){if(typeof sb!=='undefined'&&sb&&!V5._spFetch){V5._spFetch=1;sb.from('v60_short_programs').select('id,data').eq('id',id).then(function(r){if(r.data&&r.data[0]){var X=D();if(X&&!progOf(id))X.sp.push(r.data[0].data);go()}})}return '<section class="box sk129" aria-label="'+L('جارٍ تحميل البرنامج…','Loading program…')+'"><i style="width:55%;height:22px"></i><i style="width:85%"></i><i style="width:70%"></i><i style="width:40%;height:34px;margin-top:16px"></i></section>'}
+ if(!P){if(typeof sb!=='undefined'&&sb&&!V5._spFetch){V5._spFetch=1;sb.from((typeof me!=='undefined'&&me&&me.r==='admin')?'v60_short_programs':'v196_sp_pub').select('id,data').eq('id',id).then(function(r){if(r.data&&r.data[0]){var X=D();if(X&&!progOf(id))X.sp.push(r.data[0].data);go()}})}return '<section class="box sk129" aria-label="'+L('جارٍ تحميل البرنامج…','Loading program…')+'"><i style="width:55%;height:22px"></i><i style="width:85%"></i><i style="width:70%"></i><i style="width:40%;height:34px;margin-top:16px"></i></section>'}
  var why=openReg(P),stu=typeof me!=='undefined'&&me&&me.r==='student',mine=stu&&live(D().spr).find(function(r){return r.pid===id&&r.sid==me.id});
  var h='<section class="box sp6-reg">'+spInfo(P);
  if(V5._spDone===id)h+=V5._spWait===id?waitBox60():okBox60();
@@ -27519,12 +27519,17 @@ function view(r){var s=stOf(r),a=r.app77||{},hist=(a.hist||[]).slice().reverse()
  return h}
 V5.view77=view;
 var CUR=null;
-async function track(n,em){var r=(S.requests||[]).find(function(x){return String(x.id).toUpperCase()===n});if(r)return {r:r,local:1};
+async function track(n,em){var r=(S.requests||[]).find(function(x){return String(x.id).toUpperCase()===n});if(r&&typeof me!=='undefined'&&me&&me.r==='admin')return {r:r,local:1};
  if(typeof sb!=='undefined'&&sb){try{var x=await sb.rpc('v141_track',em?{rid:n,em:em}:{rid:n});if(!x.error&&x.data)return {r:x.data,local:0}}catch(e){}}return null}
 function sum141(r){return '<div class="msg"><b>'+L('بيانات الطلب','Application details')+'</b><br>'+L('الاسم: ','Name: ')+e7(r.name||'')+'<br>'+L('رقم الطلب: ','Application No.: ')+'<b dir="ltr">'+e7(r.id||'')+'</b>'+(r.admRes||r.status?'<br>'+L('حالة القبول: ','Admission status: ')+'<b>'+e7(r.admRes||r.status)+'</b>':'')+(r.rank?'<br>'+L('ترتيبك في المفاضلة: ','Your rank: ')+'<b>'+e7(r.rank)+'</b>':'')+(r.admNote?'<br>'+e7(r.admNote):'')+(r.sid?'<br>'+L('الرقم الأكاديمي: ','Academic number: ')+'<b dir="ltr">'+e7(r.sid)+'</b> '+L('(بيانات الدخول أُرسلت إلى بريدك)','(sign-in details were emailed to you)'):'')+'</div>'}
-var _rg=W.revGo;W.revGo=function(f){var v=fv(f),n=String(v.n||'').trim().toUpperCase();
- (async function(){var t=await track(n);if(!t){out('<div class="msg er">'+L('لا يوجد طلب بهذا الرقم. تأكد من رقم الطلب كما وصلك عند التسجيل.','No application matches this number. Check the application number you received when you applied.')+'</div>');return}
-  CUR={n:n,em:'',local:t.local};var base='';try{base=t.local?revView(t.r):sum141(t.r)}catch(e){}out(view(t.r)+base)})();return false};
+var _rg=W.revGo;W.revGo=function(f){var v=fv(f),n=String(v.n||'').trim().toUpperCase(),ver=String(v.v||v.s||'').trim();
+ /* v196: لا تُعرض بيانات الطلب إلا برمز تحقق: البريد المسجّل في الطلب أو الرمز السري */
+ if(!ver&&!(typeof me!=='undefined'&&me&&me.r==='admin')){out('<div class="msg er">'+L('أدخل البريد الإلكتروني المسجّل في الطلب أو الرمز السري.','Enter the email registered in the application or the secret code.')+'</div>');return false}
+ (async function(){var t=await track(n,ver);
+  if(t&&t.r&&t.r.locked141){out('<div class="msg er">'+L('تعددت المحاولات غير الصحيحة لهذا الطلب. حاول بعد ساعة.','Too many incorrect attempts for this application. Try again in an hour.')+'</div>');return}
+  if(t&&t.r&&(t.r.bad141||t.r.need141))t=null;
+  if(!t){out('<div class="msg er">'+L('لا يوجد طلب بهذا الرقم. تأكد من رقم الطلب كما وصلك عند التسجيل.','No application matches this number. Check the application number you received when you applied.')+'</div>');return}
+  CUR={n:n,em:ver,local:t.local};var base='';try{base=t.local?revView(t.r):sum141(t.r)}catch(e){}out(view(t.r)+base)})();return false};
 H.unlock141=function(f){if(!CUR)return;var em=String(fv(f).em||'').trim();if(!em)return;(async function(){var t=await track(CUR.n,em);if(!t||!t.r||!t.r.full141){toast(L('البريد لا يطابق البريد المسجّل في الطلب.','The email does not match the one registered in the application.'));return}CUR.em=em;out(view(t.r)+sum141(t.r))})()};
 try{revGo=W.revGo}catch(e){}
 H.resub77=function(f){if(!CUR)return;var v=fv(f),patch={};EDF.forEach(function(F){var x=String(v[F[0]]==null?'':v[F[0]]).trim().slice(0,300);patch[F[0]]=F[0]==='nameEn'?x.toUpperCase():x});var note=String(v.note77||'').trim().slice(0,600);
@@ -27542,7 +27547,7 @@ function plOK(id){try{if(typeof me==='undefined'||!me||me.r!=='student')return f
 var _po=W.plOpen;W.plOpen=function(id){if(inReg){var r=(S.requests||[]).find(function(x){return x.id==id});APPLIED={id:id,secret:(r&&r.secret)||''};try{sessionStorage.removeItem('pa')}catch(e){}try{PA=null}catch(e){}location.hash='#/review';go();
   setTimeout(function(){var f=document.querySelector('#app form[onsubmit*="revGo"]');if(f&&APPLIED){if(f.elements.n)f.elements.n.value=APPLIED.id;if(f.elements.s)f.elements.s.value=APPLIED.secret}},60);return}
  if(!plOK(id)){toast(L('اختبار تحديد المستوى يظهر للطالب المسجّل في بوابته فقط إذا أرسله المعهد.','The placement test appears only in a registered student’s portal when the Institute sends it.'));location.hash='#/home';return}return _po.apply(this,arguments)};try{plOpen=W.plOpen}catch(e){}
-try{var _vr=V.review;V.review=function(){var h=_vr.apply(this,arguments);if(APPLIED){var em=(S.home||{}).em||'';h='<div class="msg ok a77ok"><b>'+L('تم استلام طلب تسجيلك بنجاح.','Your application has been received successfully.')+'</b><br>'+L('رقم الطلب: ','Application No.: ')+'<b dir="ltr">'+e7(APPLIED.id)+'</b>'+'<br>'+L('احتفظ به لمتابعة حالة طلبك. الخطوة التالية: أرسل من بريدك إلى بريد المعهد ','Keep it to follow your application. Next step: email from your own address to ')+'<b dir="ltr">'+e7(em)+'</b>'+L(' مع رقم الطلب في عنوان الرسالة: صورة آخر مؤهل دراسي، وكشف الدرجات، وصورة الهوية أو الجواز. ويصلك بريد رسمي عند كل تحديث في حالة طلبك.',' with the application number in the subject: your latest qualification, its transcript, and your ID or passport. You will receive an official email at every status update.')+'</div>'+h}return h};V.track=V.review}catch(e){}
+try{var _vr=V.review;V.review=function(){var h=_vr.apply(this,arguments);if(APPLIED){var em=(S.home||{}).em||'';h='<div class="msg ok a77ok"><b>'+L('تم استلام طلب تسجيلك بنجاح.','Your application has been received successfully.')+'</b><br>'+L('رقم الطلب: ','Application No.: ')+'<b dir="ltr">'+e7(APPLIED.id)+'</b>'+(APPLIED.secret?'<br>'+L('الرمز السري لمتابعة الطلب: ','Secret code to track the application: ')+'<b dir="ltr" style="font-family:monospace;font-size:1.15em">'+e7(APPLIED.secret)+'</b>':'')+'<br>'+L('احتفظ به لمتابعة حالة طلبك. الخطوة التالية: أرسل من بريدك إلى بريد المعهد ','Keep it to follow your application. Next step: email from your own address to ')+'<b dir="ltr">'+e7(em)+'</b>'+L(' مع رقم الطلب في عنوان الرسالة: صورة آخر مؤهل دراسي، وكشف الدرجات، وصورة الهوية أو الجواز. ويصلك بريد رسمي عند كل تحديث في حالة طلبك.',' with the application number in the subject: your latest qualification, its transcript, and your ID or passport. You will receive an official email at every status update.')+'</div>'+h}return h};V.track=V.review}catch(e){}
 try{var _vp=V.placement;V.placement=function(){if(typeof me!=='undefined'&&me&&me.r==='student'){try{var s=(S.students||[]).find(function(x){return x.id==me.id});if(s&&s.pl77&&!s.pl77.done&&typeof PA!=='undefined'&&String(PA)===String(s.pl77.rid))return _vp.apply(this,arguments)}catch(e){}}
  return '<div class="box narrow"><h2>'+L('اختبار تحديد المستوى','Placement Test')+'</h2><p>'+L('اختبار تحديد المستوى اختياري، ولا علاقة له بالقبول ولا بالتسجيل. يرسله المعهد عند الحاجة إلى الطلاب المسجّلين فقط، فيظهر في بوابة الطالب.','The placement test is optional and unrelated to admission or registration. The Institute sends it, when needed, to registered students only, and it appears in the student portal.')+'</p><p><a class="btn s" href="#/portals">'+L('دخول البوابات','Enter the Portals')+'</a></p></div>'}}catch(e){}
 /* بطاقة الاختبار في بوابة الطالب (عند الإرسال فقط) */
@@ -28105,7 +28110,7 @@ function seal127(){try{var v=X(),SL=(v.seals||[]).find(function(x){return x&&x.i
  /* v128: لا ختم في الوثائق غير ختم رئيس المعهد */var ch=0,M=(v.seals||[]).find(function(x){return x&&x.id==='seal-main'});if(M&&(!M.deleted||M.active)){M.deleted=1;M.active=0;ch=1}
  var PR=v.profiles||{};Object.keys(PR).forEach(function(k){var q=PR[k];if(q&&Array.isArray(q.seals)&&q.seals.some(function(z){return z!=='seal-pres'})){q.seals=['seal-pres'];ch=1}});if(ch){try{save0()}catch(e){}}}catch(e){}}
 seal127();try{GOH.pre.push(seal127)}catch(e){}
-var done=0;async function pull(){if(done||typeof sb==='undefined'||!sb)return;done=1;try{var r=await sb.from('v60_short_programs').select('id,data');if(r.error||!r.data)return;var v=X(),ch=0;
+var done=0;async function pull(){if(done||typeof sb==='undefined'||!sb)return;done=1;try{var r=await sb.from((typeof me!=='undefined'&&me&&me.r==='admin')?'v60_short_programs':'v196_sp_pub').select('id,data');if(r.error||!r.data)return;var v=X(),ch=0;
  r.data.forEach(function(row){var d=row.data||{};if(!d.id)d.id=row.id;var l=v.sp.find(function(o){return String(o.id)===String(row.id)});if(!l){v.sp.push(d);ch++}else if((d.u||'')>(l.u||l.at||'')){Object.keys(l).forEach(function(k){delete l[k]});Object.assign(l,d);ch++}/* v173: الأحدث يفوز لدى الجميع */});
  ens();if(ch){try{save0()}catch(e){}var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(k===''||k==='programs')go()}}catch(e){console.warn('sp pub',e)}}
 try{GOH.post.push(function(){var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(k===''||k==='programs'||k==='student')pull()})}catch(e){}
@@ -28177,7 +28182,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v194';
+window.__BUILD__='v196';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
