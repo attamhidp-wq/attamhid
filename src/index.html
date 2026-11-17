@@ -23926,6 +23926,7 @@ function candPage(tok){
  var head='<div class="p210hero"><h1>'+L('اختبار تحديد المستوى في اللغة العربية','Arabic Language Placement Test')+'</h1><p>'+e0(L(d.nameAr||d.nameEn,d.nameEn||d.nameAr))+' · <span dir="ltr">'+e0(d.id)+'</span></p></div>';
  var s=d.status,body='';
  if(CS.paper&&s==='started')return '<div class="p210">'+testUI()+'</div>';
+ if(CS.prof&&s==='scheduled')return '<div class="p210">'+head+profUI()+'</div>';
  if(s==='registered')body='<div class="box">'+stL(s)+'<p>'+L('تم تسجيلك. سيحدّد المعهد موعد اختبارك، ويصلك الموعد ورابط الدخول على بريدك.','You are registered. The Institute will set your test time and email you the link.')+'</p></div>';
  else if(s==='scheduled'){var at=Date.parse(d.sched&&d.sched.at),til=at+((d.sched&&+d.sched.win)||24)*3600e3,n=nowS(),mins=(d.sched&&d.sched.mins)||60;
   body='<div class="box">'+stL(s)+'<div class="p210kv"><b>'+L('الموعد (بتوقيت دكا)','Time (Dhaka)')+'</b><span dir="ltr">'+DK(d.sched.at)+'</span><b>'+L('يبقى متاحاً حتى','Available until')+'</b><span dir="ltr">'+DK(new Date(til).toISOString())+'</span><b>'+L('المدة','Duration')+'</b><span>'+mins+' '+L('دقيقة','min')+'</span><b>'+L('عدد الأسئلة','Questions')+'</b><span>60</span></div>'+
@@ -23942,6 +23943,17 @@ function candPage(tok){
  else body='<div class="box">'+stL(s)+'</div>';
  return '<div class="p210">'+head+body+'</div>'}
 H.plt210re=function(){CS.d=null;rr()};
+/* v212: مراجعة البيانات الشخصية وإكمالها قبل بدء الاختبار (تظهر في الشهادة كما هي) */
+function profUI(){var p=CS.prof||{},f=function(k,ar,en,ex){return '<label>'+L(ar,en)+' *<input name="'+k+'" value="'+e0(p[k]||'')+'" required '+(ex||'')+'></label>'};
+ return '<div class="box"><h3>'+L('راجع بياناتك قبل بدء الاختبار','Review your details before starting')+'</h3><p class="mu">'+L('تظهر هذه البيانات في شهادة نتيجتك كما تكتبها هنا. أكمل الناقص وصحّح أي خطأ، ثم اضغط «تأكيد البيانات وبدء الاختبار»؛ ويبدأ الاختبار مباشرة.','These details appear on your result certificate exactly as written here. Complete anything missing and correct any mistake, then press “Confirm and start”; the test starts immediately.')+'</p>'+
+  (CS.pbad?'<div class="msg er">'+L('أكمل جميع الحقول المطلوبة بصورة صحيحة.','Please complete all required fields correctly.')+'</div>':'')+
+  '<form class="p210f" onsubmit="return V51.h.plt210conf(this)">'+f('nameAr','الاسم الكامل بالعربية','Full name in Arabic')+f('nameEn','الاسم الكامل بالإنجليزية (كما في الجواز)','Full name in English (as in passport)','dir="ltr"')+
+  '<label>'+L('تاريخ الميلاد','Date of birth')+' *<input name="dob" type="date" dir="ltr" value="'+e0(p.dob||'')+'" required></label><label>'+L('الجنس','Sex')+' *<select name="sex" required><option value=""></option><option value="m"'+(p.sex==='m'?' selected':'')+'>'+L('ذكر','Male')+'</option><option value="f"'+(p.sex==='f'?' selected':'')+'>'+L('أنثى','Female')+'</option></select></label>'+
+  f('nat','الجنسية (بالعربية)','Nationality (Arabic)')+'<label>'+L('الجنسية بالإنجليزية','Nationality in English')+'<input name="natEn" dir="ltr" value="'+e0(p.natEn||'')+'"></label>'+
+  f('tongue','اللغة الأم','First language')+f('idno','رقم الجواز أو الهوية','Passport or ID number','dir="ltr"')+f('phone','رقم الجوال (واتساب)','Mobile (WhatsApp)','dir="ltr" inputmode="tel"')+
+  '<label>'+L('البريد الإلكتروني (لا يُعدَّل)','Email (cannot be changed)')+'<input value="'+e0(CS.em||'')+'" disabled dir="ltr"></label>'+
+  '<div class="w"><button class="btn" style="min-height:52px;font-size:17px">'+L('تأكيد البيانات وبدء الاختبار','Confirm and start the test')+'</button></div></form></div>'}
+H.plt210conf=function(f){CS.pend=fv(f);H.plt210go();CS.pend=null;return false};
 function testUI(){var P=CS.paper,qs=P.qs,dl=Date.parse(P.deadline),left=Math.max(0,dl-nowS()),tot=(P.mins||60)*60e3,done=Object.keys(CS.ans).length,lastG=null,lastL=null,sec=0,h='';
  h+='<div class="p210t"><span>'+L('الوقت المتبقي','Time left')+' <b id="p210clk">'+fmt(left)+'</b></span><span class="bar"><i id="p210bar" style="width:'+Math.round(100*left/tot)+'%"></i></span><span id="p210cnt">'+done+' / '+qs.length+'</span></div>';
  qs.forEach(function(q,n){if(q.lvl!==lastL){lastL=q.lvl;sec++;h+='<div class="p210sec">'+L('الجزء '+sec+' من 5','Part '+sec+' of 5')+'</div>';lastG=null}
@@ -23952,7 +23964,7 @@ function testUI(){var P=CS.paper,qs=P.qs,dl=Date.parse(P.deadline),left=Math.max
 function fmt(ms){var s=Math.floor(ms/1000),m=Math.floor(s/60);s%=60;return (m<10?'0':'')+m+':'+(s<10?'0':'')+s}
 function tick(){clearInterval(CS.tm);CS.tm=setInterval(function(){if(!CS.paper){clearInterval(CS.tm);return}var dl=Date.parse(CS.paper.deadline),left=dl-nowS(),el=document.getElementById('p210clk'),br=document.getElementById('p210bar');
  if(el)el.textContent=fmt(Math.max(0,left));if(br)br.style.width=Math.max(0,Math.round(100*left/((CS.paper.mins||60)*60e3)))+'%';if(left<=0){clearInterval(CS.tm);H.plt210sub(1)}},1000)}
-H.plt210go=function(){if(CS.busy)return;var ei=document.getElementById('p210em');if(ei)CS.em=String(ei.value||'').trim();if(!CS.em){toast(L('أدخل بريدك الإلكتروني المسجّل.','Enter your registered email.'));if(ei)ei.focus();return}CS.busy=1;rpc('plt_start',{tok:CS.tok,em:CS.em}).then(function(d){CS.busy=0;d=d||{};if(d.error==='email'){toast(L('البريد الإلكتروني غير مطابق للبريد المسجّل.','This email does not match the registered email.'));return}
+H.plt210go=function(){if(CS.busy)return;var ei=document.getElementById('p210em');if(ei)CS.em=String(ei.value||'').trim();if(!CS.em){toast(L('أدخل بريدك الإلكتروني المسجّل.','Enter your registered email.'));if(ei)ei.focus();return}CS.busy=1;rpc('plt_start',{tok:CS.tok,em:CS.em,prof:CS.pend||null}).then(function(d){CS.busy=0;d=d||{};if(d.error==='email'){toast(L('البريد الإلكتروني غير مطابق للبريد المسجّل.','This email does not match the registered email.'));return}if(d.error==='confirm'||d.error==='fields'){CS.prof=d.d||{};CS.pbad=d.error==='fields';rr();try{W.scrollTo(0,0)}catch(e){}return}CS.prof=null;
   if(d.error){if(d.error==='time_up'){CS.d=null;rr();return}toast(d.error==='early'?L('لم يحن موعد الاختبار بعد.','The test has not opened yet.'):d.error==='expired'?L('انتهت مدة إتاحة الاختبار.','The test window has closed.'):L('تعذّر بدء الاختبار.','Could not start the test.'));CS.d=null;rr();return}
   if(d.now)CS.skew=Date.parse(d.now)-Date.now();CS.paper={qs:d.qs||[],deadline:d.deadline,mins:Math.round((Date.parse(d.deadline)-Date.parse(d.now))/60e3)>0?((CS.d&&CS.d.sched&&CS.d.sched.mins)||60):60};CS.ans=d.ans||{};CS.d.status='started';
   try{W.addEventListener('beforeunload',bu210)}catch(e){}rr();try{W.scrollTo(0,0)}catch(e){}})
@@ -28463,7 +28475,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v211';
+window.__BUILD__='v212';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
