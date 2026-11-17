@@ -9,6 +9,21 @@ const json = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: 
 const EM = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/;
 const clean = (v: unknown, n: number) => String(v ?? "").replace(/[<>]/g, "").trim().slice(0, n);
 
+// v196: حماية كلمات المرور المسرَّبة (Have I Been Pwned بطريقة k-anonymity: لا يُرسل إلا أول 5 رموز من بصمة SHA-1)
+async function pwned(password: string): Promise<number> {
+  try {
+    const h = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-1", new TextEncoder().encode(password)))).map((x) => x.toString(16).padStart(2, "0")).join("").toUpperCase();
+    const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 4000);
+    const r = await fetch("https://api.pwnedpasswords.com/range/" + h.slice(0, 5), { headers: { "Add-Padding": "true", "User-Agent": "attamhid-participants" }, signal: ctl.signal });
+    clearTimeout(tm);
+    if (!r.ok) return 0;
+    const suf = h.slice(5);
+    for (const line of (await r.text()).split("\n")) { const [x, c] = line.trim().split(":"); if (x === suf) return Number(c) || 0; }
+  } catch { /* تعذّر الفحص: لا نمنع المستخدم */ }
+  return 0;
+}
+const weakPw = (pw: string) => pw.length < 8 || pw.length > 64 || !/[A-Za-z\u0600-\u06FF]/.test(pw) || !/\d/.test(pw);
+
 async function recent(email: string) {
   const { count } = await admin.from("v63_mail_log").select("id", { count: "exact", head: true }).eq("to_addr", email).like("type", "p138_auth%").gte("at", new Date(Date.now() - 90e3).toISOString());
   return (count || 0) > 0;
@@ -41,6 +56,7 @@ Deno.serve(async (req) => {
       const d = { nameAr: clean(b.nameAr, 120), nameEn: clean(b.nameEn, 120), sex: String(b.sex || ""), phone: clean(b.phone, 40), lang: String(b.lang || "ar").slice(0, 2) };
       if (!d.nameAr || !d.nameEn || !d.phone || !["m", "f"].includes(d.sex)) return json({ error: "fields_required" });
       if (pw.length < 8 || pw.length > 64 || !/[A-Za-z؀-ۿ]/.test(pw) || !/\d/.test(pw)) return json({ error: "weak" });
+      if (await pwned(pw) > 0) return json({ error: "pwned" });
       if (P) {
         if (P.confirmed_at) return json({ error: "exists" });
         if (await recent(email)) return json({ ok: true, sent: true });
@@ -62,6 +78,19 @@ Deno.serve(async (req) => {
       if (ins.error) throw ins.error;
       await mail(email, "signup", "signup", g.data.properties.hashed_token, d.nameAr, d.nameEn);
       return json({ ok: true, sent: true });
+    }
+    if (action === "setpw") {
+      // v196: تعيين كلمة المرور بعد رابط الاستعادة يمر بالخادم ليُفحص ضد كلمات المرور المسرَّبة
+      const tok = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+      const { data: U, error: ue } = await admin.auth.getUser(tok);
+      if (ue || !U?.user || String(U.user.email || "").toLowerCase() !== email) return json({ error: "auth" }, 401);
+      if (!P || P.uid !== U.user.id) return json({ error: "auth" }, 401);
+      const pw = String(b.password || "");
+      if (weakPw(pw)) return json({ error: "weak" });
+      if (await pwned(pw) > 0) return json({ error: "pwned" });
+      const up = await admin.auth.admin.updateUserById(U.user.id, { password: pw });
+      if (up.error) return json({ error: /different|same/i.test(up.error.message) ? "same" : "server" });
+      return json({ ok: true });
     }
     if (action === "resend" || action === "reset") {
       // الرد واحد دائماً حتى لا يُكشف وجود الحساب
