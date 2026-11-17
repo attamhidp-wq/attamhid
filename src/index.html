@@ -814,7 +814,7 @@ const progBox=p=>`<div class="box"><h3>${esc(p.name)}</h3><p>${esc(p.desc)}</p><
 const pst=p=>{if(p.cancelled)return 'ملغى';const n=new Date().toISOString().slice(0,10);return n<p.from?'قادم':n>p.to?'منتهٍ':'جارٍ'};
 V.programs=()=>`<h2>البرامج والدورات</h2>${tbar('prog','ابحث باسم البرنامج أو المشرف أو الوصف…',['قادم','جارٍ','منتهٍ','ملغى'])}<div class="grid">${S.programs.map(p=>`<div class="box" data-k="${esc([p.name,p.desc,p.teacher,p.plan,p.fee].join(' '))}" data-f="${pst(p)}"><h3>${esc(p.name)}</h3><span class="tag">${pst(p)}</span><p>${esc(p.desc)}</p><div class="mu">${p.kind=='diploma'?'سنتان · 4 فصول · '+esc(p.hours)+' ساعة معتمدة':esc(p.from)+' ← '+esc(p.to)+' · '+esc(p.hours)+' ساعة · '+esc(p.fee)}</div>${(p.kind=='diploma'||p.id==DIP)&&window.lvBtns?window.lvBtns():''}<p class="mu">المشرف: ${esc(p.teacher)}<br>الخطة: ${esc(p.plan)}</p>${p.cancelled?'<p class="mu">أُلغي هذا البرنامج أو أُوقف التسجيل فيه.</p>':(p.kind=='diploma'?'<a href="#/register" class="btn" style="display:inline-block;text-decoration:none">سجّل في الدبلوم</a>':'<p class="mu">🔒 للعرض فقط — التسجيل في الدورات القصيرة من بوابة الطالب بعد القبول في الدبلوم.</p>')}</div>`).join('')||'<p>لا توجد برامج بعد.</p>'}</div>`;
 V.faculty=()=>`<h2>هيئة الإدارة والتدريس</h2>${tbar('pubf','ابحث بالاسم أو المنصب أو التخصص…',[])}<div class="grid">${S.faculty.filter(f=>f.active).map(f=>`<div class="box" data-k="${esc([f.name,f.role,f.spec].join(' '))}"><h3>${esc(f.name)}</h3><p>${esc(f.role)} · ${esc(f.spec)}</p><div class="mu">المقررات: ${f.courses.map(c=>esc(P(c).name)).join('، ')||'—'}</div></div>`).join('')}</div>`;
-V.verify=()=>`<h2>التحقق من الشهادات والوثائق</h2><div class="box"><form onsubmit="return ver(this)"><label>رقم السجل أو رقم الهوية/الجواز<input name="n" placeholder="TISA-2026-0001" value="${esc(decodeURIComponent(location.hash.split('/')[2]||''))}" required></label><button class="btn">تحقق</button></form><div id="out"></div></div>${location.hash.split('/')[2]?'<img src="" onerror="ver(document.querySelector(\'#app form\'));this.remove()" alt="" hidden>':''}`;
+V.verify=()=>`<h2>التحقق من الشهادات والوثائق</h2><div class="box"><form onsubmit="return ver(this)"><label>رقم السجل أو رقم الهوية/الجواز<input name="n" placeholder="TISA-2026-0001" value="${esc(decodeURIComponent(location.hash.split('/')[2]||''))}" required></label><button class="btn">تحقق</button></form><div id="out"></div></div>${location.hash.split('/')[2]?'<img src="" onerror="try{verAuto()}catch(e){};this.remove()" alt="" hidden>':''}`;
 V.register=()=>`<img src="${LOGO}" style="height:80px" alt="معهد التمهيد"><h2>التسجيل</h2><div class="box"><p class="mu">التسجيل الخارجي متاح في برنامج واحد فقط: دبلوم عام في اللغة العربية لغير الناطقين بها (سنتان · 4 فصول دراسية · 80 ساعة معتمدة). الدورات القصيرة تُتاح من بوابة الطالب بعد القبول.</p><form onsubmit="return reg(this)">
 <label>الاسم الكامل<input name="name" required></label><label>البريد<input name="email" type="email" required></label><label>رقم الجوال<input name="phone" required></label>
 <label>الجنس<select name="sex"><option>ذكر</option><option>أنثى</option></select></label><label>الجنسية<input name="nat" required></label><label>رقم الهوية أو الجواز<input name="pid" required></label><input type="hidden" name="exlang" value="ar">
@@ -1236,7 +1236,11 @@ async function phDel(){if(!confirm('حذف الصورة نهائياً؟'))retur
 
 /* ---- فتح رابط التحقق من رمز QR ---- */
 {const q=new URLSearchParams(location.search).get('v');if(q){try{history.replaceState(null,'',location.pathname+'#/verify/'+encodeURIComponent(q))}catch(e){location.hash='#/verify/'+encodeURIComponent(q)}}}
-const verAuto=function(){try{const r=location.hash.split('/');if(r[1]=='verify'&&r[2]){const f=document.querySelector('#app form[onsubmit*="ver("]');if(f&&!f.dataset.auto){f.dataset.auto=1;ver(f)}}}catch(e){}};
+/* v204: التحقق التلقائي من الرابط يُستدعى مرة واحدة لكل رقم؛ وإعادة رسم الصفحة تعيد النتيجة ولوحة المشاركة من الذاكرة بدل استدعاء الخادم مجدداً */
+const verAuto=function(){try{const r=location.hash.split('/');if(r[1]=='verify'&&r[2]){const f=document.querySelector('#app form[onsubmit*="ver("]');if(f&&!f.dataset.auto){f.dataset.auto=1;const k=decodeURIComponent(r[2]);
+ if(window.__vq204===k){const o=document.getElementById('out');if(o&&!o.innerHTML.trim()&&window.__vh204){o.innerHTML=window.__vh204;if(window.__vsh204&&!document.getElementById('sh136'))o.insertAdjacentHTML('afterend',window.__vsh204)}return}
+ window.__vq204=k;window.__vh204='';window.__vsh204='';ver(f)}}}catch(e){}};
+try{GOH.pre.push(function(){try{if(!/^#\/verify\//.test(location.hash))return;const o=document.getElementById('out');if(o&&o.innerHTML.trim())window.__vh204=o.innerHTML;const sh=document.getElementById('sh136');if(sh)window.__vsh204=sh.outerHTML}catch(e){}})}catch(e){}
 
 /* ===== تطويرات بوابة الإدارة: مراجعة الطلبات، التعديل والإضافة، الوثيقة المخصصة ===== */
 {const st=document.createElement('style');st.textContent='.xov{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(10,20,40,.55);z-index:60;overflow:auto;padding:24px 12px}.xpn{max-width:720px;margin:0 auto;background:var(--sf,#fff);color:var(--tx,#14213d);border-radius:16px;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,.35)}.xt{width:100%;border-collapse:collapse;margin-top:10px}.xt td{border-bottom:1px solid var(--bd,#d9deea);padding:8px 6px;vertical-align:top}.xt td:first-child{color:var(--mu,#5b6578);width:38%;font-weight:600}';document.head.appendChild(st)}
@@ -28204,7 +28208,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v203';
+window.__BUILD__='v204';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
