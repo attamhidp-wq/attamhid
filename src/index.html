@@ -2588,7 +2588,7 @@ V.register=()=>head('تسجيل طالب جديد')+`<div class="box"><p class="
 const _vp=V.placement;V.placement=()=>{let h=_vp();const r=plReq();if(r&&plFresh==r.id&&r.secret&&0)h=`<div class="msg"><b>احتفظ بالرمز السري لمراجعة طلبك:</b> <span dir="ltr" style="font:700 1.2rem monospace">${A(r.secret)}</span><br>تراجع حالة طلبك ونتيجتك لاحقاً من «مراجعة الطلب واستعلام الحالة» برقم الطلب <b dir="ltr">${A(r.id)}</b> وهذا الرمز.</div>`+h;return h};
 
 /* ---------- 3) مراجعة الطلب واستعلام الحالة ---------- */
-V.review=()=>head('مراجعة الطلب واستعلام الحالة')+`<div class="box narrow"><form onsubmit="return revGo(this)"><label>رقم الطلب / السجل<input name="n" required dir="ltr" placeholder="REQ-XXXXXXXX" autocomplete="off"></label><label>البريد الإلكتروني المسجّل في الطلب أو الرمز السري<input name="v" required dir="ltr" autocomplete="off" placeholder="name@example.com"></label><button class="btn">استعلام</button></form><div id="out"></div></div>`;
+V.review=()=>head('مراجعة الطلب واستعلام الحالة')+`<div class="box narrow"><form onsubmit="return revGo(this)"><label>رقم الطلب / السجل<input name="n" required dir="ltr" placeholder="REQ-XXXXXXXX" autocomplete="off"></label><label>البريد الإلكتروني المسجّل في الطلب أو الرمز السري<input name="v" required dir="ltr" autocomplete="off" placeholder="name@example.com"></label><button class="btn">استعلام</button></form><details class="box" style="margin-top:12px"><summary>${(window.L||function(a){return a})('نسيت الرمز السري؟','Forgot the secret code?')}</summary><form onsubmit="return secRec197(this)" style="margin-top:10px"><p class="mu">${(window.L||function(a){return a})('أدخل رقم الطلب والبريد الإلكتروني المسجّل فيه، فيُرسل الرمز السري إلى ذلك البريد فقط.','Enter the application number and the email registered in it; the secret code is sent to that email only.')}</p><label>${(window.L||function(a){return a})('رقم الطلب','Application No.')}<input name="n" required dir="ltr" placeholder="REQ-XXXXXXXX" autocomplete="off"></label><label>${(window.L||function(a){return a})('البريد الإلكتروني المسجّل في الطلب','Email registered in the application')}<input name="e" type="email" required dir="ltr" autocomplete="email"></label><button class="btn s">${(window.L||function(a){return a})('أرسل الرمز إلى بريدي','Send the code to my email')}</button><div class="sr197"></div></form></details><div id="out"></div></div>`;
 V.track=V.review;
 const revView=r=>{const p=typeof plOf=='function'?plOf(r):null,L=r.sid?S.certs.filter(c=>c.type=='acc'&&c.sid==r.sid&&!c.revoked):[];
  const lv=p&&p.score!=null?`${p.score} / 100${p.lv&&typeof PLN!='undefined'?' — المستوى المقترح: '+A(PLN[p.lv]||p.lv):''}`:'لم يؤدِّ الاختبار بعد';
@@ -27522,6 +27522,11 @@ var CUR=null;
 async function track(n,em){var r=(S.requests||[]).find(function(x){return String(x.id).toUpperCase()===n});if(r&&typeof me!=='undefined'&&me&&me.r==='admin')return {r:r,local:1};
  if(typeof sb!=='undefined'&&sb){try{var x=await sb.rpc('v141_track',em?{rid:n,em:em}:{rid:n});if(!x.error&&x.data)return {r:x.data,local:0}}catch(e){}}return null}
 function sum141(r){return '<div class="msg"><b>'+L('بيانات الطلب','Application details')+'</b><br>'+L('الاسم: ','Name: ')+e7(r.name||'')+'<br>'+L('رقم الطلب: ','Application No.: ')+'<b dir="ltr">'+e7(r.id||'')+'</b>'+(r.admRes||r.status?'<br>'+L('حالة القبول: ','Admission status: ')+'<b>'+e7(r.admRes||r.status)+'</b>':'')+(r.rank?'<br>'+L('ترتيبك في المفاضلة: ','Your rank: ')+'<b>'+e7(r.rank)+'</b>':'')+(r.admNote?'<br>'+e7(r.admNote):'')+(r.sid?'<br>'+L('الرقم الأكاديمي: ','Academic number: ')+'<b dir="ltr">'+e7(r.sid)+'</b> '+L('(بيانات الدخول أُرسلت إلى بريدك)','(sign-in details were emailed to you)'):'')+'</div>'}
+/* v197: استعادة الرمز السري — يُرسل إلى البريد المسجّل في الطلب فقط، والرد واحد دائماً حتى لا يُكشف وجود الطلب */
+window.secRec197=function(f){var v=fv(f),n=String(v.n||'').trim().toUpperCase(),e=String(v.e||'').trim(),o=f.querySelector('.sr197'),b=f.querySelector('button');if(!n||!e)return false;if(b)b.disabled=true;
+ var done=function(m,ok){if(o)o.innerHTML='<div class="msg '+(ok?'ok':'er')+'">'+m+'</div>';if(b)b.disabled=false};
+ if(typeof sb==='undefined'||!sb){done(L('تعذّر الاتصال. حاول لاحقاً.','Connection failed. Try again later.'),0);return false}
+ sb.rpc('v197_secret_recover',{rid:n,em:e}).then(function(r){if(r.error&&/rate|429/i.test(String(r.error.message||r.error.code||'')))done(L('محاولات كثيرة. حاول بعد قليل.','Too many attempts. Try again shortly.'),0);else done(L('إن كانت البيانات صحيحة فسيصلك الرمز السري على بريدك المسجّل خلال دقائق. تحقّق من صندوق الوارد والرسائل غير المرغوبة.','If the details are correct, the secret code will arrive at your registered email within minutes. Check your inbox and spam folder.'),1)});return false};
 var _rg=W.revGo;W.revGo=function(f){var v=fv(f),n=String(v.n||'').trim().toUpperCase(),ver=String(v.v||v.s||'').trim();
  /* v196: لا تُعرض بيانات الطلب إلا برمز تحقق: البريد المسجّل في الطلب أو الرمز السري */
  if(!ver&&!(typeof me!=='undefined'&&me&&me.r==='admin')){out('<div class="msg er">'+L('أدخل البريد الإلكتروني المسجّل في الطلب أو الرمز السري.','Enter the email registered in the application or the secret code.')+'</div>');return false}
@@ -28182,7 +28187,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v197';
+window.__BUILD__='v198';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
