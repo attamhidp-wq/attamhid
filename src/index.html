@@ -1070,7 +1070,7 @@ async function sbAdminLogin(v){if(!sb){out('<div class="msg">تعذر الاتص
  const {data:pf}=await sb.from('profiles').select('role').eq('id',au.user.id).maybeSingle();if(!pf||pf.role!='admin'){await sb.auth.signOut();out('<div class="msg">هذا الحساب ليس حساباً إدارياً</div>');return}
  me={r:'admin'};sbUser=null;sbAdmin=true;await sbPull();tab='req';location.hash='#/admin';go()}
 function sbOut(){sbAdmin=false;try{sb&&sb.auth.signOut()}catch(e){}}
-const vc=c=>c.type=='exam'?exVer(c):`<div class="msg${c.revoked?' er':''}"><b>${c.revoked?'✖ وثيقة ملغاة'+(c.reason?' — '+esc(c.reason):'')+(c.rdate?' ('+esc(c.rdate)+')':''):'✔ وثيقة معتمدة'}</b><br>نوع الوثيقة: ${esc((CT[c.type||'part']||[''])[0])}${c.title?'<br>عنوان الوثيقة: '+esc(c.title):''}${(FR(c.type)&&c.title&&c.name==c.title)?'':'<br>الاسم: '+esc(c.name)}${c.prog?'<br>البرنامج: '+esc(c.prog):''}${(c.hours||c.grade)?'<br>'+(c.hours?'الساعات: '+esc(c.hours):'')+((c.hours&&c.grade)?' · ':'')+(c.grade?'التقدير: '+esc(c.grade):''):''}<br>تاريخ الإصدار: ${esc(c.date)}<br>رقم السجل: ${esc(c.rec)}</div>`;
+const vc=c=>(c.type=='exam'||c.type=='plt')?exVer(c):`<div class="msg${c.revoked?' er':''}"><b>${c.revoked?'✖ وثيقة ملغاة'+(c.reason?' — '+esc(c.reason):'')+(c.rdate?' ('+esc(c.rdate)+')':''):'✔ وثيقة معتمدة'}</b><br>نوع الوثيقة: ${esc((CT[c.type||'part']||[''])[0])}${c.title?'<br>عنوان الوثيقة: '+esc(c.title):''}${(FR(c.type)&&c.title&&c.name==c.title)?'':'<br>الاسم: '+esc(c.name)}${c.prog?'<br>البرنامج: '+esc(c.prog):''}${(c.hours||c.grade)?'<br>'+(c.hours?'الساعات: '+esc(c.hours):'')+((c.hours&&c.grade)?' · ':'')+(c.grade?'التقدير: '+esc(c.grade):''):''}<br>تاريخ الإصدار: ${esc(c.date)}<br>رقم السجل: ${esc(c.rec)}</div>`;
 const _ver=ver;ver=function(f){const q=fv(f).n.trim();if(!sb||!q)return _ver(f);sb.rpc('verify_cert',{q}).then(({data,error})=>{if(!error&&data&&data.length)out(data.map(vc).join(''));else sb.rpc('verify_person',{q}).then(({data:pp})=>{if(pp&&pp.name)out(`<div class="msg"><b style="color:var(--ok)">✔ بطاقة سارية</b><br>الاسم: ${esc(pp.name)}<br>الرقم: ${esc(pp.id)}</div>`);else _ver(f)})});return false};
 (async()=>{if(!sb)return;try{const {data:{session}}=await sb.auth.getSession();if(me&&me.r=='admin'){if(!session){me=null;go();return}const {data:pf}=await sb.from('profiles').select('role').eq('id',session.user.id).maybeSingle();if(!pf||pf.role!='admin'){me=null;go();return}sbAdmin=true;await sbPull();go()}else sbPubPull()}catch(e){console.error(e)}})();
 
@@ -23802,6 +23802,246 @@ try{V['']=home120}catch(e){console.error('v120 home',e)}
 V5.payMethods120=function(ctx){var c=pcfg(),M=V5.pm120view(ctx);return '<div class="pm73 pm77">'+M.map(function(m){var k=KN[m.kind]||KN.other;return '<div class="pm120r"><span class="b">'+e0(k[1])+'</span><span class="t"><span>'+e0(L3(m.ar,m.en,m.bn))+(m.holder?' · <small>'+e0(m.holder)+'</small>':'')+'</span><b dir="ltr" class="pm77n">'+e0(m.num)+'</b>'+(m.note?'<small class="mu">'+e0(m.note)+'</small>':'')+'</span><button type="button" class="btn s" onclick="try{navigator.clipboard.writeText(\''+Qs(m.num)+'\');toast(L(\'نُسخ الرقم.\',\'Number copied.\'))}catch(e){}">'+L('نسخ','Copy')+'</button></div>'}).join('')+
  (String(c.acctAr||'').trim()?'<p class="pm73a">'+e0(L(c.acctAr,c.acctEn||c.acctAr)).replace(/\n/g,'<br>')+'</p>':'')+'</div>'};
 })();
+/* =====================================================================
+   v210 — خدمة «اختبار تحديد المستوى في اللغة العربية» المستقلة:
+   تسجيل ذاتي أو يدوي، موعد تحدده الإدارة المركزية أو الجهة المخوّلة (صلاحية plt)، رابط آلي بالبريد،
+   اختبار عن بُعد (60 سؤالاً من بنك 120 سؤالاً، 12 لكل مستوى A1–C1)، تصحيح آلي، رسوم إصدار عبر بيكاش،
+   تأكيد الدفع واعتماد النتيجة، ثم شهادة نتيجة بتصميم خاص تُرسل مرفقةً بالبريد آلياً.
+   ===================================================================== */
+(function(){
+var H=V5.h,W=window;
+var e0=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var Qs=function(x){return String(x).replace(/\\/g,'\\\\').replace(/'/g,"\\'")};
+var LV=[['A1','التمهيدي','Foundation','يمتلك حصيلة أولية من المفردات والعبارات الأساسية، ويتعامل مع مواقف بسيطة ومألوفة بعبارات قصيرة.','Has a basic stock of words and set phrases and handles simple, familiar situations in short expressions.'],
+ ['A2','المبتدئ','Elementary','يفهم الجمل والعبارات الشائعة في الحياة اليومية، ويتواصل في المواقف المعتادة لتلبية حاجاته الأساسية.','Understands common everyday sentences and expressions and communicates in routine situations to meet basic needs.'],
+ ['B1','المتوسط','Intermediate','يفهم الأفكار الرئيسة في النصوص الواضحة عن الموضوعات المألوفة، ويعبّر عن تجاربه وآرائه بلغة مترابطة.','Understands the main ideas of clear texts on familiar topics and describes experiences and opinions in connected language.'],
+ ['B2','فوق المتوسط','Upper Intermediate','يفهم النصوص المركّبة في الموضوعات العامة وما يتصل بمجاله، ويتحدث ويكتب بطلاقة ووضوح مع تنويع في الصياغة.','Understands complex texts on general and field-related topics and speaks and writes fluently and clearly with varied phrasing.'],
+ ['C1','المتقدم','Advanced','يفهم النصوص الطويلة العميقة ويدرك معانيها الضمنية، ويستعمل اللغة بمرونة ودقة في المواقف الأكاديمية والمهنية.','Understands long, demanding texts and their implicit meaning, and uses the language flexibly and precisely in academic and professional settings.']];
+var lvOf=function(c){for(var i=0;i<LV.length;i++)if(LV[i][0]===c)return LV[i];return LV[0]};
+var ST210={registered:['مسجّل — ينتظر تحديد الموعد','Registered — awaiting appointment','#5B7FA6'],scheduled:['حُدّد الموعد','Scheduled','#2563a8'],started:['يؤدي الاختبار','In progress','#b7791f'],
+ submitted:['أتمّ الاختبار — ينتظر الدفع','Completed — awaiting payment','#8a5a00'],paid_claimed:['أفاد بالدفع — ينتظر التأكيد','Payment reported — to confirm','#a14d00'],paid:['الدفع مؤكَّد — جاهز للإصدار','Paid — ready to issue','#1b7f4b'],
+ issued:['صدرت الشهادة','Certificate issued','#0B1F3A'],cancelled:['ملغى','Cancelled','#8a8f98']};
+var stL=function(s){var x=ST210[s]||[s,s,'#666'];return '<span class="p210st" style="--c:'+x[2]+'">'+e0(L(x[0],x[1]))+'</span>'};
+var DK=function(iso,withTime){if(!iso)return '—';try{return new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dhaka',year:'numeric',month:'2-digit',day:'2-digit',hour:withTime===false?undefined:'2-digit',minute:withTime===false?undefined:'2-digit',hour12:false}).format(new Date(iso)).replace(',','')}catch(e){return String(iso).slice(0,16).replace('T',' ')}};
+var hasSb=function(){return typeof sb!=='undefined'&&sb&&sb.rpc};
+var rpc=function(n,a){return hasSb()?Promise.resolve(sb.rpc(n,a)).then(function(r){if(r&&r.error)throw r.error;return r?r.data:null}):Promise.reject(new Error('offline'))};
+var errTxt=function(e){var m=String(e&&(e.message||e.code)||e||'');return /rate|429/i.test(m)?L('محاولات كثيرة. حاول بعد قليل.','Too many attempts. Please try again shortly.'):/forbidden|42501/i.test(m)?L('لا تملك صلاحية هذا الإجراء.','You do not have permission for this action.'):L('تعذّر الاتصال. حاول مجدداً.','Connection failed. Please try again.')};
+
+/* ---------- الأنماط ---------- */
+(function(){try{var st=document.createElement('style');st.id='css210';st.textContent=
+'.p210{max-width:900px;margin:0 auto}.p210 h2{margin:.2em 0 .4em}.p210hero{background:linear-gradient(135deg,#0B1F3A,#163a66);color:#fff;border-radius:16px;padding:26px 22px;margin:0 0 16px}.p210hero h1{color:#fff;margin:0 0 6px;font-size:1.6rem}.p210hero p{color:#dbe4f0;margin:0}'+
+'.p210lv{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}.p210lv div{background:#f3f6fa;border:1px solid #dde4ec;border-radius:10px;padding:10px 6px;text-align:center}.p210lv b{display:block;color:#0B1F3A}.p210lv i{font-style:normal;color:#5B7FA6;font-weight:700}'+
+'.p210f{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}.p210f label{margin:0}.p210f .w{grid-column:1/-1}@media(max-width:640px){.p210f{grid-template-columns:1fr}.p210lv{grid-template-columns:repeat(3,1fr)}}'+
+'.p210st{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.82rem;font-weight:700;color:var(--c);background:color-mix(in srgb,var(--c) 12%,#fff);border:1px solid color-mix(in srgb,var(--c) 35%,#fff)}'+
+'.p210kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:10px 0}.p210kv b{color:#4a5a70;font-weight:600}'+
+'.p210t{position:sticky;top:0;z-index:30;background:#0B1F3A;color:#fff;border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;box-shadow:0 6px 18px rgba(11,31,58,.18)}.p210t b{font-size:1.25rem;font-variant-numeric:tabular-nums}.p210t .bar{flex:1;height:6px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden}.p210t .bar i{display:block;height:100%;background:#9fc0e6}'+
+'.p210sec{margin:18px 0 8px;color:#5B7FA6;font-weight:800;letter-spacing:.02em}.p210pass{background:#f6f8fb;border-inline-start:4px solid #5B7FA6;border-radius:10px;padding:12px 14px;line-height:2;margin:8px 0}'+
+'.p210q{background:#fff;border:1px solid #dde4ec;border-radius:12px;padding:12px 14px;margin:8px 0}.p210q.ok{border-color:#9fc0e6;background:#fbfdff}.p210q h4{margin:0 0 8px;font-size:1.05rem;line-height:1.9}.p210q h4 span{color:#5B7FA6;margin-inline-end:6px}'+
+'.p210o{display:grid;grid-template-columns:1fr 1fr;gap:6px}.p210o label{display:flex;gap:8px;align-items:center;border:1px solid #dde4ec;border-radius:10px;padding:9px 10px;cursor:pointer;margin:0;font-weight:500}.p210o input{margin:0;width:auto}.p210o label:has(input:checked){border-color:#0B1F3A;background:#eef3f9;font-weight:700}@media(max-width:640px){.p210o{grid-template-columns:1fr}}'+
+'.p210a table td,.p210a table th{vertical-align:top}.p210a .acts{display:flex;flex-wrap:wrap;gap:4px}.p210a .acts .btn{padding:5px 9px;font-size:.84rem}.p210cnt{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}.p210cnt span{background:#f3f6fa;border:1px solid #dde4ec;border-radius:10px;padding:6px 12px}.p210cnt b{color:#0B1F3A}';
+document.head.appendChild(st)}catch(e){}})();
+
+/* ---------- الشهادة: تقرير نتيجة بتصميم المعهد الخاص ---------- */
+function ring(score){var r=62,C=2*Math.PI*r,v=Math.max(0,Math.min(100,+score||0));return '<svg width="132" height="132" viewBox="0 0 160 160"><circle cx="80" cy="80" r="'+r+'" fill="none" stroke="#e3e9f1" stroke-width="14"/><circle cx="80" cy="80" r="'+r+'" fill="none" stroke="#0B1F3A" stroke-width="14" stroke-linecap="round" stroke-dasharray="'+(C*v/100).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 80 80)"/><circle cx="80" cy="80" r="'+(r-14)+'" fill="none" stroke="#5B7FA6" stroke-opacity=".35" stroke-width="1" stroke-dasharray="2 4"/><text x="80" y="82" text-anchor="middle" font-family="Almarai,IBM Plex Sans Arabic,sans-serif" font-size="40" font-weight="800" fill="#0B1F3A">'+v+'</text><text x="80" y="108" text-anchor="middle" font-family="IBM Plex Sans Arabic,sans-serif" font-size="13" fill="#5B7FA6">/ 100</text></svg>'}
+function certPlt(c){
+ var lv=lvOf(c.cefr||'A1'),idx=LV.indexOf(lv),M=/^f/.test(String(c.sex||''));
+ var sg=[];try{sg=resolveSigners('plt')||[]}catch(e){}if(!sg.length){try{sg=resolveSigners('intro')||[]}catch(e){}}sg=sg.slice(0,1);
+ var se=[];try{se=(resolveSeals('plt')||[]).concat(resolveSeals('intro')||[])}catch(e){}se=se.map(function(s){try{return imgOf(typeof s==='string'?s:s&&s.img)}catch(x){return ''}}).filter(Boolean).slice(0,1);
+ var LG='';try{LG=(typeof LOGO2!=='undefined'&&LOGO2)||''}catch(e){}var LGd='';try{LGd=logoT()||LOGO}catch(e){try{LGd=LOGO}catch(x){}}
+ var vu='';try{vu=vlink(c.rec)}catch(e){}var Q='';try{Q=qr(vu)}catch(e){}
+ var hd=function(d){if(!d)return '—';try{return SPCORE.hD(d)+' هـ'}catch(e){return ''}};
+ var row=function(a,e,v,ve){return '<div class="z2r"><div class="z2k"><b>'+e0(a)+'</b><i dir="ltr">'+e0(e)+'</i></div><div class="z2v"><b>'+e0(v||'—')+'</b>'+(ve?'<i dir="ltr">'+e0(ve)+'</i>':'')+'</div></div>'};
+ var sexA=c.sex==='f'?'أنثى':c.sex==='m'?'ذكر':'',sexE=c.sex==='f'?'Female':c.sex==='m'?'Male':'';
+ var info=row('الاسم','Name',c.name,c.nameEn)+row('تاريخ الميلاد','Date of birth',c.dob||'—')+row('الجنسية','Nationality',c.nat||'—',c.natEn||'')+row('اللغة الأم','First language',c.tongue||'—')+row('الجنس','Sex',sexA||'—',sexE)+row('رقم الهوية / الجواز','ID / Passport No.',c.idno||'—');
+ var tinfo=row('نوع الاختبار','Test mode','عن بُعد','Online')+row('تاريخ الاختبار','Test date',c.testDate||'—',hd(c.testDate))+row('تاريخ الإصدار','Issue date',c.date||'—',hd(c.date));
+ var ladder=LV.map(function(x,i){return '<div class="z2st'+(i===idx?' z2on':i<idx?' z2past':'')+'"><span>'+x[0]+'</span><b>'+e0(x[1])+'</b><i dir="ltr">'+e0(x[2])+'</i></div>'}).join('');
+ var desc=LV.slice().reverse().map(function(x){var on=x[0]===lv[0];return '<tr'+(on?' class="z2on"':'')+'><td class="z2l"><b>'+e0(x[1])+'</b><i dir="ltr">'+e0(x[2])+'</i></td><td class="z2c">'+x[0]+'</td><td class="z2d"><div>'+e0(x[3])+'</div><div dir="ltr" class="z2de">'+e0(x[4])+'</div></td></tr>'}).join('');
+ var sgH=sg.map(function(s){var im='';try{im=s.img?imgOf(s.img):''}catch(e){}return '<div class="z2sg">'+(im?'<img src="'+im+'" alt="">':'<div style="height:54px"></div>')+'<i></i><b>'+e0(s.n)+'</b><span dir="ltr">'+e0(s.ne||'')+'</span><em>'+e0(s.t||'')+'</em><em dir="ltr">'+e0(s.te||'')+'</em></div>'}).join('');
+ var css='.pl210{position:relative;width:794px;height:1123px;background:#fff;color:#14213d;font-family:"IBM Plex Sans Arabic",Almarai,Tahoma,sans-serif;direction:rtl;overflow:hidden;box-sizing:border-box}'+
+ '.pl210 *{box-sizing:border-box}.pl210 .z2hd{height:150px;background:linear-gradient(120deg,#0B1F3A 0%,#13305a 62%,#1d4475 100%);color:#fff;padding:26px 40px 0;position:relative}'+
+ '.pl210 .z2hd:after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:linear-gradient(90deg,#9AA6AE,#5B7FA6,#9AA6AE)}'+
+ '.pl210 .z2hd svg.z2ln{position:absolute;left:0;top:0;opacity:.13}.pl210 .z2hd .z2lg{position:absolute;left:40px;top:34px;width:230px;height:70px;display:flex;align-items:center}.pl210 .z2hd .z2lg img{max-height:70px;max-width:230px;width:auto;display:block}'+
+ '.pl210 .z2hd .z2tt{position:absolute;right:40px;left:300px;top:26px;text-align:right}.pl210 .z2hd .z2tt h1{margin:0;font-family:Almarai,"IBM Plex Sans Arabic",sans-serif;font-size:27px;font-weight:800;color:#fff;text-align:right;line-height:1.35}.pl210 .z2hd .z2tt h2{margin:4px 0 0;font-size:14px;font-weight:600;letter-spacing:.06em;color:#c9d6e6;text-align:right;direction:ltr}'+
+ '.pl210 .z2hd .z2tt .z2chip{display:inline-block;margin-top:10px;padding:3px 12px;border:1px solid rgba(255,255,255,.35);border-radius:999px;font-size:11.5px;color:#e5edf6;float:right}'+
+ '.pl210 .z2bd{padding:16px 40px 0}.pl210 .z2sec{display:flex;align-items:center;gap:10px;margin:0 0 5px;color:#0B1F3A;font-family:Almarai,sans-serif;font-weight:800;font-size:14px}.pl210 .z2sec:before{content:"";width:8px;height:20px;background:#5B7FA6;border-radius:2px}.pl210 .z2sec i{font-style:normal;color:#5B7FA6;font-weight:600;font-size:12px;direction:ltr;margin-inline-start:auto}'+
+ '.pl210 .z2gr{display:grid;grid-template-columns:1fr 1fr;gap:0 26px;border-top:1px solid #dfe5ec;margin-bottom:10px}.pl210 .z2r{display:flex;justify-content:space-between;gap:10px;padding:2px 0;border-bottom:1px solid #eef1f5;min-height:32px;align-items:center}'+
+ '.pl210 .z2r .z2k b{display:block;font-size:12.5px;color:#4a5a70;font-weight:600}.pl210 .z2r .z2k i{display:block;font-style:normal;font-size:10px;color:#8a97a8}.pl210 .z2r .z2v{text-align:left}.pl210 .z2r .z2v b{display:block;font-size:14px;color:#0B1F3A;text-align:left}.pl210 .z2r .z2v i{display:block;font-style:normal;font-size:11px;color:#5B7FA6;text-align:left}'+
+ '.pl210 .z2res{display:grid;grid-template-columns:140px 1fr;gap:20px;align-items:center;background:#f5f8fb;border:1px solid #dfe6ee;border-radius:14px;padding:6px 20px;margin:2px 0 8px}'+
+ '.pl210 .z2res .z2lvn{font-family:Almarai,sans-serif;font-size:30px;font-weight:800;color:#0B1F3A;line-height:1.2}.pl210 .z2res .z2lve{font-size:15px;color:#5B7FA6;font-weight:700;direction:ltr;text-align:right}.pl210 .z2res .z2cefr{display:inline-block;margin-top:8px;background:#0B1F3A;color:#fff;border-radius:8px;padding:4px 12px;font-weight:800;letter-spacing:.08em;font-size:14px}.pl210 .z2res .z2cefr small{font-weight:500;opacity:.8;letter-spacing:0;margin-inline-start:6px}'+
+ '.pl210 .z2lad{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0 0;direction:ltr}.pl210 .z2lad .z2st{border-radius:8px;padding:6px 4px;text-align:center;background:#e8eef5;color:#5b6b80}.pl210 .z2lad .z2st.z2past{background:#cfdbe8;color:#0B1F3A}.pl210 .z2lad .z2st.z2on{background:#0B1F3A;color:#fff;box-shadow:0 4px 10px rgba(11,31,58,.25)}'+
+ '.pl210 .z2lad span{display:block;font-weight:800;font-size:13px;letter-spacing:.06em}.pl210 .z2lad b{display:block;font-size:11px;font-weight:700;direction:rtl}.pl210 .z2lad i{display:block;font-style:normal;font-size:8.5px;opacity:.85}'+
+ '.pl210 table.z2ds{width:714px!important;max-width:714px;min-width:0!important;display:table!important;table-layout:fixed;border-collapse:separate;border-spacing:0;margin:0;font-size:11px}.pl210 .z2ds th{background:#0B1F3A;color:#fff;font-weight:700;padding:6px 8px;font-size:11.5px}.pl210 .z2ds th:first-child{border-radius:0 8px 0 0}.pl210 .z2ds th:last-child{border-radius:8px 0 0 0}'+
+ '.pl210 .z2ds td{border-bottom:1px solid #e6ebf1;padding:3px 8px;vertical-align:middle;white-space:normal}.pl210 .z2ds td.z2l,.pl210 .z2ds th:first-child{width:112px;text-align:center}.pl210 .z2ds td.z2l b{display:block;font-size:12.5px;color:#0B1F3A}.pl210 .z2ds td.z2l i{display:block;font-style:normal;font-size:9.5px;color:#7a889a}.pl210 .z2ds th:nth-child(2){width:52px}.pl210 .z2ds td.z2c{text-align:center;font-weight:800;color:#5B7FA6;letter-spacing:.05em}'+
+ '.pl210 .z2ds td.z2d{line-height:1.4;color:#2b3a50;font-size:10px}.pl210 .z2ds td.z2d .z2de{font-size:8.6px;color:#7a889a;line-height:1.3;margin-top:1px;text-align:left}.pl210 .z2ds tr.z2on td{background:#eef3f9}.pl210 .z2ds tr.z2on td.z2c{color:#0B1F3A}.pl210 .z2ds tr.z2on td.z2l b:after{content:" ●";color:#5B7FA6;font-size:10px}'+
+ '.pl210 .z2ft{position:absolute;left:40px;right:40px;bottom:44px;display:grid;grid-template-columns:120px 1fr 200px;gap:18px;align-items:end}.pl210 .z2ft .z2qr{text-align:center;font-size:9.5px;color:#5b6b80;line-height:1.4}.pl210 .z2ft .z2qr img{width:96px;height:96px;display:block;margin:0 auto 4px;border:1px solid #dfe5ec;border-radius:6px;padding:3px;background:#fff}'+
+ '.pl210 .z2ft .z2no{text-align:center;color:#4a5a70;font-size:11px;line-height:1.6}.pl210 .z2ft .z2no b{display:block;font-size:17px;color:#0B1F3A;letter-spacing:.12em;direction:ltr}'+
+ '.pl210 .z2sg{text-align:center;position:relative}.pl210 .z2sg img{height:58px;max-width:170px;object-fit:contain;display:block;margin:0 auto -6px;position:relative;z-index:2}.pl210 .z2sg i{display:block;height:1px;background:#9aa6ae;margin:2px 10px 5px}.pl210 .z2sg b{display:block;font-size:12.5px;color:#0B1F3A}.pl210 .z2sg span{display:block;font-size:10px;color:#5b6b80}.pl210 .z2sg em{display:block;font-style:normal;font-size:10.5px;color:#4a5a70}'+
+ '.pl210 .z2seal{position:absolute;left:214px;bottom:70px;width:80px;height:80px;object-fit:contain;opacity:.92;z-index:1}.pl210 .z2bt{position:absolute;inset:auto 0 0 0;height:34px;background:#0B1F3A;color:#c9d6e6;font-size:10.5px;display:flex;align-items:center;justify-content:space-between;padding:0 40px}.pl210 .z2bt b{color:#fff;font-weight:600}'+
+ '.pl210 .z2rv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 64px Almarai,sans-serif;color:rgba(180,30,30,.22);transform:rotate(-24deg);pointer-events:none}';
+ var lines='';for(var i=0;i<16;i++)lines+='<path d="M'+(i*60-200)+' 150 L'+(i*60+40)+' 0" stroke="#fff" stroke-width="1"/>';
+ return '<div class="pl210" data-plt="1"><style>'+css+'</style>'+
+  '<div class="z2hd"><svg class="z2ln" width="794" height="150" viewBox="0 0 794 150">'+lines+'</svg>'+(LG?'<div class="z2lg"><img src="'+LG+'" alt=""></div>':LGd?'<div class="z2lg"><img src="'+LGd+'" alt="" style="filter:brightness(0) invert(1)"></div>':'')+
+   '<div class="z2tt"><h1>تقرير نتيجة اختبار تحديد المستوى</h1><h2>ARABIC LANGUAGE PLACEMENT TEST — RESULT REPORT</h2><span class="z2chip">اللغة العربية لغير الناطقين بها · Arabic for Non-Native Speakers</span></div></div>'+
+  '<div class="z2bd"><div class="z2sec">بيانات المتقدّم<i>Candidate</i></div><div class="z2gr">'+info+'</div>'+
+   '<div class="z2sec">بيانات الاختبار<i>Test</i></div><div class="z2gr">'+tinfo+'<div class="z2r"><div class="z2k"><b>رقم الشهادة</b><i dir="ltr">Certificate No.</i></div><div class="z2v"><b dir="ltr">'+e0(c.rec)+'</b></div></div></div>'+
+   '<div class="z2sec">الدرجة الكلية والمستوى<i>Overall score &amp; level</i></div>'+
+   '<div class="z2res"><div>'+ring(c.score)+'</div><div><div class="z2lvn">'+e0(lv[1])+'</div><div class="z2lve">'+e0(lv[2])+'</div><span class="z2cefr">'+lv[0]+'<small>الإطار الأوروبي المرجعي · CEFR</small></span><div class="z2lad">'+ladder+'</div></div></div>'+
+   '<div class="z2sec">تفسير مستويات الاختبار<i>Level descriptors</i></div><table class="z2ds"><thead><tr><th>المستوى · Level</th><th>CEFR</th><th>الوصف · Description</th></tr></thead><tbody>'+desc+'</tbody></table></div>'+
+  '<div class="z2ft"><div class="z2qr">'+(Q?'<img src="'+Q+'" alt="">':'')+'للتحقق امسح الرمز<br><span dir="ltr">Scan to verify</span></div>'+
+   '<div class="z2no">رقم الشهادة · Certificate No.<b>'+e0(c.rec)+'</b><span dir="ltr">'+e0((vu||'').replace(/^https?:\/\//,''))+'</span></div>'+
+   '<div>'+sgH+'</div></div>'+(se[0]?'<img class="z2seal" src="'+se[0]+'" alt="">':'')+
+  '<div class="z2bt"><span>معهد التمهيد · <b>At Tamhid Institute</b></span><span dir="ltr">attamhid.com</span></div>'+
+  (c.revoked?'<div class="z2rv">ملغاة · REVOKED</div>':'')+'</div>'}
+V5.certPlt210=certPlt;
+var _ct210=W.certHTML;W.certHTML=function(c){if(c&&c.type==='plt'){try{return certPlt(c)}catch(e){console.error('plt210',e)}}return _ct210.apply(this,arguments)};
+try{certHTML=W.certHTML}catch(e){}
+
+/* ---------- الصفحة العامة: التعريف والتسجيل الذاتي ---------- */
+var lvlStrip=function(){return '<div class="p210lv">'+LV.map(function(x){return '<div><i>'+x[0]+'</i><b>'+e0(L(x[1],x[2]))+'</b></div>'}).join('')+'</div>'};
+function pubPage(){
+ return '<div class="p210"><div class="p210hero"><h1>'+L('اختبار تحديد المستوى في اللغة العربية','Arabic Language Placement Test')+'</h1><p>'+L('اختبار عن بُعد يقيس مستواك في العربية وفق الإطار الأوروبي المرجعي (CEFR) من التمهيدي A1 إلى المتقدم C1، وتحصل بعده على شهادة نتيجة معتمدة من معهد التمهيد قابلة للتحقق.','An online test that measures your Arabic level on the CEFR scale, from Foundation A1 to Advanced C1, followed by a verifiable result certificate from At Tamhid Institute.')+'</p></div>'+
+  '<div class="box"><h3>'+L('كيف يعمل؟','How it works')+'</h3><ol style="line-height:2;margin:0;padding-inline-start:20px"><li>'+L('سجّل بياناتك في النموذج أدناه.','Register using the form below.')+'</li><li>'+L('يحدّد المعهد موعد اختبارك ويرسل إليك رابط الدخول على بريدك.','The Institute sets your test time and emails you the link.')+'</li><li>'+L('تؤدي الاختبار عن بُعد: 60 سؤالاً في 60 دقيقة (مفردات، تراكيب، فهم المقروء).','You take the online test: 60 questions in 60 minutes (vocabulary, structures, reading).')+'</li><li>'+L('تصلك تعليمات إصدار الشهادة بالبريد، ثم تصلك الشهادة بعد اعتماد النتيجة.','You receive certificate instructions by email, then the certificate once the result is approved.')+'</li></ol>'+lvlStrip()+'</div>'+
+  '<div class="box"><h3>'+L('التسجيل في الاختبار','Register for the test')+'</h3><form class="p210f" onsubmit="return V51.h.plt210reg(this)">'+
+   '<label>'+L('الاسم الكامل بالعربية','Full name in Arabic')+' *<input name="nameAr" required maxlength="120"></label><label>'+L('الاسم الكامل بالإنجليزية (كما في الجواز)','Full name in English (as in passport)')+' *<input name="nameEn" required dir="ltr" maxlength="120"></label>'+
+   '<label>'+L('البريد الإلكتروني','Email')+' *<input name="email" type="email" required dir="ltr"></label><label>'+L('رقم الجوال (واتساب)','Mobile (WhatsApp)')+' *<input name="phone" required dir="ltr" inputmode="tel"></label>'+
+   '<label>'+L('تاريخ الميلاد','Date of birth')+'<input name="dob" type="date" dir="ltr"></label><label>'+L('الجنس','Sex')+'<select name="sex"><option value="m">'+L('ذكر','Male')+'</option><option value="f">'+L('أنثى','Female')+'</option></select></label>'+
+   '<label>'+L('الجنسية','Nationality')+'<input name="nat" maxlength="80"></label><label>'+L('اللغة الأم','First language')+'<input name="tongue" maxlength="60"></label>'+
+   '<label class="w">'+L('رقم الهوية أو جواز السفر (يظهر في الشهادة)','ID or passport number (shown on the certificate)')+'<input name="idno" dir="ltr" maxlength="40"></label>'+
+   '<div class="w"><button class="btn">'+L('تسجيل','Register')+'</button></div><div class="w" id="p210o"></div></form></div></div>'}
+H.plt210reg=function(f){var v=fv(f),o=document.getElementById('p210o'),b=f.querySelector('button');if(b)b.disabled=true;
+ rpc('plt_register',{d:v}).then(function(d){d=d||{};if(d.error){o.innerHTML='<div class="msg er">'+(d.error==='fields'?L('أكمل الحقول المطلوبة بصورة صحيحة.','Please complete the required fields correctly.'):L('حاول لاحقاً.','Please try later.'))+'</div>';if(b)b.disabled=false;return}
+  f.innerHTML='<div class="msg ok w" style="grid-column:1/-1"><b>'+L('تم تسجيلك بنجاح.','You are registered.')+'</b><br>'+L('أرسلنا إليك رسالة تأكيد على بريدك، وسنرسل إليك موعد الاختبار ورابط الدخول بالبريد أيضاً. إن لم تجد الرسالة فتحقّق من الرسائل غير المرغوب فيها.','We emailed you a confirmation, and we will also email you the test time and link. If you cannot find it, check your spam folder.')+'</div>'})
+ .catch(function(e){o.innerHTML='<div class="msg er">'+errTxt(e)+'</div>';if(b)b.disabled=false});return false};
+
+/* ---------- صفحة المتقدّم: الموعد، الاختبار، الدفع، الشهادة ---------- */
+var CS=V5.__plt210c||(V5.__plt210c={tok:null,d:null,load:0,paper:null,ans:{},skew:0,tm:null,sv:null,dirty:0,busy:0});
+function load(tok,force){if(!hasSb())return;if(CS.tok===tok&&CS.d&&!force)return;if(CS.load)return;CS.load=1;CS.tok=tok;
+ rpc('plt_get',{tok:tok}).then(function(d){CS.d=d||{error:'x'};CS.load=0;if(d&&d.now)CS.skew=Date.parse(d.now)-Date.now();rr()}).catch(function(e){CS.d={error:'net',msg:errTxt(e)};CS.load=0;rr()})}
+var rr=function(){try{W.__force71=1;go()}catch(e){}};
+var nowS=function(){return Date.now()+CS.skew};
+function candPage(tok){
+ if(CS.tok!==tok){CS.d=null;CS.paper=null;CS.ans={}}
+ if(!CS.d){load(tok);return '<div class="p210"><div class="box"><p class="mu">… '+L('جارٍ التحميل','Loading')+'</p></div></div>'}
+ var d=CS.d;if(d.error)return '<div class="p210"><div class="box"><div class="msg er">'+(d.error==='not_found'?L('الرابط غير صحيح أو انتهت صلاحيته.','This link is invalid or has expired.'):(d.msg||L('تعذّر التحميل.','Could not load.')))+'</div></div></div>';
+ var head='<div class="p210hero"><h1>'+L('اختبار تحديد المستوى في اللغة العربية','Arabic Language Placement Test')+'</h1><p>'+e0(L(d.nameAr||d.nameEn,d.nameEn||d.nameAr))+' · <span dir="ltr">'+e0(d.id)+'</span></p></div>';
+ var s=d.status,body='';
+ if(CS.paper&&s==='started')return '<div class="p210">'+testUI()+'</div>';
+ if(s==='registered')body='<div class="box">'+stL(s)+'<p>'+L('تم تسجيلك. سيحدّد المعهد موعد اختبارك، ويصلك الموعد ورابط الدخول على بريدك.','You are registered. The Institute will set your test time and email you the link.')+'</p></div>';
+ else if(s==='scheduled'){var at=Date.parse(d.sched&&d.sched.at),til=at+((d.sched&&+d.sched.win)||24)*3600e3,n=nowS(),mins=(d.sched&&d.sched.mins)||60;
+  body='<div class="box">'+stL(s)+'<div class="p210kv"><b>'+L('الموعد (بتوقيت دكا)','Time (Dhaka)')+'</b><span dir="ltr">'+DK(d.sched.at)+'</span><b>'+L('يبقى متاحاً حتى','Available until')+'</b><span dir="ltr">'+DK(new Date(til).toISOString())+'</span><b>'+L('المدة','Duration')+'</b><span>'+mins+' '+L('دقيقة','min')+'</span><b>'+L('عدد الأسئلة','Questions')+'</b><span>60</span></div>'+
+   (n<at?'<div class="msg">'+L('يُفتح الاختبار في الموعد المحدد. افتح هذه الصفحة عندئذٍ.','The test opens at the scheduled time. Open this page then.')+'</div><button class="btn s" onclick="V51.h.plt210re()">'+L('تحديث','Refresh')+'</button>':
+    n>til?'<div class="msg er">'+L('انتهت مدة إتاحة الاختبار. تواصل مع المعهد لتحديد موعد جديد.','The test window has closed. Contact the Institute for a new time.')+'</div>':
+    '<div class="msg"><b>'+L('قبل البدء:','Before you start:')+'</b><br>'+L('• يبدأ العدّ التنازلي ('+mins+' دقيقة) لحظة الضغط على «ابدأ الاختبار»، ولا يتوقف إذا أغلقت الصفحة.','• The '+mins+'-minute countdown starts when you press “Start the test” and does not stop if you close the page.')+'<br>'+L('• تُحفظ إجاباتك تلقائياً، ويمكنك العودة إلى الصفحة نفسها إن انقطع الاتصال.','• Your answers are saved automatically; you can return to this page if your connection drops.')+'<br>'+L('• أدِّ الاختبار بنفسك دون مساعدة ودون قواميس.','• Take the test on your own, without help or dictionaries.')+'</div><button class="btn" style="min-height:52px;font-size:17px" onclick="V51.h.plt210go()">'+L('ابدأ الاختبار','Start the test')+'</button>')+'</div>'}
+ else if(s==='started')body='<div class="box">'+stL(s)+'<p>'+L('اختبارك قيد الأداء.','Your test is in progress.')+'</p><button class="btn" onclick="V51.h.plt210go()">'+L('متابعة الاختبار','Continue the test')+'</button></div>';
+ else if(s==='submitted'){body='<div class="box">'+stL(s)+'<p>'+L('شكراً لإتمامك الاختبار. لإصدار شهادة نتيجة الاختبار يُرجى دفع رسوم الإصدار ثم إدخال رقم العملية.','Thank you for completing the test. To issue your result certificate, please pay the issuance fee and then enter the transaction ID.')+'</p>'+
+   '<div class="p210kv"><b>'+L('رسوم الإصدار','Issuance fee')+'</b><span><b>'+e0(d.fee)+'</b> '+L('تاكا بنغلاديشي','BDT')+(+d.sch?' <small class="mu">('+L('بعد منحة ','after a ')+e0(d.sch)+'%'+L('',' scholarship')+')</small>':'')+'</span><b>'+L('طريقة الدفع','Payment')+'</b><span>bKash — Send Money</span><b>'+L('رقم بيكاش','bKash number')+'</b><span dir="ltr"><b>'+e0(d.bkash)+'</b></span><b>'+L('المرجع (Reference)','Reference')+'</b><span dir="ltr">'+e0(d.id)+'</span></div>'+
+   '<form class="p210f" onsubmit="return V51.h.plt210pay(this)"><label>'+L('رقم العملية (TrxID)','Transaction ID (TrxID)')+' *<input name="trx" required dir="ltr" autocomplete="off" placeholder="8N7A6B5C4D"></label><label>'+L('رقم بيكاش الذي دفعتَ منه','bKash number you paid from')+'<input name="from" dir="ltr" inputmode="tel" placeholder="01XXXXXXXXX"></label><div class="w"><button class="btn">'+L('إرسال رقم العملية','Submit the TrxID')+'</button></div><div class="w" id="p210o"></div></form></div>'}
+ else if(s==='paid_claimed')body='<div class="box">'+stL(s)+'<p>'+L('استلمنا رقم عملية الدفع ','We received your payment TrxID ')+'<b dir="ltr">'+e0(d.pay&&d.pay.trx)+'</b>. '+L('سنؤكد الدفع ونعتمد النتيجة، ثم تصلك الشهادة على بريدك.','We will confirm the payment and approve the result, then email you the certificate.')+'</p></div>';
+ else if(s==='paid')body='<div class="box">'+stL(s)+'<p>'+L('تم تأكيد الدفع، ونتيجتك قيد الاعتماد. ستصلك الشهادة على بريدك قريباً.','Your payment is confirmed and your result is being approved. The certificate will be emailed to you shortly.')+'</p></div>';
+ else if(s==='issued'){var u='';try{u=vlink(d.rec)}catch(e){}body='<div class="box">'+stL(s)+'<p>'+L('صدرت شهادة نتيجة اختبارك وأُرسلت إلى بريدك مرفقةً بالرسالة.','Your result certificate has been issued and emailed to you as an attachment.')+'</p><div class="p210kv"><b>'+L('المستوى','Level')+'</b><span><b>'+e0(d.level?L(d.level.ar,d.level.en):'')+'</b> · '+e0(d.level&&d.level.cefr)+'</span><b>'+L('الدرجة','Score')+'</b><span>'+e0(d.score)+' / 100</span><b>'+L('رقم الشهادة','Certificate No.')+'</b><span dir="ltr">'+e0(d.rec)+'</span></div>'+(u?'<a class="btn" href="'+e0(u)+'">'+L('التحقق من الشهادة ومشاركتها','Verify and share the certificate')+'</a>':'')+'</div>'}
+ else body='<div class="box">'+stL(s)+'</div>';
+ return '<div class="p210">'+head+body+'</div>'}
+H.plt210re=function(){CS.d=null;rr()};
+function testUI(){var P=CS.paper,qs=P.qs,dl=Date.parse(P.deadline),left=Math.max(0,dl-nowS()),tot=(P.mins||60)*60e3,done=Object.keys(CS.ans).length,lastG=null,lastL=null,sec=0,h='';
+ h+='<div class="p210t"><span>'+L('الوقت المتبقي','Time left')+' <b id="p210clk">'+fmt(left)+'</b></span><span class="bar"><i id="p210bar" style="width:'+Math.round(100*left/tot)+'%"></i></span><span id="p210cnt">'+done+' / '+qs.length+'</span></div>';
+ qs.forEach(function(q,n){if(q.lvl!==lastL){lastL=q.lvl;sec++;h+='<div class="p210sec">'+L('الجزء '+sec+' من 5','Part '+sec+' of 5')+'</div>';lastG=null}
+  if(q.g&&q.g!==lastG){lastG=q.g;h+='<div class="p210pass"><small class="mu">'+L('اقرأ النص ثم أجب عن الأسئلة التي تليه:','Read the text, then answer the questions that follow:')+'</small><div>'+e0(q.p)+'</div></div>'}else if(!q.g)lastG=null;
+  var a=CS.ans[String(q.i)];h+='<div class="p210q'+(a!=null?' ok':'')+'" id="q210_'+q.i+'"><h4><span>'+(n+1)+'.</span>'+e0(q.q)+'</h4><div class="p210o">'+(q.o||[]).map(function(o,k){return '<label><input type="radio" name="q'+q.i+'" value="'+k+'"'+(String(a)===String(k)?' checked':'')+' onchange="V51.h.plt210a('+q.i+','+k+')"> '+e0(o)+'</label>'}).join('')+'</div></div>'});
+ h+='<div class="box" style="text-align:center"><p class="mu">'+L('راجع إجاباتك ثم سلّم الاختبار. لا يمكن التعديل بعد التسليم.','Review your answers, then submit. You cannot change them after submitting.')+'</p><button class="btn" style="min-height:52px;font-size:17px" onclick="V51.h.plt210sub()">'+L('تسليم الاختبار','Submit the test')+'</button></div>';
+ setTimeout(tick,0);return h}
+function fmt(ms){var s=Math.floor(ms/1000),m=Math.floor(s/60);s%=60;return (m<10?'0':'')+m+':'+(s<10?'0':'')+s}
+function tick(){clearInterval(CS.tm);CS.tm=setInterval(function(){if(!CS.paper){clearInterval(CS.tm);return}var dl=Date.parse(CS.paper.deadline),left=dl-nowS(),el=document.getElementById('p210clk'),br=document.getElementById('p210bar');
+ if(el)el.textContent=fmt(Math.max(0,left));if(br)br.style.width=Math.max(0,Math.round(100*left/((CS.paper.mins||60)*60e3)))+'%';if(left<=0){clearInterval(CS.tm);H.plt210sub(1)}},1000)}
+H.plt210go=function(){if(CS.busy)return;CS.busy=1;rpc('plt_start',{tok:CS.tok}).then(function(d){CS.busy=0;d=d||{};
+  if(d.error){if(d.error==='time_up'){CS.d=null;rr();return}toast(d.error==='early'?L('لم يحن موعد الاختبار بعد.','The test has not opened yet.'):d.error==='expired'?L('انتهت مدة إتاحة الاختبار.','The test window has closed.'):L('تعذّر بدء الاختبار.','Could not start the test.'));CS.d=null;rr();return}
+  if(d.now)CS.skew=Date.parse(d.now)-Date.now();CS.paper={qs:d.qs||[],deadline:d.deadline,mins:Math.round((Date.parse(d.deadline)-Date.parse(d.now))/60e3)>0?((CS.d&&CS.d.sched&&CS.d.sched.mins)||60):60};CS.ans=d.ans||{};CS.d.status='started';
+  try{W.addEventListener('beforeunload',bu210)}catch(e){}rr();try{W.scrollTo(0,0)}catch(e){}})
+ .catch(function(e){CS.busy=0;toast(errTxt(e))})};
+function bu210(e){if(CS.paper){e.preventDefault();e.returnValue='';return ''}}
+H.plt210a=function(i,k){CS.ans[String(i)]=k;var q=document.getElementById('q210_'+i);if(q)q.classList.add('ok');var c=document.getElementById('p210cnt');if(c)c.textContent=Object.keys(CS.ans).length+' / '+CS.paper.qs.length;
+ CS.dirty=1;clearTimeout(CS.sv);CS.sv=setTimeout(save,1500)};
+function save(){if(!CS.dirty||!CS.paper)return;CS.dirty=0;var a=Object.assign({},CS.ans);rpc('plt_save',{tok:CS.tok,ans:a}).then(function(d){if(d&&d.error==='time_up'){CS.paper=null;CS.d=null;rr()}}).catch(function(){CS.dirty=1;clearTimeout(CS.sv);CS.sv=setTimeout(save,5000)})}
+H.plt210sub=function(auto){if(!CS.paper)return;var n=CS.paper.qs.length,a=Object.keys(CS.ans).length;
+ if(!auto&&!confirm(L('أجبتَ عن '+a+' من '+n+' سؤالاً. هل تريد تسليم الاختبار الآن؟','You answered '+a+' of '+n+' questions. Submit the test now?')))return;
+ clearTimeout(CS.sv);clearInterval(CS.tm);var ans=Object.assign({},CS.ans);
+ var go2=function(tries){rpc('plt_submit',{tok:CS.tok,ans:ans}).then(function(){CS.paper=null;CS.d=null;try{W.removeEventListener('beforeunload',bu210)}catch(e){}toast(L('سُلِّم الاختبار. شكراً لك.','Test submitted. Thank you.'));rr()})
+  .catch(function(e){if(tries<4)setTimeout(function(){go2(tries+1)},2500*(tries+1));else toast(errTxt(e)+' '+L('إجاباتك محفوظة؛ أعد المحاولة.','Your answers are saved; try again.'))})};go2(0)};
+H.plt210pay=function(f){var v=fv(f),o=document.getElementById('p210o'),b=f.querySelector('button');if(b)b.disabled=true;
+ rpc('plt_paid',{tok:CS.tok,trx:v.trx,sender:v.from||''}).then(function(d){d=d||{};if(d.error){o.innerHTML='<div class="msg er">'+(d.error==='trx'?L('رقم العملية غير صحيح.','Invalid transaction ID.'):L('تعذّر الإرسال.','Could not submit.'))+'</div>';if(b)b.disabled=false;return}CS.d=null;rr()})
+ .catch(function(e){o.innerHTML='<div class="msg er">'+errTxt(e)+'</div>';if(b)b.disabled=false});return false};
+
+V.plt=function(){var p=location.hash.split('/');if(p[2])return candPage(decodeURIComponent(p[2]));return pubPage()};
+
+/* ---------- الإدارة: تبويب «اختبار تحديد المستوى» ---------- */
+var AS=V5.__plt210a||(V5.__plt210a={rows:null,t:0,load:0,f:'',q:'',err:''});
+var canPlt=function(){try{if(typeof me==='undefined'||!me)return false;if(me.r==='admin'&&!me.unit)return true;return typeof V5.can==='function'?!!V5.can('plt'):!!(V5.perm&&V5.perm('plt'))}catch(e){return false}};
+function aload(force){if(AS.load||(!force&&AS.rows&&Date.now()-AS.t<60000))return;AS.load=1;rpc('plt_list',{}).then(function(d){AS.rows=d||[];AS.t=Date.now();AS.load=0;AS.err='';rr()}).catch(function(e){AS.load=0;AS.err=errTxt(e);AS.rows=AS.rows||[];rr()})}
+var linkOf=function(r){return 'https://attamhid.com/#/plt/'+r.token};
+var bt=function(t,on,cls){return '<button type="button" class="btn s'+(cls?' '+cls:'')+'" onclick="'+on+'">'+t+'</button>'};
+function tabPlt(){aload();var R=AS.rows||[],cnt={};R.forEach(function(r){cnt[r.status]=(cnt[r.status]||0)+1});
+ var q=AS.q.toLowerCase(),F=R.filter(function(r){return (!AS.f||r.status===AS.f)&&(!q||JSON.stringify([r.id,r.data.nameAr,r.data.nameEn,r.data.email,r.data.phone]).toLowerCase().indexOf(q)>-1)});
+ var pub='https://attamhid.com/#/plt',qrI='';try{qrI=qr(pub)}catch(e){}
+ var rows=F.map(function(r){var d=r.data||{},s=r.status,lv=d.level?lvOf(d.level):null,ac=[];
+  if(s==='registered'||s==='scheduled')ac.push(bt(s==='scheduled'?L('تغيير الموعد','Reschedule'):L('تحديد الموعد','Set time'),"V51.h.plt210sch('"+r.id+"')"));
+  if(s==='submitted'||s==='paid_claimed')ac.push(bt(L('تأكيد الدفع','Confirm payment'),"V51.h.plt210x('pay_ok','"+r.id+"')"));
+  if(s==='paid_claimed')ac.push(bt(L('رفض الدفع','Reject payment'),"V51.h.plt210x('pay_no','"+r.id+"')"));
+  if(s==='paid'||s==='issued')ac.push(bt(s==='issued'?L('إعادة إرسال الشهادة','Re-send certificate'):L('اعتماد النتيجة وإصدار الشهادة','Approve & issue certificate'),"V51.h.plt210iss('"+r.id+"')"));
+  if(d.rec)ac.push(bt(L('عرض الشهادة','View certificate'),"V51.h.plt210view('"+r.id+"')"));
+  if(s!=='issued'&&s!=='cancelled')ac.push(bt(L('المنحة %','Scholarship %'),"V51.h.plt210sh('"+r.id+"')"));
+  ac.push(bt(L('نسخ رابط المتقدم','Copy candidate link'),"V51.h.plt210cp('"+r.id+"')"));
+  if(s!=='issued'&&s!=='cancelled')ac.push(bt(L('إعادة إرسال البريد','Resend email'),"V51.h.plt210x('resend','"+r.id+"')"));
+  if(s==='started')ac.push(bt(L('إنهاء وتصحيح','Finish & grade'),"V51.h.plt210x('finish','"+r.id+"')"));
+  if(['started','submitted','scheduled'].indexOf(s)>-1)ac.push(bt(L('إعادة الاختبار','Allow retake'),"V51.h.plt210x('reset','"+r.id+"')"));
+  if(s!=='issued')ac.push(s==='cancelled'?bt(L('استعادة','Restore'),"V51.h.plt210x('restore','"+r.id+"')"):bt(L('إلغاء','Cancel'),"V51.h.plt210x('cancel','"+r.id+"')"));
+  var per=d.per&&d.per.c?Object.keys(d.per.n||{}).map(function(k){return k+' '+(d.per.c[k]||0)+'/'+d.per.n[k]}).join(' · '):'';
+  return '<tr><td><b dir="ltr">'+e0(r.id)+'</b><br><small class="mu">'+e0(d.src==='admin'?L('يدوي','Manual'):L('ذاتي','Self'))+' · '+DK(r.created_at,false)+'</small></td>'+
+   '<td><b>'+e0(d.nameAr)+'</b><br><small dir="ltr">'+e0(d.nameEn)+'</small><br><small dir="ltr" class="mu">'+e0(d.email)+' · '+e0(d.phone)+'</small></td>'+
+   '<td>'+stL(s)+(d.sched?'<br><small dir="ltr">'+DK(d.sched.at)+' (Dhaka)</small>':'')+'</td>'+
+   '<td>'+(d.score!=null?'<b>'+e0(d.score)+'</b>/100'+(lv?'<br><b>'+e0(L(lv[1],lv[2]))+'</b> · '+lv[0]:'')+(per?'<br><small class="mu" dir="ltr">'+e0(per)+'</small>':''):'—')+'</td>'+
+   '<td>'+e0(r.fee)+' BDT'+(+d.sch?'<br><small>'+L('منحة ','Scholarship ')+e0(d.sch)+'%</small>':'')+(d.pay&&d.pay.trx?'<br><small dir="ltr">TrxID: <b>'+e0(d.pay.trx)+'</b>'+(d.pay.from?' · '+e0(d.pay.from):'')+'</small>':'')+(d.rec?'<br><small dir="ltr">'+e0(d.rec)+'</small>':'')+'</td>'+
+   '<td><div class="acts">'+ac.join('')+'</div></td></tr>'}).join('');
+ var flt='<select onchange="V51.h.plt210f(this.value)"><option value="">'+L('كل الحالات','All statuses')+' ('+R.length+')</option>'+Object.keys(ST210).map(function(k){return '<option value="'+k+'"'+(AS.f===k?' selected':'')+'>'+e0(L(ST210[k][0],ST210[k][1]))+' ('+(cnt[k]||0)+')</option>'}).join('')+'</select>';
+ return '<div class="p210a"><h3>'+L('اختبار تحديد المستوى في اللغة العربية','Arabic Language Placement Test')+'</h3>'+
+  (AS.err?'<div class="msg er">'+e0(AS.err)+'</div>':'')+
+  '<div class="v51row2">'+(qrI?'<img src="'+qrI+'" alt="" style="width:96px;height:96px">':'')+'<div><b>'+L('رابط التسجيل الذاتي','Self-registration link')+'</b><br><code dir="ltr">'+pub+'</code><br>'+bt(L('نسخ الرابط','Copy link'),"navigator.clipboard&&navigator.clipboard.writeText('"+pub+"');toast('"+L('نُسخ الرابط','Link copied')+"')")+' '+bt(L('تحديث القائمة','Refresh list'),"V51.h.plt210load()")+'</div></div>'+
+  '<div class="p210cnt">'+Object.keys(ST210).filter(function(k){return cnt[k]}).map(function(k){return '<span>'+e0(L(ST210[k][0],ST210[k][1]))+': <b>'+cnt[k]+'</b></span>'}).join('')+'</div>'+
+  '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 8px">'+flt+'<input placeholder="'+L('بحث بالاسم أو البريد أو الرقم المرجعي','Search by name, email or reference')+'" value="'+e0(AS.q)+'" oninput="V51.h.plt210q(this.value)" style="flex:1;min-width:200px"></div>'+
+  (AS.rows==null?'<p class="mu">… '+L('جارٍ التحميل','Loading')+'</p>':'<div class="tw"><table><thead><tr><th>'+L('المرجع','Ref.')+'</th><th>'+L('المتقدم','Candidate')+'</th><th>'+L('الحالة والموعد','Status & time')+'</th><th>'+L('النتيجة','Result')+'</th><th>'+L('الرسوم والدفع','Fee & payment')+'</th><th></th></tr></thead><tbody>'+(rows||'<tr><td colspan="6" class="mu">'+L('لا يوجد متقدمون بعد.','No candidates yet.')+'</td></tr>')+'</tbody></table></div>')+
+  '<details class="v51box"><summary><b>'+L('إضافة متقدم يدوياً','Add a candidate manually')+'</b></summary><form class="p210f" onsubmit="return V51.h.plt210add(this)" style="margin-top:10px">'+
+   '<label>'+L('الاسم بالعربية','Name (Arabic)')+' *<input name="nameAr" required></label><label>'+L('الاسم بالإنجليزية','Name (English)')+' *<input name="nameEn" required dir="ltr"></label>'+
+   '<label>'+L('البريد','Email')+' *<input name="email" type="email" required dir="ltr"></label><label>'+L('الجوال','Mobile')+'<input name="phone" dir="ltr"></label>'+
+   '<label>'+L('تاريخ الميلاد','Date of birth')+'<input name="dob" type="date"></label><label>'+L('الجنس','Sex')+'<select name="sex"><option value="m">'+L('ذكر','Male')+'</option><option value="f">'+L('أنثى','Female')+'</option></select></label>'+
+   '<label>'+L('الجنسية','Nationality')+'<input name="nat"></label><label>'+L('اللغة الأم','First language')+'<input name="tongue"></label>'+
+   '<label>'+L('رقم الهوية / الجواز','ID / Passport No.')+'<input name="idno" dir="ltr"></label><label>'+L('المنحة %','Scholarship %')+'<input name="sch" type="number" min="0" max="100" value="0"></label>'+
+   '<div class="w"><button class="btn">'+L('إضافة','Add')+'</button></div></form></details>'+
+  '<p class="mu">'+L('الرسوم الأساسية لإصدار الشهادة 1000 تاكا، وتُخصم المنحة بنسبتها. الدفع عبر بيكاش 01619607378. لا تظهر الرسوم في صفحات الموقع العامة، بل في بريد المتقدم وصفحته الخاصة فقط.','Base certificate fee 1000 BDT, reduced by the scholarship percentage. Payment by bKash 01619607378. The fee is not shown on public pages, only in the candidate’s email and private page.')+'</p></div>'}
+H.plt210load=function(){aload(1)};H.plt210f=function(v){AS.f=v;rr()};H.plt210q=function(v){AS.q=v;clearTimeout(AS.qt);AS.qt=setTimeout(rr,350)};
+var rowOf=function(id){return (AS.rows||[]).find(function(r){return r.id===id})};
+var act=function(a,id,p,okMsg){return rpc('plt_admin',{act:a,p_id:id,p:p||{}}).then(function(d){d=d||{};if(d.error){toast(L('تعذّر الإجراء: ','Action failed: ')+d.error);return d}toast(okMsg||L('تم.','Done.'));aload(1);try{V5.aud(L('اختبار تحديد المستوى: ','Placement test: ')+a,id,JSON.stringify(p||{}))}catch(e){}return d}).catch(function(e){toast(errTxt(e))})};
+H.plt210x=function(a,id){var C={pay_ok:L('تأكيد الدفع لهذا المتقدم؟','Confirm this payment?'),pay_no:L('رفض عملية الدفع وإبلاغ المتقدم؟','Reject this payment and notify the candidate?'),reset:L('السماح بإعادة الاختبار؟ ستُحذف إجاباته ونتيجته الحالية، ويلزم تحديد موعد جديد.','Allow a retake? Current answers and result will be cleared and a new time is needed.'),cancel:L('إلغاء تسجيل هذا المتقدم؟','Cancel this registration?'),finish:L('إنهاء الاختبار الآن وتصحيحه بالإجابات المحفوظة؟','Finish now and grade the saved answers?')};if(C[a]&&!confirm(C[a]))return;act(a,id)};
+H.plt210sch=function(id){var r=rowOf(id);if(!r)return;var d=r.data||{},cur=d.sched&&d.sched.at?new Date(Date.parse(d.sched.at)+6*3600e3).toISOString().slice(0,16):'';
+ var v=prompt(L('موعد الاختبار بتوقيت دكا (YYYY-MM-DD HH:MM):','Test time in Dhaka time (YYYY-MM-DD HH:MM):'),cur.replace('T',' '));if(!v)return;var m=/^(\d{4}-\d{2}-\d{2})[ T](\d{1,2}):(\d{2})$/.exec(v.trim());if(!m){toast(L('صيغة غير صحيحة.','Invalid format.'));return}
+ var hh=('0'+m[2]).slice(-2),iso=m[1]+'T'+hh+':'+m[3]+':00+06:00',mins=prompt(L('مدة الاختبار بالدقائق:','Duration in minutes:'),String((d.sched&&d.sched.mins)||60));if(mins===null)return;var win=prompt(L('مدة إتاحة الرابط بالساعات بعد الموعد:','Link availability (hours after the start time):'),String((d.sched&&d.sched.win)||24));if(win===null)return;
+ act('sched',id,{at:iso,mins:+mins||60,win:+win||24},L('حُدّد الموعد وأُرسل الرابط إلى المتقدم.','Time set and link emailed to the candidate.'))};
+H.plt210sh=function(id){var r=rowOf(id);if(!r)return;var v=prompt(L('نسبة المنحة من رسوم الإصدار (0–100):','Scholarship % of the fee (0–100):'),String(r.data.sch||0));if(v===null)return;act('sch',id,{sch:Math.max(0,Math.min(100,+v||0))})};
+H.plt210cp=function(id){var r=rowOf(id);if(!r)return;try{navigator.clipboard.writeText(linkOf(r))}catch(e){}toast(L('نُسخ رابط المتقدم. لا تشاركه إلا مع صاحبه.','Candidate link copied. Share it only with the candidate.'))};
+H.plt210add=function(f){var v=fv(f);act('add','',v,L('أُضيف المتقدم وأُرسلت إليه رسالة التأكيد.','Candidate added and confirmation emailed.')).then(function(d){if(d&&d.ok)f.reset()});return false};
+var upCert=function(c){S.certs=S.certs||[];var i=S.certs.findIndex(function(x){return x.rec===c.rec});if(i>-1)S.certs[i]=Object.assign({},S.certs[i],c);else S.certs.push(c)};
+H.plt210view=function(id){var r=rowOf(id);if(!r||!r.data.rec)return;var c=(S.certs||[]).find(function(x){return x.rec===r.data.rec});
+ var show=function(c){try{(W.show||show0)(W.certHTML(c),c.rec)}catch(e){try{seeCert(c.rec)}catch(x){}}};var show0=function(h,rec){try{seeCert(rec)}catch(e){}};
+ if(c){show(c);return}rpc('plt_issue_prep',{p_id:id}).then(function(d){if(d&&d.cert){upCert(d.cert);show(d.cert)}}).catch(function(e){toast(errTxt(e))})};
+var b64=function(blob){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){res(String(fr.result).split(',')[1]||'')};fr.onerror=rej;fr.readAsDataURL(blob)})};
+H.plt210iss=async function(id){var r=rowOf(id);if(!r)return;var d=r.data||{},lv=lvOf(d.level||'A1');
+ if(!confirm(L('اعتماد نتيجة '+(d.nameAr||d.nameEn)+' ('+d.score+'/100 — '+lv[1]+' '+lv[0]+') وإصدار الشهادة وإرسالها إليه بالبريد؟','Approve '+(d.nameEn||d.nameAr)+'’s result ('+d.score+'/100 — '+lv[2]+' '+lv[0]+'), issue the certificate and email it?')))return;
+ toast(L('جارٍ تجهيز الشهادة…','Preparing the certificate…'));
+ try{var p=await rpc('plt_issue_prep',{p_id:id});if(!p||!p.cert){toast(L('تعذّر التجهيز: ','Preparation failed: ')+(p&&p.error||''));return}upCert(p.cert);
+  try{if(W.hydrate108)await Promise.race([W.hydrate108(),new Promise(function(r){setTimeout(r,5000)})])}catch(e){}
+  var blob=await W.mkBlob(W.certHTML(p.cert),'pdf',2),s=await b64(blob);
+  var x=await rpc('plt_issue_send',{p_id:id,pdf_b64:s});if(x&&x.ok){toast(L('صدرت الشهادة رقم ','Certificate issued: ')+x.rec+L(' وأُرسلت إلى بريد المتقدم.',' and emailed to the candidate.'));try{V5.aud(L('إصدار شهادة اختبار تحديد المستوى','Placement certificate issued'),x.rec,id)}catch(e){}aload(1)}else toast(L('تعذّر الإرسال: ','Sending failed: ')+(x&&x.error||''))}
+ catch(e){console.error('plt210iss',e);toast(errTxt(e))}};
+V5.tabPlt210=tabPlt;
+try{V51TABS.push(['plt','اختبار تحديد المستوى','Placement Test',tabPlt]);TABLBL['اختبار تحديد المستوى']='plt';TABLBL['Placement Test']='plt';SVC_ADMIN.push(['plt','اختبار تحديد المستوى (الخدمة المستقلة)','Placement Test (standalone service)'])}catch(e){console.error('plt210 tab',e)}
+})();
 (function(){var css=`
 .l3{display:inline-flex;align-items:center;gap:2px;padding:2px;border:1px solid var(--bd);border-radius:999px;background:var(--sf);vertical-align:middle}
 .l3 button{border:0;background:transparent;color:var(--tx);font:inherit;font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;cursor:pointer;line-height:1.2;min-height:30px}
@@ -25252,7 +25492,7 @@ H.dr69=function(on){drawer(!!on)};W.V5gs=function(){V5.gsOpen69&&V5.gsOpen69()};
 var SECT=[
  ['home','الرئيسية','Overview','home',['v69h','v112i','dash']],
  ['aca','الشؤون الأكاديمية','Academic Affairs','book',['v112d','v51p','pr','v65p','cr','cal','tf','v93s','v64a','ex','v65b','v67b','v77g','v67g','apv','v60sp','v131t','v138p','v66d','v131c']],
- ['adm','القبول والتسجيل','Admissions & Registration','users',['v112a','req','v75r','v77a','st','v156pl','v119c','v131s','v131p','v74p','v115g']],
+ ['adm','القبول والتسجيل','Admissions & Registration','users',['plt','v112a','req','v75r','v77a','st','v156pl','v119c','v131s','v131p','v74p','v115g']],
  ['fin','الإدارة المالية','Finance','doc',['v120f','v71p']],
  ['doc','الوثائق','Documents','doc',['ce','dr','v98g','v51d','v64c','v51s','v64q','v67n','v75n']],
  ['com','التواصل والمحتوى','Communication & Content','chat',['v64m','fb','v77h','nw','lb','pt']],
@@ -28223,7 +28463,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v209';
+window.__BUILD__='v210';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
