@@ -27859,7 +27859,7 @@ function restore(o){if(!o)return;var app=document.getElementById('app');if(!app)
  if(Math.abs(scrollY-o.y)>1||Math.abs(scrollX-o.x)>1)scrollTo(o.x,o.y)}
 function install(){if(typeof W.go!=='function'||W.go.__s71)return;var inner=W.go;
  var BGX=/sbPubPull|sbUserPull|sbRefresh|v51PubPull|pullBanks|sbPull|guard39|softGo37/;
- var g=function(){try{if((typeof taking!=='undefined'&&taking)||(typeof plTk!=='undefined'&&plTk))return inner.apply(this,arguments)}catch(e){}var r0=route(),ev=W.event,direct=!!(ev&&/^(click|submit|change|input|keydown|keyup|pointerup|mouseup|touchend|hashchange|popstate)$/.test(ev.type)),src=!!W.__bg71;if(!src){try{src=BGX.test(new Error().stack||'')}catch(e){}}
+ var g=function(){try{if((typeof taking!=='undefined'&&taking)||(typeof plTk!=='undefined'&&plTk))return inner.apply(this,arguments)}catch(e){}if(W.__force71){W.__force71=0;ST.user++;var rf=inner.apply(this,arguments);lastRoute=route();setTimeout(function(){lastSig=sig()},0);return rf}/* v200: انتقال مقصود بعد عملية غير متزامنة (دخول، تفعيل، خروج) يُرسم فوراً */var r0=route(),ev=W.event,direct=!!(ev&&/^(click|submit|change|input|keydown|keyup|pointerup|mouseup|touchend|hashchange|popstate)$/.test(ev.type)),src=!!W.__bg71;if(!src){try{src=BGX.test(new Error().stack||'')}catch(e){}}
   /* أي إعادة رسم لا يطلقها المستخدم مباشرة (مؤقت، مزامنة، وعد مؤجل) على الصفحة نفسها تُعامل كخلفية تحفظ الحالة */
   var real=src;if(!direct&&!src)src=1;var bg=src&&r0===lastRoute&&lastSig!==null,idle=Date.now()-lastUser>1500;
   /* v83: حدّ لإعادة الرسم الخلفية — مرة كل 1.5 ثانية على الأكثر؛ ما زاد يُدمج في رسمة واحدة مؤجلة. فعل المستخدم يُرسم فوراً */
@@ -28187,7 +28187,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v198';
+window.__BUILD__='v200';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -29387,14 +29387,15 @@ H.q138=function(f){var d=V5._spData138||{},v=W.fv(f),o=f.querySelector('.q138o')
  sb.functions.invoke('v138-part',{body:{action:'signup',email:d.email,password:v.p,nameAr:d.nameAr||'',nameEn:d.nameEn||'',sex:d.sex||'',phone:d.phone||'',lang:isEn()?'en':'ar'}}).then(function(r){b.disabled=false;var x=r&&r.data||{};
   if(r.error||x.error){say('<div class="msg er">'+(x.error==='exists'?L('لديك حساب بهذا البريد مسبقاً. ','You already have an account with this email. ')+'<a href="#/me">'+L('سجّل الدخول','Sign in')+'</a>':er(x.error||'server'))+'</div>');return}
   f.outerHTML='<div class="msg ok big138" style="margin-top:12px"><b>'+L('أُنشئ حسابك ✓','Your account has been created ✓')+'</b><br>'+L('أرسلنا رابط التفعيل إلى ','We have sent an activation link to ')+'<b dir="ltr">'+e0(d.email)+'</b>. '+L('افتح الرسالة واضغط «تفعيل الحساب» خلال 24 ساعة.','Open the email and press “Activate account” within 24 hours.')+'</div>'},function(){b.disabled=false;say('<div class="msg er">'+er('server')+'</div>')});return false};
+function goF(){try{var ae=document.activeElement;if(ae&&ae.blur)ae.blur()}catch(e){}W.__force71=1;try{W.go()}catch(e){}}
 H.p138in=function(f){var v=W.fv(f);if(!hasSb())return false;var b=f.querySelector('button');if(b.disabled)return false;b.disabled=true;out('<p class="mu">… '+L('جارٍ التحقق','Checking')+'</p>');
  (async function(){try{var r=await sb.auth.signInWithPassword({email:String(v.email).trim().toLowerCase(),password:v.p});b.disabled=false;
   if(r.error){if(/confirm/i.test(r.error.message)){out('<div class="msg er">'+L('لم يُفعَّل الحساب بعد. افتح رابط التفعيل في بريدك.','Your account is not activated yet. Open the activation link in your email.')+' <button type="button" class="btn s" onclick="V51.h.p138rs(\''+e0(String(v.email).trim())+'\')">'+L('إعادة إرسال رابط التفعيل','Resend activation link')+'</button></div>');return}out('<div class="msg er">'+L('البريد أو كلمة المرور غير صحيحة.','Incorrect email or password.')+'</div>');return}
   try{await sb.rpc('v138_confirm')}catch(e){}var p=await loadPU(1);if(!p){try{await sb.auth.signOut({scope:'local'})}catch(e){}out('<div class="msg er">'+L('هذا الحساب ليس حساب مشارك. ادخل من «بوابة الدخول».','This is not a participant account. Please use the sign-in portal.')+'</div>');return}
-  PST.msg='';toast(L('أهلاً ','Welcome ')+((p.data&&(isEn()?p.data.nameEn:p.data.nameAr))||''));var back=V5.p138back;V5.p138back=null;location.hash=back||'#/me';go()}catch(e){b.disabled=false;out('<div class="msg er">'+er('server')+'</div>')}})();return false};
+  PST.msg='';toast(L('أهلاً ','Welcome ')+((p.data&&(isEn()?p.data.nameEn:p.data.nameAr))||''));var back=V5.p138back;V5.p138back=null;location.hash=back||'#/me';goF()}catch(e){b.disabled=false;out('<div class="msg er">'+er('server')+'</div>')}})();return false};
 H.p138rs=function(em){sb.functions.invoke('v138-part',{body:{action:'resend',email:em}}).then(function(){out('<div class="msg ok">'+L('إن كان الحساب موجوداً فسيصلك رابط التفعيل خلال دقيقة.','If the account exists, an activation link will arrive within a minute.')+'</div>')})};
 H.p138fg=function(f){var v=W.fv(f);var b=f.querySelector('button');b.disabled=true;sb.functions.invoke('v138-part',{body:{action:'reset',email:v.email}}).then(function(){b.disabled=false;out('<div class="msg ok">'+L('إن كان البريد مسجّلاً فسيصلك رابط تعيين كلمة المرور خلال دقيقة. الرابط صالح لساعة واحدة.','If the email is registered, a password link will arrive within a minute. It is valid for one hour.')+'</div>')},function(){b.disabled=false;out('<div class="msg er">'+er('server')+'</div>')});return false};
-H.p138out=async function(){try{await sb.auth.signOut({scope:'local'})}catch(e){}PU=null;V5.p138=null;location.hash='#/';go()};
+H.p138out=async function(){try{await sb.auth.signOut({scope:'local'})}catch(e){}PU=null;V5.p138=null;location.hash='#/';goF()};
 /* الرابط القادم من البريد: #/pv/<type>/<token_hash> */
 V.pv=function(){var a=location.hash.split('/'),ty=a[2]||'',tk=a[3]||'';if(!V5._pv138||V5._pv138!==tk){V5._pv138=tk;(async function(){
   if(!hasSb()||!/^(signup|magiclink|recovery)$/.test(ty)||!tk){PST.msg='<div class="msg er">'+L('الرابط غير صالح.','Invalid link.')+'</div>';location.hash='#/me';return}
@@ -29402,7 +29403,7 @@ V.pv=function(){var a=location.hash.split('/'),ty=a[2]||'',tk=a[3]||'';if(!V5._p
   var r=await sb.auth.verifyOtp({token_hash:tk,type:ty});
   if(r.error){V5.p138rec=0;PST.msg='<div class="msg er">'+L('انتهت صلاحية الرابط أو استُخدم من قبل. ','This link has expired or was already used. ')+(ty==='recovery'?L('اطلب رابطاً جديداً.','Request a new link.'):L('ادخل ببريدك وكلمة المرور، أو اطلب رابط تفعيل جديد.','Sign in with your email and password, or request a new activation link.'))+'</div>';location.hash=ty==='recovery'?'#/me/forgot':'#/me';return}
   try{await sb.rpc('v138_confirm')}catch(e){}V5.mc63=null;try{sessionStorage.removeItem('mc63')}catch(e){}
-  await loadPU(1);if(ty==='recovery'){location.hash='#/pnew';go();return}toast(L('فُعّل حسابك ✓ أهلاً بك','Your account is activated ✓ Welcome'));location.hash='#/me';go()})()}
+  await loadPU(1);if(ty==='recovery'){location.hash='#/pnew';goF();return}toast(L('فُعّل حسابك ✓ أهلاً بك','Your account is activated ✓ Welcome'));location.hash='#/me';goF()})()}
  return '<section class="box narrow"><p class="mu">… '+L('جارٍ التحقق من الرابط','Verifying the link')+'</p></section>'};
 V.pnew=function(){return '<section class="box narrow pa138s"><h2>'+L('تعيين كلمة مرور جديدة','Set a new password')+'</h2><form onsubmit="return V51.h.p138np(this)">'+pw('p','new-password',L('كلمة المرور الجديدة','New password'))+pw('p2','new-password',L('تأكيد كلمة المرور','Confirm password'))+'<p class="mu">'+L('8 خانات على الأقل تجمع بين الحروف والأرقام.','At least 8 characters mixing letters and digits.')+'</p><button class="btn">'+L('حفظ','Save')+'</button></form><div id="out138"></div></section>'};
 H.p138np=function(f){var v=W.fv(f);if(v.p!==v.p2){out('<div class="msg er">'+L('كلمتا المرور غير متطابقتين.','The passwords do not match.')+'</div>');return false}if(String(v.p).length<8||!/[A-Za-z؀-ۿ]/.test(v.p)||!/\d/.test(v.p)){out('<div class="msg er">'+er('weak')+'</div>');return false}
