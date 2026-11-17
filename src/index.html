@@ -23263,8 +23263,8 @@ var enc=encodeURIComponent;
 function sharePanel(rec,st,c){var url=SITE136()+'?v='+enc(rec),nmA=(st&&st.progAr)||'',nmE=(st&&st.progEn)||nmA,dt=String((c&&c.date)||'').slice(0,10),y=+dt.slice(0,4)||new Date().getFullYear(),mo=+dt.slice(5,7)||new Date().getMonth()+1;
  var home=SITE136().split('?')[0].split('#')[0],ty=String((c&&c.type)||''),ctA=ty==='spa'?'شهادة حضور':(ty==='spp'||ty==='part')?'شهادة مشاركة':'شهادة',ctE=ty==='spa'?'a certificate of attendance':(ty==='spp'||ty==='part')?'a certificate of participation':'a certificate';
  /* v205: نص منشور منقّح: الحمد والإنجاز، ثم الشكر، وفي الختام دعوة للمشاركة في برامج المعهد مع رابط الموقع */
- var txt=L('الحمد لله الذي بنعمته تتم الصالحات؛ أتممتُ بفضل الله '+(nmA?'برنامج «'+nmA+'»':'برنامجاً علمياً')+' في معهد التمهيد، وحصلتُ على '+ctA+'.\n\nوالشكر موصول للمعهد وأساتذته الكرام على هذه الفرصة العلمية النافعة.\n\nويمكنكم أيضاً المشاركة في البرامج النوعية بالمعهد وزيارته عبر الرابط:\n'+home+'\n\n#معهد_التمهيد',
-  'Praise be to God — by His grace I have completed '+(nmE?'the programme “'+nmE+'”':'a scholarly programme')+' at At Tamhid Institute and earned '+ctE+'.\n\nMy sincere thanks to the Institute and its distinguished teachers for this valuable opportunity.\n\nYou too can take part in the Institute’s distinctive programmes and visit it here:\n'+home+'\n\n#AtTamhidInstitute');
+ var txt=L('الحمد لله الذي بنعمته تتم الصالحات؛ أتممتُ بفضل الله '+(nmA?'برنامج «'+nmA+'»':'برنامجاً علمياً')+' في معهد التمهيد، وحصلتُ على '+ctA+'.\n\nويمكنكم أيضاً المشاركة في البرامج النوعية بالمعهد وزيارته عبر الرابط:\n'+home+'\n\n#معهد_التمهيد',
+  'Praise be to God — by His grace I have completed '+(nmE?'the programme “'+nmE+'”':'a scholarly programme')+' at At Tamhid Institute and earned '+ctE+'.\n\nYou too can take part in the Institute’s distinctive programmes and visit it here:\n'+home+'\n\n#AtTamhidInstitute');
  V5._sh202={rec:rec,txt:txt,url:home};
  var li='https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name='+enc(nmE||nmA||'Certificate')+'&organizationName='+enc('At Tamhid Institute')+'&issueYear='+y+'&issueMonth='+mo+'&certUrl='+enc(url)+'&certId='+enc(rec);
  var L0=[['LinkedIn',li,'#0A66C2'],['Facebook','https://www.facebook.com/sharer/sharer.php?u='+enc(home)+'&quote='+enc(txt),'#1877F2'],['X','https://twitter.com/intent/tweet?text='+enc(txt),'#111'],['WhatsApp','https://wa.me/?text='+enc(txt),'#25D366'],['Telegram','https://t.me/share/url?url='+enc(home)+'&text='+enc(txt.replace(home,'').replace(/\n+#/,'\n#')),'#229ED9']];
@@ -28211,7 +28211,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v205';
+window.__BUILD__='v206';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
