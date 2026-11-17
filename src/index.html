@@ -25333,6 +25333,22 @@ function moreMenu(td){if(td.dataset.m69)return;var bs=[].slice.call(td.querySele
  [].slice.call(td.childNodes).forEach(function(n){if(n.nodeType===3&&!n.nodeValue.trim())n.remove()});td.insertBefore(wrap,td.firstChild)}
 document.addEventListener('click',function(e){document.querySelectorAll('details.mr69[open]').forEach(function(d){if(!d.contains(e.target))d.open=false})});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('details.mr69[open]').forEach(function(d){d.open=false;var s=d.querySelector('summary');s&&s.focus()})});
+/* v201: قائمة «المزيد» — على الجوال تُفتح لوحةً سفلية بعرض الشاشة فوق شريط التنقل، مع خلفية معتمة تُغلقها؛ وعلى الشاشات الواسعة تُحاذى داخل حدود الشاشة */
+(function(){try{var st=document.createElement('style');st.textContent=
+ '.mr69bd{display:none}'+
+ '@media (max-width:760px){'+
+ '.act69>.mr69{flex:1 1 100%!important;display:block}.act69>.mr69>summary{width:100%;justify-content:center}'+
+ 'details.mr69[open]>.mr69bd{display:block;position:fixed;inset:0;background:rgba(8,18,38,.45);z-index:1200}'+
+ 'details.mr69[open] .mr69m{position:fixed!important;inset:auto 0 0 0!important;top:auto!important;left:0!important;right:0!important;min-width:0!important;max-width:none!important;width:auto!important;max-height:70vh;overflow:auto;z-index:1201;border-radius:16px 16px 0 0!important;padding:8px 12px calc(14px + env(safe-area-inset-bottom))!important;box-shadow:0 -10px 30px rgba(8,18,38,.25)!important;transform:none!important}'+
+ 'details.mr69[open] .mr69m::before{content:"";display:block;width:44px;height:5px;border-radius:3px;background:var(--bd,#c9d2de);margin:4px auto 10px}'+
+ 'details.mr69[open] .mr69m .btn{min-height:48px;font-size:16px;padding:10px 14px;border-bottom:1px solid var(--bd,#e3e8ef)!important;border-radius:10px}'+
+ 'details.mr69[open] .mr69m .btn:last-child{border-bottom:0!important}'+
+ '}';document.head.appendChild(st)}catch(e){}
+ function prep(d){if(!d.querySelector(':scope>.mr69bd')){var b=document.createElement('div');b.className='mr69bd';b.setAttribute('aria-hidden','true');b.addEventListener('click',function(ev){ev.stopPropagation();ev.preventDefault();d.open=false});d.appendChild(b)}}
+ function fit(d){var m=d.querySelector('.mr69m');if(!m)return;m.style.insetInlineStart='';m.style.insetInlineEnd='';if(innerWidth<=760)return;var r=m.getBoundingClientRect();if(r.right>innerWidth-8||r.left<8){m.style.insetInlineEnd='auto';m.style.insetInlineStart='0';r=m.getBoundingClientRect();if(r.right>innerWidth-8||r.left<8){m.style.insetInlineStart='';m.style.insetInlineEnd=''}}}
+ document.addEventListener('toggle',function(e){var d=e.target;if(!d||!d.classList||!d.classList.contains('mr69'))return;if(d.open){prep(d);fit(d);if(innerWidth<=760){var f=d.querySelector('.mr69m [role=menuitem],.mr69m .btn');try{f&&f.focus({preventScroll:true})}catch(x){}}}},true);
+ document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('details.mr69 .mr69m .btn,details.mr69 .mr69m button,details.mr69 .mr69m a');if(b){var d=b.closest('details.mr69');setTimeout(function(){if(d)d.open=false},0)}},true);
+})();
 var PAGE=20;
 function enhanceTable(tw){var tb=tw.querySelector('table');if(!tb||tw.dataset.t69)return;tw.dataset.t69=1;tw.classList.add('c69');
  var rows=[].slice.call(tb.rows),hr=rows[0];if(!hr||!hr.querySelector('th'))return;var th=[].slice.call(hr.cells).map(function(c){return c.textContent.replace(/\s+/g,' ').trim()});
@@ -28187,7 +28203,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v200';
+window.__BUILD__='v201';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
