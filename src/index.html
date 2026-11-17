@@ -1926,18 +1926,26 @@ add('mc',T[0],c.mc,i=>({ty:'mc',t:'سؤال تجريبي '+(i+1),o:['أ','ب','�
 const _exS5=exStart;exStart=function(id){const e=S.exams.find(x=>x.id==id);if(e&&e.q&&e.q.length&&!exReady(e)){toast('هذا الاختبار لا يستوفي شرط عدد الأسئلة ('+EXMIN+'–'+EXMAX+')');return}return _exS5.apply(this,arguments)};
 /* التسجيل: رقم الطلب + التوجيه لبوابة الاختبار */
 let PA=null,PAREQ=null,plTk=null,plTm=null,PLP=null,plFresh=null;try{PA=sessionStorage.getItem('pa')}catch(e){}
-const plReq=()=>PA?(S.requests.find(r=>r.id==PA)||(PAREQ&&PAREQ.id==PA?PAREQ:null)):null;
+const plReq=()=>PA?(S.requests.find(r=>r.id==PA)||(PAREQ&&PAREQ.id==PA?PAREQ:null)||plStu209()):null;
+/* v209: الطالب المسجَّل داخل بوابته يدخل الاختبار المرسَل إليه مباشرة (يتحقق الخادم من أن الطلب طلبه) */
+function plStu209(){try{if(typeof me==='undefined'||!me||me.r!=='student')return null;const s=(S.students||[]).find(x=>String(x.id)==String(me.id));if(s&&s.pl77&&String(s.pl77.rid).toUpperCase()==String(PA).toUpperCase())return {id:s.pl77.rid,status:'student',sid:s.id};}catch(e){}return null}
 const plEx=()=>S.exams.find(e=>e.id==1000001)||S.exams.find(e=>e.pub&&isPlEx(e)&&e.lang=='ar'&&((e.q&&e.q.length)?exReady(e):e.ready)&&['none','open'].includes(typeof exWin=='function'?exWin(e):'none'));
 function plOpen(id){PA=id;try{sessionStorage.setItem('pa',id)}catch(e){}plTk=null;location.hash='#/placement';go()}
 function plOut(){PA=null;PAREQ=null;plTk=null;clearInterval(plTm);try{sessionStorage.removeItem('pa')}catch(e){}go()}
 const _reg5=reg;reg=function(f){const n=S.requests.length;const r=_reg5.apply(this,arguments),q=S.requests[S.requests.length-1];
-if(S.requests.length>n&&q){q.exlang='ar';save();plFresh=q.id;toast('رقم طلبك: '+q.id);plOpen(q.id)}return r};
+if(S.requests.length>n&&q){q.exlang='ar';save();plFresh=q.id;try{window.PAEM=String(q.email||q.secret||'');sessionStorage.setItem('paem',window.PAEM)}catch(e){}toast('رقم طلبك: '+q.id);plOpen(q.id)}return r};
 function plLogin(f){const n=fv(f).n.trim().toUpperCase(),r=S.requests.find(x=>String(x.id).toUpperCase()==n);
 if(r){if(r.status=='مرفوض'){out('<div class="msg er">هذا الطلب غير مؤهل لأداء الاختبار. تواصل مع الإدارة.</div>')}else{plFresh=null;plOpen(r.id)}return false}
-if(sb){sb.rpc('track_request',{rid:n}).then(({data})=>{if(data&&data.status&&data.status!='مرفوض'){PAREQ={id:n,status:data.status};plFresh=null;plOpen(n)}else out('<div class="msg er">رقم الطلب غير صحيح. تحقق منه وأعد المحاولة.</div>')});return false}
+if(sb){const v=String(fv(f).v||'').trim();if(!v){out('<div class="msg er">أدخل البريد الإلكتروني المسجّل في الطلب أو الرمز السري.</div>');return false}
+ /* v209: التحقق برقم الطلب مع البريد أو الرمز السري (كمتابعة الطلب)، ويُرسل الرمز مع الاختبار ليتحقق منه الخادم */
+ sb.rpc('v141_track',{rid:n,em:v}).then(({data,error})=>{const d=data||{};if(error&&/rate|429/i.test(String(error.message||error.code||''))){out('<div class="msg er">محاولات كثيرة. حاول بعد قليل.</div>');return}
+  if(d.locked141){out('<div class="msg er">أُوقفت المحاولات مؤقتاً بعد عدة محاولات خاطئة. حاول بعد ساعة.</div>');return}
+  if(d.full141&&d.status!='مرفوض'&&!/اعتذار/.test(String(d.status||''))){PAREQ={id:n,status:d.status};window.PAEM=v;try{sessionStorage.setItem('paem',v)}catch(e){}plFresh=null;plOpen(n)}
+  else if(d.full141)out('<div class="msg er">هذا الطلب غير مؤهل لأداء الاختبار. تواصل مع الإدارة.</div>');
+  else out('<div class="msg er">رقم الطلب أو البريد/الرمز السري غير صحيح. تحقق منهما وأعد المحاولة.</div>')});return false}
 out('<div class="msg er">رقم الطلب غير صحيح. تحقق منه وأعد المحاولة.</div>');return false}
 V.placement=()=>{const r=plReq(),head='<img src="'+LOGO+'" style="height:80px" alt="معهد التمهيد"><h2>بوابة اختبار تحديد المستوى — اللغة العربية</h2>';
-if(!r)return head+`<div class="box"><p class="mu">ادخل برقم الطلب الذي ظهر لك بعد التسجيل، ولا حاجة إلى كلمة مرور.</p><form onsubmit="return plLogin(this)"><label>رقم الطلب<input name="n" placeholder="REQ-XXXXXXXX" required autocomplete="off" dir="ltr"></label><button class="btn">دخول إلى الاختبار</button></form><div id="out"></div><p class="mu">ليس لديك رقم طلب؟ <a href="#/register">سجّل الآن</a>.</p></div>`;
+if(!r)return head+`<div class="box"><p class="mu">ادخل برقم الطلب الذي ظهر لك بعد التسجيل، مع البريد الإلكتروني المسجّل في الطلب أو الرمز السري الذي وصلك.</p><form onsubmit="return plLogin(this)"><label>رقم الطلب<input name="n" placeholder="REQ-XXXXXXXX" required autocomplete="off" dir="ltr"></label><label>البريد الإلكتروني المسجّل في الطلب أو الرمز السري<input name="v" required autocomplete="off" dir="ltr" placeholder="name@example.com"></label><button class="btn">دخول إلى الاختبار</button></form><p class="mu"><a href="#/review">نسيت الرمز السري؟</a></p><div id="out"></div><p class="mu">ليس لديك رقم طلب؟ <a href="#/register">سجّل الآن</a>.</p></div>`;
 const e=plEx(),sub=S.subs.find(x=>x.rid==r.id);
 const info=`<div class="msg"><b>رقم طلبك: <span dir="ltr" style="font-size:1.3rem">${esc(r.id)}</span></b><br>${plFresh==r.id?'تم استلام طلب تسجيلك بنجاح. ':''}احتفظ بهذا الرقم؛ تدخل به إلى هذه البوابة وتتابع به حالة طلبك.${r.name?'<br>المتقدم: '+esc(r.name):''} <button class="btn s" onclick="plOut()">خروج</button></div>`;
 if(plTk&&e&&e.id==plTk&&!sub)return head+info+plTake(r,e);
@@ -1946,7 +1954,7 @@ if(!e)return head+info+'<div class="box"><p>لا يتوفر اختبار تحد�
 const dr=S.dr['PL_'+r.id+'_'+e.id];
 return head+info+`<div class="box"><h3>${esc(e.title)}</h3><p>${e.q&&e.q.length?e.q.length+' سؤالاً · ':''}المدة ${e.min} دقيقة. يُرصد الاختبار ويُقيَّم آلياً فور التسليم ولا يمكن إعادته.</p><button class="btn" onclick="plStart()">${dr?'متابعة الاختبار':'ابدأ الاختبار'}</button></div>`};
 async function plStart(){const r=plReq(),e=plEx();if(!r||!e)return;
-if(sb){const{data,error}=await sb.rpc('placement_paper',{rid:r.id,eid:String(e.id)});if(!error&&data&&data.length)PLP=data;else if(e.q&&e.q.length){PLP=null;toast('تعذر الاتصال بخادم الاختبار؛ سيُصحَّح محلياً وقد لا تصل النتيجة للإدارة تلقائياً')}else{toast('تعذر تحميل الاختبار من الخادم');return}}else if(e.q&&e.q.length)PLP=null;else{toast('الاختبار غير متاح');return}
+if(sb){const{data,error}=await sb.rpc('placement_paper',{rid:r.id,eid:String(e.id),em:(window.PAEM||(function(){try{return sessionStorage.getItem('paem')}catch(x){return null}})()||null)});if(!error&&data&&data.length)PLP=data;else if(e.q&&e.q.length){PLP=null;toast('تعذر الاتصال بخادم الاختبار؛ سيُصحَّح محلياً وقد لا تصل النتيجة للإدارة تلقائياً')}else{toast('تعذر تحميل الاختبار من الخادم');return}}else if(e.q&&e.q.length)PLP=null;else{toast('الاختبار غير متاح');return}
 const k='PL_'+r.id+'_'+e.id;S.dr[k]=S.dr[k]||{t:Date.now(),a:{}};save();plTk=e.id;go()}
 function plQs(e){return PLP?PLP.map(q=>({i:q.pos,t:q.t,ty:q.ty,o:q.opts})):e.q.map((q,i)=>({i,t:q.t,ty:q.ty,o:q.o}))}
 function plTake(r,e){const d=S.dr['PL_'+r.id+'_'+e.id]||{a:{}};
@@ -1956,7 +1964,7 @@ function plTick(){clearInterval(plTm);const r=plReq(),e=exFind(plTk);if(!r||!e)r
 async function plSubmit(auto){if(!auto&&!confirm('تأكيد التسليم؟ لا يمكن التعديل بعده.'))return;const r=plReq(),e=exFind(plTk);if(!r||!e||S.subs.some(x=>x.rid==r.id))return;
 const k='PL_'+r.id+'_'+e.id,a=(S.dr[k]||{a:{}}).a;let sc=0,wr={},total,max,pct;
 if(!PLP&&e.q&&e.q.length){e.q.forEach((q,i)=>{if(q.ty=='wr')wr[i]=String(a[i]||'').trim().length>=25?1:0;else if(a[i]===q.c)sc++});total=+(sc+Object.values(wr).reduce((x,y)=>x+y,0)).toFixed(2);max=e.q.length;pct=Math.round(numOr0(total)/Math.max(1,max)*1000)/10}
-else{const{data,error}=await sb.rpc('submit_placement',{rid:r.id,eid:String(e.id),answers:a});if(error){toast('تعذر التسليم: '+error.message);return}const d=Array.isArray(data)?data[0]:data;if(!d){toast('تعذر التسليم');return}pct=+(d.pct??d.score);total=d.raw??d.score;max=d.max??100;sc=total}
+else{const{data,error}=await sb.rpc('submit_placement',{rid:r.id,eid:String(e.id),answers:a,em:(window.PAEM||(function(){try{return sessionStorage.getItem('paem')}catch(x){return null}})()||null)});if(error){toast('تعذر التسليم: '+error.message);return}const d=Array.isArray(data)?data[0]:data;if(!d){toast('تعذر التسليم');return}pct=+(d.pct??d.score);total=d.raw??d.score;max=d.max??100;sc=total}
 S.subs.push({id:Date.now(),ts:Date.now(),rid:r.id,sid:'',eid:e.id,ans:a,auto:sc,wr,total,pct,st:'مُقيَّم',date:exToday(),pl:1});
 const pl={score:pct,raw:total,max,lv:plLvN(pct),eid:e.id,date:exToday(),ts:Date.now(),...((sb&&!PLP)?{unsynced:true}:{})};plLink(r.id,pl);
 delete S.dr[k];plTk=null;PLP=null;clearInterval(plTm);save();toast('سُلِّم الاختبار وقُيِّم آلياً — درجتك '+pct+' / 100 — المستوى المقترح: '+PLN[plLvN(pct)]);go()}
@@ -28215,7 +28223,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v208';
+window.__BUILD__='v209';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
