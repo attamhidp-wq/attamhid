@@ -23838,7 +23838,7 @@ var errTxt=function(e){var m=String(e&&(e.message||e.code)||e||'');return /rate|
 '.p210sec{margin:18px 0 8px;color:#5B7FA6;font-weight:800;letter-spacing:.02em}.p210pass{background:#f6f8fb;border-inline-start:4px solid #5B7FA6;border-radius:10px;padding:12px 14px;line-height:2;margin:8px 0}'+
 '.p210q{background:#fff;border:1px solid #dde4ec;border-radius:12px;padding:12px 14px;margin:8px 0}.p210q.ok{border-color:#9fc0e6;background:#fbfdff}.p210q h4{margin:0 0 8px;font-size:1.05rem;line-height:1.9}.p210q h4 span{color:#5B7FA6;margin-inline-end:6px}'+
 '.p210o{display:grid;grid-template-columns:1fr 1fr;gap:6px}.p210o label{display:flex;gap:8px;align-items:center;border:1px solid #dde4ec;border-radius:10px;padding:9px 10px;cursor:pointer;margin:0;font-weight:500}.p210o input{margin:0;width:auto}.p210o label:has(input:checked){border-color:#0B1F3A;background:#eef3f9;font-weight:700}@media(max-width:640px){.p210o{grid-template-columns:1fr}}'+
-'.p210a table td,.p210a table th{vertical-align:top}.p210a .acts{display:flex;flex-wrap:wrap;gap:4px}.p210a .acts .btn{padding:5px 9px;font-size:.84rem}.p210cnt{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}.p210cnt span{background:#f3f6fa;border:1px solid #dde4ec;border-radius:10px;padding:6px 12px}.p210cnt b{color:#0B1F3A}';
+'.p210a table td,.p210a table th{vertical-align:top}.p210a .acts{display:flex;flex-wrap:wrap;gap:4px}.p210a .acts .btn{padding:5px 9px;font-size:.84rem}.p216bd{position:fixed;inset:0;z-index:99990;background:rgba(11,31,58,.45);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}.p216m{background:#fff;border-radius:14px;padding:18px;max-width:720px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25)}.p216m h3{margin:0 0 12px;grid-column:1/-1}.p216m .w{grid-column:1/-1}.p210cnt{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}.p210cnt span{background:#f3f6fa;border:1px solid #dde4ec;border-radius:10px;padding:6px 12px}.p210cnt b{color:#0B1F3A}';
 document.head.appendChild(st)}catch(e){}})();
 
 /* ---------- الشهادة: تقرير نتيجة بتصميم المعهد الخاص ---------- */
@@ -24000,6 +24000,7 @@ function tabPlt(){aload();var R=AS.rows||[],cnt={};R.forEach(function(r){cnt[r.s
   if(s==='paid'||s==='issued')ac.push(bt(s==='issued'?L('إعادة إرسال الشهادة','Re-send certificate'):L('اعتماد النتيجة وإصدار الشهادة','Approve & issue certificate'),"V51.h.plt210iss('"+r.id+"')"));
   if(d.rec)ac.push(bt(L('عرض الشهادة','View certificate'),"V51.h.plt210view('"+r.id+"')"));
   if(s!=='issued'&&s!=='cancelled')ac.push(bt(L('المنحة %','Scholarship %'),"V51.h.plt210sh('"+r.id+"')"));
+  if(cen210())ac.unshift(bt(L('تعديل البيانات','Edit details'),"V51.h.plt210ed('"+r.id+"')"));
   ac.push(bt(L('نسخ رابط المتقدم','Copy candidate link'),"V51.h.plt210cp('"+r.id+"')"));
   if(s!=='issued'&&s!=='cancelled')ac.push(bt(L('إعادة إرسال البريد','Resend email'),"V51.h.plt210x('resend','"+r.id+"')"));
   if(s==='started')ac.push(bt(L('إنهاء وتصحيح','Finish & grade'),"V51.h.plt210x('finish','"+r.id+"')"));
@@ -24035,6 +24036,19 @@ H.plt210sch=function(id){var r=rowOf(id);if(!r)return;var d=r.data||{},cur=d.sch
  var v=prompt(L('موعد الاختبار بتوقيت دكا (YYYY-MM-DD HH:MM):','Test time in Dhaka time (YYYY-MM-DD HH:MM):'),cur.replace('T',' '));if(!v)return;var m=/^(\d{4}-\d{2}-\d{2})[ T](\d{1,2}):(\d{2})$/.exec(v.trim());if(!m){toast(L('صيغة غير صحيحة.','Invalid format.'));return}
  var hh=('0'+m[2]).slice(-2),iso=m[1]+'T'+hh+':'+m[3]+':00+06:00',mins=prompt(L('مدة الاختبار بالدقائق:','Duration in minutes:'),String((d.sched&&d.sched.mins)||60));if(mins===null)return;var win=prompt(L('مدة إتاحة الرابط بالساعات بعد الموعد:','Link availability (hours after the start time):'),String((d.sched&&d.sched.win)||24));if(win===null)return;
  act('sched',id,{at:iso,mins:+mins||60,win:+win||24},L('حُدّد الموعد وأُرسل الرابط إلى المتقدم.','Time set and link emailed to the candidate.'))};
+var cen210=function(){try{return typeof me!=='undefined'&&!!me&&me.r==='admin'&&!me.unit&&!V5.imp64}catch(e){return false}};
+H.plt210ed=function(id){var r=rowOf(id);if(!r||!cen210())return;var d=r.data||{},iss=!!d.rec;
+ var f=function(n,a,e,t,dir){return '<label>'+a+'<input name="'+n+'" type="'+(t||'text')+'"'+(dir?' dir="ltr"':'')+(n==='nameAr'||n==='nameEn'||n==='email'?' required':'')+' value="'+e0(d[n]||'')+'"></label>'};
+ var o=document.createElement('div');o.className='p216bd';o.innerHTML='<form class="p216m p210f" onsubmit="return V51.h.plt210eds(this,\''+id+'\')"><h3>'+L('تعديل بيانات المتقدم','Edit candidate details')+' <small dir="ltr" class="mu">'+e0(id)+'</small></h3>'+
+  f('nameAr',L('الاسم بالعربية','Name (Arabic)'))+f('nameEn',L('الاسم بالإنجليزية','Name (English)'),0,0,1)+f('email',L('البريد','Email'),0,'email',1)+f('phone',L('الجوال','Mobile'),0,0,1)+
+  f('dob',L('تاريخ الميلاد','Date of birth'),0,'date')+'<label>'+L('الجنس','Sex')+'<select name="sex"><option value="m"'+(d.sex!=='f'?' selected':'')+'>'+L('ذكر','Male')+'</option><option value="f"'+(d.sex==='f'?' selected':'')+'>'+L('أنثى','Female')+'</option></select></label>'+
+  f('nat',L('الجنسية (عربي)','Nationality (Arabic)'))+f('natEn',L('الجنسية (إنجليزي)','Nationality (English)'),0,0,1)+f('tongue',L('اللغة الأم','First language'))+f('idno',L('رقم الهوية / الجواز','ID / Passport No.'),0,0,1)+
+  (iss?'<p class="mu w">'+L('صدرت شهادة لهذا المتقدم؛ ستُحدَّث بياناتها في صفحة التحقق مباشرة، ثم يمكنك «إعادة إرسال الشهادة» ليصله الملف المحدَّث.','A certificate has been issued; its verification data will update immediately. Then use “Re-send certificate” to email the updated file.')+'</p>':'')+
+  '<div class="w" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn s" onclick="this.closest(\'.p216bd\').remove()">'+L('إلغاء','Cancel')+'</button><button class="btn">'+L('حفظ التعديلات','Save changes')+'</button></div></form>';
+ o.addEventListener('click',function(e){if(e.target===o)o.remove()});document.body.appendChild(o);try{o.querySelector('input').focus()}catch(e){}};
+H.plt210eds=function(f,id){var v=fv(f);var b=f.querySelector('button:not([type])');if(b)b.disabled=true;
+ act('edit',id,v,L('حُفظت التعديلات.','Changes saved.')).then(function(d){if(d&&d.ok){var o=f.closest('.p216bd');if(o)o.remove();if(d.rec){try{var c=(S.certs||[]).find(function(x){return x.rec===d.rec});if(c){c.name=v.nameAr;c.nameEn=v.nameEn;c.sex=v.sex;c.dob=v.dob;c.nat=v.nat;c.natEn=v.natEn;c.tongue=v.tongue;c.idno=v.idno}}catch(e){}}}else if(b)b.disabled=false})
+ .catch(function(){if(b)b.disabled=false});return false};
 H.plt210sh=function(id){var r=rowOf(id);if(!r)return;var v=prompt(L('نسبة المنحة من رسوم الإصدار (0–100):','Scholarship % of the fee (0–100):'),String(r.data.sch||0));if(v===null)return;act('sch',id,{sch:Math.max(0,Math.min(100,+v||0))})};
 H.plt210cp=function(id){var r=rowOf(id);if(!r)return;try{navigator.clipboard.writeText(linkOf(r))}catch(e){}toast(L('نُسخ رابط المتقدم. لا تشاركه إلا مع صاحبه.','Candidate link copied. Share it only with the candidate.'))};
 H.plt210add=function(f){var v=fv(f);act('add','',v,L('أُضيف المتقدم وأُرسلت إليه رسالة التأكيد.','Candidate added and confirmation emailed.')).then(function(d){if(d&&d.ok)f.reset()});return false};
@@ -28475,7 +28489,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v215';
+window.__BUILD__='v216';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
