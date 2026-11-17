@@ -23838,7 +23838,7 @@ var errTxt=function(e){var m=String(e&&(e.message||e.code)||e||'');return /rate|
 '.p210sec{margin:18px 0 8px;color:#5B7FA6;font-weight:800;letter-spacing:.02em}.p210pass{background:#f6f8fb;border-inline-start:4px solid #5B7FA6;border-radius:10px;padding:12px 14px;line-height:2;margin:8px 0}'+
 '.p210q{background:#fff;border:1px solid #dde4ec;border-radius:12px;padding:12px 14px;margin:8px 0}.p210q.ok{border-color:#9fc0e6;background:#fbfdff}.p210q h4{margin:0 0 8px;font-size:1.05rem;line-height:1.9}.p210q h4 span{color:#5B7FA6;margin-inline-end:6px}'+
 '.p210o{display:grid;grid-template-columns:1fr 1fr;gap:6px}.p210o label{display:flex;gap:8px;align-items:center;border:1px solid #dde4ec;border-radius:10px;padding:9px 10px;cursor:pointer;margin:0;font-weight:500}.p210o input{margin:0;width:auto}.p210o label:has(input:checked){border-color:#0B1F3A;background:#eef3f9;font-weight:700}@media(max-width:640px){.p210o{grid-template-columns:1fr}}'+
-'.p210a table td,.p210a table th{vertical-align:top}.p210a .acts{display:flex;flex-wrap:wrap;gap:4px}.p210a .acts .btn{padding:5px 9px;font-size:.84rem}.p216bd{position:fixed;inset:0;z-index:99990;background:rgba(11,31,58,.45);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}.p216m{background:#fff;border-radius:14px;padding:18px;max-width:720px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25)}.p216m h3{margin:0 0 12px;grid-column:1/-1}.p216m .w{grid-column:1/-1}.p210cnt{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}.p210cnt span{background:#f3f6fa;border:1px solid #dde4ec;border-radius:10px;padding:6px 12px}.p210cnt b{color:#0B1F3A}';
+'.p210a table td,.p210a table th{vertical-align:top}.p210a .acts{display:flex;flex-wrap:wrap;gap:4px}.p210a .acts .btn{padding:5px 9px;font-size:.84rem}.p217bar{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin:0 0 12px}.p217bar details{flex:1;min-width:220px;background:#f5f8fb;border:1px solid #dfe6ee;border-radius:10px;padding:8px 12px}.p217bar summary{cursor:pointer;font-weight:700}.p216bd{position:fixed;inset:0;z-index:99990;background:rgba(11,31,58,.45);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}.p216m{background:#fff;border-radius:14px;padding:18px;max-width:720px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25)}.p216m h3{margin:0 0 12px;grid-column:1/-1}.p216m .w{grid-column:1/-1}.p210cnt{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}.p210cnt span{background:#f3f6fa;border:1px solid #dde4ec;border-radius:10px;padding:6px 12px}.p210cnt b{color:#0B1F3A}';
 document.head.appendChild(st)}catch(e){}})();
 
 /* ---------- الشهادة: تقرير نتيجة بتصميم المعهد الخاص ---------- */
@@ -23900,11 +23900,12 @@ try{certHTML=W.certHTML}catch(e){}
 var lvlStrip=function(){return '<div class="p210lv">'+LV.map(function(x){return '<div><i>'+x[0]+'</i><b>'+e0(L(x[1],x[2]))+'</b></div>'}).join('')+'</div>'};
 function pubPage(){
  return '<div class="p210"><div class="p210hero"><h1>'+L('اختبار تحديد المستوى في اللغة العربية','Arabic Language Placement Test')+'</h1><p>'+L('اختبار عن بُعد يقيس مستواك في العربية وفق الإطار الأوروبي المرجعي (CEFR) من التمهيدي A1 إلى المتقدم C1، وتحصل بعده على شهادة نتيجة معتمدة من معهد التمهيد قابلة للتحقق.','An online test that measures your Arabic level on the CEFR scale, from Foundation A1 to Advanced C1, followed by a verifiable result certificate from At Tamhid Institute.')+'</p></div>'+
-  '<div class="box p217lg" id="p217"><h3>'+L('دخول المختبرين','Candidate sign-in')+'</h3><p class="mu" style="margin:0 0 10px">'+L('للمسجّلين في الاختبار فقط: أدخل بريدك الإلكتروني المسجّل، فيصلك رمز دخول من 6 أرقام.','For registered candidates only: enter your registered email and you will receive a 6-digit sign-in code.')+'</p>'+
-   '<form class="p210f" onsubmit="return V51.h.plt217otp(this)"><label class="w">'+L('البريد الإلكتروني المسجّل','Registered email')+'<input name="em" type="email" required dir="ltr" autocomplete="email" value="'+e0(LG.em||'')+'"'+(LG.sent?' readonly':'')+'></label>'+
-   (LG.sent?'<label class="w">'+L('رمز الدخول (من بريدك)','Sign-in code (from your email)')+'<input name="code" required dir="ltr" inputmode="numeric" autocomplete="one-time-code" maxlength="7" pattern="[0-9 ]{6,7}" style="letter-spacing:.3em;font-size:20px;text-align:center"></label>'+
-     '<div class="w" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn">'+L('دخول','Sign in')+'</button><button type="button" class="btn s" onclick="V51.h.plt217rs()">'+L('تغيير البريد أو إعادة الإرسال','Change email or resend')+'</button></div>':
-     '<div class="w"><button class="btn">'+L('إرسال رمز الدخول','Send sign-in code')+'</button></div>')+
+  '<div class="box p217lg" id="p217"><h3>'+L('دخول المختبرين','Candidate sign-in')+'</h3><p class="mu" style="margin:0 0 10px">'+L('للمسجّلين في الاختبار فقط: ادخل ببريدك الإلكتروني المسجّل وكلمة المرور التي وصلتك بالبريد.','Registered candidates only: sign in with your registered email and the password you received by email.')+'</p>'+
+   (LG.tok?'<div class="msg ok">'+L('أنت مسجّل الدخول.','You are signed in.')+' <a class="btn s" href="#/plt/'+e0(LG.tok)+'">'+L('متابعة إلى صفحتي','Go to my page')+'</a></div>':'')+
+   '<form class="p210f" onsubmit="return V51.h.plt217in(this)"><label>'+L('البريد الإلكتروني المسجّل','Registered email')+'<input name="em" type="email" required dir="ltr" autocomplete="username" value="'+e0(LG.em||'')+'"></label>'+
+   '<label>'+L('كلمة المرور','Password')+'<input name="pw" type="password" required dir="ltr" autocomplete="current-password"></label>'+
+   '<div class="w"><button class="btn">'+L('دخول','Sign in')+'</button></div>'+
+   '<p class="mu w" style="margin:0;font-size:.9em">'+L('نسيت كلمة المرور؟ تواصل مع المعهد لإرسال كلمة مرور جديدة إلى بريدك.','Forgot your password? Contact the Institute to have a new one emailed to you.')+'</p>'+
    '<div class="w" id="p217o">'+(LG.msg||'')+'</div></form></div>'+
   '<div class="box"><h3>'+L('كيف يعمل؟','How it works')+'</h3><ol style="line-height:2;margin:0;padding-inline-start:20px"><li>'+L('سجّل بياناتك في النموذج أدناه.','Register using the form below.')+'</li><li>'+L('يحدّد المعهد موعد اختبارك ويرسل إليك رابط الدخول على بريدك.','The Institute sets your test time and emails you the link.')+'</li><li>'+L('تؤدي الاختبار عن بُعد: 60 سؤالاً في 60 دقيقة (مفردات، تراكيب، فهم المقروء).','You take the online test: 60 questions in 60 minutes (vocabulary, structures, reading).')+'</li><li>'+L('تصلك تعليمات إصدار الشهادة بالبريد، ثم تصلك الشهادة بعد اعتماد النتيجة.','You receive certificate instructions by email, then the certificate once the result is approved.')+'</li></ol>'+lvlStrip()+'</div>'+
   '<div class="box"><h3>'+L('التسجيل في الاختبار (لغير المسجّلين)','Register for the test (new candidates)')+'</h3><form class="p210f" onsubmit="return V51.h.plt210reg(this)">'+
@@ -23914,22 +23915,19 @@ function pubPage(){
    '<label>'+L('الجنسية','Nationality')+'<input name="nat" maxlength="80"></label><label>'+L('اللغة الأم','First language')+'<input name="tongue" maxlength="60"></label>'+
    '<label class="w">'+L('رقم الهوية أو جواز السفر (يظهر في الشهادة)','ID or passport number (shown on the certificate)')+'<input name="idno" dir="ltr" maxlength="40"></label>'+
    '<div class="w"><button class="btn">'+L('تسجيل','Register')+'</button></div><div class="w" id="p210o"></div></form></div></div>'}
-var LG=V5.__plt217||(V5.__plt217={em:'',sent:0,msg:''});
+var LG=V5.__plt217||(V5.__plt217={em:'',msg:'',tok:''});try{if(!LG.tok)LG.tok=sessionStorage.getItem('p217tok')||''}catch(e){}
 var lgMsg=function(t,ok){return '<div class="msg'+(ok?' ok':' er')+'">'+t+'</div>'};
-H.plt217rs=function(){LG.sent=0;LG.msg='';rr()};
-H.plt217otp=function(f){var em=String(f.em.value||'').trim().toLowerCase();if(LG.sent&&f.code)return H.plt217in(f);var b=f.querySelector('button');if(b)b.disabled=true;
- rpc('plt_otp',{em:em}).then(function(d){d=d||{};LG.em=em;
-  if(d.error==='not_registered'){LG.msg=lgMsg(L('هذا البريد غير مسجّل في اختبار تحديد المستوى. سجّل أولاً من النموذج أدناه، أو تحقّق من كتابة البريد.','This email is not registered for the Placement Test. Register using the form below, or check the spelling.'));LG.sent=0}
-  else if(d.error){LG.msg=lgMsg(L('تحقّق من البريد وحاول مرة أخرى.','Check the email and try again.'));LG.sent=0}
-  else{LG.sent=1;LG.msg=lgMsg(d.wait?L('أُرسل إليك رمز قبل لحظات؛ تحقّق من بريدك (ومن الرسائل غير المرغوب فيها).','A code was sent moments ago; check your inbox (and spam).'):L('أرسلنا رمز الدخول إلى بريدك. صالح 15 دقيقة. تحقّق من الرسائل غير المرغوب فيها إن لم تجده.','We emailed you a sign-in code, valid for 15 minutes. Check spam if you cannot find it.'),1)}
-  rr();setTimeout(function(){try{var c=document.querySelector('#p217 [name=code]');if(c)c.focus()}catch(e){}},80)})
- .catch(function(e){if(b)b.disabled=false;LG.msg=lgMsg(/429|rate/i.test(String(e&&e.message||e))?L('محاولات كثيرة؛ انتظر دقائق ثم أعد المحاولة.','Too many attempts; wait a few minutes.'):errTxt(e));rr()});return false};
-H.plt217in=function(f){var b=f.querySelector('button:not([type])');if(b)b.disabled=true;
- rpc('plt_login',{em:LG.em,code:f.code.value}).then(function(d){d=d||{};
-  if(d.ok&&d.token){CS.em=d.em;try{sessionStorage.setItem('p210em',d.em)}catch(e){}LG.sent=0;LG.msg='';location.hash='#/plt/'+d.token;return}
-  var M={code:L('الرمز غير صحيح.','Incorrect code.'),expired:L('انتهت صلاحية الرمز؛ اطلب رمزاً جديداً.','The code has expired; request a new one.'),locked:L('محاولات خاطئة كثيرة؛ اطلب رمزاً جديداً.','Too many wrong attempts; request a new code.'),not_registered:L('هذا البريد غير مسجّل.','This email is not registered.')};
-  if(d.error==='expired'||d.error==='locked'){LG.sent=0}LG.msg=lgMsg(M[d.error]||L('تعذّر الدخول.','Sign-in failed.'));rr()})
- .catch(function(e){if(b)b.disabled=false;LG.msg=lgMsg(errTxt(e));rr()});return false};
+H.plt217in=function(f){var em=String(f.em.value||'').trim().toLowerCase(),b=f.querySelector('button');if(b)b.disabled=true;LG.em=em;
+ rpc('plt_login',{em:em,pw:f.pw.value}).then(function(d){d=d||{};
+  if(d.ok&&d.token){CS.em=d.em;LG.tok=d.token;LG.msg='';try{sessionStorage.setItem('p210em',d.em);sessionStorage.setItem('p217tok',d.token)}catch(e){}location.hash='#/plt/'+d.token;return}
+  LG.msg=lgMsg(d.error==='locked'?L('محاولات خاطئة كثيرة؛ انتظر 15 دقيقة ثم أعد المحاولة.','Too many wrong attempts; wait 15 minutes and try again.'):L('البريد أو كلمة المرور غير صحيحة، أو البريد غير مسجّل في الاختبار.','Incorrect email or password, or the email is not registered for the test.'));rr()})
+ .catch(function(e){LG.msg=lgMsg(/429|rate/i.test(String(e&&e.message||e))?L('محاولات كثيرة؛ انتظر دقائق ثم أعد المحاولة.','Too many attempts; wait a few minutes.'):errTxt(e));rr()});return false};
+H.plt217out=function(){LG.tok='';CS.em='';CS.d=null;CS.tok=null;try{sessionStorage.removeItem('p217tok');sessionStorage.removeItem('p210em')}catch(e){}location.hash='#/plt'};
+H.plt217pw=function(f){var b=f.querySelector('button');if(f.n1.value!==f.n2.value){toast(L('كلمتا المرور الجديدتان غير متطابقتين.','The new passwords do not match.'));return false}if(b)b.disabled=true;
+ rpc('plt_pwchange',{tok:CS.tok,oldpw:f.o.value,newpw:f.n1.value}).then(function(d){d=d||{};if(b)b.disabled=false;
+  if(d.ok){f.reset();var dt=f.closest('details');if(dt)dt.open=false;toast(L('تم تغيير كلمة المرور.','Password changed.'));return}
+  toast(d.error==='old'?L('كلمة المرور الحالية غير صحيحة.','The current password is incorrect.'):d.error==='short'?L('كلمة المرور الجديدة 8 أحرف على الأقل.','The new password must be at least 8 characters.'):L('تعذّر التغيير.','Could not change the password.'))})
+ .catch(function(e){if(b)b.disabled=false;toast(errTxt(e))});return false};
 H.plt210reg=function(f){var v=fv(f),o=document.getElementById('p210o'),b=f.querySelector('button');if(b)b.disabled=true;
  rpc('plt_register',{d:v}).then(function(d){d=d||{};if(d.error){o.innerHTML='<div class="msg er">'+(d.error==='fields'?L('أكمل الحقول المطلوبة بصورة صحيحة.','Please complete the required fields correctly.'):L('حاول لاحقاً.','Please try later.'))+'</div>';if(b)b.disabled=false;return}
   f.innerHTML='<div class="msg ok w" style="grid-column:1/-1"><b>'+L('تم تسجيلك بنجاح.','You are registered.')+'</b><br>'+L('أرسلنا إليك رسالة تأكيد على بريدك، وسنرسل إليك موعد الاختبار ورابط الدخول بالبريد أيضاً. إن لم تجد الرسالة فتحقّق من الرسائل غير المرغوب فيها.','We emailed you a confirmation, and we will also email you the test time and link. If you cannot find it, check your spam folder.')+'</div>'})
@@ -23946,7 +23944,8 @@ function candPage(tok){
  if(CS.tok!==tok){CS.d=null;CS.paper=null;CS.ans={}}
  if(!CS.d){load(tok);return '<div class="p210"><div class="box"><p class="mu">… '+L('جارٍ التحميل','Loading')+'</p></div></div>'}
  var d=CS.d;if(d.error)return '<div class="p210"><div class="box"><div class="msg er">'+(d.error==='not_found'?L('الرابط غير صحيح أو انتهت صلاحيته.','This link is invalid or has expired.'):(d.msg||L('تعذّر التحميل.','Could not load.')))+'</div></div></div>';
- var head='<div class="p210hero"><h1>'+L('اختبار تحديد المستوى في اللغة العربية','Arabic Language Placement Test')+'</h1><p>'+e0(L(d.nameAr||d.nameEn,d.nameEn||d.nameAr))+' · <span dir="ltr">'+e0(d.id)+'</span></p></div>';
+ var head='<div class="p210hero"><h1>'+L('اختبار تحديد المستوى في اللغة العربية','Arabic Language Placement Test')+'</h1><p>'+e0(L(d.nameAr||d.nameEn,d.nameEn||d.nameAr))+' · <span dir="ltr">'+e0(d.id)+'</span></p></div>'+
+  '<div class="p217bar"><details><summary>'+L('تغيير كلمة المرور','Change password')+'</summary><form class="p210f" onsubmit="return V51.h.plt217pw(this)" style="margin-top:10px"><label class="w">'+L('كلمة المرور الحالية','Current password')+'<input name="o" type="password" required dir="ltr" autocomplete="current-password"></label><label>'+L('كلمة المرور الجديدة (8 أحرف على الأقل)','New password (min. 8 characters)')+'<input name="n1" type="password" required minlength="8" dir="ltr" autocomplete="new-password"></label><label>'+L('تأكيد كلمة المرور الجديدة','Confirm new password')+'<input name="n2" type="password" required minlength="8" dir="ltr" autocomplete="new-password"></label><div class="w"><button class="btn">'+L('حفظ','Save')+'</button></div></form></details><button type="button" class="btn s" onclick="V51.h.plt217out()">'+L('خروج','Sign out')+'</button></div>';
  var s=d.status,body='';
  if(CS.paper&&s==='started')return '<div class="p210">'+testUI()+'</div>';
  if(CS.prof&&s==='scheduled')return '<div class="p210">'+head+profUI()+'</div>';
@@ -24024,6 +24023,7 @@ function tabPlt(){aload();var R=AS.rows||[],cnt={};R.forEach(function(r){cnt[r.s
   if(d.rec)ac.push(bt(L('عرض الشهادة','View certificate'),"V51.h.plt210view('"+r.id+"')"));
   if(s!=='issued'&&s!=='cancelled')ac.push(bt(L('المنحة %','Scholarship %'),"V51.h.plt210sh('"+r.id+"')"));
   if(cen210())ac.unshift(bt(L('تعديل البيانات','Edit details'),"V51.h.plt210ed('"+r.id+"')"));
+  if(cen210()&&s!=='cancelled'){ac.push(bt(L('دخول بوابة المختبر','Enter candidate portal'),"V51.h.plt218go('"+r.id+"')"));ac.push(bt(L('إرسال كلمة مرور جديدة','Email a new password'),"V51.h.plt218pw('"+r.id+"')"))}
   ac.push(bt(L('نسخ رابط المتقدم','Copy candidate link'),"V51.h.plt210cp('"+r.id+"')"));
   if(s!=='issued'&&s!=='cancelled')ac.push(bt(L('إعادة إرسال البريد','Resend email'),"V51.h.plt210x('resend','"+r.id+"')"));
   if(s==='started')ac.push(bt(L('إنهاء وتصحيح','Finish & grade'),"V51.h.plt210x('finish','"+r.id+"')"));
@@ -24069,6 +24069,8 @@ H.plt210ed=function(id){var r=rowOf(id);if(!r||!cen210())return;var d=r.data||{}
   (iss?'<p class="mu w">'+L('صدرت شهادة لهذا المتقدم؛ ستُحدَّث بياناتها في صفحة التحقق مباشرة، ثم يمكنك «إعادة إرسال الشهادة» ليصله الملف المحدَّث.','A certificate has been issued; its verification data will update immediately. Then use “Re-send certificate” to email the updated file.')+'</p>':'')+
   '<div class="w" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn s" onclick="this.closest(\'.p216bd\').remove()">'+L('إلغاء','Cancel')+'</button><button class="btn">'+L('حفظ التعديلات','Save changes')+'</button></div></form>';
  o.addEventListener('click',function(e){if(e.target===o)o.remove()});document.body.appendChild(o);try{o.querySelector('input').focus()}catch(e){}};
+H.plt218go=function(id){var r=rowOf(id);if(!r||!cen210())return;try{V5.__plt210c.em=String(r.data.email||'').toLowerCase();V5.__plt210c.adm=1}catch(e){}try{V5.aud(L('دخول بوابة مختبر','Entered candidate portal'),id,'')}catch(e){}location.hash='#/plt/'+r.token};
+H.plt218pw=function(id){var r=rowOf(id);if(!r||!cen210())return;if(!confirm(L('إنشاء كلمة مرور جديدة لـ '+(r.data.nameAr||r.data.nameEn)+' وإرسالها إلى بريده '+r.data.email+'؟ تتوقف كلمة المرور السابقة.','Create a new password for '+(r.data.nameEn||r.data.nameAr)+' and email it to '+r.data.email+'? The previous password will stop working.')))return;act('pw',id,{},L('أُرسلت كلمة المرور الجديدة إلى بريد المختبر.','A new password was emailed to the candidate.'))};
 H.plt210eds=function(f,id){var v=fv(f);var b=f.querySelector('button:not([type])');if(b)b.disabled=true;
  act('edit',id,v,L('حُفظت التعديلات.','Changes saved.')).then(function(d){if(d&&d.ok){var o=f.closest('.p216bd');if(o)o.remove();if(d.rec){try{var c=(S.certs||[]).find(function(x){return x.rec===d.rec});if(c){c.name=v.nameAr;c.nameEn=v.nameEn;c.sex=v.sex;c.dob=v.dob;c.nat=v.nat;c.natEn=v.natEn;c.tongue=v.tongue;c.idno=v.idno}}catch(e){}}}else if(b)b.disabled=false})
  .catch(function(){if(b)b.disabled=false});return false};
@@ -28512,7 +28514,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v217';
+window.__BUILD__='v218';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};

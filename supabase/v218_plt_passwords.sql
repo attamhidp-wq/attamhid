@@ -1,0 +1,7 @@
+-- v218: password sign-in for the placement test portal (replaces v217 one-time codes; plt_otp dropped)
+-- v218_pwgen/v218_pwset: random 10-char password, bcrypt hash in data.pwh (no plaintext stored in v210_plt).
+-- First password is generated and emailed with the first candidate email (ack for self-registration, sched for admin-added).
+-- plt_login(em,pw): bcrypt check across the email's non-cancelled records; 8 failures → 15-minute lock.
+-- plt_pwchange(tok,old,new): min 8 chars.
+-- plt_admin: 'pw' (central only) new password emailed (v210_mail kind 'pw'); 'enter' (central only) returns token.
+-- v210_mail: candidate email buttons now open the portal https://attamhid.com/#/plt ; v210_send dedupe skips plt_pw.
