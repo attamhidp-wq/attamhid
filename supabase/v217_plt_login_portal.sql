@@ -1,0 +1,4 @@
+-- v217: candidate sign-in portal on #/plt
+-- plt_otp(em): rate-limited; only registered (non-cancelled) emails; 6-digit code (sha256 hashed in data.otp, 15 min, 60s resend gap) emailed via v210_tpl/v210_send (type plt_otp).
+-- plt_login(em, code): max 5 wrong attempts per code; on success clears otp, sets lastLogin and returns the candidate token.
+-- Both: search_path public, extensions; EXECUTE granted to anon, authenticated.
