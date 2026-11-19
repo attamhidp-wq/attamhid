@@ -149,14 +149,14 @@ def dip_page(D):
     LE = {'1': 'Level 1', '2': 'Level 2', '3': 'Level 3', '4': 'Level 4'}
     desc = 'دبلوم عام في اللغة العربية لغير الناطقين بها في معهد التمهيد ببنغلاديش: لمدة سنتين في أربعة فصول دراسية و%s ساعة معتمدة، يجمع مهارات اللغة العربية والعلوم الشرعية.' % tot
     body = ('<p class="mu"><a href="/programs/">البرامج</a> › الدبلوم العام</p><article class="card"><span class="tag ok">البرنامج الرئيس</span><h1>%s</h1>'
-            '<p>برنامج تأسيسي متكامل لغير الناطقين بالعربية، يبني مهارات القراءة والكتابة والاستماع والمحادثة والنحو والصرف، مع مقررات في القرآن الكريم والحديث والفقه والسيرة والتاريخ الإسلامي، وينتهي بمشروع تخرج.</p>'
+            '<p>برنامج تأسيسي متكامل لغير الناطقين بالعربية، يبني مهارات القراءة والكتابة والاستماع والمحادثة والنحو والصرف والمعجم والبلاغة والترجمة، مع مقررات في القرآن الكريم والحديث والفقه والعقيدة والسيرة، وينتهي بمشروع تخرج وتدريب ميداني.</p>'
             '<dl><dt>المدة</dt><dd>سنتان (أربعة فصول دراسية)</dd><dt>الساعات المعتمدة</dt><dd>%s ساعة</dd><dt>لغة الدراسة</dt><dd>العربية</dd>%s<dt>الشهادة</dt><dd>درجة دبلوم عام في اللغة العربية لغير الناطقين بها</dd></dl>'
             '<a class="btn" href="/#/register">قدّم طلب الالتحاق</a><a class="btn s" href="/#/programs">تفاصيل أكثر على الموقع</a></article>') % (E(name), E(tot), '<dt>المنح الدراسية</dt><dd>من 20% إلى 100% بحسب استيفاء الشروط</dd>')
     body += '<section class="card"><h2>الخطة الدراسية</h2>'
     for k in sorted(lv):
         h = sum(int(re.sub(r'\D', '', str(c.get('hrs') or 0)) or 0) for c in lv[k])
         body += '<h3>%s <small class="mu">(%s ساعة)</small></h3><table><tr><th>الرمز</th><th>المقرر</th><th>الساعات</th></tr>%s</table>' % (E(LN.get(k, 'المستوى ' + k)), h, ''.join('<tr><td>%s</td><td>%s</td><td>%s</td></tr>' % (E(c.get('code')), E(c.get('name')), E(c.get('hrs'))) for c in lv[k]))
-    body += '</section><section class="card en" lang="en"><h2>Diploma in Arabic for Non-Native Speakers</h2><p>A two-year foundation programme (four semesters, %s credit hours) that builds reading, writing, listening, speaking, grammar and morphology in Arabic, alongside courses in the Qur’an, Hadith, Fiqh, Seerah and Islamic history, ending with a graduation project.</p>' % E(tot)
+    body += '</section><section class="card en" lang="en"><h2>Diploma in Arabic for Non-Native Speakers</h2><p>A two-year foundation programme (four semesters, %s credit hours) that builds reading, writing, listening, speaking, grammar, morphology, lexicography, rhetoric and translation in Arabic, alongside courses in the Qur’an, Hadith, Fiqh, Creed and Seerah, ending with a graduation project and field training.</p>' % E(tot)
     for k in sorted(lv):
         body += '<h3>%s</h3><p class="mu">%s</p>' % (LE.get(k, 'Level ' + k), E(', '.join(c.get('nameEn') or '' for c in lv[k])))
     body += '<a class="btn" href="/#/register">Apply now</a></section>'
@@ -175,7 +175,7 @@ def index_page(D, SP, now):
         k = KIND.get(P.get('kind'), ('برنامج', 'Programme')); s = dt(P.get('start'))
         return '<a class="it card" href="/programs/%s.html"><span class="tag">%s</span><h3>%s</h3><span class="mu">%s%s</span></a>' % (E(P['id']), E(k[0]), E(P.get('nameAr')), E(dAr(s)), (' · ' + E(P.get('trainerAr'))) if P.get('trainerAr') else '')
     body = ('<h1>البرامج والدورات في معهد التمهيد</h1><p class="mu">دبلوم عام في اللغة العربية لغير الناطقين بها، وبرامج قصيرة ودورات وورش عمل في اللغة العربية والعلوم الشرعية والبحث العلمي.</p>'
-            '<div class="list"><a class="it card" href="/programs/diploma.html"><span class="tag ok">البرنامج الرئيس</span><h3>دبلوم عام في اللغة العربية لغير الناطقين بها</h3><span class="mu">سنتان · أربعة فصول دراسية · %s ساعة معتمدة</span></a></div>') % E(D.get('hours') or 80)
+            '<div class="list"><a class="it card" href="/programs/diploma.html"><span class="tag ok">البرنامج الرئيس</span><h3>دبلوم عام في اللغة العربية لغير الناطقين بها</h3><span class="mu">سنتان · أربعة فصول دراسية · %s ساعة معتمدة</span></a></div>') % E(D.get('hours') or 84)
     body += '<h2>البرامج القصيرة القادمة</h2><div class="list">%s</div>' % (''.join(item(P) for P in up) or '<p class="mu">تُعلن البرامج القادمة قريباً.</p>')
     if past: body += '<h2>برامج انعقدت</h2><div class="list">%s</div>' % ''.join(item(P) for P in past)
     ld = {'@context': 'https://schema.org', '@type': 'ItemList', 'itemListElement': [{'@type': 'ListItem', 'position': i + 1, 'url': SITE + u} for i, u in enumerate(['/programs/diploma.html'] + ['/programs/%s.html' % P['id'] for P in up + past])]}
