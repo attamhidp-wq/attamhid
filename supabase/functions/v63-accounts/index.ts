@@ -789,9 +789,9 @@ async function staffRun(q: Array<Record<string, any>>) {
       const per = person(String(r.ref_id), fd);
       to = [per.email];
       t = { subject: `تكليف بتدريس مقرر — ${String(cd.name || "")} / Course Teaching Assignment`, titleAr: "تكليف بتدريس مقرر", titleEn: "Course Teaching Assignment", dearAr: dearA(per, "staff"), dearEn: dearE(per),
-        ar: "كُلِّفتم بتدريس المقرر التالي:", extraAr: card([["المقرر", String(cd.name || "—")], ["الرمز", String(cd.code || "—")], ["البرنامج", pp.ar], ["الساعات", String(cd.hrs || "—")]], "rtl") + P("تجدون المقرر وطلابه واختباراته في بوابة هيئة التدريس.", "rtl"),
-        en: "You have been assigned to teach the following course:", extraEn: card([["Course", String(cd.nameEn || cd.name || "—")], ["Code", String(cd.codeEn || cd.code || "—")], ["Programme", pp.en], ["Credit hours", String(cd.hrs || "—")]], "ltr") + P("You will find the course, its students and exams in the faculty portal.", "ltr"),
-        btn: { url: B.base + "?p=" + encodeURIComponent(per.id), ar: "الدخول إلى بوابة هيئة التدريس", en: "Sign in to the faculty portal" } };
+        ar: "كُلِّفتم بتدريس المقرر التالي:", extraAr: card([["المقرر", String(cd.name || "—")], ["الرمز", String(cd.code || "—")], ["البرنامج", pp.ar], ["الساعات", String(cd.hrs || "—")]], "rtl") + P("تجدون المقرر وطلابه واختباراته في «الخدمات الذاتية لأعضاء هيئة التدريس».", "rtl"),
+        en: "You have been assigned to teach the following course:", extraEn: card([["Course", String(cd.nameEn || cd.name || "—")], ["Code", String(cd.codeEn || cd.code || "—")], ["Programme", pp.en], ["Credit hours", String(cd.hrs || "—")]], "ltr") + P("You will find the course, its students and exams in Faculty Self-Service.", "ltr"),
+        btn: { url: B.base + "?p=" + encodeURIComponent(per.id), ar: "الدخول إلى «الخدمات الذاتية لأعضاء هيئة التدريس»", en: "Sign in to Faculty Self-Service" } };
     } else if (r.kind === "daily") {
       to = central;
       const d = (r.data || {}) as Record<string, any>, n = (k: string) => String(d[k] ?? 0);
