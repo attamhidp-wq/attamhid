@@ -1,0 +1,31 @@
+-- v225 — بوابة التدريب الميداني ومشروع التخرج (مقرر 4401) — مرجع البنية في قاعدة البيانات (لا بيانات هنا)
+-- تُطبَّق الدوال مباشرة في Supabase؛ هذا الملف توثيق للبنية فقط.
+--
+-- الجداول (كلها بأمن الصفوف RLS، ولا صلاحية للزائر anon عليها):
+--   ft_rec(id text, kind text, sid text, sup text[], st text, data jsonb, created_at, updated_at)
+--       kind: tr ملف تدريب | gp مشروع تخرج | opp فرصة داخلية | app طلب ترشح | rec توصية | ent جهة تدريب
+--   ft_cfg(k text, data jsonb, updated_at)           -- الإعدادات (k='main')
+--   ft_docs(ref, form, rec_id, sub, st, issued_at, by_ref, title_ar, title_en, cancelled_at, replaced_by, h)
+--       سجل أرقام الوثائق المرجعية فقط (لا تُحفظ نسخ الوثائق). st: valid | cancelled
+--   ft_tok(tok, rec_id, exp, data, created_at)       -- روابط مؤقتة آمنة لممثل الجهة الخارجية
+--   ft_audit(id, at, who, rec_id, act, detail)       -- سجل التدقيق: من، وماذا، ومتى
+--   ft_note(id, at, to_ref, rec_id, ar, en, seen)    -- إشعارات داخل الموقع (والبريد عبر v210_send)
+--
+-- سياسة القراءة على ft_rec: المخوَّلون (ft_is_staff)، والطالب صاحب الملف وزملاؤه في المشروع الجماعي،
+--   والمشرفون المرتبطون (sup)، والجهات المعتمدة والفرص المنشورة للمؤهلين فقط.
+--
+-- الدوال (SECURITY DEFINER، وتتحقق من الدور داخلياً):
+--   ft_whoami, ft_cfg_get, ft_cfg_set, ft_people, ft_signers
+--   ft_new(kind, p), ft_act(id, act, p) مع ft_defs() خريطة الإجراءات والأدوار والحالات
+--   ft_log_day, ft_tr_close, ft_req_dec, ft_app_dec, ft_mk_int, ft_promote, ft_task_ok
+--   ft_gp_dec, ft_gp_cmte, ft_gp_min, ft_grade, ft_grade_post
+--   ft_tok_new, ft_tok_get, ft_tok_act (للزائر بالرابط المؤقت فقط)
+--   ft_doc_issue, ft_verify (عامة: الصلاحية والحالة فقط), ft_override (تعديل يدوي بسبب إلزامي)
+--   ft_audit_list, ft_docs_list, ft_alerts (مجدولة يومياً ft225_alerts), ft_notify, ft_sum, ft_snap, ft_nm, ft_name
+--
+-- إصلاحات v225 بعد الاختبار:
+--   ft_new/ft_doc_issue/ft_signers: إزالة تعارض أسماء المتغيرات مع أعمدة الجداول.
+--   ft_roles: إضافة الأدوار بـ array_append.
+--   ft_act: حساب مجموع ت-8 وت-11 ودرجتهما المحولة في الخادم؛ تقويم اللجنة والترشح يُسجَّل باسم صاحبه فقط.
+--   ft_gp_min: متوسط تقويم أعضاء اللجنة الثلاثة بلا تكرار.
+--   ft_doc_issue: منع الطالب من إصدار النموذجين السريين ت-8 وم-8.
