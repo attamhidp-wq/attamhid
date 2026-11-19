@@ -991,8 +991,8 @@ function drReject(f){const r=S.docReqs.find(x=>x.id==dre);if(!r)return;r.status=
 const drTab=()=>(dre?drForm():'')+tbl(['الطلب','الجهة','الاسم','الوثيقة','الملاحظة','الحالة',''],S.docReqs.slice().reverse().map(r=>`<tr data-k="${esc([r.id,who(r.uid).name,r.uid,ctN(r.type)].join(' '))}" data-f="${r.status}"><td>${r.id}</td><td>${r.role=='student'?'طالب':'عضو هيئة'}</td><td>${esc(who(r.uid).name)}<br><small class="mu">${r.uid}</small></td><td>${ctN(r.type)}</td><td style="white-space:normal">${esc(r.note||'—')}</td><td><span class="tag ${r.status=='مقبول'?'ok':r.status=='مرفوض'?'er':''}">${r.status}</span></td><td>${r.status=='قيد المراجعة'?`<button class="btn" onclick="dre='${r.id}';go()">مراجعة وإصدار</button>`:r.rec?`<button class="btn s" onclick="seeCert('${r.rec}')">معاينة</button>`:''}</td></tr>`));
 
 /* ---------- router ---------- */
-const NAVEN={'':'Home',programs:'Programs',news:'News & Events',library:'Library',faculty:'Faculty & Staff',exams:'Exams & Assessment',verify:'Verify Document',portals:'Portals'};
-const NAV=[['','الرئيسية'],['programs','البرامج'],['news','الأخبار والفعاليات'],['library','المكتبة'],['faculty','الهيئة'],['exams','واجهة الاختبارات والتقييم'],['verify','التحقق من الوثيقة'],['portals','البوابات']];
+const NAVEN={'':'Home',programs:'Programs',plt:'Placement Test',training:'Training Portal',news:'News & Events',library:'Library',faculty:'Faculty & Staff',exams:'Exams & Assessment',verify:'Verify Document',portals:'Portals'};
+const NAV=[['','الرئيسية'],['programs','البرامج'],['plt','اختبار تحديد المستوى'],['news','الأخبار والفعاليات'],['library','المكتبة'],['faculty','الهيئة'],['exams','واجهة الاختبارات والتقييم'],['verify','التحقق من الوثيقة'],['portals','البوابات']];
 /* v173: أثناء تحميل الصفحة تُستدعى go() قبل اكتمال تعريف بعض الدوال؛ كان الخطأ يوقف بقية الملف لمن دخل بحسابه (فتتعطل أزرار في البوابات). الآن يُتجاوز الخطأ أثناء الإقلاع فقط، ثم يُعاد العرض بعد اكتمال التحميل. */
 function go(){if(window.__ready173)return __go173();try{return __go173()}catch(e){try{console.warn('go@boot',e&&e.message);window.__rep175&&window.__rep175('boot-go',String(e&&e.message||e),e&&e.stack?String(e.stack).split('\n').slice(1,4).join(' < ').replace(/https?:\/\/[^/]+\//g,''):'')}catch(_){}}}
 function __go173(){const r=location.hash.replace(/^#\/?/,'');
@@ -17703,7 +17703,7 @@ function regPost(){var f=document.querySelector('#app form[onsubmit*="reg("]');i
  ps.onchange=upd;ss.onchange=upd2;upd()}
 function progPost(){engProgs().filter(function(p){return p.kind==='program'&&!p.cancelled}).forEach(function(p){document.querySelectorAll('#app .box h3,#app .pc h3').forEach(function(h){if(h.textContent.trim()!==p.name)return;var b=h.parentElement;if(b.dataset.v51)return;b.dataset.v51=1;var e=p.eng||{},dg=degree(e.degree);
   b.querySelectorAll('p.mu').forEach(function(x){if(/للعرض فقط|view only/i.test(x.textContent))x.remove()});var mu=b.querySelector('.mu');if(mu)mu.textContent=(dg?(en()?dg.en:dg.ar)+' · ':'')+(e.levels||'')+' '+L('مستويات','levels')+' · '+(e.years||'')+' '+L('أعوام','years')+(p.hours?' · '+p.hours+' '+L('ساعة معتمدة','credit hours'):'');
-  b.insertAdjacentHTML('beforeend',(e.open?'<a href="#/register/'+p.id+'" class="btn" style="display:inline-block;text-decoration:none">'+L('سجّل في البرنامج','Apply to this program')+'</a>':''))})})}
+  b.insertAdjacentHTML('beforeend',(e.open?'<a href="#/register/'+p.id+'" class="btn" style="display:inline-block;text-decoration:none">'+L('سجّل في البرنامج','Apply to this program')+'</a>':'')+(p.id==1000?' <a href="#/plt" class="btn s" style="display:inline-block;text-decoration:none">'+L('سجّل في اختبار تحديد المستوى','Register for the placement test')+'</a>':''))})})}
 function stuPost(){var s=S.students.find(function(x){return x.id==me.id});if(!s)return;var p=prog(s.prog);
  if(!perm('st.card','students'))document.querySelectorAll('#app button[onclick^="seeCard("]').forEach(function(b){b.remove()});
  if(!perm('st.record','students'))document.querySelectorAll('#app button[onclick^="seeRec("]').forEach(function(b){b.remove()});
@@ -22219,7 +22219,7 @@ try{var _fp=V.fp;V.fp=function(){var h=_fp.apply(this,arguments);try{h+=propBox(
 
 /* ---------- تبويب الإدارة: «بنوك الأسئلة» ---------- */
 var STb={code:null,edit:null};
-function bankDoc(code){var b=BK()[code],c=courseOf(code);if(!b)return '';var HD=V5.head59(),pages=[],cur=[],h=0,CAP=640;var push=function(x,ht){if(h+ht>CAP&&cur.length){pages.push(cur);cur=[];h=0}cur.push(x);h+=ht};
+function bankDoc(code){var b=BK()[code],c=courseOf(code);if(!b)return '';var HD=V5.head59(V5.planHdr223),pages=[],cur=[],h=0,CAP=640;var push=function(x,ht){if(h+ht>CAP&&cur.length){pages.push(cur);cur=[];h=0}cur.push(x);h+=ht};
  var n=0;b.q.forEach(function(q){n++;var ty=q.ty==='mc'?['اختيار من متعدد','Multiple choice']:q.ty==='tf'?['صح وخطأ','True/False']:['تقييم ذاتي','Self-assessment'],d=DL[q.d]||DL[2];
   var body='<div class="b65q"><div class="hd"><b>'+n+'. '+e5(q.t)+'</b><span dir="ltr">'+e5(q.tEn||'')+'</span></div>'+(q.ty==='mc'?'<ol class="op">'+q.o.map(function(o,i){return '<li'+(i===+q.c?' class="ok"':'')+'>'+e5(o)+' <span dir="ltr">— '+e5((q.oEn||[])[i]||'')+'</span>'+(i===+q.c?' ✔':'')+'</li>'}).join('')+'</ol>':q.ty==='tf'?'<div class="ans">'+(+q.c?'✔ صح / True':'✔ خطأ / False')+'</div>':'<div class="ans">1 — 5</div>')+
    '<div class="mt">'+ty[0]+' / '+ty[1]+' · '+L('الصعوبة','Difficulty')+': '+d[0]+' / '+d[1]+' · '+L('الدرجة','Points')+': '+(q.pts!=null?q.pts:1)+' · <span dir="ltr">'+e5(q.id)+'</span></div></div>';
@@ -23915,10 +23915,10 @@ function home120(){var Hm=S.home||{},I=(S.v51&&S.v51.inst)||{},P=progs(),D=depts
  var main=P.filter(function(p){return p.kind!=='short'&&p.kind!=='course'&&p.kind!=='workshop'}),short=P.filter(function(p){return p.kind==='short'||p.kind==='course'||p.kind==='workshop'}).sort(function(a,b){return String(b.from||'').localeCompare(String(a.from||''))});
  var nm=L(I.nameAr||'معهد التمهيد',I.nameEn||'At Tamhid Institute');
  var h='<div class="hero h120"><div class="hx"><div class="hl"><div class="kick">'+L('مؤسسة تعليمية رائدة','A leading educational institution')+'</div><h1>'+e0(nm)+'</h1><p class="lead">'+e0(HL3('hero'))+'</p>'+
-  '<div class="cta"><a class="btn g" href="#/register">'+L('قدّم طلب الالتحاق','Apply for admission')+'</a><a class="btn o" href="#/programs">'+L('استكشف البرامج','Explore programmes')+'</a></div>'+
+  '<div class="cta"><a class="btn g" href="#/register">'+L('قدّم طلب الالتحاق','Apply for admission')+'</a><a class="btn g" href="#/plt">'+L('سجّل في اختبار تحديد المستوى','Register for the placement test')+'</a><a class="btn o" href="#/programs">'+L('استكشف البرامج','Explore programmes')+'</a></div>'+
   '<ul class="trust"><li>'+ic('globe')+'<span>'+L('حضورياً وعن بُعد','On campus and online')+'</span></li><li>'+ic('users')+'<span>'+L('أساتذة متخصصون','Specialist teachers')+'</span></li></ul></div>'+
   '<aside class="hc" aria-label="'+L('روابط سريعة','Quick links')+'"><h2>'+L('ابدأ من هنا','Start here')+'</h2>'+
-  [['#/register','cap',L('طلب التسجيل','Application'),L('قدّم طلبك في دقائق','Apply in minutes')],['#/review','search',L('متابعة الطلب','Track your application'),L('حالة الطلب وخطاب القبول','Status and acceptance letter')],['#/login','screen',L('دخول البوابات','Portal sign-in'),L('الطلاب والمدرّسون والإدارة','Students, faculty and staff')],['#/verify','shield',L('التحقق من وثيقة','Verify a document'),L('خدمة للجهات والمؤسسات','A service for institutions and employers')]].map(function(x){return '<a href="'+x[0]+'"><span class="i">'+ic(x[1])+'</span><span><b>'+x[2]+'</b><small>'+x[3]+'</small></span><span class="ar" aria-hidden="true">'+ic('arrow')+'</span></a>'}).join('')+'</aside></div></div>';
+  [['#/register','cap',L('طلب التسجيل','Application'),L('قدّم طلبك في دقائق','Apply in minutes')],['#/plt','doc',L('اختبار تحديد المستوى','Placement test'),L('سجّل واختبر مستواك في العربية','Register and test your Arabic level')],['#/review','search',L('متابعة الطلب','Track your application'),L('حالة الطلب وخطاب القبول','Status and acceptance letter')],['#/login','screen',L('دخول البوابات','Portal sign-in'),L('الطلاب والمدرّسون والإدارة','Students, faculty and staff')],['#/verify','shield',L('التحقق من وثيقة','Verify a document'),L('خدمة للجهات والمؤسسات','A service for institutions and employers')]].map(function(x){return '<a href="'+x[0]+'"><span class="i">'+ic(x[1])+'</span><span><b>'+x[2]+'</b><small>'+x[3]+'</small></span><span class="ar" aria-hidden="true">'+ic('arrow')+'</span></a>'}).join('')+'</aside></div></div>';
  var ann=HL3('ann');if(ann)h+='<div class="an120" role="note"><b>'+L('مستجدات المعهد','Latest from the Institute')+'</b><span>'+e0(ann)+'</span></div>';
  /* البرامج */
  h+='<section class="s120"><div class="hd"><div><span class="ey">'+L('البرامج الأكاديمية','Academic programmes')+'</span><h2>'+L('مسارات تعليمية بمناهج واضحة وإشراف متخصص','Learning paths with clear curricula and expert supervision')+'</h2></div><a class="more" href="#/programs">'+L('كل البرامج','All programmes')+' '+ic('arrow')+'</a></div><div class="pg120">'+
@@ -23971,7 +23971,7 @@ V5.payMethods120=function(ctx){var c=pcfg(),M=V5.pm120view(ctx);return '<div cla
 /* =====================================================================
    v210 — خدمة «اختبار تحديد المستوى في اللغة العربية» المستقلة:
    تسجيل ذاتي أو يدوي، موعد تحدده الإدارة المركزية أو الجهة المخوّلة (صلاحية plt)، رابط آلي بالبريد،
-   اختبار عن بُعد (60 سؤالاً من بنك 120 سؤالاً، 12 لكل مستوى A1–C1)، تصحيح آلي، رسوم إصدار عبر بيكاش،
+   اختبار عن بُعد (100 سؤال كاملة متدرجة A1–C1 بأنماط متنوعة، في قاعدة البيانات وحدها)، تصحيح آلي، رسوم إصدار عبر بيكاش،
    تأكيد الدفع واعتماد النتيجة، ثم شهادة نتيجة بتصميم خاص تُرسل مرفقةً بالبريد آلياً.
    ===================================================================== */
 (function(){
@@ -24073,7 +24073,7 @@ function pubPage(){
    '<div class="w"><button class="btn">'+L('دخول','Sign in')+'</button></div>'+
    '<p class="mu w" style="margin:0;font-size:.9em">'+L('نسيت كلمة المرور؟ تواصل مع المعهد لإرسال كلمة مرور جديدة إلى بريدك.','Forgot your password? Contact the Institute to have a new one emailed to you.')+'</p>'+
    '<div class="w" id="p217o">'+(LG.msg||'')+'</div></form></div>'+
-  '<div class="box"><h3>'+L('كيف يعمل؟','How it works')+'</h3><ol style="line-height:2;margin:0;padding-inline-start:20px"><li>'+L('سجّل بياناتك في النموذج أدناه.','Register using the form below.')+'</li><li>'+L('تصلك كلمة المرور بالبريد، ويحدّد المعهد موعد اختبارك ويبلغك به؛ فتدخل من «دخول المختبرين» ببريدك وكلمة المرور، ولا يُفتح الاختبار إلا في موعده.','You receive your password by email and the Institute sets your test time; you then sign in under “Candidate sign-in”, and the test opens only at its scheduled time.')+'</li><li>'+L('تؤدي الاختبار عن بُعد: 60 سؤالاً في 60 دقيقة (مفردات، تراكيب، فهم المقروء).','You take the online test: 60 questions in 60 minutes (vocabulary, structures, reading).')+'</li><li>'+L('بعد اعتماد النتيجة تصلك الشهادة بالبريد، وتستطيع تنزيلها ومشاركتها من صفحتك في أي وقت.','Once the result is approved the certificate is emailed to you, and you can download and share it from your page at any time.')+'</li></ol>'+lvlStrip()+'</div>'+
+  '<div class="box"><h3>'+L('كيف يعمل؟','How it works')+'</h3><ol style="line-height:2;margin:0;padding-inline-start:20px"><li>'+L('سجّل بياناتك في النموذج أدناه.','Register using the form below.')+'</li><li>'+L('تصلك كلمة المرور بالبريد، ويحدّد المعهد موعد اختبارك ويبلغك به؛ فتدخل من «دخول المختبرين» ببريدك وكلمة المرور، ولا يُفتح الاختبار إلا في موعده.','You receive your password by email and the Institute sets your test time; you then sign in under “Candidate sign-in”, and the test opens only at its scheduled time.')+'</li><li>'+L('تؤدي الاختبار عن بُعد: 100 سؤال متدرجة من A1 إلى C1 في 120 دقيقة، بأنماط متنوعة (اختيار، صح وخطأ، تحديد الخطأ، إكمال كتابي، اختيار متعدد، مطابقة، ترتيب، فهم المقروء) في المفردات والنحو والصرف والإملاء والبلاغة.','You take the online test: 100 questions graded from A1 to C1 in 120 minutes, in varied formats (multiple choice, true/false, error spotting, written completion, multiple answer, matching, ordering, reading comprehension) covering vocabulary, grammar, morphology, spelling and rhetoric.')+'</li><li>'+L('بعد اعتماد النتيجة تصلك الشهادة بالبريد، وتستطيع تنزيلها ومشاركتها من صفحتك في أي وقت.','Once the result is approved the certificate is emailed to you, and you can download and share it from your page at any time.')+'</li></ol>'+lvlStrip()+'</div>'+
   '<div class="box"><h3>'+L('التسجيل في الاختبار (لغير المسجّلين)','Register for the test (new candidates)')+'</h3><form class="p210f" onsubmit="return V51.h.plt210reg(this)">'+
    '<label>'+L('الاسم الكامل بالعربية','Full name in Arabic')+' *<input name="nameAr" required maxlength="120"></label><label>'+L('الاسم الكامل بالإنجليزية (كما في الجواز)','Full name in English (as in passport)')+' *<input name="nameEn" required dir="ltr" maxlength="120"></label>'+
    '<label>'+L('البريد الإلكتروني','Email')+' *<input name="email" type="email" required dir="ltr"></label><label>'+L('رقم الجوال (واتساب)','Mobile (WhatsApp)')+' *<input name="phone" required dir="ltr" inputmode="tel"></label>'+
@@ -24156,11 +24156,27 @@ function profUI(){var p=CS.prof||{},f=function(k,ar,en,ex){return '<label>'+L(ar
   '<label>'+L('البريد الإلكتروني (لا يُعدَّل)','Email (cannot be changed)')+'<input value="'+e0(CS.em||'')+'" disabled dir="ltr"></label>'+
   '<div class="w"><button class="btn" style="min-height:52px;font-size:17px">'+L('تأكيد البيانات وبدء الاختبار','Confirm and start the test')+'</button></div></form></div>'}
 H.plt210conf=function(f){CS.pend=fv(f);H.plt210go();CS.pend=null;return false};
+/* v224: أنماط أسئلة اختبار تحديد المستوى: اختيار، صح/خطأ، تحديد الخطأ، إكمال كتابي، اختيار متعدد، مطابقة، ترتيب */
+function q224(q,a){var i=q.i,ty=q.ty||'mc',R=function(k,t,chk){return '<label><input type="radio" name="q'+i+'"'+(chk?' checked':'')+' onchange="V51.h.plt210a('+i+','+k+')"> '+t+'</label>'};
+ if(ty==='tf')return '<div class="p210o">'+R(1,L('صح','True'),String(a)==='1')+R(0,L('خطأ','False'),String(a)==='0')+'</div>';
+ if(ty==='err')return '<p style="font-size:21px;margin:0 0 6px">'+(q.o||[]).map(function(o,k){return '<u>'+e0(o)+'</u><sub>'+(k+1)+'</sub>'}).join(' ')+'</p><p class="mu" style="margin:0 0 6px">'+L('اختر الجزء الذي فيه الخطأ:','Choose the part that contains the error:')+'</p><div class="p210o p224err">'+(q.o||[]).map(function(o,k){return R(k,(k+1)+'. <u>'+e0(o)+'</u>',String(a)===String(k))}).join('')+'</div>';
+ if(ty==='fill')return '<div class="p210o"><input type="text" dir="rtl" autocomplete="off" style="width:100%;max-width:420px;font-size:18px;padding:8px" value="'+e0(a==null?'':a)+'" oninput="V51.h.plt224f('+i+',this.value)" placeholder="'+L('اكتب إجابتك هنا','Type your answer here')+'"></div>';
+ if(ty==='multi'){var A=Array.isArray(a)?a:[];return '<p class="mu" style="margin:0 0 6px">'+L('قد تكون الإجابة الصحيحة أكثر من خيار.','More than one option may be correct.')+'</p><div class="p210o">'+(q.o||[]).map(function(o,k){return '<label><input type="checkbox"'+(A.indexOf(k)>-1?' checked':'')+' onchange="V51.h.plt224m('+i+','+k+',this.checked)"> '+e0(o)+'</label>'}).join('')+'</div>'}
+ if(ty==='match'){var M=Array.isArray(a)?a:[];return '<div class="p210o p224mt">'+(q.L||[]).map(function(l,k){return '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0"><b style="min-width:9em">'+e0(l)+'</b><select onchange="V51.h.plt224s('+i+','+k+',this.value,'+(q.L||[]).length+')" style="font-size:16px;padding:6px;max-width:100%"><option value="">'+L('— اختر —','— Choose —')+'</option>'+(q.R||[]).map(function(r,j){return '<option value="'+j+'"'+(M[k]===j?' selected':'')+'>'+e0(r)+'</option>'}).join('')+'</select></div>'}).join('')+'</div>'}
+ if(ty==='ord'){var O=Array.isArray(a)?a:[],K=q.K||[];return '<p class="mu" style="margin:0 0 6px">'+L('اضغط الكلمات بالترتيب الصحيح:','Tap the words in the correct order:')+'</p><div class="p224ord" style="min-height:2.4em;border:1px dashed #9aa7b6;border-radius:8px;padding:8px;font-size:20px;margin-bottom:6px">'+(O.length?O.map(function(k){return e0(K[k])}).join(' '):'<span class="mu">…</span>')+'</div><div class="p210o" style="display:flex;flex-wrap:wrap;gap:6px">'+K.map(function(t,k){var used=O.indexOf(k)>-1;return '<button type="button" class="btn s" style="font-size:18px"'+(used?' disabled':'')+' onclick="V51.h.plt224o('+i+','+k+','+K.length+')">'+e0(t)+'</button>'}).join('')+'<button type="button" class="btn s" onclick="V51.h.plt224o('+i+',-1,0)">'+L('إعادة الترتيب','Reset')+'</button></div>'}
+ return '<div class="p210o">'+(q.o||[]).map(function(o,k){return R(k,e0(o),String(a)===String(k))}).join('')+'</div>'}
+try{V5.q224=q224}catch(e){}
+function set224(i,v,re){if(v==null||v===''||(Array.isArray(v)&&!v.length))delete CS.ans[String(i)];else CS.ans[String(i)]=v;var q=document.getElementById('q210_'+i);if(q)q.classList.toggle('ok',CS.ans[String(i)]!=null);var c=document.getElementById('p210cnt');if(c&&CS.paper)c.textContent=Object.keys(CS.ans).length+' / '+CS.paper.qs.length;
+ CS.dirty=1;clearTimeout(CS.sv);CS.sv=setTimeout(save,1500);if(re){var Q=(CS.paper.qs||[]).find(function(x){return x.i===i});if(q&&Q){var hh=q.querySelector('h4').outerHTML;q.innerHTML=hh+q224(Q,CS.ans[String(i)])}}}
+H.plt224f=function(i,v){set224(i,String(v||'').slice(0,120).trim())};
+H.plt224m=function(i,k,on){var A=Array.isArray(CS.ans[String(i)])?CS.ans[String(i)].slice():[];var x=A.indexOf(k);if(on&&x<0)A.push(k);if(!on&&x>-1)A.splice(x,1);set224(i,A)};
+H.plt224s=function(i,k,v,n){var A=Array.isArray(CS.ans[String(i)])?CS.ans[String(i)].slice():[];while(A.length<n)A.push(null);A[k]=v===''?null:+v;set224(i,A.every(function(x){return x==null})?null:A)};
+H.plt224o=function(i,k,n){var A=Array.isArray(CS.ans[String(i)])?CS.ans[String(i)].slice():[];if(k<0)A=[];else if(A.indexOf(k)<0)A.push(k);set224(i,A,1)};
 function testUI(){var P=CS.paper,qs=P.qs,dl=Date.parse(P.deadline),left=Math.max(0,dl-nowS()),tot=(P.mins||60)*60e3,done=Object.keys(CS.ans).length,lastG=null,lastL=null,sec=0,h='';
  h+='<div class="p210t"><span>'+L('الوقت المتبقي','Time left')+' <b id="p210clk">'+fmt(left)+'</b></span><span class="bar"><i id="p210bar" style="width:'+Math.round(100*left/tot)+'%"></i></span><span id="p210cnt">'+done+' / '+qs.length+'</span></div>';
  qs.forEach(function(q,n){if(q.lvl!==lastL){lastL=q.lvl;sec++;h+='<div class="p210sec">'+L('الجزء '+sec+' من 5','Part '+sec+' of 5')+'</div>';lastG=null}
   if(q.g&&q.g!==lastG){lastG=q.g;h+='<div class="p210pass"><small class="mu">'+L('اقرأ النص ثم أجب عن الأسئلة التي تليه:','Read the text, then answer the questions that follow:')+'</small><div>'+e0(q.p)+'</div></div>'}else if(!q.g)lastG=null;
-  var a=CS.ans[String(q.i)];h+='<div class="p210q'+(a!=null?' ok':'')+'" id="q210_'+q.i+'"><h4><span>'+(n+1)+'.</span>'+e0(q.q)+'</h4><div class="p210o">'+(q.o||[]).map(function(o,k){return '<label><input type="radio" name="q'+q.i+'" value="'+k+'"'+(String(a)===String(k)?' checked':'')+' onchange="V51.h.plt210a('+q.i+','+k+')"> '+e0(o)+'</label>'}).join('')+'</div></div>'});
+  var a=CS.ans[String(q.i)];h+='<div class="p210q'+(a!=null&&a!==''?' ok':'')+'" id="q210_'+q.i+'"><h4><span>'+(n+1)+'.</span>'+e0(q.q)+'</h4>'+q224(q,a)+'</div>'});
  h+='<div class="box" style="text-align:center"><p class="mu">'+L('راجع إجاباتك ثم سلّم الاختبار. لا يمكن التعديل بعد التسليم.','Review your answers, then submit. You cannot change them after submitting.')+'</p><button class="btn" style="min-height:52px;font-size:17px" onclick="V51.h.plt210sub()">'+L('تسليم الاختبار','Submit the test')+'</button></div>';
  setTimeout(tick,0);return h}
 function fmt(ms){var s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s/60)%60;s%=60;return (h?h+':':'')+(m<10?'0':'')+m+':'+(s<10?'0':'')+s}
@@ -25443,7 +25459,7 @@ H.lo671x=function(){if(!central())return;xl([['learning-outcomes',V5.loRows671()
 
 /* ---------- وثيقة البنك (PDF): صفحة ملخص + بلوم والناتج لكل سؤال، مع منع القصّ ---------- */
 var lines=function(s,cpl){s=String(s||'');return Math.max(1,Math.ceil(s.length/cpl))};
-function bankDoc(code){var b=BK()[code],c=courseOf(code);if(!b)return '';var HD=V5.head59(),pages=[],cur=[],h=0,CAP=636,r=check(code),s=r.st,lo=LOs(b),Rv=b.rev671||{};
+function bankDoc(code){var b=BK()[code],c=courseOf(code);if(!b)return '';var HD=V5.head59(V5.planHdr223),pages=[],cur=[],h=0,CAP=636,r=check(code),s=r.st,lo=LOs(b),Rv=b.rev671||{};
  var Q=[],add=function(x,ht){Q.push([x,ht])},brk=function(){Q.push(null)};
  /* صفحة الملخص */
  var sm='<div class="b671s"><div class="t"><b>ملخص البنك</b><span dir="ltr">Bank summary</span></div><table class="c62-tb b671t"><tr><th><b>البند</b><small>Item</small></th><th><b>القيمة</b><small>Value</small></th></tr>'+
@@ -28697,7 +28713,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v223';
+window.__BUILD__='v224';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
