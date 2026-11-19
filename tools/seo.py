@@ -79,7 +79,7 @@ def page(path, title, desc, body, ld, en_title=''):
         '<style>%s</style><script type="application/ld+json">%s</script></head><body>'
         '<header><div class="w"><a href="/" aria-label="معهد التمهيد"><img src="/img/logo-a8d46018.webp" alt="معهد التمهيد — At Tamhid Institute" width="163" height="44"></a>'
         '<nav><a href="/">الرئيسية</a><a href="/programs/">البرامج</a><a href="/news/">الأخبار</a><a href="/#/register">التقديم</a><a href="/#/verify">التحقق من وثيقة</a></nav></div></header>'
-        '<main class="w">%s</main><footer><div class="w">© %d معهد التمهيد — At Tamhid Institute (ATI) · <a href="/">attamhid.com</a></div></footer></body></html>') % (
+        '<main class="w">%s</main><footer><div class="w"><p><a href="/student-services/">الخدمات الذاتية للطلاب والطالبات</a> · <a href="/faculty-services/">الخدمات الذاتية لأعضاء هيئة التدريس</a> · <a href="/training/">بوابة التدريب</a> · <a href="/graduates/">بوابة الخريجين</a></p>© %d معهد التمهيد — At Tamhid Institute (ATI) · <a href="/">attamhid.com</a></div></footer></body></html>') % (
         E(title), E(desc), E(url), E(title), E(desc), E(url), SITE, CSS, json.dumps(ld, ensure_ascii=False).replace('</', '<\\/'), body, datetime.date.today().year)
 
 ORG = {'@type': 'EducationalOrganization', 'name': 'معهد التمهيد', 'alternateName': ['At Tamhid Institute', 'ATI', 'আত তামহীদ ইনস্টিটিউট'], 'url': SITE + '/', 'logo': SITE + '/img/app-512-v132.png', 'address': {'@type': 'PostalAddress', 'addressCountry': 'BD'}}
@@ -164,7 +164,7 @@ def dip_page(D):
         {'@type': 'Course', 'name': name, 'alternateName': 'Diploma in Arabic for Non-Native Speakers', 'description': desc, 'url': SITE + path, 'inLanguage': 'ar', 'provider': ORG,
          'educationalCredentialAwarded': 'دبلوم عام في اللغة العربية لغير الناطقين بها', 'numberOfCredits': tot, 'timeRequired': 'P2Y',
          'hasCourseInstance': [{'@type': 'CourseInstance', 'courseMode': 'onsite', 'courseSchedule': {'@type': 'Schedule', 'duration': 'P2Y', 'repeatFrequency': 'P6M', 'repeatCount': 4}}],
-         'offers': {'@type': 'Offer', 'category': 'Paid', 'url': SITE + '/#/register'}, 'syllabusSections': [{'@type': 'Syllabus', 'name': LN.get(k, k), 'description': '، '.join(c.get('name') or '' for c in lv[k])} for k in sorted(lv)]},
+         'offers': {'@type': 'Offer', 'category': 'Paid', 'url': SITE + '/#/register'}, 'hasPart': [{'@type': 'Course', 'courseCode': str(c.get('code') or ''), 'name': c.get('name') or '', 'alternateName': c.get('nameEn') or None, 'numberOfCredits': c.get('hrs'), 'inLanguage': 'ar', 'provider': {'@type': 'EducationalOrganization', 'name': 'معهد التمهيد', 'url': SITE + '/'}} for c in C], 'syllabusSections': [{'@type': 'Syllabus', 'name': LN.get(k, k), 'description': '، '.join(c.get('name') or '' for c in lv[k])} for k in sorted(lv)]},
         {'@type': 'BreadcrumbList', 'itemListElement': [{'@type': 'ListItem', 'position': 1, 'name': 'معهد التمهيد', 'item': SITE + '/'}, {'@type': 'ListItem', 'position': 2, 'name': 'البرامج', 'item': SITE + '/programs/'}, {'@type': 'ListItem', 'position': 3, 'name': 'الدبلوم العام'}]}]}
     return path, page(path, name + ' | معهد التمهيد', desc, body, ld)
 
@@ -199,6 +199,89 @@ def news_pages(N):
     idx = ('/news/', page('/news/', 'أخبار معهد التمهيد — At Tamhid Institute', 'آخر أخبار معهد التمهيد وإعلاناته وفعالياته.', '<h1>أخبار معهد التمهيد</h1><div class="list">%s</div>' % (items or '<p class="mu">لا أخبار بعد.</p>'), {'@context': 'https://schema.org', '@type': 'CollectionPage', 'name': 'أخبار معهد التمهيد', 'url': SITE + '/news/'}), None)
     return [idx] + out
 
+# ---------------------------------------------------------------------------
+# v227 — صفحات عامة ثابتة لكل بوابة وخدماتها بالعربية والإنجليزية والبنغالية (قابلة للفهرسة)
+# ---------------------------------------------------------------------------
+PORTALS = [
+ ('student-services', '/#/student',
+  ('الخدمات الذاتية للطلاب والطالبات', 'Student Self-Service', 'Student Self-Service'),
+  ('خدمات الطلاب والطالبات في معهد التمهيد في مكان واحد: التسجيل والجداول، والدرجات والسجل الأكاديمي، والإرشاد الأكاديمي، والطلبات والوثائق.',
+   'Services for At Tamhid Institute students in one place: registration and timetables, grades and academic record, academic advising, and requests and documents.',
+   'আত তামহীদ ইনস্টিটিউটের শিক্ষার্থীদের সেবা এক জায়গায়: নিবন্ধন ও সময়সূচি, ফলাফল ও একাডেমিক রেকর্ড, একাডেমিক পরামর্শ, এবং আবেদন ও নথিপত্র।'),
+  [('التسجيل والجداول', 'Registration & timetables', 'নিবন্ধন ও সময়সূচি'),
+   ('الدرجات والسجل الأكاديمي', 'Grades & academic record', 'ফলাফল ও একাডেমিক রেকর্ড'),
+   ('الإرشاد الأكاديمي', 'Academic advising', 'একাডেমিক পরামর্শ'),
+   ('الاختبارات ومواعيدها', 'Exams & schedules', 'পরীক্ষা ও সময়সূচি'),
+   ('الكفاية والانتقال والتخرج', 'Proficiency, progression & graduation', 'দক্ষতা, অগ্রগতি ও স্নাতক'),
+   ('الطلبات والوثائق', 'Requests & documents', 'আবেদন ও নথিপত্র')]),
+ ('faculty-services', '/#/fp',
+  ('الخدمات الذاتية لأعضاء هيئة التدريس', 'Faculty Self-Service', 'Faculty Self-Service'),
+  ('خدمات أعضاء هيئة التدريس في معهد التمهيد: المقررات والشعب، والجداول، وإدخال الدرجات، والحضور، والطلبات والوثائق.',
+   'Services for At Tamhid Institute faculty: courses and sections, timetables, grade entry, attendance, and requests and documents.',
+   'আত তামহীদ ইনস্টিটিউটের শিক্ষকদের সেবা: কোর্স ও সেকশন, সময়সূচি, নম্বর প্রদান, উপস্থিতি, এবং আবেদন ও নথিপত্র।'),
+  [('المقررات والشعب', 'Courses & sections', 'কোর্স ও সেকশন'),
+   ('الجدول التدريسي', 'Teaching timetable', 'পাঠদানের সময়সূচি'),
+   ('إدخال الدرجات', 'Grade entry', 'নম্বর প্রদান'),
+   ('الحضور والغياب', 'Attendance', 'উপস্থিতি'),
+   ('الطلبات والوثائق', 'Requests & documents', 'আবেদন ও নথিপত্র')]),
+ ('training', '/#/training',
+  ('بوابة التدريب', 'Training Portal', 'Training Portal'),
+  ('بوابة التدريب في معهد التمهيد: حساب واحد للتسجيل في البرامج القصيرة والدورات وورش العمل بضغطة واحدة، والحصول على الشهادات فور صدورها.',
+   'The At Tamhid Institute Training Portal: one account to register for short programmes, courses and workshops in one click, and to receive certificates as soon as they are issued.',
+   'আত তামহীদ ইনস্টিটিউটের Training Portal: একটি অ্যাকাউন্টে এক ক্লিকে স্বল্পমেয়াদি প্রোগ্রাম, কোর্স ও কর্মশালায় নিবন্ধন, এবং প্রকাশের সঙ্গে সঙ্গে সনদ গ্রহণ।'),
+  [('البرامج القصيرة والدورات وورش العمل', 'Short programmes, courses & workshops', 'স্বল্পমেয়াদি প্রোগ্রাম, কোর্স ও কর্মশালা'),
+   ('التسجيل بضغطة واحدة', 'One-click registration', 'এক ক্লিকে নিবন্ধন'),
+   ('الشهادات', 'Certificates', 'সনদ')]),
+ ('graduates', '/#/graduates',
+  ('بوابة الخريجين', 'Graduates Portal', 'Graduates Portal'),
+  ('بوابة الخريجين في معهد التمهيد: التدريب الميداني ونماذجه، ومشروع التخرج ونماذجه، وخدمات التخرج، والتحقق من الوثائق برمز QR، وسجل المرشحين.',
+   'The At Tamhid Institute Graduates Portal: field training and its forms, the graduation project and its forms, graduation services, QR document verification, and the candidates register.',
+   'আত তামহীদ ইনস্টিটিউটের Graduates Portal: মাঠ প্রশিক্ষণ ও এর ফরম, স্নাতক প্রকল্প ও এর ফরম, স্নাতক সেবা, QR কোডে নথি যাচাই, এবং প্রার্থী তালিকা।'),
+  [('التدريب الميداني (النماذج ت-1 إلى ت-18)', 'Field training (forms T-1 to T-18)', 'মাঠ প্রশিক্ষণ (ফরম T-1 থেকে T-18)'),
+   ('مشروع التخرج (النماذج م-1 إلى م-10)', 'Graduation project (forms P-1 to P-10)', 'স্নাতক প্রকল্প (ফরম P-1 থেকে P-10)'),
+   ('خدمات التخرج', 'Graduation services', 'স্নাতক সেবা'),
+   ('التحقق من الوثائق برمز QR', 'QR document verification', 'QR কোডে নথি যাচাই'),
+   ('سجل المرشحين', 'Candidates register', 'প্রার্থী তালিকা')]),
+]
+PL = {'ar': ('ar', 'rtl', 0, '', 'ar_AR'), 'en': ('en', 'ltr', 1, '/en', 'en_US'), 'bn': ('bn', 'ltr', 2, '/bn', 'bn_BD')}
+UI = {'home': ('الرئيسية', 'Home', 'হোম'), 'prog': ('البرامج', 'Programmes', 'প্রোগ্রাম'), 'news': ('الأخبار', 'News', 'সংবাদ'),
+      'svc': ('الخدمات', 'Services', 'সেবাসমূহ'), 'enter': ('الدخول إلى الخدمة', 'Sign in to the service', 'সেবায় প্রবেশ করুন'),
+      'others': ('خدمات أخرى في المعهد', 'Other institute services', 'ইনস্টিটিউটের অন্যান্য সেবা'), 'verify': ('التحقق من وثيقة', 'Verify a document', 'নথি যাচাই'),
+      'inst': ('معهد التمهيد', 'At Tamhid Institute', 'আত তামহীদ ইনস্টিটিউট')}
+
+def portal_page(P, lang):
+    slug, app, names, descs, svcs = P
+    lg, dr, i, pre, loc = PL[lang]
+    path = pre + '/' + slug + '/'; url = SITE + path; nm = names[i]; desc = descs[i]
+    alt = ''.join('<link rel="alternate" hreflang="%s" href="%s%s/%s/">' % (k, SITE, PL[k][3], slug) for k in ('ar', 'en', 'bn')) + '<link rel="alternate" hreflang="x-default" href="%s/%s/">' % (SITE, slug)
+    ln = ' · '.join('<a href="%s%s/%s/" lang="%s" hreflang="%s"%s>%s</a>' % (SITE, PL[k][3], slug, k, k, ' aria-current="true"' if k == lang else '', {'ar': 'العربية', 'en': 'English', 'bn': 'বাংলা'}[k]) for k in ('ar', 'en', 'bn'))
+    oth = ''.join('<li><a href="%s/%s/">%s</a></li>' % (pre, Q[0], E(Q[2][i])) for Q in PORTALS if Q[0] != slug)
+    body = ('<nav class="mu" aria-label="breadcrumb"><a href="/">%s</a> › %s</nav><article class="card"><h1>%s</h1><p>%s</p><h2>%s</h2><ul>%s</ul>'
+            '<a class="btn" href="%s">%s</a></article><section class="card"><h2>%s</h2><ul>%s<li><a href="/#/verify">%s</a></li><li><a href="/programs/">%s</a></li></ul><p class="mu">%s</p></section>') % (
+        E(UI['inst'][i]), E(nm), E(nm), E(desc), E(UI['svc'][i]), ''.join('<li>%s</li>' % E(s[i]) for s in svcs), app, E(UI['enter'][i]),
+        E(UI['others'][i]), oth, E(UI['verify'][i]), E(UI['prog'][i]), ln)
+    ld = {'@context': 'https://schema.org', '@graph': [
+        {'@type': 'WebPage', '@id': url, 'url': url, 'name': nm, 'description': desc, 'inLanguage': lg, 'isPartOf': {'@id': SITE + '/#website'}, 'about': {'@id': SITE + '/#org'},
+         'potentialAction': {'@type': 'Action', 'name': UI['enter'][i], 'target': SITE + app}},
+        {'@type': 'BreadcrumbList', 'itemListElement': [{'@type': 'ListItem', 'position': 1, 'name': UI['inst'][i], 'item': SITE + '/'}, {'@type': 'ListItem', 'position': 2, 'name': nm, 'item': url}]},
+        dict(ORG, **{'@id': SITE + '/#org'}), {'@type': 'WebSite', '@id': SITE + '/#website', 'url': SITE + '/', 'name': 'معهد التمهيد', 'alternateName': 'At Tamhid Institute', 'inLanguage': ['ar', 'en', 'bn']}]}
+    title = '%s | %s' % (nm, 'معهد التمهيد — At Tamhid Institute' if lang == 'ar' else 'At Tamhid Institute — معهد التمهيد')
+    h = page(path, title, desc, body, ld)
+    h = h.replace('<html lang="ar" dir="rtl">', '<html lang="%s" dir="%s">' % (lg, dr), 1).replace('<link rel="canonical"', alt + '<link rel="canonical"', 1)
+    h = h.replace('<meta name="theme-color"', '<meta property="og:locale" content="%s"><meta property="og:image" content="%s/img/app-512-v132.png"><meta name="theme-color"' % (loc, SITE), 1)
+    if lang != 'ar':
+        h = h.replace('<nav><a href="/">الرئيسية</a><a href="/programs/">البرامج</a><a href="/news/">الأخبار</a><a href="/#/register">التقديم</a><a href="/#/verify">التحقق من وثيقة</a></nav>',
+                      '<nav><a href="/">%s</a><a href="/programs/">%s</a><a href="/news/">%s</a><a href="/#/verify">%s</a></nav>' % (E(UI['home'][i]), E(UI['prog'][i]), E(UI['news'][i]), E(UI['verify'][i])), 1)
+        h = h.replace("font-family:'IBM Plex Sans Arabic',system-ui,sans-serif", "font-family:system-ui,'Noto Sans Bengali','IBM Plex Sans Arabic',sans-serif", 1)
+    if lang != 'ar':
+        for a, b in (('الخدمات الذاتية للطلاب والطالبات', 'Student Self-Service'), ('الخدمات الذاتية لأعضاء هيئة التدريس', 'Faculty Self-Service'), ('>بوابة التدريب<', '>Training Portal<'), ('>بوابة الخريجين<', '>Graduates Portal<')):
+            h = h.replace(a, b) if a.startswith('>') else h.replace('>' + a + '</a> ·', '>' + b + '</a> ·', 1)
+        h = h.replace('href="/student-services/"', 'href="%s/student-services/"' % pre).replace('href="/faculty-services/"', 'href="%s/faculty-services/"' % pre).replace('href="/training/"', 'href="%s/training/"' % pre).replace('href="/graduates/"', 'href="%s/graduates/"' % pre)
+    return path, h
+
+def portal_pages():
+    return [portal_page(P, l) for P in PORTALS for l in ('ar', 'en', 'bn')]
+
 def main():
     data = fetch() if '--fetch' in sys.argv else json.load(open(SNAP, encoding='utf-8'))
     now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) + datetime.timedelta(hours=3)
@@ -208,6 +291,9 @@ def main():
     NP = news_pages(data.get('news') or [])
     os.makedirs(os.path.join(R, 'news'), exist_ok=True)
     pages = pages + [(a, b) for a, b, c in NP]
+    PP = portal_pages()
+    for a, b in PP: os.makedirs(os.path.join(R, a.strip('/')), exist_ok=True)
+    pages = pages + PP
     keep = set()
     for path, h in pages:
         fn = os.path.join(R, path.strip('/'), 'index.html') if path.endswith('/') else os.path.join(R, path.strip('/'))
@@ -219,7 +305,7 @@ def main():
             if f.endswith('.html') and p not in keep: os.remove(p)
     today = datetime.date.today().isoformat()
     lm = lambda P: str(P.get('u') or P.get('at') or today)[:10]
-    urls = [(SITE + '/', today, '1.0'), (SITE + '/programs/', today, '0.9'), (SITE + '/programs/diploma.html', today, '0.9')] + [(SITE + '/programs/%s.html' % P['id'], lm(P), '0.7') for P in SP] + [(SITE + a, str((c or {}).get('date') or today)[:10] if c else today, '0.6') for a, b, c in NP]
+    urls = [(SITE + '/', today, '1.0'), (SITE + '/programs/', today, '0.9'), (SITE + '/programs/diploma.html', today, '0.9')] + [(SITE + '/programs/%s.html' % P['id'], lm(P), '0.7') for P in SP] + [(SITE + a, str((c or {}).get('date') or today)[:10] if c else today, '0.6') for a, b, c in NP] + [(SITE + a, today, '0.8') for a, b in PP]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>\n' % (E(u), d, p) for u, d, p in urls) + '</urlset>\n'
     open(os.path.join(R, 'sitemap.xml'), 'w', encoding='utf-8').write(sm)
     open(os.path.join(R, 'robots.txt'), 'w', encoding='utf-8').write('User-agent: *\nAllow: /\nDisallow: /tools/\nDisallow: /supabase/\nDisallow: /src/\n\nSitemap: %s/sitemap.xml\n' % SITE)
