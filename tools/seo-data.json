@@ -4,10 +4,10 @@
 "id": "1000",
 "name": "دبلوم عام في اللغة العربية لغير الناطقين بها",
 "nameEn": "Diploma in Arabic for Non-Native Speakers",
-"plan": "سنتان · 4 فصول دراسية · 80 ساعة معتمدة",
-"planEn": "Two years · 4 semesters · 80 credit hours.",
+"plan": "سنتان · 4 فصول دراسية · 84 ساعة معتمدة",
+"planEn": "Two years · 4 semesters · 84 credit hours.",
 "fee": "",
-"hours": 80,
+"hours": 84,
 "courses": [
 {
 "code": "1101",
@@ -34,6 +34,14 @@
 "type": "إلزامي"
 },
 {
+"code": "1104",
+"name": "المفردات والتعبيرات",
+"nameEn": "Vocabulary and Expressions",
+"term": 1,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
 "code": "1201",
 "name": "النحو 1",
 "nameEn": "Arabic Syntax 1",
@@ -43,24 +51,24 @@
 },
 {
 "code": "1202",
+"name": "الأصوات والنطق",
+"nameEn": "Arabic Phonetics and Pronunciation",
+"term": 1,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "1203",
 "name": "التراكيب اللغوية",
 "nameEn": "Linguistic Structures",
 "term": 1,
-"hrs": 3,
+"hrs": 2,
 "type": "إلزامي"
 },
 {
 "code": "1301",
 "name": "القرآن الكريم 1 (التلاوة والتجويد)",
 "nameEn": "The Holy Quran 1 (Recitation and Tajweed)",
-"term": 1,
-"hrs": 2,
-"type": "إلزامي"
-},
-{
-"code": "1302",
-"name": "فقه العبادات",
-"nameEn": "Jurisprudence of Worship",
 "term": 1,
 "hrs": 2,
 "type": "إلزامي"
@@ -99,32 +107,32 @@
 },
 {
 "code": "2202",
-"name": "الصرف",
-"nameEn": "Arabic Morphology",
+"name": "الصرف 1",
+"nameEn": "Arabic Morphology 1",
+"term": 2,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "2203",
+"name": "المعجم العربي ومهارات استعماله",
+"nameEn": "Arabic Lexicography and Dictionary Skills",
 "term": 2,
 "hrs": 2,
 "type": "إلزامي"
 },
 {
 "code": "2301",
-"name": "القرآن الكريم 2",
-"nameEn": "The Holy Quran 2",
+"name": "القرآن الكريم 2 (التلاوة وتفسير جزء عمّ)",
+"nameEn": "The Holy Quran 2 (Recitation and Exegesis of Juz' Amma)",
 "term": 2,
 "hrs": 2,
 "type": "إلزامي"
 },
 {
 "code": "2302",
-"name": "الحديث الشريف (الأربعون النووية)",
-"nameEn": "Prophetic Hadith (An-Nawawi's Forty)",
-"term": 2,
-"hrs": 2,
-"type": "إلزامي"
-},
-{
-"code": "2401",
-"name": "السيرة النبوية",
-"nameEn": "The Prophetic Biography",
+"name": "الفقه الميسّر (العبادات)",
+"nameEn": "Simplified Jurisprudence of Worship",
 "term": 2,
 "hrs": 2,
 "type": "إلزامي"
@@ -154,43 +162,51 @@
 "type": "إلزامي"
 },
 {
+"code": "3104",
+"name": "القراءة الموسّعة",
+"nameEn": "Extensive Reading",
+"term": 3,
+"hrs": 1,
+"type": "إلزامي"
+},
+{
 "code": "3201",
 "name": "النحو 3",
 "nameEn": "Arabic Syntax 3",
+"term": 3,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "3202",
+"name": "الصرف 2 (الاشتقاق والأبنية)",
+"nameEn": "Arabic Morphology 2 (Derivation and Patterns)",
 "term": 3,
 "hrs": 2,
 "type": "إلزامي"
 },
 {
-"code": "3202",
-"name": "البلاغة القرآنية",
-"nameEn": "Quranic Rhetoric",
+"code": "3203",
+"name": "البلاغة 1 (علم البلاغة)",
+"nameEn": "Arabic Rhetoric 1",
 "term": 3,
 "hrs": 2,
 "type": "إلزامي"
 },
 {
 "code": "3301",
-"name": "التفسير (جزء عمّ)",
-"nameEn": "Quranic Exegesis (Juz' Amma)",
+"name": "الحديث الشريف (الأربعون النووية)",
+"nameEn": "Prophetic Hadith (An-Nawawi's Forty)",
 "term": 3,
 "hrs": 2,
 "type": "إلزامي"
 },
 {
-"code": "3302",
-"name": "العقيدة (العقيدة الطحاوية)",
-"nameEn": "Islamic Creed (Al-Aqidah Al-Tahawiyyah)",
+"code": "3401",
+"name": "السيرة النبوية",
+"nameEn": "The Prophetic Biography",
 "term": 3,
 "hrs": 2,
-"type": "إلزامي"
-},
-{
-"code": "3303",
-"name": "فقه المعاملات",
-"nameEn": "Jurisprudence of Transactions",
-"term": 3,
-"hrs": 3,
 "type": "إلزامي"
 },
 {
@@ -211,8 +227,8 @@
 },
 {
 "code": "4103",
-"name": "الخطابة والإلقاء",
-"nameEn": "Public Speaking and Oratory",
+"name": "الخطابة والإعلام بالعربية",
+"nameEn": "Public Speaking and Media in Arabic",
 "term": 4,
 "hrs": 3,
 "type": "إلزامي"
@@ -226,35 +242,35 @@
 "type": "إلزامي"
 },
 {
+"code": "4202",
+"name": "البلاغة 2 (البلاغة القرآنية)",
+"nameEn": "Arabic Rhetoric 2 (Quranic Rhetoric)",
+"term": 4,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "4203",
+"name": "التحليل اللغوي للنصوص",
+"nameEn": "Linguistic Analysis of Texts",
+"term": 4,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
 "code": "4301",
-"name": "الحديث الشريف (رياض الصالحين)",
-"nameEn": "Prophetic Hadith (Riyad As-Salihin)",
+"name": "العقيدة (العقيدة الطحاوية)",
+"nameEn": "Islamic Creed (Al-Aqidah Al-Tahawiyyah)",
 "term": 4,
 "hrs": 2,
 "type": "إلزامي"
 },
 {
 "code": "4401",
-"name": "التاريخ الإسلامي (الخلفاء الراشدون)",
-"nameEn": "Islamic History (The Rightly Guided Caliphs)",
+"name": "مشروع التخرج والتدريب الميداني",
+"nameEn": "Graduation Project and Field Training",
 "term": 4,
-"hrs": 2,
-"type": "إلزامي"
-},
-{
-"code": "4402",
-"name": "التواصل الرقمي والإعلام بالعربية",
-"nameEn": "Digital Communication and Media in Arabic",
-"term": 4,
-"hrs": 2,
-"type": "إلزامي"
-},
-{
-"code": "4403",
-"name": "مشروع التخرج",
-"nameEn": "Graduation Project",
-"term": 4,
-"hrs": 2,
+"hrs": 3,
 "type": "إلزامي"
 }
 ]
