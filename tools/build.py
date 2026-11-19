@@ -22,6 +22,17 @@ def minify(body, h):
     except Exception as e:
         print('minify error', e); return body
 src = open(os.path.join(R, 'src/index.html'), encoding='utf-8').read()
+# v223: لا تُحفظ أي أسئلة أو إجابات في المستودع — مكانها قاعدة البيانات وحدها. يتوقف البناء إن ظهر نص سؤال حقيقي.
+_QOK = ('سؤال تجريبي', 'سؤال نموذجي', 'عبارة نموذجية', 'عبارة تجريبية')
+_QRX = re.compile(r"""["']?ty["']?\s*:\s*["'](?:mc|tf|sa)["']\s*,\s*["']?t["']?\s*:\s*["']([^"'\\]{8,})""")
+def _qscan(name, text):
+    bad = [m.group(1)[:40] for m in _QRX.finditer(text) if not m.group(1).startswith(_QOK)]
+    if bad:
+        sys.exit('BUILD BLOCKED (v223): question content found in %s — questions/answers belong in the database only: %s' % (name, bad[:3]))
+_qscan('src/index.html', src)
+for _f in ('i18n-bn.js',):
+    _p = os.path.join(R, _f)
+    if os.path.exists(_p): _qscan(_f, open(_p, encoding='utf-8').read())
 MIN = 3000
 MINV = 'm2:merge_vars=false;'
 LAZY = {'jsqr'}  # تُحمَّل عند الحاجة فقط
