@@ -1,0 +1,13 @@
+-- v226–v228 (توثيق فقط، بلا بيانات) — ما طُبِّق على قاعدة البيانات
+-- 1) التفويض المركزي: جدول v226_grants (holder, portal ∈ student/faculty/training/graduates, service,
+--    perm ∈ view/input/approve/issue/manual, scope {kind all/level/section/students, vals}, starts, ends, revoked_at)
+--    مع RLS (قراءة للإدارة المركزية أو لصاحب التفويض)، ودوال v226_grant_save / v226_grant_revoke / v226_grants_list
+--    (للإدارة المركزية فقط، وتُسجَّل في سجل التدقيق)، وv226_has وv226_use (تسجيل كل استعمال)، وv226_ft_roles لربط
+--    تفويضات «بوابة الخريجين» بأدوارها (منسق التدريب، منسق المشاريع، رئيس القسم، التعديل اليدوي).
+-- 2) أسماء البوابات في رسائل الخادم: ft_notify (#/graduates «بوابة الخريجين»)، v119_on_slots («الخدمات الذاتية لأعضاء هيئة التدريس»).
+-- 3) أمن (v228):
+--    - العرض v196_sp_pub: سُحبت صلاحيات INSERT/UPDATE/DELETE/TRUNCATE من anon وauthenticated وبقي SELECT فقط
+--      (كان العرض قابلاً للحذف عبره متجاوزاً RLS — ثُبت ذلك باختبار متراجَع عنه ثم أُغلق).
+--    - دوال ft_* وv226_* ذات SECURITY DEFINER: سُحب التنفيذ من PUBLIC/anon (عدا ft_verify وft_tok_get وft_tok_act وft_cfg_get).
+--    - search_path ثابت لـ15 دالة (public, extensions, pg_temp).
+--    - سجلات التدقيق audit_log وft_audit وv63_acc_log غير قابلة للتعديل أو الحذف أو التفريغ (المشغّل v228_immutable).
