@@ -28716,7 +28716,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v228';
+window.__BUILD__='v229';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -30109,7 +30109,8 @@ try{GOH.post.push(nwEn157)}catch(e){}
 var SRC157={fb:['فيسبوك','Facebook'],x:['X (تويتر)','X (Twitter)'],ig:['إنستغرام','Instagram'],qr:['رمز QR في الملصقات','Poster QR code'],search:['محركات البحث','Search engines'],wa:['واتساب','WhatsApp'],tg:['تلغرام','Telegram'],mail:['البريد','Email'],ref:['مواقع أخرى','Other websites'],direct:['مباشر / غير معروف','Direct / unknown']};
 function src157(){try{var o=JSON.parse(localStorage.getItem('src157')||'null');return o&&o.s||'direct'}catch(e){return 'direct'}}
 function srcTag157(){try{[].forEach.call(document.querySelectorAll('#app form[onsubmit*="reg("]'),function(f){if(f.querySelector('[name=src157]'))return;var i=document.createElement('input');i.type='hidden';i.name='src157';i.value=src157();f.appendChild(i)});
- if(typeof me!=='undefined'&&me&&me.r==='admin'&&typeof tab!=='undefined'&&tab==='req'&&!document.getElementById('src157')){var R=(S.requests||[]).filter(function(r){return !r.deleted}),C={};R.forEach(function(r){var k=SRC157[r.src157]?r.src157:'direct';C[k]=(C[k]||0)+1});
+ var adm157=/^#\/admin/.test(location.hash||'')&&typeof me!=='undefined'&&me&&me.r==='admin'&&typeof tab!=='undefined'&&tab==='req';if(!adm157){var ob=document.getElementById('src157');if(ob)ob.remove()}
+ if(adm157&&!document.getElementById('src157')){var R=(S.requests||[]).filter(function(r){return !r.deleted}),C={};R.forEach(function(r){var k=SRC157[r.src157]?r.src157:'direct';C[k]=(C[k]||0)+1});
   var ks=Object.keys(C).sort(function(a,b){return C[b]-C[a]}),tot=R.length||1,box=document.createElement('div');box.className='box';box.id='src157';
   box.innerHTML='<h3>'+L('مصادر المتقدمين','Where applicants come from')+'</h3><p class="mu">'+L('يُسجَّل مع كل طلب جديد المصدر الذي جاء منه المتقدم (منشورات فيسبوك وإنستغرام، رمز QR في الملصقات، البحث...). الطلبات السابقة لهذه الميزة تظهر «غير معروف».','Each new application records where the applicant came from (Facebook and Instagram posts, poster QR codes, search...). Applications before this feature show as “unknown”.')+'</p><div class="tw"><table><tr><th>'+L('المصدر','Source')+'</th><th>'+L('الطلبات','Applications')+'</th><th>%</th></tr>'+ks.map(function(k){return '<tr><td>'+L(SRC157[k][0],SRC157[k][1])+'</td><td>'+C[k]+'</td><td>'+Math.round(C[k]*100/tot)+'%</td></tr>'}).join('')+'</table></div>';
   var a=document.getElementById('app'),h=a&&a.querySelector('.box');if(h)h.parentNode.insertBefore(box,h);else if(a)a.appendChild(box)}}catch(e){}}
