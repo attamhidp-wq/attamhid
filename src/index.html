@@ -25255,7 +25255,7 @@ var REQ={mc:20,tf:10,total:30};V5.bankReq67=REQ;
 function rows(){var C=V5.p26c67?V5.p26c67():[],B=S.bank65||{},Cf=(S.v51&&S.v51.bank65cfg)||{mc:10,tf:5};
  return C.map(function(c){var k=String(code4(c.code)),b=B[k],q=(b&&b.q)||[],n={mc:0,tf:0,sa:0};q.forEach(function(x){if(n[x.ty]!=null)n[x.ty]++});
   var dif={1:0,2:0,3:0};q.forEach(function(x){if(x.ty!=='sa'&&dif[x.d]!=null)dif[x.d]++});
-  var bil=q.filter(function(x){return x.ty!=='sa'}).every(function(x){return String(x.t||'').trim()&&String(x.tEn||'').trim()&&(x.ty!=='mc'||((x.o||[]).length===4&&(x.oEn||[]).length===4&&x.c!=null))&&(x.ty!=='tf'||x.c!=null)});
+  var ar=!!(b&&b.pol222),bil=q.filter(function(x){return x.ty!=='sa'}).every(function(x){return String(x.t||'').trim()&&(ar||String(x.tEn||'').trim())&&(x.ty!=='mc'||((x.o||[]).length===4&&(ar||(x.oEn||[]).length===4)&&x.c!=null))&&(x.ty!=='tf'||x.c!=null)});
   var full=n.mc>=REQ.mc&&n.tf>=REQ.tf&&!n.sa&&bil,st=!b?'none':b.status==='approved'?'approved':'draft';
   var e=(S.exams||[]).find(function(x){return x.courseId===c.id&&x.bank65&&!x.retired65})||null;
   var auto=e&&(e.pub===true||e.pub===1)&&e.q&&e.q.filter(function(x){return x.ty==='mc'}).length>=+(e.draw65||Cf).mc&&e.q.filter(function(x){return x.ty==='tf'}).length>=+(e.draw65||Cf).tf;
@@ -25307,6 +25307,11 @@ function stats(b){var q=((b&&b.q)||[]).filter(function(x){return x.ty==='mc'||x.
 V5.bankStats671=stats;
 function check(code){var b=BK()[code],E=[],add=function(a,e){E.push([a,e])};
  if(!b){add('لا يوجد بنك لهذا المقرر.','No bank for this course.');return {ok:false,errs:E,st:null}}
+ /* v222: بنوك الأسئلة المتقدمة المعتمدة من الإدارة (عربية، كلها صعبة): يُشترط العدد والاكتمال والإجابة فقط */
+ if(b.pol222){var s2=stats(b),bd2=(b.q||[]).filter(function(x){return (x.ty==='mc'||x.ty==='tf')&&!(String(x.t||'').trim()&&(x.ty!=='mc'||((x.o||[]).length===4&&x.c!=null))&&(x.ty!=='tf'||x.c!=null))});
+  if(s2.mc<REQ.mc||s2.tf<REQ.tf)add('عدد الأسئلة: '+s2.mc+' اختيار من متعدد و'+s2.tf+' صح وخطأ (المطلوب '+REQ.mc+' و'+REQ.tf+' على الأقل).','Question count: '+s2.mc+' MC and '+s2.tf+' T/F (required at least '+REQ.mc+' and '+REQ.tf+').');
+  if(bd2.length)add('أسئلة غير مكتملة أو بلا إجابة: '+bd2.slice(0,6).map(function(x){return x.id}).join('، '),'Incomplete questions or without an answer: '+bd2.slice(0,6).map(function(x){return x.id}).join(', '));
+  return {ok:!E.length,errs:E,st:s2}}
  var s=stats(b),n=s.n,ids=function(a){return a.slice(0,6).join('، ')+(a.length>6?' …':'')};
  if(s.mc<REQ.mc||s.tf<REQ.tf)add('عدد الأسئلة: '+s.mc+' اختيار من متعدد و'+s.tf+' صح وخطأ (المطلوب '+REQ.mc+' و'+REQ.tf+' على الأقل).','Question count: '+s.mc+' MC and '+s.tf+' T/F (required at least '+REQ.mc+' and '+REQ.tf+').');
  var bad=(b.q||[]).filter(function(x){return (x.ty==='mc'||x.ty==='tf')&&!(String(x.t||'').trim()&&String(x.tEn||'').trim()&&(x.ty!=='mc'||((x.o||[]).length===4&&(x.oEn||[]).length===4&&x.c!=null))&&(x.ty!=='tf'||x.c!=null))});
@@ -28685,7 +28690,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v221';
+window.__BUILD__='v222';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
