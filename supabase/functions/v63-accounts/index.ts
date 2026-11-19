@@ -362,6 +362,8 @@ function genPw() {
   for (let i = a.length - 1; i > 0; i--) { const j = crypto.getRandomValues(new Uint32Array(1))[0] % (i + 1); [a[i], a[j]] = [a[j], a[i]]; }
   return a.join("");
 }
+// v230: كل كلمة مرور مولَّدة تُفحص أيضاً بقاعدة كلمات المرور المسرَّبة
+async function freshPw() { let p = genPw(); for (let i = 0; i < 3 && (await pwned(p)) > 0; i++) p = genPw(); return p; }
 const strong = (p: string) => p.length >= 10 && /[A-Za-z؀-ۿ]/.test(p) && /\d/.test(p);
 async function sha(t: string) { return b64(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))); }
 
@@ -403,7 +405,7 @@ async function accAdmin(action: string, body: Record<string, unknown>, me: { id:
       let h = await holder(ref, role);
       for (let i = 0; !h && i < 8; i++) { await new Promise((r) => setTimeout(r, 1000)); h = await holder(ref, role); }
       if (!h) { out.push({ ref_id: ref, error: "not_found" }); continue; }
-      const pw = genPw();
+      const pw = await freshPw();
       let uid = "";
       const cr = await admin.auth.admin.createUser({ email: accEmail(ref), password: pw, email_confirm: true, user_metadata: { ref_id: ref, role } });
       if (cr.error) {
@@ -460,7 +462,7 @@ async function accAdmin(action: string, body: Record<string, unknown>, me: { id:
       const pw = await dec(a.init_enc!);
       return { ok: true, view: view(a), password: pw, expires: a.init_exp };
     }
-    const pw = genPw();
+    const pw = await freshPw();
     const up = await admin.auth.admin.updateUserById(a.user_id, { password: pw });
     if (up.error) return { error: "auth", detail: up.error.message };
     const exp = new Date(Date.now() + days * 864e5).toISOString();
