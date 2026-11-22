@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v233c';
+window.__BUILD__='v233d';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -31029,9 +31029,9 @@ var nfKV=function(items){/* جدول بيانات بحدود على نمط خط�
  return '<table class="kv"><colgroup><col style="width:118px"><col><col style="width:118px"><col></colgroup>'+rows.join('')+'</table>'};
 var nfP=function(t){return '<p class="tx">'+t+'</p>'};
 var nfCK=function(opts,val){return opts.map(function(o){var on=String(val||'')===String(o[0]);return '<span class="chk"><i>'+(on?'✓':'')+'</i>'+o[1]+'</span>'}).join('')};
-var nfTB=function(heads,rows,per,blankN){/* جدول يُقسَّم كتلاً حتى يتوزع على الصفحات مع تكرار العناوين؛ وإن كان فارغاً طُبعت أسطر للتعبئة */per=per||10;var out=[],th='<tr>'+heads.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr>';
+var nfTB=function(heads,rows,per,blankN,fw){/* جدول يُقسَّم كتلاً حتى يتوزع على الصفحات مع تكرار العناوين؛ وإن كان فارغاً طُبعت أسطر للتعبئة */per=per||10;var out=[],th='<tr>'+heads.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr>';
  if(!rows.length)for(var b=0;b<(blankN||1);b++)rows.push(heads.map(function(h,j){return j===0&&blankN>1?String(b+1):'<span style="display:inline-block;height:24px"></span>'}));
- var cg=heads.length>2?'<colgroup><col style="width:'+(heads.length>5?9:12)+'%">'+heads.slice(1).map(function(){return '<col>'}).join('')+'</colgroup>':'';for(var i=0;i<rows.length;i+=per)out.push('<table class="tb">'+cg+th+rows.slice(i,i+per).map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>'}).join('')+'</tr>'}).join('')+'</table>');return out};
+ var cg=heads.length>2||fw?'<colgroup><col style="width:'+(fw||(heads.length>5?9:12))+'%">'+heads.slice(1).map(function(){return '<col>'}).join('')+'</colgroup>':'';for(var i=0;i<rows.length;i+=per)out.push('<table class="tb">'+cg+th+rows.slice(i,i+per).map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>'}).join('')+'</tr>'}).join('')+'</table>');return out};
 var nfSIG=function(list){/* توقيعات خطية تُضاف بعد الطباعة؛ التوقيع الإلكتروني الوحيد لرئيس المعهد في خانة الاعتماد */list=list.filter(Boolean);if(!list.length)return '';return '<div class="sig" style="grid-template-columns:repeat('+Math.max(3,list.length)+',1fr)">'+list.map(function(x){return '<div><div class="r">'+x[0]+'</div><div class="nm">'+nfE(x[1]||'')+'</div><div class="ln"><span>التوقيع (خطي)</span><span>التاريخ: '+nfE(x[2]||'')+'</span></div></div>'}).join('')+'</div>'};
 var nfHijri=function(iso){try{var d=iso?new Date(iso):new Date();return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'long',year:'numeric'}).format(d)}catch(e){return ''}};
 var nfGreg=function(iso){try{var d=iso?new Date(iso):new Date();return d.toISOString().slice(0,10)}catch(e){return ''}};
@@ -31039,6 +31039,10 @@ var nfGreg=function(iso){try{var d=iso?new Date(iso):new Date();return d.toISOSt
 var nfF=function(old,r,sub){try{return fieldsOf(old,r,sub).V}catch(e){return {}}};
 var nfSubs=function(old,r){try{return FD[old].subs?FD[old].subs(r):[]}catch(e){return []}};
 var nfWhen=function(old,r){try{return !!FD[old].when(r)}catch(e){return false}};
+/* بنود التقويم من المحرك السابق: [عنوان البند، قيمته] لمفاتيح محددة */
+var nfItems=function(old,r,sub,keys){var F;try{F=fieldsOf(old,r,sub)}catch(e){return []}return keys.map(function(k){var x=F.V.__f[k];return x?[x[1],F.V[k]]:null}).filter(Boolean)};
+var nfSum=function(a){var t=0,ok=0;a.forEach(function(x){var n=parseFloat(x[1]);if(!isNaN(n)){t+=n;ok++}});return ok?String(Math.round(t*100)/100):''};
+
 
 /* ---------- تعريف النماذج التسعة ---------- */
 var nfDef=function(code,o){o.code=code;NF[code]=o;NFO.push(code)};
@@ -31074,7 +31078,9 @@ nfDef('ت-3',{k:'tr',t:['سجل التدريب الميداني والمتابع
   nfTB(['الأسبوع','المدة','الأيام','ساعات الأسبوع','التراكمي','ملاحظات مشرف الجهة'],w.map(function(x){var V=nfF('ت-6',r,x[0]);return [nfE(V.wk),nfE((V.wf||'')+(V.wt?' — '+V.wt:'')),nfE(V.n),nfE(V.wsum),nfE(V.cum),nfE(V.onote)]}),6,16).forEach(function(x){B.push(x)});
   B.push(nfSec('٣','زيارات مشرف المعهد ومتابعته','Supervisor follow-up'));
   nfTB(['الزيارة','التاريخ','الطريقة','من قابلهم','التوصيات والإجراءات'],v.map(function(x){var V=nfF('ت-7',r,x[0]);return [nfE(V.no),nfE(V.date),nfE(V.mode),nfE(V.met),nfE(V.rec)]}),6,4).forEach(function(x){B.push(x)});
-  B.push(nfSec('٤','طلبات التمديد أو الانسحاب','Extension / withdrawal requests'));
+  var vk=['v0','v1','v2','v3','v4','v5'],vv=v.slice(0,4),lab=nfItems('ت-7',r,(vv[0]||[''])[0],vk);if(!lab.length)lab=nfItems('ت-7',r,'',vk);
+  nfTB(['بند المتابعة'].concat((vv.length?vv:[['',''],['','']]).map(function(x,i){return 'الزيارة '+(i+1)})),lab.map(function(L,j){return [nfE(L[0])].concat((vv.length?vv:[['',''],['','']]).map(function(x){return x[0]?nfE((nfItems('ت-7',r,x[0],[vk[j]])[0]||['',''])[1]):''}))}),6,0,40).forEach(function(x,i){B.push(i?x:'<div class="sec"><h2>تقويم الزيارات</h2><span class="en">Visit evaluation</span></div>'+x)});
+  B.push(nfSec('٥','طلبات التمديد أو الانسحاب','Extension / withdrawal requests'));
   nfTB(['نوع الطلب','الساعات المنجزة','المطلوب إلى','الأسباب','القرار'],q.map(function(x){var V=nfF('ت-12',r,x[0]);return [nfE(V.type),nfE(V.hd),nfE(V.to),nfE(V.reason),nfE(V.dec)]}),8,2).forEach(function(x){B.push(x)});
   B.push(nfSIG([['المتدرب',h.s1,''],['مشرف الجهة (المصادقة)',h.s2,''],['المشرف الأكاديمي',v.length?nfF('ت-7',r,v[0][0]).sup:'','']]));
   return B}});
@@ -31083,8 +31089,11 @@ nfDef('ت-4',{k:'tr',t:['التقويم الختامي للتدريب الميد
  body:function(r){var o=nfF('ت-8',r),s=nfF('ت-9',r),f=nfF('ت-11',r),t=nfF('ت-10',r),B=[];
   B.push(nfSec('١','بيانات المتدرب','Trainee')+nfKV([['اسم المتدرب',o.name||f.name],['الرقم الأكاديمي',t.sid],['الجهة ومجال التدريب',o.entDom||f.ent,1],['الساعات المنجزة',o.hrs],['مدة التدريب',(o.from||'')+(o.to?' — '+o.to:'')]]));
   B.push(nfSec('٢','تقويم مشرف الجهة (سري)','Organization supervisor (confidential)')+nfKV([['أبرز نقاط القوة',o.strong,1],['ما يحتاج إلى تحسين',o.improve,1],['التوصية باستقبال متدربين مستقبلاً',o.again]])+nfSIG([['مشرف الجهة الخارجية',o.by,'']]));
+  var c8=nfItems('ت-8',r,'',['c0','c1','c2','c3','c4']);B.push('<div class="sec"><h2>درجات تقويم مشرف الجهة</h2><span class="en">Organization ratings</span></div>'+nfTB(['معيار التقويم','الدرجة'],c8.map(function(x){return [nfE(x[0]),nfE(x[1])]}).concat([['<b>المجموع</b>','<b>'+nfE(nfSum(c8))+'</b>']]),8,0,75)[0]);
   B.push(nfSec('٣','التقويم الذاتي للمتدرب','Self-evaluation')+nfKV([['المهارات المكتسبة',s.skills,1],['أكبر صعوبة وعلاجها',s.diff,1],['ما سأفعله بطريقة مختلفة',s.again,1]]));
-  B.push(nfSec('٤','تقويم ملف التدريب وعرضه','File & presentation')+nfKV([['التقرير الختامي (رابط التسليم)',t.link,1],['تقويم مشرف الجهة (من 15)',f.e8],['تاريخ العرض',f.date]])+nfSIG([['المشرف الأكاديمي',f.s1,'']]));
+  var s9=nfItems('ت-9',r,'',['s0','s1','s2','s3','s4','s5']);B.push(nfTB(['بند التقويم الذاتي','تقدير المتدرب'],s9.map(function(x){return [nfE(x[0]),nfE(x[1])]}),8,0,75)[0]);
+  var c11=nfItems('ت-11',r,'',['c0','c1','c2','c3','c4']);
+  B.push(nfSec('٤','تقويم ملف التدريب وعرضه','File & presentation')+nfKV([['التقرير الختامي (رابط التسليم)',t.link,1],['تقويم مشرف الجهة (من 15)',f.e8],['تاريخ العرض',f.date]])+nfTB(['معيار تقويم الملف والعرض','الدرجة'],c11.map(function(x){return [nfE(x[0]),nfE(x[1])]}).concat([['<b>المجموع</b>','<b>'+nfE(nfSum(c11))+'</b>']]),8,0,75)[0]+nfSIG([['المشرف الأكاديمي',f.s1,'']]));
   return B}});
 nfDef('ت-5',{k:'tr',t:['شهادة إتمام التدريب الميداني','Certificate of Field-Training Completion'],cert:1,parts:['ت-14'],
  when:function(r){return nfWhen('ت-14',r)},
@@ -31099,6 +31108,9 @@ nfDef('م-1',{k:'gp',t:['تسجيل مشروع التخرج وإسناد الم�
  body:function(r){var a=nfF('م-1',r),i=nfF('م-2',r),s=nfF('م-3',r),B=[];
   B.push(nfSec('١','بيانات الطالب والمشروع','Student & project')+nfKV([['اسم الطالب',a.name||i.name],['الرقم الأكاديمي',a.sid||i.sid],['وسيلة التواصل',a.contact],['الفصل الدراسي',a.term],['نوع المشروع',a.type],['فردي أم جماعي',a.mode],['أسماء الزملاء (للمشروع الجماعي)',a.mem,1],['العنوان المقترح',a.title,1]]));
   B.push(nfSec('٢','مقترح المشروع','Proposal')+nfKV([['مشكلة المشروع وأهميته',a.problem,1],['المنهج',[a.method,a.methodO].filter(Boolean).join(' — '),1]]));
+  B.push(nfTB(['م','سؤال المشروع','الهدف المقابل'],[0,1,2].map(function(i){var q=nfItems('م-1',r,'',['q'+i,'o'+i]);return [String(i+1),nfE((q[0]||['',''])[1]),nfE((q[1]||['',''])[1])]}),6)[0]);
+  B.push(nfTB(['م','المصادر والمراجع الأولية'],nfItems('م-1',r,'',['s0']).concat((function(){var F;try{F=fieldsOf('م-1',r,'')}catch(e){return []}return F.L.filter(function(x){return /^s[1-4]$/.test(x[0])&&/^reg\.src/.test(x[4]||'')}).map(function(x){return [x[1],x[3]]})})()).map(function(x,i){return [String(i+1),nfE(x[1])]}),6)[0]);
+  var pr=nfItems('م-1',r,'',['p0','p1','p2']).map(function(x){return x[1]}).filter(Boolean);if(pr.length)B.push(nfKV([['رغبات الطالب في المشرف',pr.join('، '),1]]));
   B.push(nfSec('٣','إقرار الأمانة العلمية','Academic integrity')+'<div class="box boxs">'+nfP('أقرّ بأن هذا المشروع من عملي، وأنني وثّقت كل ما نقلته من غيري توثيقاً صحيحاً، ولم أستعن بأحد في كتابته على وجه يخالف أنظمة المعهد، وأتحمّل تبعة ما يخالف ذلك.')+'</div>'+nfSIG([['الطالب',i.s1||a.s1,'']]));
   B.push(nfSec('٤','قرار القسم وإسناد المشرف','Department decision')+nfKV([['القرار',nfCK([['معتمد','معتمد'],['معاد للتعديل','معاد للتعديل'],['مرفوض','مرفوض']],a.dec),1,1],['السبب',a.reason,1],['العنوان المعتمد',s.title,1],['المشرف',s.sup],['موعد تسليم الخطة',s.due]])+'');
   return B}});
@@ -31110,7 +31122,8 @@ nfDef('م-2',{k:'gp',t:['سجل الإشراف والإنجاز في مشروع 
   nfTB(['اللقاء','التاريخ والطريقة','المرحلة','ما نوقش','ملاحظات المشرف والمطلوب','الإنجاز'],m.map(function(x){var V=nfF('م-4',r,x[0]);return [nfE(V.no),nfE([V.date,V.mode].filter(Boolean).join(' — ')),nfE(V.stage),nfE(V.disc),nfE(V.notes),nfE(V.prog)]}),5,8).forEach(function(x){B.push(x)});
   B.push(nfSec('٣','طلبات تغيير المشرف أو تعديل العنوان','Change requests'));
   nfTB(['نوع الطلب','الحالي','المقترح','المسوّغات'],q.map(function(x){var V=nfF('م-5',r,x[0]);return [nfE(V.type),nfE(V.sup||V.title),nfE(V.newT),nfE(V.reason)]}),8,2).forEach(function(x){B.push(x)});
-  B.push(nfSec('٤','طلب الإجازة للمناقشة','Defence request')+nfKV([['تاريخ تسليم النسخة النهائية',d.fd],['العضو المقترح الأول',d.m1],['العضو المقترح الثاني',d.m2]])+nfP('أشهد بأن المشروع اكتمل وفق الخطة المعتمدة، وأنه صالح للمناقشة.')+nfSIG([['الطالب',h.s1,''],['المشرف الأكاديمي',d.s1||h.s2,'']]));
+  var k6=nfItems('م-6',r,'',['k0','k1','k2','k3','k4']);
+  B.push(nfSec('٤','طلب الإجازة للمناقشة','Defence request')+nfKV([['تاريخ تسليم النسخة النهائية',d.fd],['العضو المقترح الأول',d.m1],['العضو المقترح الثاني',d.m2]])+nfTB(['بند التحقق قبل المناقشة','الحالة'],k6.map(function(x){return [nfE(x[0]),nfE(x[1])]}),8,0,75)[0]+nfP('أشهد بأن المشروع اكتمل وفق الخطة المعتمدة، وأنه صالح للمناقشة.')+nfSIG([['الطالب',h.s1,''],['المشرف الأكاديمي',d.s1||h.s2,'']]));
   return B}});
 nfDef('م-3',{k:'gp',t:['محضر مناقشة مشروع التخرج وتقويمه','Graduation-Project Defence Minutes and Evaluation'],conf:1,parts:['م-7','م-8','م-9'],
  when:function(r){return nfWhen('م-7',r)||nfWhen('م-9',r)},
@@ -31118,6 +31131,8 @@ nfDef('م-3',{k:'gp',t:['محضر مناقشة مشروع التخرج وتقو�
   B.push(nfSec('١','قرار تشكيل اللجنة','Committee')+nfKV([['اسم الطالب',c.name||m.name],['عنوان المشروع',c.title||m.title,1],['رئيس اللجنة (المشرف)',c.chair],['عضو مناقش',c.m1],['عضو مناقش',c.m2],['موعد المناقشة',[c.date,c.time].filter(Boolean).join(' — ')],['المكان أو الرابط',c.place,1]])+'');
   B.push(nfSec('٢','تقويم أعضاء اللجنة (سري)','Members’ evaluations (confidential)'));
   nfTB(['العضو وصفته','الملاحظات والتعديلات المقترحة'],e.map(function(x){var V=nfF('م-8',r,x[0]);return [nfE(V.mem),nfE(V.notes)]}),6,3).forEach(function(x){B.push(x)});
+  var ck=['c0','c1','c2','c3','c4','c5'],cl=nfItems('م-8',r,(e[0]||[''])[0],ck);if(!cl.length)cl=nfItems('م-8',r,'',ck);
+  B.push(nfTB(['العضو'].concat(cl.map(function(x){return x[0]})).concat(['المجموع']),e.map(function(x){var it=nfItems('م-8',r,x[0],ck),V=nfF('م-8',r,x[0]);return [nfE(V.mem)].concat(it.map(function(y){return nfE(y[1])})).concat([nfE(nfSum(it))])}),6,3,26)[0]);
   B.push(nfSec('٣','محضر المناقشة والنتيجة','Minutes & result')+nfKV([['تاريخ الاجتماع',m.date],['درجة المكتوب',m.w],['درجة العرض والمناقشة',m.o],['النتيجة',m.res],['مهلة التعديلات (أيام)',m.days],['ملخص التعديلات المطلوبة',m.rev,1],['اعتماد النسخة المعدلة',[m.fin,m.finS,m.finD].filter(Boolean).join(' — '),1]])+nfSIG([['رئيس اللجنة (المشرف)',m.s1,''],['عضو مناقش',m.s2,''],['عضو مناقش',m.s3,'']]));
   return B}});
 nfDef('م-4',{k:'gp',t:['قرار النتيجة النهائية لمقرر 4401','Final Result Decision — Course 4401'],parts:['م-10'],
@@ -31171,7 +31186,8 @@ var nfBuild=async function(code,r,ref,issued,pv){var D=NF[code],term='';try{term
   return '<div class="g9-doc" data-nf="1" dir="rtl" style="background:#fff">'+pages.map(function(p,i){return nfPage(nfHead()+'<i class="rule"></i><div class="nfbd" style="top:'+(i===0?NFT1:NFTn)+'px">'+(i===0?nfTitle(D,ref,issued,term):'<div class="tt2"><b>'+e9(D.t[0])+'</b><span>'+e9(D.t[1])+' — Page '+(i+1)+'</span></div>')+p.map(function(k){return '<div style="padding-bottom:6px">'+blocks[k]+'</div>'}).join('')+'</div>'+nfFoot(D,ref,issued,i+1,N,i===N-1),D,pv)}).join('')+'</div>'}
  finally{host.remove()}};
 
-var nfMissing=function(code,r){var D=NF[code],out=[];(D.parts||[]).forEach(function(p){if(!nfWhen(p,r))return;var ss=FD[p].subs?nfSubs(p,r).map(function(x){return x[0]}):[''];ss.forEach(function(s){try{missing(fieldsOf(p,r,s)).forEach(function(x){out.push(x)})}catch(e){}})});return out};
+var NF_XREF={letterRef:1,m1ref:1,m7ref:1};/* أرقام النماذج السابقة المدمجة: صارت أجزاءً من الوثيقة نفسها */
+var nfMissing=function(code,r){var D=NF[code],out=[];(D.parts||[]).forEach(function(p){if(!nfWhen(p,r))return;var ss=FD[p].subs?nfSubs(p,r).map(function(x){return x[0]}):[''];ss.forEach(function(s){try{missing(fieldsOf(p,r,s)).forEach(function(x){if(!NF_XREF[x[0]])out.push(x)})}catch(e){}})});return out};
 var nfAllowed=function(code,r){var D=NF[code],R=rolesOn(r);if(!D||D.k!==r.kind||!D.when(r)||!R.length)return false;if(R.indexOf('stu')>=0&&R.length===1&&D.conf)return false;return true};
 
 /* v232: الإصدار والمراجعة بالنماذج التسعة الجديدة */
@@ -31207,7 +31223,7 @@ H.nfdoc=async function(code,id){var r=REC(id),D=NF[code];if(!r||!D)return;
   var h=await nfBuild(code,r,d.ref,d.issued);show(h,nfName(code)+'-'+d.ref);setTimeout(function(){try{dl('pdf')}catch(e){}},500);if(d.replaces)T(Lx('صدرت برقم جديد، وأُلغيت السابقة في صفحة التحقق.','Issued with a new reference; the previous one is marked cancelled.'))}catch(e){T(msgOf(e))}};
 try{var NT=(window.V51||{}).numTypes67;if(NT){NT[20]=['وثائق التدريب الميداني','Field-training documents'];NT[21]=['وثائق مشروع التخرج','Graduation-project documents']}}catch(e){}
 var nfRefSample=function(code){return (code.indexOf('ت-')===0?'20':'21')+new Date().getFullYear()+'00000'};
-try{window.__nf232={NF:NF,NFO:NFO,build:nfBuild,sample:function(k){return SAMPLE(k)},ref:function(c){return nfRefSample(c)},rec:function(id){return REC(id)},FD:FD}}catch(e){}
+try{window.__nf232={NF:NF,NFO:NFO,build:nfBuild,sample:function(k){return SAMPLE(k)},ref:function(c){return nfRefSample(c)},rec:function(id){return REC(id)},missing:function(c,r){return nfMissing(c,r)},FT:function(){return FT},C:function(){return C()},allowed:function(c,r){try{return nfAllowed(c,r)}catch(e){return 'ERR '+e.message}},FD:FD}}catch(e){}
 
 
 /* v231: مراجعة النماذج الـ28 واعتمادها من الإدارة المركزية قبل بدء العمل — معاينة كاملة بقالبها الرسمي بحقول فارغة */
