@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v231c';
+window.__BUILD__='v231d';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -30998,7 +30998,7 @@ H.ft231pv=function(code){var D=FD[code];if(!D)return;try{var r=SAMPLE(D.k),sub=D
 H.ft231ok=function(code,ok){var cur=Object.assign({},formsOk()),note='';if(!ok){note=prompt(Lx('ملاحظتك على النموذج '+code+':','Your note on form '+code+':'));if(!note)return}
  cur[code]=ok?{ok:1,at:new Date().toISOString(),by:(me&&me.id)||'admin'}:{ok:0,note:note,at:new Date().toISOString()};return cfgSave({formsOk:cur},ok?Lx('اعتُمد النموذج '+code+'.','Form approved.'):Lx('سُجّلت الملاحظة.','Note saved.'))};
 H.ft231okAll=function(){if(!confirm(Lx('اعتماد كل النماذج الـ28؟ راجعها بالمعاينة أولاً.','Approve all 28 forms?')))return;var cur=Object.assign({},formsOk()),t=new Date().toISOString();Object.keys(FD).forEach(function(c){if(!(cur[c]&&cur[c].ok))cur[c]={ok:1,at:t,by:(me&&me.id)||'admin'}});return cfgSave({formsOk:cur},Lx('اعتُمدت النماذج.','Forms approved.'))};
-H.ft225doc=async function(code,id,sub){var r=REC(id);if(!r||!FD[code])return;if(!allowedFor(code,r)){T(Lx('لا صلاحية لإصدار هذه الوثيقة الآن.','You cannot issue this document now.'));return}
+H.ft225doc=async function(code,id,sub){var r=REC(id);if(!r||!FD[code])return;if(!((C().formsOk||{})[code]&&(C().formsOk||{})[code].ok)){modal(Lx('النموذج لم يُعتمد بعد','Form not approved yet'),'<p>'+Lx('لا يصدر النموذج '+code+' حتى تراجعه الإدارة المركزية وتعتمده من «مراجعة النماذج واعتمادها».','Form '+code+' is not issued until central administration reviews and approves it.')+'</p>');return}if(!allowedFor(code,r)){T(Lx('لا صلاحية لإصدار هذه الوثيقة الآن.','You cannot issue this document now.'));return}
  var F=fieldsOf(code,r,sub),miss=missing(F);
  if(miss.length){modal(Lx('لا تصدر وثيقة ناقصة','Incomplete documents are not issued'),'<p>'+Lx('الحقول المطلوبة الناقصة ومصدر كل منها:','Missing required fields and their sources:')+'</p>'+tbl([Lx('الحقل','Field'),Lx('المصدر','Source')],miss.map(function(x){return '<tr><td>'+e9(Lx(x[1],x[2]||x[1]))+'</td><td>'+e9(SRCN(x))+'</td></tr>'}))+(rolesOn(r).some(function(x){return x==='edit'||x==='admin'})?btn(Lx('تعديل يدوي','Manual edit'),'V51.h.ft225ov(\''+code+'\',\''+id+'\',\''+(sub||'')+'\')'):''));return}
  var vals={};F.L.forEach(function(x){vals[x[0]]=F.V[x[0]]});
