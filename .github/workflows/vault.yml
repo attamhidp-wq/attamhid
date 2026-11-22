@@ -45,7 +45,7 @@ jobs:
         if: env.OP == 'backup'
         run: |
           . /tmp/v.sh
-          N="${NAME:-repo-full}-$(date -u +%Y%m%dT%H%M%SZ)"
+          N="${NAME:-repo-full}-$(date -u +%Y%m%d-%H%M%S)"
           git clone --mirror "https://github.com/${GITHUB_REPOSITORY}" m.git
           git -C m.git bundle create "$PWD/$N.bundle" --all
           git -C m.git bundle verify "$PWD/$N.bundle" >/dev/null
@@ -57,7 +57,7 @@ jobs:
         if: env.OP == 'source'
         run: |
           . /tmp/v.sh
-          N="${NAME:-source}-$(date -u +%Y%m%dT%H%M%SZ)"
+          N="${NAME:-source}-$(date -u +%Y%m%d-%H%M%S)"
           git clone --depth 1 "https://github.com/${GITHUB_REPOSITORY}" s
           tar -C s --exclude=.git -czf "$N.tar.gz" .
           sha256sum "$N.tar.gz" | awk '{print $1}' > "$N.sha256"
