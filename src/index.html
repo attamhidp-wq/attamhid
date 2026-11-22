@@ -28398,7 +28398,7 @@ function install(){if(typeof W.go!=='function'||W.go.__s71)return;var inner=W.go
   /* أي إعادة رسم لا يطلقها المستخدم مباشرة (مؤقت، مزامنة، وعد مؤجل) على الصفحة نفسها تُعامل كخلفية تحفظ الحالة */
   var real=src;if(!direct&&!src)src=1;var bg=src&&r0===lastRoute&&lastSig!==null,idle=Date.now()-lastUser>1500;
   /* v83: حدّ لإعادة الرسم الخلفية — مرة كل 1.5 ثانية على الأكثر؛ ما زاد يُدمج في رسمة واحدة مؤجلة. فعل المستخدم يُرسم فوراً */
-  if(!direct&&r0===lastRoute){var nw=Date.now();if(nw-(ST.lastBg83||0)<1500){ST.capped83=(ST.capped83||0)+1;if(!ST.pend83)ST.pend83=setTimeout(function(){ST.pend83=0;ST.lastBg83=Date.now();try{W.go()}catch(e){}},1500-(nw-(ST.lastBg83||0)));return}ST.lastBg83=nw}
+  if(!direct&&r0===lastRoute&&!ST.flush83){var nw=Date.now();if(nw-(ST.lastBg83||0)<1500){ST.capped83=(ST.capped83||0)+1;if(!ST.pend83)ST.pend83=setTimeout(function(){ST.pend83=0;ST.lastBg83=Date.now();ST.flush83=1;try{W.go()}catch(e){}finally{ST.flush83=0}},1500-(nw-(ST.lastBg83||0)));return}ST.lastBg83=nw}/* v231: الرسمة المؤجلة نفسها لا تُؤجَّل مرة أخرى (كانت تدور بلا نهاية فتبقى الصفحة على «جارٍ التحميل») */
   if(bg&&!real&&Date.now()-lastSubmit<5000)bg=false;/* بعد حفظ نموذج: إعادة رسم عادية حتى تُفرَّغ الحقول */
   if(!bg){ST.user++;var r=inner.apply(this,arguments);lastRoute=route();setTimeout(function(){lastSig=sig()},0);return r}
   if(busy()){ST.deferred++;if(!pend)pend=setTimeout(function(){pend=0;try{g()}catch(e){}},4000);return}
@@ -30338,7 +30338,7 @@ var notesBox=function(){var n=FT.notes.slice(0,8);if(!n.length)return '';return 
 V.graduates=function(){
  if(typeof me==='undefined'||!me)return loginCard();
  if(typeof sb==='undefined'||!sb)return '<div class="msg er">'+Lx('البوابة تتطلب الاتصال بالخادم.','The portal requires a server connection.')+'</div>';
- if(!FT.ld){FT.load().then(function(){go()});return '<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>'}
+ if(!FT.ld){FT.load().then(function(){if(FT.ld)window.__force71=1;go()});return '<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>'}
  var w=who();if(me.r==='admin'&&me.unit&&!roles().length)return '<div class="msg er">'+Lx('هذه البوابة للطلاب وأعضاء الهيئة، وللإدارة المركزية والجهات المخوّلة منها.','This portal is for students and faculty, and for central administration and the bodies it authorizes.')+'</div>';
  var p=parts(),v=p[1]||'',id=p[2]||'',h='<h2>'+Lx('بوابة الخريجين','Graduates Portal')+'</h2><p class="mu">'+e9(w.name||'')+(roles().length?' — '+roles().filter(function(x){return x!=='staff'}).map(function(x){return RL[x]?Lx(RL[x][0],RL[x][1]):x}).join('، '):'')+'</p>'+navB();
  try{
