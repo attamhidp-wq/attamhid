@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v231b';
+window.__BUILD__='v231c';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -30339,7 +30339,7 @@ var navB=function(){var a=[[link(''),Lx('الرئيسة','Home')]];var w=who();
  if(has('pc'))a.push([link('pcd'),Lx('لوحة منسق المشاريع','Projects coordinator')]);
  if(has('head')||central())a.push([link('cand'),Lx('سجل المرشحين للتعاون','Cooperation candidates')]);
  if(has('tc')||has('pc'))a.push([link('grades'),Lx('درجات 4401','4401 grades')]);
- if(central())a.push([link('cfg'),Lx('الإعدادات والصلاحيات','Settings & permissions')],[link('audit'),Lx('سجل التدقيق','Audit log')]);
+ if(central())a.push([link('forms'),Lx('مراجعة النماذج واعتمادها','Review & approve forms')],[link('cfg'),Lx('الإعدادات والصلاحيات','Settings & permissions')],[link('audit'),Lx('سجل التدقيق','Audit log')]);
  return '<nav class="ft-nav" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px">'+a.map(function(x){return '<a class="btn s" href="'+x[0]+'">'+x[1]+'</a>'}).join('')+'</nav>'};
 var notesBox=function(){var n=FT.notes.slice(0,8);if(!n.length)return '';return '<details class="box"><summary><b>'+Lx('الإشعارات','Notifications')+'</b> ('+n.length+')</summary><ul>'+n.map(function(x){return '<li><small class="mu" dir="ltr">'+e9(String(x.at||'').slice(0,16).replace('T',' '))+'</small> '+e9(Lx(x.ar,x.en||x.ar))+(x.rec_id&&REC(x.rec_id)?' — <a href="'+link('r/'+x.rec_id)+'">'+Lx('فتح','Open')+'</a>':'')+'</li>'}).join('')+'</ul></details>'};
 
@@ -30363,6 +30363,7 @@ V.graduates=function(){
  if(v==='pcd'&&has('pc'))return h+pcDash();
  if(v==='cand'&&(has('head')||central()))return h+candView();
  if(v==='grades'&&(has('tc')||has('pc')))return h+gradesView();
+ if(v==='forms'&&central())return h+formsReview();
  if(v==='cfg'&&central())return h+cfgView();
  if(v==='audit'&&central())return h+auditView();
  if(v==='doc'&&id)return h+docPanel(REC(id));
@@ -30794,7 +30795,7 @@ try{var g0=X.gradReq223;if(typeof g0==='function'&&!g0.__v225){X.gradReq223=func
 /* ===== الوصول من القائمة والبوابات ===== */
 try{if(!NAV.some(function(x){return x[0]==='graduates'}))NAV.push(['graduates','بوابة الخريجين'])}catch(e){}
 try{var vs=V.student;V.student=function(){var h=vs.apply(this,arguments);try{if(me&&me.r==='student'&&/الخدمات الذاتية للطلاب والطالبات|Student Self-Service/.test(h))h=h.replace(/(<h2[^>]*>[^<]*<\/h2>)/,'$1<p><a class="btn" href="#/graduates">'+Lx('بوابة الخريجين','Field training & graduation project portal')+'</a></p>')}catch(e){}return h}}catch(e){}
-try{var va231=V.admin;V.admin=function(){var h=va231.apply(this,arguments);try{if(me&&me.r==='admin'&&!me.unit&&typeof h==='string'&&h.indexOf('ft231adm')<0){var A=[['',Lx('لوحة بوابة الخريجين','Graduates Portal dashboard')],['tcd',Lx('لوحة منسق التدريب','Training coordinator')],['pcd',Lx('لوحة منسق المشاريع','Projects coordinator')],['grades',Lx('دفتر درجات 4401','4401 gradebook')],['cfg',Lx('إعدادات البوابة والصلاحيات','Settings & permissions')],['audit',Lx('سجل التدقيق','Audit log')]];
+try{var va231=V.admin;V.admin=function(){var h=va231.apply(this,arguments);try{if(me&&me.r==='admin'&&!me.unit&&typeof h==='string'&&h.indexOf('ft231adm')<0){var A=[['',Lx('لوحة بوابة الخريجين','Graduates Portal dashboard')],['tcd',Lx('لوحة منسق التدريب','Training coordinator')],['pcd',Lx('لوحة منسق المشاريع','Projects coordinator')],['grades',Lx('دفتر درجات 4401','4401 gradebook')],['forms',Lx('مراجعة النماذج الـ28 واعتمادها','Review & approve the 28 forms')],['cfg',Lx('إعدادات البوابة والصلاحيات','Settings & permissions')],['audit',Lx('سجل التدقيق','Audit log')]];
  h=h.replace(/(<h2[^>]*>[\s\S]*?<\/h2>)/,'$1<div class="box ft231adm"><b>'+Lx('بوابة الخريجين','Graduates Portal')+'</b><p>'+A.map(function(x){return '<a class="btn s" href="#/graduates'+(x[0]?'/'+x[0]:'')+'">'+x[1]+'</a>'}).join(' ')+'</p></div>')}}catch(e){}return h}}catch(e){}
 try{var vf=V.fp;V.fp=function(){var h=vf.apply(this,arguments);try{if(me&&me.r==='faculty')h=h.replace(/(<h2[^>]*>[^<]*<\/h2>)/,'$1<p><a class="btn" href="#/graduates">'+Lx('بوابة الخريجين','Field training & graduation project portal')+'</a></p>')}catch(e){}return h}}catch(e){}
 
@@ -30982,6 +30983,21 @@ function docList(r){var codes=Object.keys(FD).filter(function(c){return FD[c].k=
  return '<details class="box" open><summary><b>'+Lx('النماذج والوثائق (تُولَّد PDF عند الطلب)','Forms & documents (generated as PDF on demand)')+'</b> ('+rows.length+' / '+(rows.length+later.length)+')</summary>'+tbl([Lx('الرمز','Code'),Lx('الوثيقة','Document'),Lx('آخر رقم مرجعي','Last reference'),''],rows.concat(later))+'</details>'}
 H.ft231later=function(){modal(Lx('متى يُتاح النموذج؟','When is a form available?'),'<p>'+Lx('يُتاح كل نموذج تلقائياً عند بلوغ الملف مرحلته ولصاحب الدور المعني به: مثلاً طلب الالتحاق (ت-1) بعد تعبئة بيانات الجهة، وخطاب التوجيه (ت-2) بعد اعتماد منسق التدريب، وشهادة الإتمام (ت-14) بعد إغلاق الملف.','Each form becomes available automatically when the file reaches its stage, for the role concerned.')+'</p>')};
 function docPanel(r){return r?docList(r):''}
+/* v231: مراجعة النماذج الـ28 واعتمادها من الإدارة المركزية قبل بدء العمل — معاينة كاملة بقالبها الرسمي بحقول فارغة */
+var SAMPLE=function(kind){var arr=['log','visits','reqs','meets','m8','tasks','subs','cmt','mem'],o={s:{},app:{goals:[]},letter:{},start:{},plan:{},e8:{},e9:{},e11:{},e17:{},reg:{},m2:{},m3:{},m6:{},m7:{},m9:{},f15:{},o:{},dec:{},acc:{},esup:{},isupRec:{},ov:{}};arr.forEach(function(k){o[k]=[]});
+ return {id:'نموذج-للمراجعة',kind:kind,sid:'',st:'closed',sup:[],data:o}};
+var formsOk=function(){return C().formsOk||{}};
+function formsReview(){var ok=formsOk(),codes=Object.keys(FD),n=codes.filter(function(c){return ok[c]&&ok[c].ok}).length;
+ return '<h3>'+Lx('مراجعة النماذج واعتمادها','Review and approve the forms')+'</h3><p class="mu">'+Lx('هذه النماذج الـ28 كلها بقالبها الرسمي وحقولها فارغة. راجع كل نموذج، ثم اعتمده أو سجّل عليه ملاحظة. المعتمد منها: ','All 28 forms in their official template with empty fields. Review each one, then approve it or add a note. Approved: ')+n+' / '+codes.length+'</p>'+
+ (n<codes.length?'<p>'+btn(Lx('اعتماد كل النماذج دفعة واحدة','Approve all forms'),'V51.h.ft231okAll()','s')+'</p>':'')+
+ tbl([Lx('الرمز','Code'),Lx('النموذج','Form'),Lx('الحالة','Status'),''],codes.map(function(c){var D=FD[c],x=ok[c];
+  return '<tr><td><b>'+c+'</b></td><td>'+e9(Lx(D.t[0],D.t[1]))+'</td><td>'+(x&&x.ok?'<span class="tag ok">'+Lx('معتمد ','Approved ')+e9(String(x.at||'').slice(0,10))+'</span>':x&&x.note?'<span class="tag er">'+Lx('ملاحظة: ','Note: ')+e9(x.note)+'</span>':'<span class="tag">'+Lx('بانتظار المراجعة','Awaiting review')+'</span>')+'</td><td>'+
+   btn(Lx('معاينة','Preview'),'V51.h.ft231pv(\''+c+'\')','s')+(x&&x.ok?'':btn(Lx('اعتماد','Approve'),'V51.h.ft231ok(\''+c+'\',1)','s'))+btn(Lx('ملاحظة','Note'),'V51.h.ft231ok(\''+c+'\',0)','s')+'</td></tr>'}))}
+H.ft231pv=function(code){var D=FD[code];if(!D)return;try{var r=SAMPLE(D.k),sub=D.subs?((D.subs(r)||[])[0]||['',''])[0]:'',F=fieldsOf(code,r,sub);show(docHTML(code,r,sub,F,'معاينة',new Date().toISOString()),'ft-review-'+code.replace('ت-','T').replace('م-','G'))}
+ catch(e){console.error('ft231 preview',code,e);T(Lx('تعذّرت معاينة النموذج: ','Preview failed: ')+e9(e.message))}};
+H.ft231ok=function(code,ok){var cur=Object.assign({},formsOk()),note='';if(!ok){note=prompt(Lx('ملاحظتك على النموذج '+code+':','Your note on form '+code+':'));if(!note)return}
+ cur[code]=ok?{ok:1,at:new Date().toISOString(),by:(me&&me.id)||'admin'}:{ok:0,note:note,at:new Date().toISOString()};return cfgSave({formsOk:cur},ok?Lx('اعتُمد النموذج '+code+'.','Form approved.'):Lx('سُجّلت الملاحظة.','Note saved.'))};
+H.ft231okAll=function(){if(!confirm(Lx('اعتماد كل النماذج الـ28؟ راجعها بالمعاينة أولاً.','Approve all 28 forms?')))return;var cur=Object.assign({},formsOk()),t=new Date().toISOString();Object.keys(FD).forEach(function(c){if(!(cur[c]&&cur[c].ok))cur[c]={ok:1,at:t,by:(me&&me.id)||'admin'}});return cfgSave({formsOk:cur},Lx('اعتُمدت النماذج.','Forms approved.'))};
 H.ft225doc=async function(code,id,sub){var r=REC(id);if(!r||!FD[code])return;if(!allowedFor(code,r)){T(Lx('لا صلاحية لإصدار هذه الوثيقة الآن.','You cannot issue this document now.'));return}
  var F=fieldsOf(code,r,sub),miss=missing(F);
  if(miss.length){modal(Lx('لا تصدر وثيقة ناقصة','Incomplete documents are not issued'),'<p>'+Lx('الحقول المطلوبة الناقصة ومصدر كل منها:','Missing required fields and their sources:')+'</p>'+tbl([Lx('الحقل','Field'),Lx('المصدر','Source')],miss.map(function(x){return '<tr><td>'+e9(Lx(x[1],x[2]||x[1]))+'</td><td>'+e9(SRCN(x))+'</td></tr>'}))+(rolesOn(r).some(function(x){return x==='edit'||x==='admin'})?btn(Lx('تعديل يدوي','Manual edit'),'V51.h.ft225ov(\''+code+'\',\''+id+'\',\''+(sub||'')+'\')'):''));return}
