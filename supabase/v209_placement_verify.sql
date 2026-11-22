@@ -1,0 +1,2 @@
+-- v209 — اختبار تحديد المستوى: placement_paper / submit_placement تقبلان em (البريد المسجّل أو الرمز السري)،
+-- ويُسمح دون em للإدارة والموظفين وللطالب المسجّل صاحب الطلب (sid = my_ref). التعريفات مطبّقة بالترحيلين v209_placement_verify و v209b_placement_owner.

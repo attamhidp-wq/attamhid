@@ -1,0 +1,114 @@
+# v231 — النسخ الاحتياطي الخاص: الحزمة الكاملة للمستودع بكل تاريخه، والمصدر، إلى مخزن خاص في Supabase (repo-vault)
+# لا أسرار: الهوية برمز OIDC لهذا الملف على main، والمخزن يعيد رابطاً موقَّعاً قصير العمر. يُشغَّل يدوياً فقط.
+name: vault
+on:
+  workflow_dispatch:
+    inputs:
+      op:
+        description: 'backup | verify | source | dbbackup | list'
+        required: true
+        default: list
+      name:
+        description: 'اسم الحزمة للتحقق (verify) أو بادئة الاسم (backup/source)'
+        required: false
+        default: ''
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: vault-${{ github.event.inputs.op }}
+  cancel-in-progress: false
+jobs:
+  vault:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      FN: https://ttuelhswxyjbjdnydmns.supabase.co/functions/v1/v231-vault
+      OP: ${{ github.event.inputs.op }}
+      NAME: ${{ github.event.inputs.name }}
+    steps:
+      - name: OIDC
+        run: |
+          T=$(curl -fsS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=attamhid-vault" | jq -r .value)
+          echo "::add-mask::$T"; echo "OIDC=$T" >> "$GITHUB_ENV"
+      - name: Helpers
+        run: |
+          cat > /tmp/v.sh <<'EOF'
+          call(){ jq -n --arg o "$OIDC" --arg op "$1" --arg n "$2" '{oidc:$o,op:$op,name:$n}' | curl -fsS -X POST -H 'Content-Type: application/json' --data-binary @- "$FN"; }
+          put(){ U=$(call put "$2" | jq -r .url); [ "$U" != null ] || { echo "put failed $2"; exit 1; }; curl -fsS -X PUT -H 'x-upsert: false' -H 'Content-Type: application/octet-stream' --data-binary @"$1" "$U" >/dev/null; echo "uploaded $2 $(stat -c%s "$1") bytes"; }
+          get(){ U=$(call get "$1" | jq -r .url); [ "$U" != null ] || { echo "get failed $1"; exit 1; }; curl -fsS -o "$2" "$U"; }
+          EOF
+      - name: List
+        if: env.OP == 'list'
+        run: . /tmp/v.sh; call list "" | jq -c '.files[]'
+      - name: Backup (full mirror with all history and refs)
+        if: env.OP == 'backup'
+        run: |
+          . /tmp/v.sh
+          N="${NAME:-repo-full}-$(date -u +%Y%m%d-%H%M%S)"
+          git clone --mirror "https://github.com/${GITHUB_REPOSITORY}" m.git
+          git -C m.git bundle create "$PWD/$N.bundle" --all
+          git -C m.git bundle verify "$PWD/$N.bundle" >/dev/null
+          { echo "commits $(git -C m.git rev-list --all --count)"; echo "objects $(git -C m.git count-objects -v | awk '/in-pack/{print $2}')"; git -C m.git show-ref | sort; } > "$N.manifest"
+          sha256sum "$N.bundle" | awk '{print $1}' > "$N.sha256"
+          put "$N.bundle" "$N.bundle"; put "$N.manifest" "$N.manifest"; put "$N.sha256" "$N.sha256"
+          echo "NAME=$N"; head -2 "$N.manifest"; echo "refs $(($(wc -l < "$N.manifest")-2))"; echo "sha256 $(cat "$N.sha256")"
+      - name: Source snapshot (private copy of the source tree)
+        if: env.OP == 'source'
+        run: |
+          . /tmp/v.sh
+          N="${NAME:-source}-$(date -u +%Y%m%d-%H%M%S)"
+          git clone --depth 1 "https://github.com/${GITHUB_REPOSITORY}" s
+          tar -C s --exclude=.git -czf "$N.tar.gz" .
+          sha256sum "$N.tar.gz" | awk '{print $1}' > "$N.sha256"
+          put "$N.tar.gz" "$N.tar.gz"; put "$N.sha256" "$N.sha256"
+          echo "NAME=$N files $(tar -tzf "$N.tar.gz" | wc -l) sha256 $(cat "$N.sha256")"
+      - name: Database backup + test restore (data never leaves Supabase; only counts and hashes here)
+        if: env.OP == 'dbbackup'
+        run: |
+          DBX=https://ttuelhswxyjbjdnydmns.supabase.co/functions/v1/v231-dbx
+          SET="${NAME:-db}-$(date -u +%Y%m%d-%H%M%S)"
+          tok(){ curl -fsS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=attamhid-vault" | jq -r .value; }
+          dbx(){ T=$(tok); jq -c --arg o "$T" --arg set "$SET" '. + {oidc:$o,set:$set}' | curl -sS --max-time 75 --retry 2 -X POST -H 'Content-Type: application/json' --data-binary @- "$DBX"; }
+          js(){ jq -e 'type=="object"' >/dev/null 2>&1 <<<"$1" && jq -c . <<<"$1" || echo '{"ok":false,"detail":"bad response"}'; }
+          echo '{"op":"plan"}' | dbx > plan.json; jq -e .ok plan.json >/dev/null || { cat plan.json; exit 1; }
+          echo "SET=$SET tables=$(jq '.plan|length' plan.json) rows=$(jq '[.plan[].rows]|add' plan.json) parts=$(jq '[.plan[].parts]|add' plan.json)"
+          echo '{"op":"ddl"}' | dbx | tee ddl.json | jq -c '{ok,roundtrip,counts,error,detail}'
+          jq -e '.ok and .roundtrip' ddl.json >/dev/null
+          export -f tok dbx js; export DBX SET
+          cat > /tmp/part.sh <<'EOF2'
+          REQ="$1"
+          for try in 1 2 3; do
+            E=$(js "$(jq -c '. + {op:"export"}' <<<"$REQ" | dbx)")
+            R=$(js "$(jq -c '. + {op:"restore"}' <<<"$REQ" | dbx)")
+            OK=$(jq -n --argjson e "$E" --argjson r "$R" '($e.ok and $r.ok and $e.sha256==$r.sha256 and $e.rows==$r.rows)')
+            [ "$OK" = true ] && break; sleep $((try*5))
+          done
+          jq -cn --argjson q "$REQ" --argjson e "$E" --argjson r "$R" --argjson ok "$OK" '{s:$q.s,t:$q.t,part:$q.part,rows:$e.rows,bytes:$e.bytes,sha256:$e.sha256,restored:$r.rows,ok:$ok,err:($e.detail // $r.detail)}'
+          EOF2
+          jq -c '.plan[] as $r | range(0;$r.parts) as $i | {s:$r.s,t:$r.t,per:$r.per,part:$i}' plan.json > reqs.jsonl
+          echo "parts to export: $(wc -l < reqs.jsonl)"
+          tr '\n' '\0' < reqs.jsonl | xargs -0 -P 6 -I{} bash /tmp/part.sh {} > parts.jsonl
+          FAIL=$(jq -s 'map(select(.ok|not))|length' parts.jsonl)
+          jq -c 'select(.ok|not)' parts.jsonl | head -20
+          jq -s --slurpfile p plan.json --slurpfile d ddl.json '{set:env.SET, at:(now|todate), tables:($p[0].plan|length), parts:length, rows:(map(.rows)|add), failed:(map(select(.ok|not))|length), ddl:$d[0].sha256, files:.}' parts.jsonl > manifest.json
+          jq -c '{manifest:.,op:"manifest"}' manifest.json | dbx | jq -c .
+          jq -r '"exported parts=\(.parts) rows=\(.rows) failed=\(.failed)"' manifest.json
+          jq -r '.files|group_by(.s)|.[]|"\(.[0].s): tables=\(map(.t)|unique|length) rows=\(map(.rows)|add) restored=\(map(.restored)|add)"' manifest.json
+          [ "$FAIL" = 0 ] && echo "DB BACKUP + RESTORE TEST PASSED ($SET)"
+      - name: Verify by test restore
+        if: env.OP == 'verify'
+        run: |
+          . /tmp/v.sh
+          [ -n "$NAME" ] || { echo "name required"; exit 1; }
+          get "$NAME.bundle" r.bundle; get "$NAME.manifest" r.manifest; get "$NAME.sha256" r.sha256
+          [ "$(sha256sum r.bundle | awk '{print $1}')" = "$(cat r.sha256)" ] && echo "sha256 OK"
+          git init -q -b x vtmp && git -C vtmp bundle verify "$PWD/r.bundle" >/dev/null && echo "bundle verify OK"
+          git clone --mirror r.bundle restored.git
+          git -C restored.git fsck --full --no-progress && echo "fsck OK"
+          C=$(git -C restored.git rev-list --all --count); E=$(awk '/^commits/{print $2}' r.manifest)
+          echo "commits restored=$C expected=$E"; [ "$C" = "$E" ]
+          tail -n +3 r.manifest | sort > want; git -C restored.git show-ref | sort > have
+          diff want have && echo "refs OK ($(wc -l < have))"
+          git clone -q restored.git wt && test -s wt/index.html && echo "checkout OK ($(git -C wt ls-files | wc -l) files at $(git -C wt rev-parse --short HEAD))"
+          echo "RESTORE TEST PASSED"

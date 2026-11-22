@@ -1,0 +1,7 @@
+tools/.mincache/
+# v223: لا أسئلة ولا إجابات في المستودع (قاعدة البيانات وحدها)
+*.gift
+*qbank*
+*question-bank*
+tools/tmp/
+*.b64

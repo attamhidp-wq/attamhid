@@ -1,0 +1,1 @@
+-- v219: plt_cert(tok) — returns the issued certificate data (public.certs) for the signed-in candidate (token), rate-limited; used for download/share on the candidate page.

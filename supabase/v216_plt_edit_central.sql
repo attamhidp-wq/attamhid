@@ -1,0 +1,2 @@
+-- v216: plt_admin('edit') restricted to central administration (v51_is_central()); validates names/email;
+-- logs data.edits [{at,by}]; when a certificate exists, syncs name/nameEn/sex/dob/nat/natEn/tongue/idno into public.certs.

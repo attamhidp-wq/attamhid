@@ -1,0 +1,288 @@
+{
+"sp": [],
+"dip": {
+"id": "1000",
+"name": "دبلوم عام في اللغة العربية لغير الناطقين بها",
+"nameEn": "Diploma in Arabic for Non-Native Speakers",
+"plan": "سنتان · 4 فصول دراسية · 84 ساعة معتمدة",
+"planEn": "Two years · 4 semesters · 84 credit hours.",
+"fee": "",
+"hours": 84,
+"courses": [
+{
+"code": "1101",
+"name": "مهارة القراءة 1",
+"nameEn": "Reading Skills 1",
+"term": 1,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "1102",
+"name": "مهارة الكتابة 1",
+"nameEn": "Writing Skills 1",
+"term": 1,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "1103",
+"name": "الاستماع والمحادثة 1",
+"nameEn": "Listening and Speaking 1",
+"term": 1,
+"hrs": 4,
+"type": "إلزامي"
+},
+{
+"code": "1104",
+"name": "المفردات والتعبيرات",
+"nameEn": "Vocabulary and Expressions",
+"term": 1,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "1201",
+"name": "النحو 1",
+"nameEn": "Arabic Syntax 1",
+"term": 1,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "1202",
+"name": "الأصوات والنطق",
+"nameEn": "Arabic Phonetics and Pronunciation",
+"term": 1,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "1203",
+"name": "التراكيب اللغوية",
+"nameEn": "Linguistic Structures",
+"term": 1,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "1301",
+"name": "القرآن الكريم 1 (التلاوة والتجويد)",
+"nameEn": "The Holy Quran 1 (Recitation and Tajweed)",
+"term": 1,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "2101",
+"name": "مهارة القراءة 2",
+"nameEn": "Reading Skills 2",
+"term": 2,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "2102",
+"name": "مهارة الكتابة 2",
+"nameEn": "Writing Skills 2",
+"term": 2,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "2103",
+"name": "الاستماع والمحادثة 2",
+"nameEn": "Listening and Speaking 2",
+"term": 2,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "2201",
+"name": "النحو 2",
+"nameEn": "Arabic Syntax 2",
+"term": 2,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "2202",
+"name": "الصرف 1",
+"nameEn": "Arabic Morphology 1",
+"term": 2,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "2203",
+"name": "المعجم العربي ومهارات استعماله",
+"nameEn": "Arabic Lexicography and Dictionary Skills",
+"term": 2,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "2301",
+"name": "القرآن الكريم 2 (التلاوة وتفسير جزء عمّ)",
+"nameEn": "The Holy Quran 2 (Recitation and Exegesis of Juz' Amma)",
+"term": 2,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "2302",
+"name": "الفقه الميسّر (العبادات)",
+"nameEn": "Simplified Jurisprudence of Worship",
+"term": 2,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "3101",
+"name": "القراءة المتقدمة",
+"nameEn": "Advanced Reading",
+"term": 3,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "3102",
+"name": "التعبير الكتابي",
+"nameEn": "Written Expression",
+"term": 3,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "3103",
+"name": "التواصل اللغوي",
+"nameEn": "Linguistic Communication",
+"term": 3,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "3104",
+"name": "القراءة الموسّعة",
+"nameEn": "Extensive Reading",
+"term": 3,
+"hrs": 1,
+"type": "إلزامي"
+},
+{
+"code": "3201",
+"name": "النحو 3",
+"nameEn": "Arabic Syntax 3",
+"term": 3,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "3202",
+"name": "الصرف 2 (الاشتقاق والأبنية)",
+"nameEn": "Arabic Morphology 2 (Derivation and Patterns)",
+"term": 3,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "3203",
+"name": "البلاغة 1 (علم البلاغة)",
+"nameEn": "Arabic Rhetoric 1",
+"term": 3,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "3301",
+"name": "الحديث الشريف (الأربعون النووية)",
+"nameEn": "Prophetic Hadith (An-Nawawi's Forty)",
+"term": 3,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "3401",
+"name": "السيرة النبوية",
+"nameEn": "The Prophetic Biography",
+"term": 3,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "4101",
+"name": "النصوص الأدبية",
+"nameEn": "Literary Texts",
+"term": 4,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "4102",
+"name": "التحرير اللغوي",
+"nameEn": "Linguistic Editing",
+"term": 4,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "4103",
+"name": "الخطابة والإعلام بالعربية",
+"nameEn": "Public Speaking and Media in Arabic",
+"term": 4,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "4201",
+"name": "الترجمة (عربي – إنجليزي)",
+"nameEn": "Translation (Arabic – English)",
+"term": 4,
+"hrs": 3,
+"type": "إلزامي"
+},
+{
+"code": "4202",
+"name": "البلاغة 2 (البلاغة القرآنية)",
+"nameEn": "Arabic Rhetoric 2 (Quranic Rhetoric)",
+"term": 4,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "4203",
+"name": "التحليل اللغوي للنصوص",
+"nameEn": "Linguistic Analysis of Texts",
+"term": 4,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "4301",
+"name": "العقيدة (العقيدة الطحاوية)",
+"nameEn": "Islamic Creed (Al-Aqidah Al-Tahawiyyah)",
+"term": 4,
+"hrs": 2,
+"type": "إلزامي"
+},
+{
+"code": "4401",
+"name": "مشروع التخرج والتدريب الميداني",
+"nameEn": "Graduation Project and Field Training",
+"term": 4,
+"hrs": 3,
+"type": "إلزامي"
+}
+]
+},
+"news": [
+{
+"ev": "2026-10-22",
+"id": 1792403806812,
+"body": "يعلن معهد التمهيد عن بدء التسجيل في البرنامج العلمي والبحثي النوعي: التواصل والتطور في التعليم العالي: من قيمة الإنسانية إلى الشراكة الاكاديمية في عصر الذكاء الاصطناعي، والذي يقدمه ويشرف عليه سعادة الأستاذ د. إبراهيم محمد طاهر البرزنجي، وذلك يوم الخميس ٢٢-١٠-٢٠٢٦م، بواقع (٤) ساعات تدريبية، ضمن برامج المعهد المستمرة لتطوير القدرات البحثية والأكاديمية.",
+"date": "2026-10-19",
+"type": "فعالية",
+"title": "التواصل والتطور في التعليم العالي: من قيمة الإنسانية إلى الشراكة الاكاديمية في عصر الذكاء الاصطناعي"
+}
+]
+}

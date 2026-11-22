@@ -1,0 +1,5 @@
+-- v215 (applied via migrations):
+-- 1) plt_issue_send: PDF base64 check used '{500,}' (exceeds Postgres RE_DUP_MAX=255 → error);
+--    replaced with length(pdf_b64) >= 500 and pdf_b64 ~ '^[A-Za-z0-9+/=]+$'.
+-- 2) plt_admin('resend'): by status — scheduled→sched, submitted→pay, paid→paid, registered→ack, otherwise error 'state'
+--    (previously any other status re-sent the registration acknowledgement).
