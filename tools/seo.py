@@ -11,9 +11,22 @@ SB = 'https://ttuelhswxyjbjdnydmns.supabase.co'
 SNAP = os.path.join(R, 'tools', 'seo-data.json')
 E = lambda x: html.escape(str(x if x is not None else ''), quote=True)
 
+def pubkey():
+    # v231: المفتاح العام (anon) من ملفات الموقع المبنية نفسها؛ المصدر لم يعد في المستودع العام
+    import base64
+    cur = json.load(open(os.path.join(R, 'js', 'manifest.json'))).get('cur', [])
+    for f in ['app.html'] + cur:
+        p = os.path.join(R, f)
+        if not os.path.exists(p): continue
+        for t in re.findall(r"eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+", open(p, encoding='utf-8', errors='ignore').read()):
+            try:
+                pl = json.loads(base64.urlsafe_b64decode(t.split('.')[1] + '=='))
+                if pl.get('role') == 'anon' and pl.get('ref') == 'ttuelhswxyjbjdnydmns': return t
+            except Exception: pass
+    raise SystemExit('public anon key not found in built files')
+
 def fetch():
-    src = open(os.path.join(R, 'src', 'index.html'), encoding='utf-8').read()
-    key = re.search(r"SB_KEY='([^']+)'", src).group(1)
+    key = pubkey()
     def get(path):
         rq = urllib.request.Request(SB + '/rest/v1/' + path, headers={'apikey': key, 'Authorization': 'Bearer ' + key})
         return json.load(urllib.request.urlopen(rq, timeout=30))
