@@ -1,21 +1,29 @@
 // v231-dbx — نسخة احتياطية خارجية لقاعدة البيانات في المخزن الخاص repo-vault، مع استعادة تجريبية.
 // البيانات لا تغادر Supabase: الدالة تقرأ بالاتصال الداخلي وتكتب إلى المخزن الخاص، والمشغّل يتلقى أعداداً وبصمات فقط.
 // الهوية: رمز OIDC لملف vault.yml على main في هذا المستودع وحده.
-import { createClient } from "jsr:@supabase/supabase-js@2";
 import postgres from "npm:postgres@3.4.4";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const admin = createClient(SB_URL, SRK, { auth: { persistSession: false, autoRefreshToken: false } });
+// تخزين مباشر عبر واجهة Storage (بلا مكتبة إضافية لتقليل زمن الإقلاع)
+const ST = SB_URL + "/storage/v1/object/" + "repo-vault" + "/";
+async function put(path: string, body: Uint8Array, type: string) {
+  const r = await fetch(ST + path, { method: "POST", headers: { Authorization: "Bearer " + SRK, apikey: SRK, "Content-Type": type, "x-upsert": "true" }, body });
+  if (!r.ok) throw new Error("upload " + r.status + " " + (await r.text()).slice(0, 120));
+}
+async function get(path: string) {
+  const r = await fetch(ST + path, { headers: { Authorization: "Bearer " + SRK, apikey: SRK } });
+  if (!r.ok) throw new Error("download " + r.status);
+  return new Uint8Array(await r.arrayBuffer());
+}
 const ISS = "https://token.actions.githubusercontent.com";
 const REPO = "attamhidp-wq/attamhid";
 const AUD = "attamhid-vault";
 const WF = REPO + "/.github/workflows/vault.yml@refs/heads/main";
-const BUCKET = "repo-vault";
 const SCRATCH = "rst_v231";
 const SCHEMAS = ["public", "bk_v226", "bk_v230", "supabase_migrations"];
 const EXTRA = [["auth", "users"], ["auth", "identities"], ["auth", "mfa_factors"], ["storage", "buckets"], ["storage", "objects"], ["cron", "job"]];
-const TARGET = 12 * 1024 * 1024; // حجم تقريبي لكل جزء قبل الضغط
+const TARGET = 3 * 1024 * 1024; // حجم تقريبي لكل جزء قبل الضغط
 const json = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { "Content-Type": "application/json" } });
 const b64u = (s: string) => { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return Uint8Array.from(atob(s), (c) => c.charCodeAt(0)); };
 let JWKS: { keys: Array<Record<string, unknown>> } | null = null;
@@ -89,16 +97,14 @@ Deno.serve(async (req) => {
       ) d`;
       const raw = new TextEncoder().encode(JSON.stringify(d.d));
       const path = `${set}/_ddl.json.gz`;
-      const { error } = await admin.storage.from(BUCKET).upload(path, await gz(raw), { contentType: "application/gzip", upsert: true });
-      if (error) throw error;
-      const back = await gunz(new Uint8Array(await (await admin.storage.from(BUCKET).download(path)).data!.arrayBuffer()));
+      await put(path, await gz(raw), "application/gzip");
+      const back = await gunz(await get(path));
       return json({ ok: true, path, bytes: raw.length, sha256: await sha(raw), roundtrip: (await sha(back)) === (await sha(raw)),
         counts: Object.fromEntries(Object.entries(d.d as Record<string, unknown[]>).map(([k, v]) => [k, Array.isArray(v) ? v.length : 0])) });
     }
     if (op === "manifest") {
       const raw = new TextEncoder().encode(JSON.stringify(body.manifest || {}));
-      const { error } = await admin.storage.from(BUCKET).upload(`${set}/_manifest.json`, raw, { contentType: "application/json", upsert: true });
-      if (error) throw error;
+      await put(`${set}/_manifest.json`, raw, "application/json");
       return json({ ok: true, sha256: await sha(raw) });
     }
     const s = String(body.s || ""), t = String(body.t || "");
@@ -111,15 +117,12 @@ Deno.serve(async (req) => {
       const raw = await readAll(await sql.unsafe(`copy (${sel(qi(s) + "." + qi(t))}) to stdout with (format csv, header)`).readable());
       const [{ n }] = await sql.unsafe(`select count(*)::int n from (${sel(qi(s) + "." + qi(t))}) x`);
       const h = await sha(raw);
-      const { error } = await admin.storage.from(BUCKET).upload(path, await gz(raw), { contentType: "application/gzip", upsert: true });
-      if (error) throw error;
+      await put(path, await gz(raw), "application/gzip");
       return json({ ok: true, path, rows: n, bytes: raw.length, sha256: h });
     }
     if (op === "restore") {
       // استعادة تجريبية: يُنزَّل الجزء من المخزن ويُحمَّل في جدول مؤقت بالبنية نفسها، ثم يُصدَّر ثانية وتُقارن البصمة والعدد.
-      const { data, error } = await admin.storage.from(BUCKET).download(path);
-      if (error) throw error;
-      const raw = await gunz(new Uint8Array(await data.arrayBuffer()));
+      const raw = await gunz(await get(path));
       const tmp = qi(SCRATCH) + "." + qi((s + "__" + t).slice(0, 60));
       await sql.unsafe(`create schema if not exists ${qi(SCRATCH)}`);
       await sql.unsafe(`revoke all on schema ${qi(SCRATCH)} from public, anon, authenticated`);
