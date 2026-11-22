@@ -94,6 +94,8 @@ async function check(browser) {
   p.on('pageerror', (e) => errs.push(e.message));
   const reqs = []; p.on('request', (r) => reqs.push(r.url()));
   await p.goto(BASE + '/', { waitUntil: 'load' }); await p.waitForTimeout(3000);
+  fs.mkdirSync(path.join(R, 'tools/tmp'), { recursive: true });
+  await p.screenshot({ path: path.join(R, 'tools/tmp/shell-mobile.png'), fullPage: true });
   const st = await p.evaluate(() => ({ app: typeof go === 'function', text: document.body.innerText.length, nav: !!document.querySelector('#nav'), ft: !!document.querySelector('#ft') }));
   res.push(['static home renders without the app', !st.app && st.text > 300 && st.nav && st.ft && !errs.length]);
   res.push(['no admin/portal code requested', !reqs.some((u) => /\/js\/(v51|adm|s35|s04|doc14)-/.test(u) || /supabase/.test(u))]);
@@ -101,13 +103,16 @@ async function check(browser) {
   await p.waitForFunction(() => typeof go === 'function' && /#\/login/.test(location.hash), null, { timeout: 90000 }).catch(() => {});
   res.push(['app boots on in-app route, URL kept', await p.evaluate(() => typeof go === 'function' && location.pathname === '/' && /#\/login/.test(location.hash))]);
   await ctx.close();
+  const c0 = await browser.newContext({ viewport: { width: 412, height: 860 }, locale: 'ar', serviceWorkers: 'block' }); const p0 = await c0.newPage();
+  await p0.goto(BASE + '/app.html', { waitUntil: 'load' }); await p0.waitForFunction(() => typeof go === 'function' && document.querySelector('#app') && document.querySelector('#app').innerText.length > 200, null, { timeout: 90000 }).catch(() => {});
+  await p0.waitForTimeout(5000); await p0.screenshot({ path: path.join(R, 'tools/tmp/app-mobile.png'), fullPage: true }); await c0.close();
   const c2 = await browser.newContext({ locale: 'ar', serviceWorkers: 'block' }); const p2 = await c2.newPage();
   await p2.goto(BASE + '/#/verify', { waitUntil: 'load' });
   res.push(['deep link boots app', await p2.waitForFunction(() => typeof go === 'function', null, { timeout: 90000 }).then(() => true).catch(() => false)]);
   await c2.close();
   const c3 = await browser.newContext({ locale: 'ar', serviceWorkers: 'block' }); const p3 = await c3.newPage();
   await p3.goto(BASE + '/', { waitUntil: 'load' });
-  const link = await p3.$('#nav a[href*="#/"], #app a[href*="#/"]');
+  const link = await p3.$('#nav a[href^="#/"]:visible, #app a[href^="#/"]:visible, #nav a[href^="/#/"]:visible, #app a[href^="/#/"]:visible');
   if (link) { await link.click(); res.push(['click on in-app link boots app', await p3.waitForFunction(() => typeof go === 'function', null, { timeout: 90000 }).then(() => true).catch(() => false)]); }
   await c3.close();
   const c4 = await browser.newContext({ locale: 'ar', serviceWorkers: 'block' }); const p4 = await c4.newPage();

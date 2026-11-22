@@ -33,6 +33,14 @@ jobs:
           timeout 240 npx playwright install --with-deps chromium || npx playwright install chromium
       - name: Render and check
         run: node tools/prerender.js
+      - name: Screenshots (public home only)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shell-screens
+          path: tools/tmp/*.png
+          retention-days: 3
+          if-no-files-found: ignore
       - name: Publish
         run: |
           git config user.name "ati-prerender-bot"
