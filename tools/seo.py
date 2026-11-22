@@ -90,6 +90,19 @@ CSP_STATIC = ("default-src 'none'; script-src 'sha256-%s'; style-src 'self' 'uns
 SEC_HEAD = ('<meta http-equiv="Content-Security-Policy" content="%s"><meta name="referrer" content="strict-origin-when-cross-origin">'
             '<style id="afc">html{display:none!important}</style><noscript><style>html{display:block!important}</style></noscript><script>%s</script>') % (CSP_STATIC, FB_JS)
 
+# v231: تعريفات الخط مضمَّنة في الصفحة (لا ورقة أنماط خارجية تحجب العرض الأول)؛ وإن تعذّر جلبها يبقى الرابط كما كان
+FONT_URL = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap'
+def _font_tag():
+    try:
+        rq = urllib.request.Request(FONT_URL, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36'})
+        css = urllib.request.urlopen(rq, timeout=20).read().decode('utf-8')
+        if '@font-face' in css:
+            return '<style>' + re.sub(r'\s+', ' ', re.sub(r'/\*[^*]*\*/', '', css)) + '</style>'
+    except Exception:
+        pass
+    return '<link href="%s" rel="stylesheet">' % FONT_URL
+FONT_TAG = _font_tag()
+
 def redirect_page(src, dst):
     """صفحة تحويل ثابتة لرابط قديم مهم: canonical إلى الرابط الجديد، وnoindex، وتحويل فوري"""
     u = SITE + dst
@@ -112,7 +125,7 @@ def page(path, title, desc, body, ld, en_title=''):
         '<title>%s</title><meta name="description" content="%s"><link rel="canonical" href="%s">'
         '<meta property="og:type" content="website"><meta property="og:site_name" content="معهد التمهيد — At Tamhid Institute"><meta property="og:title" content="%s"><meta property="og:description" content="%s"><meta property="og:url" content="%s"><meta property="og:image" content="%s/img/app-512-v132.png"><meta property="og:locale" content="ar_AR"><meta property="og:locale:alternate" content="en_US">'
         '<meta name="theme-color" content="#14284B"><link rel="icon" href="/img/favicon-512aae70.png"><link rel="manifest" href="/manifest.webmanifest">'
-        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">'
+        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' + FONT_TAG +
         '<style>%s</style><script type="application/ld+json">%s</script></head><body>'
         '<header><div class="w"><a href="/" aria-label="معهد التمهيد"><img src="/img/logo-a8d46018.webp" alt="معهد التمهيد — At Tamhid Institute" width="163" height="44"></a>'
         '<nav><a href="/">الرئيسية</a><a href="/programs/">البرامج</a><a href="/news/">الأخبار</a><a href="/#/register">التقديم</a><a href="/#/verify">التحقق من وثيقة</a></nav></div></header>'
