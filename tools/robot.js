@@ -32,6 +32,14 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
   const res = await p.evaluate(() => V51.robot134());
   console.log('result', JSON.stringify(res));
   await p.waitForTimeout(15000);
+  // فحص تشخيصي عند التشغيل اليدوي فقط: هل تُفتح بوابة الخريجين للإدارة المركزية؟
+  if (process.env.GITHUB_EVENT_NAME === 'workflow_dispatch') {
+    const cons = []; p.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') cons.push(m.text().slice(0, 200)); });
+    await p.evaluate(() => { location.hash = '#/graduates'; });
+    await p.waitForTimeout(15000);
+    const st = await p.evaluate(() => ({ hash: location.hash, ld: (window.V51 && 0) || (typeof FT !== 'undefined' ? FT.ld : 'noFT'), text: (document.querySelector('#app') || {}).innerText ? document.querySelector('#app').innerText.slice(0, 300) : '' }));
+    console.log('DIAG graduates', JSON.stringify(st)); if (cons.length) console.log('DIAG console', cons.slice(0, 8).join(' | '));
+  }
   await p.evaluate(() => { try { save(); } catch (e) {} });
   await p.waitForTimeout(8000);
   await p.evaluate(() => { try { sbOut(); } catch (e) {} });
