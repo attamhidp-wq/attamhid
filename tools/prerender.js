@@ -114,7 +114,8 @@ async function check(browser) {
   await c2.close();
   const c3 = await browser.newContext({ locale: 'ar', serviceWorkers: 'block' }); const p3 = await c3.newPage();
   await p3.goto(BASE + '/', { waitUntil: 'load' });
-  const link = await p3.$('#nav a[href^="#/"]:visible, #app a[href^="#/"]:visible, #nav a[href^="/#/"]:visible, #app a[href^="/#/"]:visible');
+  const NOT = ':not([href="#/"]):not([href="#/home"]):not([href="/#/"]):visible';
+  const link = await p3.$(['#nav a[href^="#/"]', '#app a[href^="#/"]', '#nav a[href^="/#/"]', '#app a[href^="/#/"]'].map((x) => x + NOT).join(', '));
   if (link) { const href = await link.getAttribute('href'); await link.click(); const ok = await until(p3, () => typeof go === 'function' && location.pathname === '/', 90000); console.log('clicked', href, '→', await p3.evaluate(() => location.hash).catch(() => '?')); res.push(['click on in-app link boots app', ok]); }
   else res.push(['in-app link present in shell', false]);
   await c3.close();
