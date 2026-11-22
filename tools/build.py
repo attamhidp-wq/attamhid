@@ -78,7 +78,11 @@ def font(m):
 out = re.sub(r'<link[^>]*rel="stylesheet"[^>]*>|<link[^>]*href="https://fonts[^>]*>', font, out, count=0)
 if 'rel="preconnect" href="https://fonts.gstatic.com"' not in out:
     out = out.replace('<head>', '<head>\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>\n<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>', 1)
-open(os.path.join(R, 'index.html'), 'w', encoding='utf-8', newline='').write(out)
+# v231: التطبيق الكامل في app.html؛ وindex.html صفحة رئيسية خفيفة مُصيَّرة مسبقاً (tools/prerender.js على GitHub Actions)
+open(os.path.join(R, 'app.html'), 'w', encoding='utf-8', newline='').write(out)
+_ix = os.path.join(R, 'index.html')
+if not (os.path.exists(_ix) and 'data-ati-shell=' in open(_ix, encoding='utf-8').read(400)):
+    open(_ix, 'w', encoding='utf-8', newline='').write(out)  # قبل أول توليد للصفحة الخفيفة: نسخة كاملة تعمل كما كانت
 # تنظيف: يبقى ملف البناء الحالي والسابق فقط (حتى لا تنكسر صفحة محفوظة مؤقتاً لدى زائر)
 mp = os.path.join(R, 'js/manifest.json')
 prev = []
@@ -94,9 +98,9 @@ json.dump({'cur': files, 'prev': prev if set(prev) != set(files) else (json.load
 # v132: عامل الخدمة (تطبيق قابل للتثبيت يعمل دون اتصال): يُولَّد بإصدار البناء وقائمة الملفات الحالية
 try:
     bv = re.search(r"__BUILD__='(v\d+)'", src).group(1)
-    pre = files + ['i18n-bn.js?v=' + bv, 'manifest.webmanifest', 'img/app-192-v132.png', 'img/logom-243bc940.webp', 'img/logo-a8d46018.webp', 'img/favicon-512aae70.png', 'fonts/amiri-400-v171.woff', 'fonts/amiri-700-v171.woff', 'fonts/ruqaa-400-v171.woff', 'fonts/ruqaa-700-v171.woff', 'fonts/tinos-400-v171.woff', 'fonts/tinos-700-v171.woff']
+    pre = files + ['app.html', 'i18n-bn.js?v=' + bv, 'manifest.webmanifest', 'img/app-192-v132.png', 'img/logom-243bc940.webp', 'img/logo-a8d46018.webp', 'img/favicon-512aae70.png', 'fonts/amiri-400-v171.woff', 'fonts/amiri-700-v171.woff', 'fonts/ruqaa-400-v171.woff', 'fonts/ruqaa-700-v171.woff', 'fonts/tinos-400-v171.woff', 'fonts/tinos-700-v171.woff']
     tpl = open(os.path.join(R, 'tools/sw.tpl.js'), encoding='utf-8').read()
     open(os.path.join(R, 'sw.js'), 'w', encoding='utf-8', newline='').write(tpl.replace('__V__', bv + '-' + hashlib.sha256(''.join(files).encode()).hexdigest()[:8]).replace('__PRE__', json.dumps(pre)))
 except Exception as e:
     print('sw build failed', e)
-print('index.html', len(out.encode()), 'bytes;', len(files), 'js files;', sum(os.path.getsize(os.path.join(R, f)) for f in files), 'bytes')
+print('app.html', len(out.encode()), 'bytes;', len(files), 'js files;', sum(os.path.getsize(os.path.join(R, f)) for f in files), 'bytes')

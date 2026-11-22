@@ -2,6 +2,11 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
+<!-- v231: سياسة أمان المحتوى ومنع التضمين في إطارات (الحد الممكن دون ترويسات خادم) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://ttuelhswxyjbjdnydmns.supabase.co wss://ttuelhswxyjbjdnydmns.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://script.google.com https://script.googleusercontent.com https://i.ytimg.com; media-src 'self' data: blob:; frame-src 'self' blob: data:; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<style id="afc">html{display:none!important}</style><noscript><style>html{display:block!important}</style></noscript>
+<script>if(self===top){var afc=document.getElementById('afc');if(afc)afc.parentNode.removeChild(afc)}else{try{top.location.replace(self.location.href)}catch(e){}}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#14284B">
@@ -74,6 +79,7 @@ if(v&&(!o||Date.now()-o.at>2592e6))localStorage.setItem(k,JSON.stringify({s:v,at
   var b=JSON.stringify({build:String(window.__BUILD__||''),kind:String(kind).slice(0,28),msg:msg,src:src,hash:String(location.hash||'').replace(/[?&](p|p2|password|email|pass|token)=[^&#]*/gi,'').slice(0,110),role:String(role).slice(0,18),ua:String(navigator.userAgent||'').slice(0,290)});
   fetch(U,{method:'POST',headers:{'Content-Type':'application/json','apikey':K,'Authorization':'Bearer '+K,'Prefer':'return=minimal'},body:b,keepalive:true}).catch(function(){})}catch(e){}}
  window.__rep175=send;
+ document.addEventListener('securitypolicyviolation',function(e){try{send('csp',String(e.violatedDirective||'')+' '+String(e.blockedURI||'').slice(0,200),String(e.sourceFile||'').replace(/^https?:\/\/[^/]+\//,'')+':'+(e.lineNumber||0))}catch(x){}});
  window.addEventListener('error',function(ev){try{var t=ev.target;if(t&&t!==window&&(t.tagName==='SCRIPT'||t.tagName==='LINK')){send('load',(t.src||t.href||'').slice(0,300),'');return}
   if(ev.message&&!/^Script error\.?$/.test(ev.message)&&!/ loading$/.test(ev.message))send('error',ev.message,(ev.filename||'').replace(/^https?:\/\/[^/]+\//,'')+':'+(ev.lineno||0)+':'+(ev.colno||0)+(ev.error&&ev.error.stack?' | '+String(ev.error.stack).split('\n').slice(1,4).join(' < ').replace(/https?:\/\/[^/]+\//g,''):''))}catch(e){}},true);
  window.addEventListener('unhandledrejection',function(ev){try{var r=ev.reason,m=r&&(r.message||String(r))||'';if(/ loading$|AbortError|Failed to fetch|NetworkError|Load failed/i.test(m))return;send('reject',m,r&&r.stack?String(r.stack).split('\n').slice(1,4).join(' < ').replace(/https?:\/\/[^/]+\//g,''):'')}catch(e){}});

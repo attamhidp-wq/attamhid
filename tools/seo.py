@@ -69,9 +69,33 @@ table{width:100%;border-collapse:collapse;font-size:.95rem}th,td{padding:8px;bor
 .list a.it{display:block;text-decoration:none;color:inherit}.list .it h3{margin:.1em 0;font-size:1.05rem}footer{border-top:1px solid #dfe4ec;padding:18px 0;color:#5b6b82;font-size:.9rem;background:#fff}
 @media (max-width:560px){dl{grid-template-columns:1fr}dt{margin-top:6px}h1{font-size:1.35rem}nav a{margin-inline-start:10px;font-size:.95rem}}"""
 
+# v231: سياسة أمان محتوى صارمة لكل صفحة ثابتة (الحد الممكن عبر meta دون ترويسات خادم) ومنع التضمين في إطارات
+FB_JS = "if(self===top){var a=document.getElementById('afc');if(a)a.parentNode.removeChild(a)}else{try{top.location.replace(self.location.href)}catch(e){}}"
+FB_SHA = __import__('base64').b64encode(__import__('hashlib').sha256(FB_JS.encode()).digest()).decode()
+CSP_STATIC = ("default-src 'none'; script-src 'sha256-%s'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; "
+              "img-src 'self' data: https:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests") % FB_SHA
+SEC_HEAD = ('<meta http-equiv="Content-Security-Policy" content="%s"><meta name="referrer" content="strict-origin-when-cross-origin">'
+            '<style id="afc">html{display:none!important}</style><noscript><style>html{display:block!important}</style></noscript><script>%s</script>') % (CSP_STATIC, FB_JS)
+
+def redirect_page(src, dst):
+    """صفحة تحويل ثابتة لرابط قديم مهم: canonical إلى الرابط الجديد، وnoindex، وتحويل فوري"""
+    u = SITE + dst
+    return ('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">' + SEC_HEAD +
+            '<meta name="robots" content="noindex,follow"><link rel="canonical" href="%s"><meta http-equiv="refresh" content="0;url=%s">'
+            '<title>نُقلت الصفحة | معهد التمهيد</title></head><body><p>نُقلت هذه الصفحة إلى <a href="%s">%s</a>.</p></body></html>') % (E(u), E(dst), E(dst), E(u))
+
+# روابط قديمة مهمة (صفحات برامج قصيرة سابقة ونسخة قديمة للصفحة الرئيسية) تُحوَّل إلى مكانها الحالي
+REDIRECTS = {
+    '/index.html.html': '/',
+    '/programs/SP-L1792335113821.html': '/programs/', '/programs/SP-L1792350463325.html': '/programs/',
+    '/programs/SP-L1792350602852.html': '/programs/', '/programs/SP-L1792416682327.html': '/programs/',
+    '/programs/SP-L1792476038696.html': '/programs/', '/programs/SP-L1792873323937.html': '/programs/',
+    '/programs/SP-mw7fxy76vcq3.html': '/programs/',
+}
+
 def page(path, title, desc, body, ld, en_title=''):
     url = SITE + path
-    return ('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+    return ('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">' + SEC_HEAD + '<meta name="viewport" content="width=device-width,initial-scale=1">'
         '<title>%s</title><meta name="description" content="%s"><link rel="canonical" href="%s">'
         '<meta property="og:type" content="website"><meta property="og:site_name" content="معهد التمهيد — At Tamhid Institute"><meta property="og:title" content="%s"><meta property="og:description" content="%s"><meta property="og:url" content="%s"><meta property="og:image" content="%s/img/app-512-v132.png"><meta property="og:locale" content="ar_AR"><meta property="og:locale:alternate" content="en_US">'
         '<meta name="theme-color" content="#14284B"><link rel="icon" href="/img/favicon-512aae70.png"><link rel="manifest" href="/manifest.webmanifest">'
@@ -294,6 +318,8 @@ def main():
     PP = portal_pages()
     for a, b in PP: os.makedirs(os.path.join(R, a.strip('/')), exist_ok=True)
     pages = pages + PP
+    have = {a for a, b in pages}
+    pages = pages + [(a, redirect_page(a, b)) for a, b in REDIRECTS.items() if a not in have]
     keep = set()
     for path, h in pages:
         fn = os.path.join(R, path.strip('/'), 'index.html') if path.endswith('/') else os.path.join(R, path.strip('/'))

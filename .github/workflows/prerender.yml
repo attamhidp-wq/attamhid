@@ -1,0 +1,43 @@
+# v231 — الصفحة الرئيسية الخفيفة: تُصيَّر من التطبيق الكامل (app.html) بالبيانات العامة الحية، وتُختبر، ثم تُنشر index.html
+# لا تُحمَّل شيفرة الإدارة ولا البوابات إلا لمن يدخلها؛ وإن فشل أي فحص يبقى index.html السابق كما هو.
+name: prerender
+on:
+  push:
+    branches: [main]
+    paths: ['app.html', 'tools/prerender.js', 'tools/shell-loader.js']
+  schedule:
+    - cron: '41 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: prerender
+  cancel-in-progress: false
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Cache browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-1.48.2-chromium
+      - name: Install
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1.48.2
+          timeout 240 npx playwright install --with-deps chromium || npx playwright install chromium
+      - name: Render and check
+        run: node tools/prerender.js
+      - name: Publish
+        run: |
+          git config user.name "ati-prerender-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "تحديث الصفحة الرئيسية الخفيفة"
+          for i in 1 2 3; do git pull --rebase -q && git push -q && exit 0; sleep 5; done; exit 1
