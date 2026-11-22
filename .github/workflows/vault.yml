@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       op:
-        description: 'backup | verify | source | list'
+        description: 'backup | verify | source | dbbackup | list'
         required: true
         default: list
       name:
@@ -63,6 +63,35 @@ jobs:
           sha256sum "$N.tar.gz" | awk '{print $1}' > "$N.sha256"
           put "$N.tar.gz" "$N.tar.gz"; put "$N.sha256" "$N.sha256"
           echo "NAME=$N files $(tar -tzf "$N.tar.gz" | wc -l) sha256 $(cat "$N.sha256")"
+      - name: Database backup + test restore (data never leaves Supabase; only counts and hashes here)
+        if: env.OP == 'dbbackup'
+        run: |
+          DBX=https://ttuelhswxyjbjdnydmns.supabase.co/functions/v1/v231-dbx
+          SET="${NAME:-db}-$(date -u +%Y%m%d-%H%M%S)"
+          tok(){ curl -fsS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=attamhid-vault" | jq -r .value; }
+          dbx(){ T=$(tok); echo "::add-mask::$T"; jq -c --arg o "$T" --arg set "$SET" '. + {oidc:$o,set:$set}' | curl -sS --max-time 150 -X POST -H 'Content-Type: application/json' --data-binary @- "$DBX"; }
+          js(){ jq -e 'type=="object"' >/dev/null 2>&1 <<<"$1" && jq -c . <<<"$1" || echo '{"ok":false,"detail":"bad response"}'; }
+          echo '{"op":"plan"}' | dbx > plan.json; jq -e .ok plan.json >/dev/null || { cat plan.json; exit 1; }
+          echo "SET=$SET tables=$(jq '.plan|length' plan.json) rows=$(jq '[.plan[].rows]|add' plan.json) parts=$(jq '[.plan[].parts]|add' plan.json)"
+          echo '{"op":"ddl"}' | dbx | tee ddl.json | jq -c '{ok,roundtrip,counts,error,detail}'
+          jq -e '.ok and .roundtrip' ddl.json >/dev/null
+          : > parts.jsonl; FAIL=0
+          for row in $(jq -c '.plan[]' plan.json); do
+            P=$(jq -r .parts <<<"$row")
+            for ((i=0;i<P;i++)); do
+              REQ=$(jq -c --argjson i $i '{s,t,per,part:$i}' <<<"$row")
+              E=$(js "$(jq -c '. + {op:"export"}' <<<"$REQ" | dbx)")
+              R=$(js "$(jq -c '. + {op:"restore"}' <<<"$REQ" | dbx)")
+              OK=$(jq -n --argjson e "$E" --argjson r "$R" '($e.ok and $r.ok and $e.sha256==$r.sha256 and $e.rows==$r.rows)')
+              jq -cn --argjson q "$REQ" --argjson e "$E" --argjson r "$R" --argjson ok "$OK" '{s:$q.s,t:$q.t,part:$q.part,rows:$e.rows,bytes:$e.bytes,sha256:$e.sha256,restored:$r.rows,ok:$ok,err:($e.detail // $r.detail)}' >> parts.jsonl
+              [ "$OK" = true ] || { FAIL=$((FAIL+1)); tail -1 parts.jsonl; }
+            done
+          done
+          jq -s --slurpfile p plan.json --slurpfile d ddl.json '{set:env.SET, at:(now|todate), tables:($p[0].plan|length), parts:length, rows:(map(.rows)|add), failed:(map(select(.ok|not))|length), ddl:$d[0].sha256, files:.}' parts.jsonl > manifest.json
+          jq -c '{manifest:.,op:"manifest"}' manifest.json | dbx | jq -c .
+          jq -r '"exported parts=\(.parts) rows=\(.rows) failed=\(.failed)"' manifest.json
+          jq -r '.files|group_by(.s)|.[]|"\(.[0].s): tables=\(map(.t)|unique|length) rows=\(map(.rows)|add) restored=\(map(.restored)|add)"' manifest.json
+          [ "$FAIL" = 0 ] && echo "DB BACKUP + RESTORE TEST PASSED ($SET)"
       - name: Verify by test restore
         if: env.OP == 'verify'
         run: |
