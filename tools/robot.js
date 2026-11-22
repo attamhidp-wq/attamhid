@@ -63,6 +63,16 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     await p.evaluate(() => { location.hash = '#/ext-training/admin'; }); await p.waitForTimeout(6000);
     const ex2 = await p.evaluate(() => ((document.querySelector('#app') || {}).innerText || '').slice(0, 80).replace(/\s+/g, ' '));
     console.log('CHECK ext-portal', ex1.form && ex1.conds && /إدارة بوابة التدريب الميداني الخارجي/.test(ex2) ? 'OK' : 'FAIL', JSON.stringify({ ex1, ex2 }));
+    // v235: الهوية الموحدة — صفحة الإدارة، ونموذج التسجيل وتحديد المستوى
+    await p.evaluate(() => { location.hash = '#/idn-admin'; }); await p.waitForTimeout(5000);
+    const idn = await p.evaluate(() => { const P = V51.idn235.people(); const miss = P.filter((x) => V51.idn235.missing(x.kind, x.o).length); const byKind = {}; miss.forEach((x) => { byKind[x.kind] = (byKind[x.kind] || 0) + 1; });
+      const top = {}; miss.forEach((x) => V51.idn235.missing(x.kind, x.o).forEach((f) => { top[f[0]] = (top[f[0]] || 0) + 1; }));
+      return { total: P.length, missing: miss.length, byKind, noEmail: miss.filter((x) => !x.o.email).length, top, page: !!document.querySelector('#app table') }; });
+    await p.evaluate(() => { location.hash = '#/register'; }); await p.waitForTimeout(4000);
+    const rg = await p.evaluate(() => { const f = document.querySelector('#app form[onsubmit="return reg(this)"]'); if (!f) return 'noform'; return ['country', 'countryEn', 'mother', 'motherEn', 'address', 'addressEn', 'pobEn', 'q64_issuerEn', 'q64_major', 'q64_majorEn', 'q64_countryEn'].filter((k) => !f.elements[k]).join(',') || 'all'; });
+    await p.evaluate(() => { location.hash = '#/plt'; }); await p.waitForTimeout(4000);
+    const pl = await p.evaluate(() => { const f = document.querySelector('#app form[onsubmit*="plt210reg"]'); return f ? { q64: !!f.querySelector('fieldset.q64'), req: ['dob', 'nat', 'idno', 'idType', 'tongue', 'country'].filter((k) => f.elements[k] && f.elements[k].required).length } : 'noform'; });
+    console.log('CHECK idn', idn.page && rg === 'all' && pl.q64 === false && pl.req === 6 ? 'OK' : 'FAIL', JSON.stringify({ idn, rg, pl }));
     await p.evaluate(() => { location.hash = '#/graduates'; }); await p.waitForTimeout(8000);
     console.log('CHECK graduates', /بوابة الخريجين/.test(t) && !/جارٍ التحميل/.test(t) ? 'OK' : 'FAIL', t);
   }
