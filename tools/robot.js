@@ -38,7 +38,18 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     await p.evaluate(() => { location.hash = '#/graduates'; });
     await p.waitForTimeout(15000);
     const st = await p.evaluate(() => ({ hash: location.hash, ld: (window.V51 && 0) || (typeof FT !== 'undefined' ? FT.ld : 'noFT'), text: (document.querySelector('#app') || {}).innerText ? document.querySelector('#app').innerText.slice(0, 300) : '' }));
-    console.log('DIAG graduates', JSON.stringify(st)); if (cons.length) console.log('DIAG console', cons.slice(0, 8).join(' | '));
+    console.log('DIAG graduates', JSON.stringify(st));
+    const calls = await p.evaluate(async () => {
+      const t = (pr) => Promise.race([pr.then((r) => (r && r.error ? 'ERR ' + (r.error.message || r.error.code) : 'OK ' + JSON.stringify(r && r.data).slice(0, 60))), new Promise((res) => setTimeout(() => res('HANG>10s'), 10000))]);
+      const o = {};
+      o.whoami = await t(sb.rpc('ft_whoami')); o.cfg = await t(sb.rpc('ft_cfg_get'));
+      o.rec = await t(sb.from('ft_rec').select('*').order('updated_at', { ascending: false }));
+      o.note = await t(sb.from('ft_note').select('*').order('id', { ascending: false }).limit(60));
+      o.sig = await t(sb.rpc('ft_signers')); o.ppl = await t(sb.rpc('ft_people'));
+      o.me = JSON.stringify(me).slice(0, 120);
+      return o;
+    });
+    console.log('DIAG calls', JSON.stringify(calls)); if (cons.length) console.log('DIAG console', cons.slice(0, 8).join(' | '));
   }
   await p.evaluate(() => { try { save(); } catch (e) {} });
   await p.waitForTimeout(8000);
