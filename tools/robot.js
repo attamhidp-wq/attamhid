@@ -39,10 +39,11 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     await p.waitForTimeout(15000);
     const t = await p.evaluate(() => ((document.querySelector('#app') || {}).innerText || '').slice(0, 120).replace(/\s+/g, ' '));
     await p.evaluate(() => { location.hash = '#/graduates/forms'; }); await p.waitForTimeout(6000);
-    const fr = await p.evaluate(async () => { const codes = [...document.querySelectorAll('#app table tr td:first-child b')].map((b) => b.textContent.trim()); const bad = [];
-      for (const c of codes) { const before = document.querySelectorAll('.ft-doc').length; try { V51.h.ft231pv(c); } catch (e) { bad.push(c + ':' + e.message); continue; } await new Promise((r) => setTimeout(r, 300)); const d = document.querySelector('#pvw .ft-doc') || document.querySelector('.ft-doc'); if (!d || d.innerText.length < 200) bad.push(c + ':empty'); }
-      return { n: codes.length, bad }; });
-    console.log('CHECK forms-review', fr.n === 28 && !fr.bad.length ? 'OK' : 'FAIL', JSON.stringify(fr));
+    const fr = await p.evaluate(async () => { const codes = [...document.querySelectorAll('#app table tr td:first-child b')].map((b) => b.textContent.trim()).filter((c) => /^[تم]-\d+$/.test(c)); const bad = [], pages = {};
+      for (const c of codes) { try { await V51.h.ft231pv(c); } catch (e) { bad.push(c + ':' + e.message); continue; } await new Promise((r) => setTimeout(r, 400)); const d = document.querySelector('.g9-doc[data-nf]'); if (!d || d.innerText.length < 200) bad.push(c + ':empty'); else pages[c] = d.querySelectorAll('.g9p').length; try { closeM && closeM(); } catch (e) {} }
+      const real = {}; try { const N = window.__nf232, r = N.rec('TR-261122-68259'); if (r) for (const c of N.NFO.filter((c) => N.NF[c].k === r.kind)) { try { const h = await N.build(c, r, 'TEST', new Date().toISOString()); real[c] = (h.match(/class="g9p/g) || []).length + 'p' + (N.NF[c].when(r) ? '' : '(not-yet)'); } catch (e) { real[c] = 'ERR ' + e.message; } } else real.none = 1; } catch (e) { real.err = e.message; }
+      return { n: codes.length, bad, pages, real }; });
+    console.log('CHECK forms-review', fr.n === 9 && !fr.bad.length ? 'OK' : 'FAIL', JSON.stringify(fr));
     await p.evaluate(() => { location.hash = '#/graduates'; }); await p.waitForTimeout(8000);
     console.log('CHECK graduates', /بوابة الخريجين/.test(t) && !/جارٍ التحميل/.test(t) ? 'OK' : 'FAIL', t);
   }
