@@ -23,7 +23,7 @@ const WF = REPO + "/.github/workflows/vault.yml@refs/heads/main";
 const SCRATCH = "rst_v231";
 const SCHEMAS = ["public", "bk_v226", "bk_v230", "supabase_migrations"];
 const EXTRA = [["auth", "users"], ["auth", "identities"], ["auth", "mfa_factors"], ["storage", "buckets"], ["storage", "objects"], ["cron", "job"]];
-const TARGET = 3 * 1024 * 1024; // حجم تقريبي لكل جزء قبل الضغط
+const TARGET = 1536 * 1024; // حجم تقريبي لكل جزء قبل الضغط
 const json = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { "Content-Type": "application/json" } });
 const b64u = (s: string) => { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return Uint8Array.from(atob(s), (c) => c.charCodeAt(0)); };
 let JWKS: { keys: Array<Record<string, unknown>> } | null = null;
@@ -111,18 +111,18 @@ Deno.serve(async (req) => {
     const part = Number(body.part || 0), per = Number(body.per || 0);
     const [{ ok: exists }] = await sql`select exists(select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname=${s} and c.relname=${t} and c.relkind in ('r','p')) ok`;
     if (!exists || !(per > 0) || part < 0) return json({ error: "target" }, 400);
-    const path = `${set}/${s}.${t}.${String(part).padStart(4, "0")}.csv.gz`;
+    const path = `${set}/${s}.${t}.${String(part).padStart(4, "0")}.csv`;
     const sel = (src: string) => `select * from ${src} order by ctid offset ${part * per} limit ${per}`;
     if (op === "export") {
       const raw = await readAll(await sql.unsafe(`copy (${sel(qi(s) + "." + qi(t))}) to stdout with (format csv, header)`).readable());
       const [{ n }] = await sql.unsafe(`select count(*)::int n from (${sel(qi(s) + "." + qi(t))}) x`);
       const h = await sha(raw);
-      await put(path, await gz(raw), "application/gzip");
+      await put(path, raw, "text/csv");
       return json({ ok: true, path, rows: n, bytes: raw.length, sha256: h });
     }
     if (op === "restore") {
       // استعادة تجريبية: يُنزَّل الجزء من المخزن ويُحمَّل في جدول مؤقت بالبنية نفسها، ثم يُصدَّر ثانية وتُقارن البصمة والعدد.
-      const raw = await gunz(await get(path));
+      const raw = await get(path);
       const tmp = qi(SCRATCH) + "." + qi((s + "__" + t).slice(0, 60));
       await sql.unsafe(`create schema if not exists ${qi(SCRATCH)}`);
       await sql.unsafe(`revoke all on schema ${qi(SCRATCH)} from public, anon, authenticated`);
