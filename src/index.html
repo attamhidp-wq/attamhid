@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v235b';
+window.__BUILD__='v236';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -31637,7 +31637,7 @@ H.idn235save=async function(f){var R=myRec();if(!R)return;var o=read(f,R.kind),b
   if(d.data&&R.o){Object.keys(d.data).forEach(function(k){R.o[k]=d.data[k]})}T(Lx('حُفظت بياناتك.','Your data has been saved.'));var m=missing(R.kind,R.o);if(!m.length){location.hash=R.kind==='student'?'#/student':R.kind==='faculty'?'#/fp':'#/admin'}go()}
  catch(e){b.disabled=false;out.innerHTML='<div class="msg er">'+e9(e.message||String(e))+'</div>'}};
 /* الإلزام: من نقصت بياناته يُحوَّل إلى صفحة الاستكمال قبل أي خدمة */
-var FREE=/^(idn|login|logout|pwchange|reset|recover|2fa|verify|ft-verify|privacy|terms|)$/;
+var FREE=/^(idn|idn-fill|login|logout|pwchange|reset|recover|2fa|verify|ft-verify|privacy|terms|)$/;
 setInterval(function(){try{var k=location.hash.replace(/^#\/?/,'').split('/')[0];if(FREE.test(k))return;if(typeof me==='undefined'||!me)return;if(me.r==='admin'&&!me.unit)return;var n=needs();if(n){location.hash='#/idn';try{go()}catch(e){}}}catch(e){}},1500);
 
 /* ---------- الإدارة المركزية: كل الأشخاص، نسبة الاكتمال، التعديل الكامل، والبريد ---------- */
@@ -31659,17 +31659,40 @@ H.idn235ed=function(kind,id){var x=findP(id);if(!x)return;try{mdl(Lx('تعديل
 H.idn235edS=function(f,id){var x=findP(id);if(!x)return;var o=read(f,x.kind),bad=check(o,x.kind);if(bad.length){T(bad.join(' · '));return}var em=String((f.elements.email||{}).value||'').trim();
  Object.keys(o).forEach(function(k){if(o[k]!=='')x.o[k]=o[k]});if(o.dob)x.o.birth=o.dob;if(o.docType)x.o.idType=o.docType;if(em)x.o.email=em;x.o.idn16={at:new Date().toISOString(),by:'admin'};
  try{touch(x.o)}catch(e){}try{save()}catch(e){}try{document.getElementById('mod').style.display='none'}catch(e){}T(Lx('حُفظت البيانات.','Saved.'));go()};
-/* بريد الاستكمال (بلا روابط وفق سياسة البريد الرسمي) */
-var mailBody=function(x,m){var nm=x.o.name||'',ne=x.o.nameEn||'';var la=m.map(function(f){return '• '+f[1]}).join('\n'),le=m.map(function(f){return '• '+f[2]}).join('\n');
- var text='السلام عليكم ورحمة الله وبركاته\n'+(nm?'المكرم/ة '+nm+'\n':'')+'\nيلزمكم استكمال بياناتكم الأساسية في نظام معهد التمهيد بدقة، لأنها تُطبع كما هي في وثائقكم وشهاداتكم الرسمية بالعربية والإنجليزية، ولا تُتاح الخدمات قبل استكمالها.\n\nالبيانات الناقصة:\n'+la+'\n\nادخلوا إلى بوابتكم في موقع المعهد برقمكم '+x.o.id+' وكلمة المرور، فتظهر لكم صفحة «استكمال البيانات الأساسية» مباشرة. اكتبوا الاسم والعنوان والتخصص بالإنجليزية كما في جواز السفر.\n\n—\nDear '+(ne||nm)+',\nYou are required to complete your core data in the At Tamhid Institute system accurately, as it is printed exactly as entered in your official documents and certificates in Arabic and English. Services are not available until it is complete.\n\nMissing data:\n'+le+'\n\nSign in to your portal on the Institute website with your number '+x.o.id+' and password; the “Complete your core data” page opens directly. Write your name, address and major in English exactly as in your passport.\n\nمعهد التمهيد — At Tamhid Institute';
- var html='<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;font-size:15px;line-height:1.8;color:#16202E">'+e9(text).replace(/\n—\n/,'</div><hr><div dir="ltr" style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#16202E">').replace(/\n/g,'<br>')+'</div>';
- return {subject:'استكمال البيانات الأساسية — معهد التمهيد / Complete your core data — At Tamhid Institute',text:text,html:html}};
-var sendOne=async function(x){var m=missing(x.kind,x.o);if(!m.length||!x.o.email)return {skip:1};if(!V5.fn63)return {error:'no_fn'};var B=mailBody(x,m);
- var r=await V5.fn63({action:'mail',type:'idn16',to:x.o.email,subject:B.subject,html:B.html,text:B.text,cred_with:'',cred_without:'',cred_with_text:'',cred_without_text:'',from_name:'معهد التمهيد — At Tamhid Institute',reply_to:''});
- if(r&&r.ok){var L=LOG(),p=L.mail[x.o.id]||{n:0};L.mail[x.o.id]={at:new Date().toISOString(),n:(p.n||0)+1,to:x.o.email};try{V5.setTouch('idn16')}catch(e){}try{save()}catch(e){}}return r||{error:'x'}};
-H.idn235mail=async function(id){var x=findP(id);if(!x)return;T(Lx('… جارٍ الإرسال','… Sending'));var r=await sendOne(x);T(r&&r.ok?Lx('أُرسل البريد.','Email sent.'):Lx('تعذّر الإرسال: ','Could not send: ')+e9((r&&(r.error||r.detail))||''));go()};
+/* بريد الاستكمال الديناميكي: تكليف رسمي + رابط شخصي آمن يفتح نموذج البيانات الناقصة، والحفظ في الموقع مباشرة */
+var mailBody=function(x,m,link,exp){var nm=x.o.name||'',ne=x.o.nameEn||nm,f=/أنثى|^f/i.test(String(x.o.sex||'')),hon=f?'المكرمة':'المكرم',hEn=f?'Ms.':'Mr.';
+ var la=m.map(function(y){return y[1]}),le=m.map(function(y){return y[2]});
+ var text='السلام عليكم ورحمة الله وبركاته\n'+hon+' / '+nm+' ('+x.o.id+')\n\nتكلّفكم إدارة معهد التمهيد باستكمال بياناتكم الأساسية بدقة، لأنها تُطبع كما هي في وثائقكم وشهاداتكم الرسمية بالعربية والإنجليزية. البيانات الناقصة ('+m.length+'):\n'+la.map(function(t){return '• '+t}).join('\n')+'\n\nافتحوا الرابط الشخصي الآتي، واملؤوا البيانات، ثم اضغطوا «حفظ»؛ فتُحفظ في ملفكم في الموقع مباشرة:\n'+link+'\n\nالرابط خاص بكم فلا تشاركوه، وينتهي في '+exp+'. اكتبوا الاسم والعنوان والتخصص بالإنجليزية كما في جواز السفر.\n\n—\n'+hEn+' '+ne+' ('+x.o.id+')\n\nAt Tamhid Institute requires you to complete your core data accurately, as it is printed exactly as entered in your official documents and certificates in Arabic and English. Missing data ('+m.length+'):\n'+le.map(function(t){return '• '+t}).join('\n')+'\n\nOpen your personal link below, fill in the data and press “Save”; it is saved directly to your file on the website:\n'+link+'\n\nThe link is personal — do not share it. It expires on '+exp+'. Write your name, address and major in English exactly as in your passport.\n\nمعهد التمهيد — At Tamhid Institute';
+ var li=function(a){return '<ul style="margin:6px 0 12px;padding-inline-start:20px">'+a.map(function(t){return '<li>'+e9(t)+'</li>'}).join('')+'</ul>'},btnH=function(t){return '<p style="text-align:center;margin:18px 0"><a href="'+e9(link)+'" style="display:inline-block;background:#14284B;color:#fff;text-decoration:none;padding:12px 26px;border-radius:6px;font-weight:bold;font-size:16px">'+t+'</a></p>'};
+ var html='<div style="max-width:620px;margin:auto;border:1px solid #d6dbe0;border-top:6px solid #14284B;border-radius:6px;padding:20px 24px;font-family:Tahoma,Arial,sans-serif;color:#16202E">'+
+  '<div dir="rtl" style="font-size:15px;line-height:1.9"><p style="margin:0 0 6px;color:#14284B;font-size:18px;font-weight:bold">تكليف باستكمال البيانات الأساسية</p><p>السلام عليكم ورحمة الله وبركاته<br>'+hon+' / <b>'+e9(nm)+'</b> ('+e9(x.o.id)+')</p><p>تكلّفكم إدارة معهد التمهيد باستكمال بياناتكم الأساسية بدقة، لأنها تُطبع كما هي في وثائقكم وشهاداتكم الرسمية بالعربية والإنجليزية. البيانات الناقصة ('+m.length+'):</p>'+li(la)+'<p>افتحوا رابطكم الشخصي، واملؤوا البيانات، ثم اضغطوا «حفظ»؛ فتُحفظ في ملفكم في الموقع مباشرة.</p>'+btnH('استكمال البيانات الآن')+'<p style="font-size:13px;color:#5a6680">الرابط خاص بكم فلا تشاركوه، وينتهي في '+e9(exp)+'. اكتبوا الاسم والعنوان والتخصص بالإنجليزية كما في جواز السفر.</p></div>'+
+  '<hr style="border:0;border-top:1px solid #d6dbe0;margin:16px 0"><div dir="ltr" style="font-size:14px;line-height:1.7"><p style="margin:0 0 6px;color:#14284B;font-size:16px;font-weight:bold">Request to complete your core data</p><p>'+hEn+' <b>'+e9(ne)+'</b> ('+e9(x.o.id)+')</p><p>At Tamhid Institute requires you to complete your core data accurately, as it is printed exactly as entered in your official documents and certificates in Arabic and English. Missing data ('+m.length+'):</p>'+li(le)+btnH('Complete my data now')+'<p style="font-size:12.5px;color:#5a6680">The link is personal — do not share it. It expires on '+e9(exp)+'.</p></div>'+
+  '<p style="text-align:center;font-size:12px;color:#5a6680;margin-top:14px">معهد التمهيد — At Tamhid Institute</p></div>';
+ return {subject:'تكليف باستكمال البيانات الأساسية — معهد التمهيد / Complete your core data — At Tamhid Institute',text:text,html:html}};
+var MT='idn16l';
+var sendOne=async function(x){var m=missing(x.kind,x.o);if(!m.length||!x.o.email)return {skip:1};if(!V5.fn63||typeof sb==='undefined')return {error:'no_fn'};
+ var tk=await sb.rpc('idn_tok_new',{p_ref:String(x.o.id),p_days:30});if(tk.error||!tk.data||!tk.data.tok)return {error:'token'};
+ var link=location.origin+'/#/idn-fill/'+tk.data.tok,B=mailBody(x,m,link,tk.data.exp);
+ var r=await V5.fn63({action:'mail',type:MT,to:x.o.email,subject:B.subject,html:B.html,text:B.text,cred_with:'',cred_without:'',cred_with_text:'',cred_without_text:'',from_name:'معهد التمهيد — At Tamhid Institute',reply_to:''});
+ if(r&&r.ok){var L=LOG(),p=L.mail[x.o.id]||{n:0};L.mail[x.o.id]={at:new Date().toISOString(),n:(p.n||0)+1,to:x.o.email};try{save()}catch(e){}}return r||{error:'x'}};
+H.idn235mail=async function(id){var x=findP(id);if(!x)return;T(Lx('… جارٍ الإرسال','… Sending'));var r=await sendOne(x);T(r&&r.ok?Lx('أُرسل البريد بالرابط الشخصي.','Email with the personal link sent.'):Lx('تعذّر الإرسال: ','Could not send: ')+e9((r&&(r.error||r.detail))||''));go()};
+/* صفحة الرابط الشخصي: عامة بلا دخول؛ تعرض البيانات الناقصة فقط للتعبئة، والمسجّل للعرض */
+var TK={tok:null,d:null,ld:0,done:0};
+V['idn-fill']=function(){var t=(location.hash.split('/')[2]||'').trim();if(!t)return '<div class="msg er">'+Lx('الرابط غير صحيح.','Invalid link.')+'</div>';
+ if(TK.tok!==t){TK={tok:t,d:null,ld:0,done:0}}
+ if(!TK.d){if(!TK.ld&&typeof sb!=='undefined'){TK.ld=1;sb.rpc('idn_tok_get',{p_tok:t}).then(function(r){TK.d=r.data||{ok:false};try{W.__force71=1;go()}catch(e){}}).catch(function(){TK.d={ok:false,error:'net'};try{go()}catch(e){}})}return '<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>'}
+ var d=TK.d;if(!d.ok)return '<div class="box"><h2>'+Lx('استكمال البيانات الأساسية','Complete your core data')+'</h2><div class="msg er">'+(d.error==='net'?Lx('تعذّر الاتصال. أعد المحاولة.','Connection failed. Try again.'):Lx('انتهت صلاحية هذا الرابط أو أنه غير صحيح. تواصل مع المعهد لإرسال رابط جديد.','This link has expired or is invalid. Contact the Institute for a new link.'))+'</div></div>';
+ var o=d.data||{},m=missing(d.kind,o);
+ if(TK.done||!m.length)return '<div class="box"><h2>'+Lx('استكمال البيانات الأساسية','Complete your core data')+'</h2><div class="msg ok"><b>'+Lx('بياناتك مكتملة ومحفوظة في ملفك. شكراً لك.','Your data is complete and saved to your file. Thank you.')+'</b></div></div>';
+ return '<h2>'+Lx('استكمال البيانات الأساسية','Complete your core data')+'</h2><p><b>'+e9(o.name||'')+'</b> <span dir="ltr">'+e9(o.nameEn||'')+'</span> — '+e9(d.id)+'</p><div class="msg">'+Lx('املأ البيانات الناقصة ('+m.length+') ثم اضغط «حفظ»؛ تُحفظ في ملفك في الموقع مباشرة. اكتب الاسم والعنوان والتخصص بالإنجليزية كما في جواز السفر. البيانات المسجّلة سابقاً تُعرض للاطلاع، ويصحّحها المعهد عند الحاجة. الرابط صالح حتى ','Fill in the missing data ('+m.length+') and press “Save”; it is saved directly to your file. Write your name, address and major in English exactly as in your passport. Recorded data is shown for reference; the Institute corrects it when needed. The link is valid until ')+e9(d.exp)+'.</div>'+
+  '<form class="box v51g idn-f" onsubmit="V51.h.idn235tok(this);return false">'+form(d.kind,o,{lockFilled:1})+'<div><button class="btn">'+Lx('حفظ','Save')+'</button></div><div id="idno"></div></form>'};
+H.idn235tok=async function(f){var d=TK.d;if(!d||!d.ok)return;var o=read(f,d.kind),bad=check(o,d.kind),out=document.getElementById('idno');if(bad.length){out.innerHTML='<div class="msg er">'+e9(bad.join(' · '))+'</div>';return}
+ var b=f.querySelector('button');b.disabled=true;try{var r=await sb.rpc('idn_tok_save',{p_tok:TK.tok,p:o});if(r.error)throw r.error;var x=r.data||{};
+  if(!x.ok){b.disabled=false;out.innerHTML='<div class="msg er">'+(x.error==='expired'?Lx('انتهت صلاحية الرابط.','The link has expired.'):Lx('حقول بلغة غير صحيحة: ','Fields in the wrong language: ')+e9((x.bad||[]).join('، ')))+'</div>';return}
+  Object.keys(o).forEach(function(k){if(o[k])d.data[k]=o[k]});TK.done=!missing(d.kind,d.data).length;T(Lx('حُفظت بياناتك في ملفك.','Your data has been saved to your file.'));try{W.__force71=1;go()}catch(e){}window.scrollTo(0,0)}
+ catch(e){b.disabled=false;out.innerHTML='<div class="msg er">'+e9(e.message||String(e))+'</div>'}};
 var running=0;
-var sentLog=async function(){var M={};try{var r=await V5.fn63({action:'mail_log',limit:500});((r&&r.items)||[]).forEach(function(it){if(it.type!=='idn16'||it.status==='failed')return;var k=String(it.to_addr||it.to||'').toLowerCase(),p=M[k]||{n:0,at:''};p.n++;if(String(it.at)>p.at)p.at=String(it.at);M[k]=p})}catch(e){return null}return M};
+var sentLog=async function(){var M={};try{var r=await V5.fn63({action:'mail_log',limit:500});((r&&r.items)||[]).forEach(function(it){if(it.type!==MT||it.status==='failed')return;var k=String(it.to_addr||it.to||'').toLowerCase(),p=M[k]||{n:0,at:''};p.n++;if(String(it.at)>p.at)p.at=String(it.at);M[k]=p})}catch(e){return null}return M};
 var campaign=async function(force){if(running||!central()||!V5.fn63)return 0;running=1;var L=LOG(),n=0,now=Date.now();try{var SL=await sentLog();if(!SL&&!force){return 0}for(var x of people()){var m=missing(x.kind,x.o);if(!m.length||!x.o.email)continue;var p=(SL&&SL[String(x.o.email).toLowerCase()])||L.mail[x.o.id];
    if(!force&&p&&((p.n||0)>=4||now-new Date(p.at).getTime()<7*864e5))continue;var r=await sendOne(x);if(r&&r.ok)n++;await new Promise(function(r){setTimeout(r,1200)})}}finally{running=0}return n};
 H.idn235all=async function(){if(!confirm(Lx('إرسال بريد الاستكمال لكل من نقصت بياناته الآن؟','Email everyone with missing data now?')))return;T(Lx('… جارٍ الإرسال','… Sending'));var n=await campaign(1);T(Lx('أُرسلت رسائل: ','Emails sent: ')+n);go()};
@@ -31680,6 +31703,7 @@ setInterval(function(){try{if(!central())return;if(!(S.students&&S.students.leng
 /* رابط في الإدارة المركزية */
 GOHpush(function(){try{if(!central()||!/^#\/admin/.test(location.hash))return;var a=document.querySelector('#app');if(!a||a.querySelector('.idn235adm'))return;var h=a.querySelector('h2');if(!h)return;var miss=people().filter(function(x){return missing(x.kind,x.o).length}).length;
  h.insertAdjacentHTML('afterend','<div class="box idn235adm"><b>'+Lx('البيانات الأساسية (الهوية الموحدة)','Core data (unified identity)')+'</b> — '+Lx('ناقصو البيانات: ','With missing data: ')+miss+' <a class="btn s" href="#/idn-admin">'+Lx('عرض وتعديل','View & edit')+'</a></div>')}catch(e){}});
+setTimeout(function(){try{if(/^#\/(idn-fill|idn|idn-admin)(\/|$)/.test(location.hash)){W.__force71=1;go()}}catch(e){}},0);
 V5.idn235={missing:missing,fieldsFor:fieldsFor,people:people,mailBody:mailBody,okAr:okAr,okEn:okEn,CTRY:CTRY,LANGS:LANGS};
 }catch(e){console.error('idn235',e)}})();
 
