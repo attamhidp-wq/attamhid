@@ -44,6 +44,23 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       const real = {}; try { const N = window.__nf232, r = N.rec('TR-261122-68259'); if (r) for (const c of N.NFO.filter((c) => N.NF[c].k === r.kind)) { try { const h = await N.build(c, r, 'TEST', new Date().toISOString()); real[c] = (h.match(/class="g9p/g) || []).length + 'p' + (N.NF[c].when(r) ? '' : '(not-yet)'); } catch (e) { real[c] = 'ERR ' + e.message; } } else real.none = 1; } catch (e) { real.err = e.message; }
       return { n: codes.length, bad, pages, real }; });
     console.log('CHECK forms-review', fr.n === 9 && !fr.bad.length ? 'OK' : 'FAIL', JSON.stringify(fr));
+    // v233: لقطات مشفّرة لأحدث وثائق المعهد الرسمية (للاسترشاد بتصميمها) — لا يقرؤها إلا حامل المفتاح الخاص
+    try {
+      const pub = fs.readFileSync(path.join(__dirname, 'robot-shot-pub.pem'), 'utf8'), crypto = require('crypto');
+      const kinds = await p.evaluate(() => { const L = {}; (S.certs || []).forEach((c) => { if (!c || !c.type || c.revoked) return; const d = String(c.date || c.at || ''); if (!L[c.type] || d > L[c.type].d) L[c.type] = { d, rec: c.rec }; }); const tr = (S.students || []).filter((s) => s.trNo67).slice(-1)[0]; return { L, tr: tr ? tr.id : null }; });
+      const jobs = Object.keys(kinds.L).map((t) => ['c', t, kinds.L[t].rec]); if (kinds.tr) jobs.push(['t', 'transcript', kinds.tr]);
+      for (const [k, t, id] of jobs) {
+        const ok = await p.evaluate(([k, id]) => { try { document.querySelectorAll('#shot233').forEach((x) => x.remove()); const h = k === 'c' ? certHTML(S.certs.find((x) => x.rec === id)) : trHTML(id); const w = document.createElement('div'); w.id = 'shot233'; w.style.cssText = 'position:absolute;left:0;top:0;z-index:99999;background:#fff;width:max-content'; w.innerHTML = h; document.body.appendChild(w); return w.offsetHeight; } catch (e) { return 'ERR ' + e.message; } }, [k, id]);
+        if (typeof ok !== 'number') { console.log('SHOT', t, ok); continue; }
+        await p.waitForTimeout(1500);
+        const el = await p.$('#shot233'); const buf = await el.screenshot({ type: 'jpeg', quality: 62 });
+        const key = crypto.randomBytes(32), iv = crypto.randomBytes(12), ci = crypto.createCipheriv('aes-256-gcm', key, iv), enc = Buffer.concat([ci.update(buf), ci.final()]);
+        const ek = crypto.publicEncrypt({ key: pub, oaepHash: 'sha256' }, key);
+        const blob = Buffer.concat([Buffer.from([ek.length >> 8, ek.length & 255]), ek, iv, ci.getAuthTag(), enc]).toString('base64');
+        for (let i = 0; i < blob.length; i += 60000) console.log('SHOT', t, i, blob.slice(i, i + 60000));
+        await p.evaluate(() => document.querySelectorAll('#shot233').forEach((x) => x.remove()));
+      }
+    } catch (e) { console.log('SHOT fail', e.message); }
     await p.evaluate(() => { location.hash = '#/graduates'; }); await p.waitForTimeout(8000);
     console.log('CHECK graduates', /بوابة الخريجين/.test(t) && !/جارٍ التحميل/.test(t) ? 'OK' : 'FAIL', t);
   }
