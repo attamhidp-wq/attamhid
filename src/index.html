@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v231';
+window.__BUILD__='v231b';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -30794,6 +30794,8 @@ try{var g0=X.gradReq223;if(typeof g0==='function'&&!g0.__v225){X.gradReq223=func
 /* ===== الوصول من القائمة والبوابات ===== */
 try{if(!NAV.some(function(x){return x[0]==='graduates'}))NAV.push(['graduates','بوابة الخريجين'])}catch(e){}
 try{var vs=V.student;V.student=function(){var h=vs.apply(this,arguments);try{if(me&&me.r==='student'&&/الخدمات الذاتية للطلاب والطالبات|Student Self-Service/.test(h))h=h.replace(/(<h2[^>]*>[^<]*<\/h2>)/,'$1<p><a class="btn" href="#/graduates">'+Lx('بوابة الخريجين','Field training & graduation project portal')+'</a></p>')}catch(e){}return h}}catch(e){}
+try{var va231=V.admin;V.admin=function(){var h=va231.apply(this,arguments);try{if(me&&me.r==='admin'&&!me.unit&&typeof h==='string'&&h.indexOf('ft231adm')<0){var A=[['',Lx('لوحة بوابة الخريجين','Graduates Portal dashboard')],['tcd',Lx('لوحة منسق التدريب','Training coordinator')],['pcd',Lx('لوحة منسق المشاريع','Projects coordinator')],['grades',Lx('دفتر درجات 4401','4401 gradebook')],['cfg',Lx('إعدادات البوابة والصلاحيات','Settings & permissions')],['audit',Lx('سجل التدقيق','Audit log')]];
+ h=h.replace(/(<h2[^>]*>[\s\S]*?<\/h2>)/,'$1<div class="box ft231adm"><b>'+Lx('بوابة الخريجين','Graduates Portal')+'</b><p>'+A.map(function(x){return '<a class="btn s" href="#/graduates'+(x[0]?'/'+x[0]:'')+'">'+x[1]+'</a>'}).join(' ')+'</p></div>')}}catch(e){}return h}}catch(e){}
 try{var vf=V.fp;V.fp=function(){var h=vf.apply(this,arguments);try{if(me&&me.r==='faculty')h=h.replace(/(<h2[^>]*>[^<]*<\/h2>)/,'$1<p><a class="btn" href="#/graduates">'+Lx('بوابة الخريجين','Field training & graduation project portal')+'</a></p>')}catch(e){}return h}}catch(e){}
 
 /* =====================================================================
@@ -30974,9 +30976,11 @@ var docHTML=function(code,r,sub,F,ref,issued){var D=FD[code],hd=HDR[D.hdr||'sec'
 var allowedFor=function(code,r){var D=FD[code],R=rolesOn(r);if(!D||D.k!==r.kind)return false;if(!D.when(r))return false;if(R.length===0)return false;
  if(R.indexOf('stu')>=0&&R.length===1){/* الطالب يرى وثائق ملفه، عدا السرية */if(code==='ت-8'||code==='م-8'||code==='ت-15'&&r.st==='applied')return false}return true};
 function docList(r){var codes=Object.keys(FD).filter(function(c){return FD[c].k===r.kind}),ed=rolesOn(r).some(function(x){return x==='edit'||x==='admin'});
- var rows=[];codes.forEach(function(c){var D=FD[c],ok=allowedFor(c,r);if(!ok)return;var subs=D.subs?D.subs(r):[['','']];subs.forEach(function(s){var key=r.id+'|'+c+'|'+s[0],ov=((r.data.ov||{})[keyOf(c,s[0])])||{},n=Object.keys(ov).length;
+ var rows=[],later=[];codes.forEach(function(c){var D=FD[c],ok=allowedFor(c,r);if(!ok){later.push('<tr class="mu"><td><b>'+c+'</b></td><td>'+e9(Lx(D.t[0],D.t[1]))+'</td><td><span class="tag">'+Lx('تُتاح عند بلوغ مرحلتها','Available at its stage')+'</span></td><td>'+btn(Lx('متى تُتاح؟','When?'),'V51.h.ft231later()','s')+'</td></tr>');return}var subs=D.subs?D.subs(r):[['','']];subs.forEach(function(s){var key=r.id+'|'+c+'|'+s[0],ov=((r.data.ov||{})[keyOf(c,s[0])])||{},n=Object.keys(ov).length;
   rows.push('<tr><td><b>'+c+'</b></td><td>'+e9(Lx(D.t[0],D.t[1]))+(s[1]?' — '+e9(s[1]):'')+(n?' <span class="tag warn">'+Lx('معدَّل يدوياً','Manually edited')+' ('+n+')</span>':'')+'</td><td>'+(FT.docs[key]?'<small dir="ltr">'+e9(FT.docs[key])+'</small>':'')+'</td><td>'+btn('PDF','V51.h.ft225doc(\''+c+'\',\''+r.id+'\',\''+e9(s[0])+'\')','s')+(ed?btn(Lx('تعديل يدوي','Manual edit'),'V51.h.ft225ov(\''+c+'\',\''+r.id+'\',\''+e9(s[0])+'\')','s'):'')+'</td></tr>')})});
- if(!rows.length)return '';return '<details class="box" open><summary><b>'+Lx('الوثائق (تُولَّد PDF عند الطلب)','Documents (generated as PDF on demand)')+'</b></summary>'+tbl([Lx('الرمز','Code'),Lx('الوثيقة','Document'),Lx('آخر رقم مرجعي','Last reference'),''],rows)+'</details>'}
+ /* v231: كل نماذج الملف ظاهرة؛ ما لم يحن وقته يظهر مع بيان متى يُتاح */
+ return '<details class="box" open><summary><b>'+Lx('النماذج والوثائق (تُولَّد PDF عند الطلب)','Forms & documents (generated as PDF on demand)')+'</b> ('+rows.length+' / '+(rows.length+later.length)+')</summary>'+tbl([Lx('الرمز','Code'),Lx('الوثيقة','Document'),Lx('آخر رقم مرجعي','Last reference'),''],rows.concat(later))+'</details>'}
+H.ft231later=function(){modal(Lx('متى يُتاح النموذج؟','When is a form available?'),'<p>'+Lx('يُتاح كل نموذج تلقائياً عند بلوغ الملف مرحلته ولصاحب الدور المعني به: مثلاً طلب الالتحاق (ت-1) بعد تعبئة بيانات الجهة، وخطاب التوجيه (ت-2) بعد اعتماد منسق التدريب، وشهادة الإتمام (ت-14) بعد إغلاق الملف.','Each form becomes available automatically when the file reaches its stage, for the role concerned.')+'</p>')};
 function docPanel(r){return r?docList(r):''}
 H.ft225doc=async function(code,id,sub){var r=REC(id);if(!r||!FD[code])return;if(!allowedFor(code,r)){T(Lx('لا صلاحية لإصدار هذه الوثيقة الآن.','You cannot issue this document now.'));return}
  var F=fieldsOf(code,r,sub),miss=missing(F);
