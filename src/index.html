@@ -669,7 +669,7 @@ a.pc:hover,a.pc:focus-visible{transform:translateY(-3px);box-shadow:0 8px 24px #
 <body>
 <header><div class="nav" id="nav" role="navigation" aria-label="التنقل الرئيسي"></div></header>
 <main id="app"></main>
-<noscript><p><a href="/programs/">البرامج والدورات في معهد التمهيد</a> · <a href="/programs/diploma.html">دبلوم عام في اللغة العربية لغير الناطقين بها</a> · <a href="/student-services/">الخدمات الذاتية للطلاب والطالبات</a> · <a href="/faculty-services/">الخدمات الذاتية لأعضاء هيئة التدريس</a> · <a href="/training/">بوابة التدريب</a> · <a href="/graduates/">بوابة الخريجين</a></p></noscript><footer id="ft"></footer>
+<noscript><p><a href="/programs/">البرامج والدورات في معهد التمهيد</a> · <a href="/programs/diploma.html">دبلوم عام في اللغة العربية لغير الناطقين بها</a> · <a href="/student-services/">الخدمات الذاتية للطلاب والطالبات</a> · <a href="/faculty-services/">الخدمات الذاتية لأعضاء هيئة التدريس</a> · <a href="/training/">بوابة التدريب</a> · <a href="/graduates/">بوابة الخريجين</a> · <a href="/external-training/">بوابة التدريب الميداني الخارجي</a></p></noscript><footer id="ft"></footer>
 <script id="v51pre">window.v51Serial=function(p){var y=new Date().getFullYear(),n=S.n.rec;while(S.certs.some(function(c){return c.rec=="TISA-"+y+"-"+pad(n,4)}))n++;if(!p)S.n.rec=n+1;return "TISA-"+y+"-"+pad(n,4)}</script>
 <div id="mod" role="dialog" aria-modal="true" aria-label="معاينة الوثيقة"><div class="in"><div style="display:flex;gap:8px;flex-wrap:wrap" id="mb"></div><div id="pvw"></div></div></div>
 <script>
@@ -1189,7 +1189,7 @@ const SOCI={
 const soi=k=>{const o=SOCI[k];return o?`<span class="soi" style="background:${o[0]}" aria-hidden="true">${o[1]}</span>`:''};
 const socKey=c=>/facebook/i.test(c[1])?'Facebook':/instagram/i.test(c[1])?'Instagram':/^X /i.test(c[1])?'X (Twitter)':/youtube/i.test(c[1])?'YouTube':/telegram/i.test(c[1])?'Telegram':'WhatsApp';
 function ftHTML(){const H=S.home,wa=n=>'https://wa.me/'+String(n).replace(/\D/g,''),L=(h,t,x)=>`<a class="chip" href="${h}" target="_blank" rel="noopener noreferrer"${x||''}>${t}</a>`;
-const PP=(LG=='en'?'/en':LG=='bn'?'/bn':''),PT=[['student-services','الخدمات الذاتية للطلاب والطالبات','Student Self-Service'],['faculty-services','الخدمات الذاتية لأعضاء هيئة التدريس','Faculty Self-Service'],['training','بوابة التدريب','Training Portal'],['graduates','بوابة الخريجين','Graduates Portal']];
+const PP=(LG=='en'?'/en':LG=='bn'?'/bn':''),PT=[['student-services','الخدمات الذاتية للطلاب والطالبات','Student Self-Service'],['faculty-services','الخدمات الذاتية لأعضاء هيئة التدريس','Faculty Self-Service'],['training','بوابة التدريب','Training Portal'],['graduates','بوابة الخريجين','Graduates Portal'],['external-training','بوابة التدريب الميداني الخارجي','External Field Training Portal']];
 return `<div class="ftc"><div class="ftr"><b>${B('الخدمات','Services')}</b><div class="ftl">${PT.map(x=>`<a class="chip" href="${PP}/${x[0]}/">${LG=='ar'?x[1]:x[2]}</a>`).join('')}</div></div><div class="ftr"><b>${B('تابعنا','Follow us')}</b><div class="ftl">${SOC.map(c=>L(c[2],soi(socKey(c))+'<span>'+(LG=='en'?c[1]:c[0])+'</span>',' title="'+(LG=='en'?c[1]:c[0])+'"')).join('')}</div></div><div class="ftr"><b>${B('تواصل معنا عبر واتساب','Contact us on WhatsApp')}</b><div class="ftl">${[H.p1,H.p2].map(p=>L(wa(p),soi('WhatsApp')+'<span dir="ltr">'+esc(p)+'</span>',' title="WhatsApp"')).join('')}</div></div><div class="ftr"><b>${B('البريد','Email')}</b><div class="ftl">${L('mailto:'+esc(H.em),soi('Email')+'<span dir="ltr">'+esc(H.em)+'</span>',' title="'+B('البريد الإلكتروني','Email')+'"')}</div></div><div class="ftr"><b>${B('تواصل معنا','Contact Us')}</b><div class="ftl"><button type="button" class="cbtn" onclick="window.cbOpen&&cbOpen()" aria-haspopup="dialog">🤖 ${B('تواصل معنا','Contact Us')}</button></div></div><div class="ftp"><a href="#/privacy">${B('سياسة الخصوصية','Privacy Policy')}</a> · <a href="#/terms">${B('الشروط والأحكام','Terms of Use')}</a></div></div>`}
 const GOH={pre:[],post:[]};
 const ABOUT_STD='معهد التمهيد مؤسسة تعليمية رائدة تقدّم برامج نوعية في التأهيل والتدريب، ومن أبرزها دبلوم عام في اللغة العربية لغير الناطقين بها، وبرامج نوعية قصيرة وطويلة، ودورات نوعية، وورش عمل، وبرامج علمية وتدريبية. والمعهد مرخّص من جهة حكومية في بنغلاديش برقم 028412/2025. ويتولى رئاسة المعهد سعادة الأستاذ المفتي منير الإسلام بن معيذ مع نخبة من الأساتذة والدكاترة وأعضاء هيئة التدريس.',
@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v233d';
+window.__BUILD__='v234';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -30393,8 +30393,8 @@ function homeView(){var w=who(),o=notesBox();
 function myOld(){var a=mine('tr').filter(function(r){return !active(r)}).concat(mine('gp').filter(function(r){return !active(r)}));if(!a.length)return '';return '<h3>'+Lx('ملفات سابقة','Previous files')+'</h3>'+tbl([Lx('الملف','File'),Lx('الحالة','Status'),''],a.map(function(r){return '<tr><td>'+e9(r.id)+'</td><td>'+chip(r)+'</td><td><a href="'+link('r/'+r.id)+'">'+Lx('فتح','Open')+'</a></td></tr>'}))}
 function rowR(r){var d=r.data||{},s=d.s||{},t=r.kind==='tr'?((d.ext==='int'?Lx('داخلي: ','Internal: '):'')+(d.app&&d.app.ent||'')):r.kind==='gp'?(d.reg&&d.reg.title||''):r.kind==='app'?((REC(d.opp)||{data:{o:{}}}).data.o.title||d.opp):r.kind==='opp'?(d.o&&d.o.title):'';
  return '<tr><td>'+e9(s.ar||'')+'<br><small class="mu" dir="ltr">'+e9(r.sid||'')+'</small></td><td>'+e9(KIND[r.kind]?Lx(KIND[r.kind][0],KIND[r.kind][1]):r.kind)+'</td><td>'+e9(t||'')+'</td><td>'+chip(r)+(r.kind==='tr'&&d.log?'<br><small>'+hrs(r)+' / '+need(r)+' '+Lx('ساعة','h')+'</small>':'')+'</td><td><a class="btn s" href="'+link('r/'+r.id)+'">'+Lx('فتح','Open')+'</a></td></tr>'}
-var KIND={tr:['تدريب ميداني','Field training'],gp:['مشروع تخرج','Graduation project'],app:['ترشح لفرصة داخلية','Internal application'],rec:['توصية بالتعاون','Recommendation'],opp:['فرصة داخلية','Opportunity'],ent:['جهة','Organization']};
-function myView(){var m=myRef(),a=FT.recs.filter(function(r){return r.sid!==m&&(r.sup||[]).indexOf(m)>=0});
+var KIND={ex:['تدريب ميداني خارجي','External field training'],tr:['تدريب ميداني','Field training'],gp:['مشروع تخرج','Graduation project'],app:['ترشح لفرصة داخلية','Internal application'],rec:['توصية بالتعاون','Recommendation'],opp:['فرصة داخلية','Opportunity'],ent:['جهة','Organization']};
+function myView(){var m=myRef(),a=FT.recs.filter(function(r){return r.kind!=='ex'&&r.sid!==m&&(r.sup||[]).indexOf(m)>=0});
  var h='<h3>'+Lx('الطلاب المرتبطون بي','Students linked to me')+'</h3>'+tbl([Lx('الطالب','Student'),Lx('النوع','Type'),Lx('الموضوع','Subject'),Lx('الحالة','Status'),''],a.map(rowR));
  var tk=[];FT.recs.forEach(function(r){if(r.kind==='tr'&&r.sid===m)((r.data.tasks)||[]).forEach(function(t){tk.push([r,t])})});
  if(tk.length)h+='<h3>'+Lx('مهامي في التكليف الداخلي','My internal-assignment tasks')+'</h3>'+tbl([Lx('المهمة','Task'),Lx('النوع','Type'),Lx('الموعد','Due'),Lx('الحالة','Status')],tk.map(function(x){var t=x[1];return '<tr><td>'+e9(t.title)+'</td><td>'+e9(TASK[t.kind]?Lx(TASK[t.kind][0],TASK[t.kind][1]):t.kind)+'</td><td dir="ltr">'+e9(t.due||'')+'</td><td>'+(t.done?Lx('منجزة','Done'):Lx('قيد العمل','Open'))+(t.rev?' · '+e9(REV[t.rev]?Lx(REV[t.rev][0],REV[t.rev][1]):t.rev):'')+'</td></tr>'}));
@@ -30796,8 +30796,8 @@ try{var g0=X.gradReq223;if(typeof g0==='function'&&!g0.__v225){X.gradReq223=func
 try{if(!NAV.some(function(x){return x[0]==='graduates'}))NAV.push(['graduates','بوابة الخريجين'])}catch(e){}
 try{var vs=V.student;V.student=function(){var h=vs.apply(this,arguments);try{if(me&&me.r==='student'&&/الخدمات الذاتية للطلاب والطالبات|Student Self-Service/.test(h))h=h.replace(/(<h2[^>]*>[^<]*<\/h2>)/,'$1<p><a class="btn" href="#/graduates">'+Lx('بوابة الخريجين','Field training & graduation project portal')+'</a></p>')}catch(e){}return h}}catch(e){}
 try{var va231=V.admin;V.admin=function(){var h=va231.apply(this,arguments);try{if(me&&me.r==='admin'&&!me.unit&&typeof h==='string'&&h.indexOf('ft231adm')<0){var A=[['',Lx('لوحة بوابة الخريجين','Graduates Portal dashboard')],['tcd',Lx('لوحة منسق التدريب','Training coordinator')],['pcd',Lx('لوحة منسق المشاريع','Projects coordinator')],['grades',Lx('دفتر درجات 4401','4401 gradebook')],['forms',Lx('مراجعة النماذج الـ28 واعتمادها','Review & approve the 28 forms')],['cfg',Lx('إعدادات البوابة والصلاحيات','Settings & permissions')],['audit',Lx('سجل التدقيق','Audit log')]];
- h=h.replace(/(<h2[^>]*>[\s\S]*?<\/h2>)/,'$1<div class="box ft231adm"><b>'+Lx('بوابة الخريجين','Graduates Portal')+'</b><p>'+A.map(function(x){return '<a class="btn s" href="#/graduates'+(x[0]?'/'+x[0]:'')+'">'+x[1]+'</a>'}).join(' ')+'</p></div>')}}catch(e){}return h}}catch(e){}
-try{var vf=V.fp;V.fp=function(){var h=vf.apply(this,arguments);try{if(me&&me.r==='faculty')h=h.replace(/(<h2[^>]*>[^<]*<\/h2>)/,'$1<p><a class="btn" href="#/graduates">'+Lx('بوابة الخريجين','Field training & graduation project portal')+'</a></p>')}catch(e){}return h}}catch(e){}
+ h=h.replace(/(<h2[^>]*>[\s\S]*?<\/h2>)/,'$1<div class="box ft231adm"><b>'+Lx('بوابة الخريجين','Graduates Portal')+'</b><p>'+A.map(function(x){return '<a class="btn s" href="#/graduates'+(x[0]?'/'+x[0]:'')+'">'+x[1]+'</a>'}).join(' ')+'</p><p><b>'+Lx('بوابة التدريب الميداني الخارجي','External Field Training Portal')+'</b> <a class="btn s" href="#/ext-training/admin">'+Lx('إدارة الطلبات والمتدربين','Applications & trainees')+'</a> <a class="btn s" href="#/ext-training">'+Lx('الصفحة العامة','Public page')+'</a></p></div>')}}catch(e){}return h}}catch(e){}
+try{var vf=V.fp;V.fp=function(){var h=vf.apply(this,arguments);try{if(me&&me.r==='faculty')h=h.replace(/(<h2[^>]*>[^<]*<\/h2>)/,'$1<p><a class="btn" href="#/graduates">'+Lx('بوابة الخريجين','Field training & graduation project portal')+'</a> <a class="btn s" href="#/ext-training/my">'+Lx('المتدربون الخارجيون المسندون إليّ','My external trainees')+'</a></p>')}catch(e){}return h}}catch(e){}
 
 /* =====================================================================
    محرك الوثائق: 28 نموذجاً تُعبّأ آلياً من النظام، وتُولَّد PDF عند الطلب ولا تُحفظ نسخها
@@ -31157,7 +31157,7 @@ var nfBand0=function(){try{var V=window.V51||{};if(V.band59)return V.band59(0)}c
 var nfDMY=function(d){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(d||''));return m?m[3]+'-'+m[2]+'-'+m[1]:''};
 var nfHIJ=function(d){try{var p=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'2-digit',month:'2-digit',year:'numeric'}).formatToParts(new Date(String(d).slice(0,10)+'T12:00:00')),g=function(t){return (p.find(function(x){return x.type===t})||{}).value||''};return g('day')+'-'+g('month')+'-'+g('year')}catch(e){return ''}};
 var nfTitle=function(D,ref,issued,term){return '<div class="tt"><div class="ar">'+e9(D.t[0])+(D.conf?'<span class="conf">سري</span>':'')+'</div><div class="en">'+e9(D.t[1])+'</div></div>'+
- '<div class="tm"><span>رمز النموذج: '+e9(D.code)+(term?' &nbsp;·&nbsp; الفصل الدراسي: '+e9(term):'')+'</span><span class="e">Form '+e9(D.code.replace('ت-','T').replace('م-','G'))+' · Course 4401</span></div>'};
+ '<div class="tm"><span>رمز النموذج: '+e9(D.code)+(term?' &nbsp;·&nbsp; الفصل الدراسي: '+e9(term):'')+'</span><span class="e">Form '+e9(D.code.replace('ت-','T').replace('م-','G').replace('خ-','E'))+(D.k==='ex'?' · External Field Training':' · Course 4401')+'</span></div>'};
 var nfFoot=function(D,ref,issued,n,N,last){var iso=nfGreg(issued),url=location.origin+'/#/ft-verify/'+encodeURIComponent(ref||''),q='';try{q=qr(url)}catch(e){}
  var I={},Hm={};try{I=(S.v51&&S.v51.inst)||{};Hm=S.home||{}}catch(e){}
  var ct=[I.addrAr?e9(I.addrAr):'دكا - بنغلاديش',Hm.p1?'<bdi dir="ltr">'+e9(Hm.p1)+'</bdi>':'<bdi dir="ltr">+8801822510180</bdi>',Hm.em?'<bdi dir="ltr">'+e9(Hm.em)+'</bdi>':'<bdi dir="ltr">attamhidp@gmail.com</bdi>'].join(' &nbsp;|&nbsp; ');
@@ -31187,24 +31187,24 @@ var nfBuild=async function(code,r,ref,issued,pv){var D=NF[code],term='';try{term
  finally{host.remove()}};
 
 var NF_XREF={letterRef:1,m1ref:1,m7ref:1};/* أرقام النماذج السابقة المدمجة: صارت أجزاءً من الوثيقة نفسها */
-var nfMissing=function(code,r){var D=NF[code],out=[];(D.parts||[]).forEach(function(p){if(!nfWhen(p,r))return;var ss=FD[p].subs?nfSubs(p,r).map(function(x){return x[0]}):[''];ss.forEach(function(s){try{missing(fieldsOf(p,r,s)).forEach(function(x){if(!NF_XREF[x[0]])out.push(x)})}catch(e){}})});return out};
+var nfMissing=function(code,r){var D=NF[code],out=[];if(D.miss)return D.miss(r)||[];(D.parts||[]).forEach(function(p){if(!nfWhen(p,r))return;var ss=FD[p].subs?nfSubs(p,r).map(function(x){return x[0]}):[''];ss.forEach(function(s){try{missing(fieldsOf(p,r,s)).forEach(function(x){if(!NF_XREF[x[0]])out.push(x)})}catch(e){}})});return out};
 var nfAllowed=function(code,r){var D=NF[code],R=rolesOn(r);if(!D||D.k!==r.kind||!D.when(r)||!R.length)return false;if(R.indexOf('stu')>=0&&R.length===1&&D.conf)return false;return true};
 
 /* v232: الإصدار والمراجعة بالنماذج التسعة الجديدة */
 var formsOk2=function(){return C().formsOk2||{}};
-var nfName=function(code){return 'ft-'+code.replace('ت-','T').replace('م-','G')};
+var nfName=function(code){return 'ft-'+code.replace('ت-','T').replace('م-','G').replace('خ-','E')};
 function formsReview(){var ok=formsOk2(),n=NFO.filter(function(c){return ok[c]&&ok[c].ok}).length;
  var grp=function(k,ar,en){return '<tr><td colspan="4" style="background:#eef2f8"><b>'+Lx(ar,en)+'</b></td></tr>'+NFO.filter(function(c){return NF[c].k===k}).map(function(c){var D=NF[c],x=ok[c];
   return '<tr><td><b>'+c+'</b></td><td>'+e9(Lx(D.t[0],D.t[1]))+(D.conf?' <span class="tag er">'+Lx('سري','Confidential')+'</span>':'')+'<br><small class="mu">'+Lx('يجمع النماذج السابقة: ','Merges former forms: ')+e9(D.parts.join('، '))+'</small></td><td>'+(x&&x.ok?'<span class="tag ok">'+Lx('معتمد ','Approved ')+e9(String(x.at||'').slice(0,10))+'</span>':x&&x.note?'<span class="tag er">'+Lx('ملاحظة: ','Note: ')+e9(x.note)+'</span>':'<span class="tag">'+Lx('بانتظار المراجعة','Awaiting review')+'</span>')+'</td><td>'+
    btn(Lx('معاينة','Preview'),'V51.h.ft231pv(\''+c+'\')','s')+(x&&x.ok?'':btn(Lx('اعتماد','Approve'),'V51.h.ft231ok(\''+c+'\',1)','s'))+btn(Lx('ملاحظة','Note'),'V51.h.ft231ok(\''+c+'\',0)','s')+'</td></tr>'}).join('')};
- return '<h3>'+Lx('مراجعة النماذج الرسمية واعتمادها','Review and approve the official forms')+'</h3><p class="mu">'+Lx('اختُصرت النماذج من 28 إلى 9 نماذج رسمية: خمسة للتدريب الميداني وأربعة لمشروع التخرج. كل نموذج بتصميم موحّد متعدد الصفحات (ترويسة وتذييل وترقيم ورمز تحقق) ويُعبَّأ آلياً من ملف الطالب. راجع كل نموذج بالمعاينة ثم اعتمده أو سجّل ملاحظتك. لا يصدر نموذج قبل اعتماده. المعتمد: ','Forms were reduced from 28 to 9 official forms. Review each, then approve it or add a note. Approved: ')+n+' / '+NFO.length+'</p>'+
+ return '<h3>'+Lx('مراجعة النماذج الرسمية واعتمادها','Review and approve the official forms')+'</h3><p class="mu">'+Lx('اختُصرت النماذج من 28 إلى 9 نماذج رسمية: خمسة للتدريب الميداني وأربعة لمشروع التخرج، وأضيفت خمسة لبوابة التدريب الميداني الخارجي. كل نموذج بتصميم موحّد متعدد الصفحات (ترويسة وتذييل وترقيم ورمز تحقق) ويُعبَّأ آلياً من ملف الطالب. راجع كل نموذج بالمعاينة ثم اعتمده أو سجّل ملاحظتك. لا يصدر نموذج قبل اعتماده. المعتمد: ','Forms were reduced from 28 to 9 official forms. Review each, then approve it or add a note. Approved: ')+n+' / '+NFO.length+'</p>'+
  (n<NFO.length?'<p>'+btn(Lx('اعتماد كل النماذج دفعة واحدة','Approve all forms'),'V51.h.ft231okAll()','s')+'</p>':'')+
- tbl([Lx('الرمز','Code'),Lx('النموذج','Form'),Lx('الحالة','Status'),''],[grp('tr','التدريب الميداني','Field training')+grp('gp','مشروع التخرج','Graduation project')])}
+ tbl([Lx('الرمز','Code'),Lx('النموذج','Form'),Lx('الحالة','Status'),''],[grp('tr','التدريب الميداني','Field training')+grp('gp','مشروع التخرج','Graduation project')+grp('ex','التدريب الميداني الخارجي','External field training')])}
 H.ft231pv=async function(code){var D=NF[code];if(!D)return;try{T(Lx('جارٍ تجهيز المعاينة…','Preparing preview…'));var h=await nfBuild(code,SAMPLE(D.k),nfRefSample(code),new Date().toISOString(),1);show(h,'ft-review-'+nfName(code).slice(3))}
  catch(e){console.error('nf preview',code,e);T(Lx('تعذّرت معاينة النموذج: ','Preview failed: ')+e9(e.message))}};
 H.ft231ok=function(code,ok){var cur=Object.assign({},formsOk2()),note='';if(!ok){note=prompt(Lx('ملاحظتك على النموذج '+code+':','Your note on form '+code+':'));if(!note)return}
  cur[code]=ok?{ok:1,at:new Date().toISOString(),by:(me&&me.id)||'admin'}:{ok:0,note:note,at:new Date().toISOString()};return cfgSave({formsOk2:cur},ok?Lx('اعتُمد النموذج '+code+'.','Form approved.'):Lx('سُجّلت الملاحظة.','Note saved.'))};
-H.ft231okAll=function(){if(!confirm(Lx('اعتماد النماذج التسعة كلها؟ راجعها بالمعاينة أولاً.','Approve all 9 forms?')))return;var cur=Object.assign({},formsOk2()),t=new Date().toISOString();NFO.forEach(function(c){if(!(cur[c]&&cur[c].ok))cur[c]={ok:1,at:t,by:(me&&me.id)||'admin'}});return cfgSave({formsOk2:cur},Lx('اعتُمدت النماذج.','Forms approved.'))};
+H.ft231okAll=function(){if(!confirm(Lx('اعتماد النماذج كلها ('+NFO.length+')؟ راجعها بالمعاينة أولاً.','Approve all '+NFO.length+' forms?')))return;var cur=Object.assign({},formsOk2()),t=new Date().toISOString();NFO.forEach(function(c){if(!(cur[c]&&cur[c].ok))cur[c]={ok:1,at:t,by:(me&&me.id)||'admin'}});return cfgSave({formsOk2:cur},Lx('اعتُمدت النماذج.','Forms approved.'))};
 function docList(r){var ed=rolesOn(r).some(function(x){return x==='edit'||x==='admin'}),rows=[],later=[];
  NFO.filter(function(c){return NF[c].k===r.kind}).forEach(function(c){var D=NF[c],key=r.id+'|'+c+'|',ok=nfAllowed(c,r),ap=(formsOk2()[c]||{}).ok;
   var nm=e9(Lx(D.t[0],D.t[1]))+(D.conf?' <span class="tag er">'+Lx('سري','Confidential')+'</span>':'');
@@ -31218,11 +31218,11 @@ H.nfdoc=async function(code,id){var r=REC(id),D=NF[code];if(!r||!D)return;
  if(!nfAllowed(code,r)){T(Lx('لا صلاحية لإصدار هذه الوثيقة الآن.','You cannot issue this document now.'));return}
  var miss=nfMissing(code,r);
  if(miss.length){modal(Lx('لا تصدر وثيقة ناقصة','Incomplete documents are not issued'),'<p>'+Lx('الحقول المطلوبة الناقصة ومصدر كل منها:','Missing required fields and their sources:')+'</p>'+tbl([Lx('الحقل','Field'),Lx('المصدر','Source')],miss.map(function(x){return '<tr><td>'+e9(Lx(x[1],x[2]||x[1]))+'</td><td>'+e9(SRCN(x))+'</td></tr>'}))+(rolesOn(r).some(function(x){return x==='edit'||x==='admin'})?btn(Lx('تعديل يدوي','Manual edit'),'V51.h.nfov(\''+code+'\',\''+id+'\')'):''));return}
- var vals={};D.parts.forEach(function(p){if(!nfWhen(p,r))return;(FD[p].subs?nfSubs(p,r):[['']]).forEach(function(s){try{var F=fieldsOf(p,r,s[0]);F.L.forEach(function(x){vals[p+'#'+s[0]+'.'+x[0]]=F.V[x[0]]})}catch(e){}})});
+ var vals=D.vals?{x:D.vals(r)}:{};D.parts.forEach(function(p){if(!nfWhen(p,r))return;(FD[p].subs?nfSubs(p,r):[['']]).forEach(function(s){try{var F=fieldsOf(p,r,s[0]);F.L.forEach(function(x){vals[p+'#'+s[0]+'.'+x[0]]=F.V[x[0]]})}catch(e){}})});
  try{var d=await FT.rpc('ft_doc_issue',{p_rec:id,p_form:code,p_sub:'',p_tar:D.t[0],p_ten:D.t[1],p_h:hashOf(['v232',code,vals])});FT.docs[id+'|'+code+'|']=d.ref;
   var h=await nfBuild(code,r,d.ref,d.issued);show(h,nfName(code)+'-'+d.ref);setTimeout(function(){try{dl('pdf')}catch(e){}},500);if(d.replaces)T(Lx('صدرت برقم جديد، وأُلغيت السابقة في صفحة التحقق.','Issued with a new reference; the previous one is marked cancelled.'))}catch(e){T(msgOf(e))}};
 try{var NT=(window.V51||{}).numTypes67;if(NT){NT[20]=['وثائق التدريب الميداني','Field-training documents'];NT[21]=['وثائق مشروع التخرج','Graduation-project documents']}}catch(e){}
-var nfRefSample=function(code){return (code.indexOf('ت-')===0?'20':'21')+new Date().getFullYear()+'00000'};
+var nfRefSample=function(code){return (code.indexOf('ت-')===0?'20':code.indexOf('خ-')===0?'22':'21')+new Date().getFullYear()+'00000'};
 try{window.__nf232={NF:NF,NFO:NFO,build:nfBuild,sample:function(k){return SAMPLE(k)},ref:function(c){return nfRefSample(c)},rec:function(id){return REC(id)},missing:function(c,r){return nfMissing(c,r)},FT:function(){return FT},C:function(){return C()},allowed:function(c,r){try{return nfAllowed(c,r)}catch(e){return 'ERR '+e.message}},FD:FD}}catch(e){}
 
 
@@ -31246,6 +31246,227 @@ H.ft225ovS=async function(f,code,id,sub){var v=V8(f),r=REC(id),F=fieldsOf(code,r
   if(v.scope==='src'){var m=/^(e8|e11)\.c\.\d$/,need8=ch.some(function(x){return m.test(x[4]||'')});if(need8){await FT.load(1);var rr=REC(id),p=ch[0][4].split('.')[0],c=((rr.data[p]||{}).c||[]).map(Number),s=c.reduce(function(a,b){return a+b},0);await FT.rpc('ft_override',{p_rec:id,p_key:keyOf(code,sub),p_field:'__sum',p_val:s,p_reason:v.reason,p_scope:'src',p_src:p+'.sum'});await FT.rpc('ft_override',{p_rec:id,p_key:keyOf(code,sub),p_field:'__conv',p_val:r2(s/20*15),p_reason:v.reason,p_scope:'src',p_src:p+'.conv'})}}
   await FT.load(1);go();T(Lx('حُفظ التعديل. أعد إصدار الوثيقة لتصدر برقم مرجعي جديد.','Saved. Reissue the document to get a new reference.'))}catch(e){T(msgOf(e))}};
 H.ft225ovReset=async function(code,id,sub,k){var why=prompt(Lx('سبب الإعادة إلى القيمة التلقائية:','Reason:'));if(!why)return;closeM();try{await FT.rpc('ft_override',{p_rec:id,p_key:keyOf(code,sub),p_field:k,p_val:null,p_reason:why,p_scope:'doc',p_src:null});await FT.load(1);go();H.ft225ov(code,id,sub)}catch(e){T(msgOf(e))}};
+/* =====================================================================
+   v234 — بوابة التدريب الميداني الخارجي (External Field Training Portal)
+   للمتدربين من جهات ومؤسسات خارجية في: تدريس مقررات الدبلوم العام، والتعليم، وإدارة المحتوى، والترجمة.
+   المسار: التقديم في الموقع ← إرسال الوثائق بالبريد الإلكتروني (لا رفع في الموقع) ← تأكيد الاستلام ← الدراسة ← القبول
+   ← إسناد المقرر والمشرف الأكاديمي ← المتابعة الأسبوعية والزيارات الصفية ← التقويم الختامي ← الإتمام وإصدار الشهادة.
+   السجلات في ft_rec (النوع ex) والعمليات عبر ext_apply / ext_status / ext_act، والوثائق خ-1..خ-5 برقم نوع 22.
+   ===================================================================== */
+var EXF={teach:['تدريس مقررات الدبلوم العام','Teaching diploma courses'],edu:['التعليم والإرشاد الأكاديمي','Education & academic support'],content:['إدارة المحتوى التعليمي','Educational content management'],trans:['الترجمة','Translation']};
+var EXS={submitted:['مقدَّم — بانتظار الوثائق بالبريد','Submitted — awaiting documents by email'],docs:['الوثائق مستلمة','Documents received'],review:['قيد الدراسة','Under review'],accepted:['مقبول — بانتظار الإسناد','Accepted — awaiting assignment'],rejected:['معتذر عنه','Declined'],active:['في التدريب','In training'],evaluated:['قُوِّم ختامياً','Evaluated'],completed:['مكتمل','Completed'],withdrawn:['منسحب / منهى','Withdrawn']};
+var EXST=['submitted','docs','review','accepted','active','evaluated','completed'];
+var EXCR=[['التخطيط والإعداد','Planning & preparation'],['جودة التنفيذ وإتقان المهام','Delivery & task quality'],['الكفاية العلمية واللغوية','Subject & language competence'],['التواصل والتعامل مع الطلاب والزملاء','Communication & rapport'],['استعمال الوسائل والتقنيات','Use of tools & technology'],['الانضباط والالتزام المهني','Discipline & professionalism']];
+var EXD={email:'attamhidp@gmail.com',minWeeks:4,
+ intro:'يتيح معهد التمهيد لطلاب الجامعات والكليات والمؤسسات التعليمية وحديثي التخرج من خارج المعهد التدريبَ الميداني في برنامج الدبلوم العام في اللغة العربية لغير الناطقين بها، بإشراف أكاديمي من أعضاء هيئة التدريس، وفق الشروط والمتطلبات الآتية.',
+ conds:['أن يكون المتقدم طالباً في مرحلة البكالوريوس أو الدراسات العليا، أو متخرجاً خلال السنتين الأخيرتين، في اللغة العربية أو تعليمها للناطقين بغيرها أو الدراسات الإسلامية أو الترجمة أو تخصص قريب منها.',
+  'أن يقدّم خطاب ترشيح أو طلب تدريب رسمياً من جهته يبيّن المدة والساعات المطلوبة واسم المشرف من جهته، أو أن يتقدم بطلب شخصي يوافق عليه المعهد.',
+  'إتقان العربية الفصيحة تحدثاً وكتابة، ومعرفة جيدة بالإنجليزية أو البنغالية لمسار الترجمة.',
+  'ألا تقل مدة التدريب عن أربعة أسابيع، وأن يستوفي الساعات المطلوبة من جهته، ويلتزم بخطة التدريب وحصصه ومواعيده كاملة.',
+  'الالتزام بأنظمة المعهد ولوائحه وآداب المهنة، والمحافظة على سرية بيانات الطلاب والمعهد.',
+  'التدريب دون مقابل مالي ما لم يصدر قرار بخلافه، ولا يترتب عليه أي التزام وظيفي على المعهد.',
+  'للمعهد قبول الطلب أو الاعتذار عنه بحسب الحاجة والمقاعد المتاحة، وله إنهاء التدريب عند الإخلال بشروطه.'],
+ docs:['خطاب ترشيح أو طلب تدريب رسمي من الجهة (المدة، والساعات المطلوبة، واسم المشرف من الجهة وبريده).','صورة الهوية أو جواز السفر.','السيرة الذاتية.','صورة آخر مؤهل أو إفادة القيد الدراسي مع كشف الدرجات.','صورة شخصية حديثة.','لمسار التدريس: خطة درس قصيرة أو تسجيل لدرس تجريبي (اختياري).']};
+var EXC=function(){var c={};try{c=(FT.cfg&&FT.cfg.ext)||(EXP.cfg&&EXP.cfg.ext)||{}}catch(e){}var o=Object.assign({},EXD);Object.keys(c).forEach(function(k){if(c[k]!=null&&c[k]!==''&&!(Array.isArray(c[k])&&!c[k].length))o[k]=c[k]});return o};
+var EXP={cfg:null,ld:0,res:null,st:null};
+var exLink=function(p){return '#/ext-training'+(p?'/'+p:'')};
+var exCap=function(){return central()||roles().some(function(x){return ['tc','head','admin','edit','dir'].indexOf(x)>=0})};
+var exMine=function(){var m=myRef();return FT.recs.filter(function(r){return r.kind==='ex'&&m&&(r.sup||[]).indexOf(m)>=0})};
+var exAll=function(){return FT.recs.filter(function(r){return r.kind==='ex'})};
+var exHrs=function(r){return ((r.data||{}).log||[]).reduce(function(s,x){return s+(parseFloat(x.hrs)||0)},0)};
+var exNeed=function(r){var d=r.data||{};return +((d.asg||{}).hours||(d.app||{}).hours||0)};
+var exPct=function(c){c=(c||[]).map(Number).filter(function(n){return !isNaN(n)});if(!c.length)return '';return Math.round(c.reduce(function(a,b){return a+b},0)/(c.length*5)*1000)/10};
+var exGrade=function(p){p=+p;if(!(p>=0)||p==='')return '';return p>=90?'ممتاز':p>=80?'جيد جداً':p>=70?'جيد':p>=60?'مقبول':'غير مجتاز'};
+var exCourses=function(){try{var L=(window.V51&&V51.planCourses65&&V51.planCourses65('2026'))||[];return L.map(function(c){return {code:c.code||c.id,name:c.name||''}}).filter(function(c){return c.code})}catch(e){return []}};
+var exCourseName=function(code){var c=exCourses().find(function(x){return String(x.code)===String(code)});return c?(c.name+' ('+c.code+')'):(code||'')};
+var exErr=function(e){var m=String((e&&e.message)||e||'');var M={'rate':'تجاوزت عدد الطلبات المسموح به اليوم. حاول لاحقاً.','email':'البريد الإلكتروني غير صحيح.','field':'اختر مجال التدريب.','hours':'عدد الساعات غير صحيح.','dates':'تحقق من تاريخي البداية والنهاية.','consent':'يلزم الإقرار بالشروط.','docs required':'لا يُقبل الطلب قبل تأكيد استلام الوثائق بالبريد.','state':'هذا الإجراء غير متاح في مرحلة الملف الحالية.','forbidden':'لا صلاحية لهذا الإجراء.','missing':'أكمل الحقول المطلوبة.'};
+ var k=Object.keys(M).find(function(k){return m.indexOf(k)>=0});if(/missing:/.test(m))return 'أكمل الحقل المطلوب: '+m.split('missing:')[1];return k?M[k]:m};
+var exStage=function(r){var st=r.st,i=EXST.indexOf(st);if(st==='rejected'||st==='withdrawn')return '<p><span class="tag er">'+e9(Lx(EXS[st][0],EXS[st][1]))+'</span></p>';
+ return '<div class="tw"><table><tr>'+EXST.map(function(s,j){return '<td style="text-align:center;padding:6px;'+(j<i?'background:#e8f3ec':j===i?'background:#1B3560;color:#fff;font-weight:700':'color:#7b869c')+'">'+(j<i?'✓ ':'')+e9(Lx(EXS[s][0].split(' — ')[0],EXS[s][1].split(' — ')[0]))+'</td>'}).join('')+'</tr></table></div>'};
+var exTag=function(st){var c=st==='completed'?'ok':st==='rejected'||st==='withdrawn'?'er':st==='submitted'?'warn':'';return '<span class="tag '+c+'">'+e9(Lx((EXS[st]||[st])[0],(EXS[st]||[st,st])[1]))+'</span>'};
+
+/* ---------- الوثائق الرسمية خ-1 .. خ-5 (القالب الرسمي نفسه، رقم النوع 22) ---------- */
+var exA=function(r){return (r.data||{}).app||{}};var exG=function(r){return (r.data||{}).asg||{}};
+var exNm=function(r,id){try{return nm(r,id)}catch(e){return id||''}};
+var exReq=function(list){return list.filter(function(x){return x[1]==null||String(x[1]).trim()===''}).map(function(x){return [x[0],x[2],x[2],'',x[3]||'ملف المتدرب',1]})};
+var exAfter=function(r,st){return EXST.indexOf(r.st)>=EXST.indexOf(st)&&r.st!=='rejected'&&r.st!=='withdrawn'};
+var exPersonKV=function(r){var a=exA(r);return nfKV([['الاسم',a.nameAr],['الاسم بالإنجليزية',a.nameEn],['الجنسية',a.nat],['رقم الهوية / الجواز',a.pid],['الجهة',a.inst,1],['المرحلة الدراسية',a.level],['التخصص',a.major]])};
+nfDef('خ-1',{k:'ex',t:['خطاب قبول متدرب ميداني','Letter of Acceptance — Field Training'],parts:[],
+ when:function(r){return exAfter(r,'accepted')},
+ miss:function(r){var a=exA(r);return exReq([['nameAr',a.nameAr,'الاسم'],['inst',a.inst,'الجهة'],['field',a.field,'مجال التدريب'],['dec',(r.data.dec||{}).at,'قرار القبول','إجراء القبول']])},
+ vals:function(r){return {a:exA(r),g:exG(r),d:(r.data.dec||{}).at}},
+ body:function(r){var a=exA(r),g=exG(r),F=EXF[a.field]||['',''];return [
+  '<div class="sec"><h2>إلى المتدرب: '+nfV(a.nameAr)+'</h2><span class="en">To: '+nfE(a.nameEn)+'</span></div>'+exPersonKV(r),
+  nfSec('١','بيانات التدريب','Training')+nfKV([['مجال التدريب',F[0]],['البرنامج','دبلوم عام في اللغة العربية لغير الناطقين بها'],['المدة',(g.from||a.from)?('من '+nfE(g.from||a.from)+' إلى '+nfE(g.to||a.to)):'',0,!!(g.from||a.from)],['الساعات المطلوبة',g.hours||a.hours],['المقرر المسند',g.course?exCourseName(g.course):'يُحدَّد عند الإسناد',1],['المشرف الأكاديمي',g.isup?exNm(r,g.isup):'يُحدَّد عند الإسناد',1]]),
+  nfP('يسرّ معهد التمهيد – قسم الدراسات اللغوية والترجمة – إفادتكم بقبول طلبكم للتدريب الميداني في المعهد في مجال <b>'+nfE(F[0])+'</b> ضمن برنامج الدبلوم العام في اللغة العربية لغير الناطقين بها، وذلك بعد دراسة الطلب واستلام الوثائق المطلوبة، على أن يكون التدريب وفق الشروط والمتطلبات المعتمدة في المعهد، وبإشراف أكاديمي من أعضاء هيئة التدريس.')+
+  nfP('ويُرجى مراجعة المشرف الأكاديمي في أول أيام التدريب، والالتزام بخطة التدريب وحصصه ومواعيده وأنظمة المعهد ولوائحه، والمحافظة على سرية بيانات الطلاب. ويصدر عند إتمام التدريب تقويم ختامي وشهادة إتمام بالساعات المنجزة.')+
+  nfP('<span dir="ltr" style="display:block;text-align:left;font-family:Tinos,serif;font-size:13px">At Tamhid Institute is pleased to inform you that your application for field training in '+nfE(F[1])+' within the Diploma in Arabic for Non-Native Speakers has been accepted, subject to the Institute’s approved terms and under the academic supervision of its faculty.</span>')]}});
+nfDef('خ-2',{k:'ex',t:['خطة التدريب وإسناد المقرر','Training Plan & Course Assignment'],parts:[],
+ when:function(r){return exAfter(r,'active')},
+ miss:function(r){var g=exG(r);return exReq([['course',g.course,'المقرر المسند','الإسناد'],['isup',g.isup,'المشرف الأكاديمي','الإسناد'],['from',g.from,'بداية التدريب','الإسناد'],['to',g.to,'نهاية التدريب','الإسناد']])},
+ vals:function(r){return {g:exG(r)}},
+ body:function(r){var a=exA(r),g=exG(r),F=EXF[a.field]||['',''];return [
+  nfSec('١','بيانات المتدرب','Trainee')+exPersonKV(r),
+  nfSec('٢','الإسناد','Assignment')+nfKV([['مجال التدريب',F[0]],['المقرر',exCourseName(g.course)],['الشعبة / المستوى',g.section],['الأيام والأوقات',g.days],['المدة',g.from?('من '+nfE(g.from)+' إلى '+nfE(g.to)):'',0,!!g.from],['الساعات المطلوبة',g.hours||a.hours],['المشرف الأكاديمي',exNm(r,g.isup)],['المشرف من الجهة',[a.homeSup,a.homeSupEmail].filter(Boolean).join(' — ')],['المهام',g.tasks,1]]),
+  nfSec('٣','التزامات المتدرب','Commitments')+'<div class="box">'+['حضور الحصص المسندة كاملة في مواعيدها، وإعداد خطة كل درس قبل تنفيذه.','تسجيل الساعات والأنشطة أسبوعياً، وعرضها على المشرف الأكاديمي.','قبول الزيارات الصفية والأخذ بتوجيهات المشرف.','الالتزام بأنظمة المعهد ولوائحه وآداب المهنة، وسرية بيانات الطلاب.'].map(function(t,i){return '<p class="tx" style="margin:2px 0"><b>'+(i+1)+'.</b> '+t+'</p>'}).join('')+'</div>',
+  nfSIG([['المتدرب',a.nameAr,''],['المشرف الأكاديمي',exNm(r,g.isup),'']])]}});
+nfDef('خ-3',{k:'ex',t:['سجل التدريب والمتابعة','Training Log & Follow-up'],parts:[],
+ when:function(r){return exAfter(r,'active')&&(((r.data.log||[]).length)||((r.data.visits||[]).length))},
+ miss:function(r){return []},
+ vals:function(r){return {l:r.data.log,v:r.data.visits}},
+ body:function(r){var a=exA(r),g=exG(r),L=r.data.log||[],Vs=r.data.visits||[],cum=0,B=[];
+  B.push(nfSec('١','بيانات المتدرب','Trainee')+nfKV([['الاسم',a.nameAr],['الجهة',a.inst],['المقرر',exCourseName(g.course)],['المشرف الأكاديمي',exNm(r,g.isup)],['الساعات المطلوبة',exNeed(r)],['الساعات المنجزة',exHrs(r)]]));
+  B.push(nfSec('٢','السجل الأسبوعي','Weekly log'));
+  nfTB(['الأسبوع','المدة','الساعات','التراكمي','الحصص والموضوعات','ملاحظة المشرف'],L.map(function(x){cum+=parseFloat(x.hrs)||0;return [nfE(x.wk),nfE([x.from,x.to].filter(Boolean).join(' — ')),nfE(x.hrs),nfE(Math.round(cum*10)/10),nfE(x.topics),nfE(x.note)]}),7,8,9).forEach(function(x){B.push(x)});
+  B.push(nfSec('٣','الزيارات الصفية','Class visits'));
+  nfTB(['الزيارة','التاريخ'].concat(EXCR.map(function(c){return c[0]})).concat(['النسبة']),Vs.map(function(x,i){return [String(i+1),nfE(x.date)].concat(EXCR.map(function(c,j){return nfE((x.c||[])[j])})).concat([nfE(exPct(x.c)?exPct(x.c)+'%':'')])}),6,3,7).forEach(function(x){B.push(x)});
+  if(Vs.some(function(x){return x.notes}))B.push(nfKV(Vs.filter(function(x){return x.notes}).map(function(x,i){return ['ملاحظات الزيارة '+(i+1),x.notes,1]})));
+  B.push(nfSIG([['المتدرب',a.nameAr,''],['المشرف الأكاديمي',exNm(r,g.isup),'']]));return B}});
+nfDef('خ-4',{k:'ex',t:['التقويم الختامي للمتدرب','Final Evaluation of the Trainee'],conf:1,parts:[],
+ when:function(r){return exAfter(r,'evaluated')},
+ miss:function(r){var v=r.data.ev||{};return exReq([['ev',(v.c||[]).length?'1':'','درجات التقويم','التقويم الختامي']])},
+ vals:function(r){return {e:r.data.ev,h:exHrs(r)}},
+ body:function(r){var a=exA(r),g=exG(r),v=r.data.ev||{},p=exPct(v.c);return [
+  nfSec('١','بيانات المتدرب','Trainee')+exPersonKV(r)+nfKV([['المقرر',exCourseName(g.course)],['المدة',g.from?('من '+nfE(g.from)+' إلى '+nfE(g.to)):'',0,!!g.from],['الساعات المطلوبة',exNeed(r)],['الساعات المنجزة',exHrs(r)]]),
+  nfSec('٢','معايير التقويم (من 5)','Criteria (out of 5)')+nfTB(['المعيار','الدرجة'],EXCR.map(function(c,j){return [c[0]+' <span dir="ltr" style="font-size:11px;color:#5a6680">'+c[1]+'</span>',nfE((v.c||[])[j])]}).concat([['<b>النسبة المئوية والتقدير</b>','<b>'+(p!==''?p+'% — '+exGrade(p):'')+'</b>']]),8,0,75)[0],
+  nfSec('٣','الملاحظات والتوصية','Notes & recommendation')+nfKV([['أبرز نقاط القوة',v.strong,1],['ما يحتاج إلى تحسين',v.improve,1],['التوصية',v.rec,1]]),
+  nfSIG([['المشرف الأكاديمي',exNm(r,g.isup),'']])]}});
+nfDef('خ-5',{k:'ex',t:['شهادة إتمام التدريب الميداني','Certificate of Field-Training Completion'],cert:1,parts:[],
+ when:function(r){return r.st==='completed'},
+ miss:function(r){var a=exA(r),g=exG(r);return exReq([['nameAr',a.nameAr,'الاسم'],['nameEn',a.nameEn,'الاسم بالإنجليزية'],['from',g.from,'بداية التدريب','الإسناد'],['done',(r.data.done||{}).at,'الإتمام','إجراء الإتمام']])},
+ vals:function(r){return {a:exA(r),g:exG(r),h:exHrs(r),d:r.data.done}},
+ body:function(r){var a=exA(r),g=exG(r),dn=r.data.done||{},F=EXF[a.field]||['',''],gr=dn.grade||exGrade(exPct((r.data.ev||{}).c));return ['<div style="text-align:center;margin-top:12px">'+
+  '<p class="tx" style="text-align:center;font-size:18px">يشهد معهد التمهيد – قسم الدراسات اللغوية والترجمة بأن</p>'+
+  '<div style="font:700 30px Amiri,serif;color:#14284B;margin:4px 0 0">'+nfV(a.nameAr)+'</div><div style="direction:ltr;font:700 17px Tinos,serif;color:#14284B">'+nfV(String(a.nameEn||'').toUpperCase())+'</div>'+
+  '<p class="tx" style="text-align:center;font-size:16.5px;margin-top:10px">من '+nfV(a.inst)+'، قد أتمّ التدريب الميداني في المعهد في مجال <b>'+nfE(F[0])+'</b>'+(g.course?' بتدريس مقرر <b>'+nfE(exCourseName(g.course))+'</b>':'')+' في برنامج الدبلوم العام في اللغة العربية لغير الناطقين بها، في المدة من '+nfV(g.from)+' إلى '+nfV(dn.to||g.to)+'، بعدد '+nfV(exHrs(r)||'')+' ساعة تدريبية'+(gr?'، وبتقدير <b>'+nfE(gr)+'</b>':'')+'.</p>'+
+  '<p class="tx" style="text-align:center;direction:ltr;font:700 13.5px Tinos,serif">At Tamhid Institute certifies that the above-named trainee from '+nfE(a.inst)+' has completed field training in '+nfE(F[1])+' within the Diploma in Arabic for Non-Native Speakers, from '+nfE(g.from)+' to '+nfE(dn.to||g.to)+', totalling '+nfE(exHrs(r)||'')+' training hours.</p></div>']}});
+
+/* ---------- الواجهة العامة: التعريف والشروط والوثائق والتقديم والاستعلام ---------- */
+var exPublic=function(){var c=EXC(),cr=exCourses();
+ if(!EXP.ld&&typeof sb!=='undefined'&&sb){EXP.ld=1;sb.rpc('ft_cfg_get').then(function(x){EXP.cfg=x.data||{};if(/^#\/ext-training\/?$/.test(location.hash))go()}).catch(function(){})}
+ var steps=[['التقديم في الموقع','Apply online'],['إرسال الوثائق بالبريد الإلكتروني','Email the documents'],['الدراسة والقرار وخطاب القبول','Review, decision & acceptance letter'],['إسناد المقرر والمشرف الأكاديمي','Course & supervisor assignment'],['التدريب والمتابعة والزيارات الصفية','Training, follow-up & class visits'],['التقويم الختامي','Final evaluation'],['شهادة إتمام التدريب الميداني','Completion certificate']];
+ var h='<h2>'+Lx('بوابة التدريب الميداني الخارجي','External Field Training Portal')+'</h2><p>'+e9(c.intro)+'</p>';
+ if(typeof me!=='undefined'&&me){h+='<p>'+(staffLink()?'<a class="btn" href="'+exLink('admin')+'">'+Lx('إدارة البوابة','Manage the portal')+'</a> ':'')+'<a class="btn s" href="'+exLink('my')+'">'+Lx('المتدربون المسندون إليّ','Trainees assigned to me')+'</a></p>'}
+ h+='<div class="grid">'+Object.keys(EXF).map(function(k){return '<div class="box"><h3>'+e9(Lx(EXF[k][0],EXF[k][1]))+'</h3></div>'}).join('')+'</div>';
+ h+='<div class="box"><h3>'+Lx('خطوات التدريب','Steps')+'</h3><ol>'+steps.map(function(s){return '<li>'+e9(Lx(s[0],s[1]))+'</li>'}).join('')+'</ol></div>';
+ h+='<div class="box"><h3>'+Lx('الشروط والمتطلبات','Conditions & requirements')+'</h3><ol>'+c.conds.map(function(s){return '<li>'+e9(s)+'</li>'}).join('')+'</ol></div>';
+ h+='<div class="box"><h3>'+Lx('الوثائق المطلوبة (تُرسل بالبريد الإلكتروني ولا تُرفع في الموقع)','Required documents (sent by email, not uploaded)')+'</h3><ol>'+c.docs.map(function(s){return '<li>'+e9(s)+'</li>'}).join('')+'</ol><p>'+Lx('بعد التقديم تصلك رقم الطلب؛ أرسل الوثائق إلى ','After applying you get an application number; send the documents to ')+'<b dir="ltr">'+e9(c.email)+'</b>'+Lx(' وضع رقم الطلب في عنوان الرسالة.',' with the application number in the subject.')+'</p></div>';
+ if(EXP.res){var id=EXP.res,sub='طلب تدريب ميداني خارجي — '+id,bd='السلام عليكم ورحمة الله،\nأرفق لكم وثائق طلب التدريب الميداني رقم '+id+':\n'+c.docs.map(function(x,i){return (i+1)+'. '+x}).join('\n')+'\n';
+  h+='<div class="msg ok" id="exok"><b>'+Lx('تم استلام طلبك.','Your application has been received.')+'</b><br>'+Lx('رقم الطلب: ','Application number: ')+'<b dir="ltr">'+e9(id)+'</b><br>'+Lx('الخطوة التالية: أرسل الوثائق المطلوبة بالبريد الإلكتروني إلى ','Next: email the required documents to ')+'<b dir="ltr">'+e9(c.email)+'</b>'+Lx(' وعنوان الرسالة: ',' with the subject: ')+'«'+e9(sub)+'».<br><a class="btn" href="mailto:'+e9(c.email)+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(bd)+'">'+Lx('فتح رسالة البريد','Open the email')+'</a></div>'}
+ var o=function(v,t){return '<option value="'+e9(v)+'">'+e9(t)+'</option>'};
+ h+='<form class="box v51g" id="exform" onsubmit="V51.h.ex234apply(this);return false"><h3>'+Lx('طلب التدريب الميداني','Field-training application')+'</h3>'+
+  '<label>'+Lx('الاسم الكامل بالعربية *','Full name in Arabic *')+'<input name="nameAr" required maxlength="120"></label>'+
+  '<label>'+Lx('الاسم الكامل بالإنجليزية (كما في الجواز) *','Full name in English (as in passport) *')+'<input name="nameEn" dir="ltr" required maxlength="120"></label>'+
+  '<label>'+Lx('الجنسية *','Nationality *')+'<input name="nat" required maxlength="60"></label>'+
+  '<label>'+Lx('رقم الهوية أو الجواز *','ID or passport no. *')+'<input name="pid" dir="ltr" required maxlength="40"></label>'+
+  '<label>'+Lx('البريد الإلكتروني *','Email *')+'<input name="email" type="email" dir="ltr" required maxlength="120"></label>'+
+  '<label>'+Lx('الهاتف / واتساب *','Phone / WhatsApp *')+'<input name="phone" dir="ltr" required maxlength="40"></label>'+
+  '<label>'+Lx('الجهة (الجامعة / الكلية / المؤسسة) *','Institution *')+'<input name="inst" required maxlength="160"></label>'+
+  '<label>'+Lx('المرحلة الدراسية *','Academic level *')+'<select name="level" required>'+o('','—')+['بكالوريوس','ماجستير','دكتوراه','دبلوم','متخرج حديثاً','أخرى'].map(function(x){return o(x,x)}).join('')+'</select></label>'+
+  '<label>'+Lx('التخصص *','Major *')+'<input name="major" required maxlength="120"></label>'+
+  '<label>'+Lx('مجال التدريب *','Training field *')+'<select name="field" required>'+o('','—')+Object.keys(EXF).map(function(k){return o(k,Lx(EXF[k][0],EXF[k][1]))}).join('')+'</select></label>'+
+  '<label>'+Lx('المقررات المرغوب تدريسها (اختياري)','Preferred courses (optional)')+(cr.length?'<select name="courses" multiple size="5">'+cr.map(function(x){return o(x.code,x.name+' ('+x.code+')')}).join('')+'</select>':'<input name="courses" maxlength="300">')+'</label>'+
+  '<label>'+Lx('تاريخ البداية المقترح *','Proposed start *')+'<input name="from" type="date" required></label>'+
+  '<label>'+Lx('تاريخ النهاية المقترح *','Proposed end *')+'<input name="to" type="date" required></label>'+
+  '<label>'+Lx('الساعات المطلوبة من جهتك *','Hours required by your institution *')+'<input name="hours" type="number" min="1" max="999" required></label>'+
+  '<label>'+Lx('اسم المشرف من جهتك','Supervisor at your institution')+'<input name="homeSup" maxlength="120"></label>'+
+  '<label>'+Lx('بريد المشرف من جهتك','Supervisor email')+'<input name="homeSupEmail" type="email" dir="ltr" maxlength="120"></label>'+
+  '<label>'+Lx('اللغات ومستواك فيها','Languages & level')+'<input name="langs" maxlength="200"></label>'+
+  '<label>'+Lx('الخبرات السابقة في التدريس أو الترجمة','Previous experience')+'<textarea name="exp" rows="3" maxlength="1500"></textarea></label>'+
+  '<label>'+Lx('ملاحظات','Notes')+'<textarea name="notes" rows="2" maxlength="1500"></textarea></label>'+
+  '<label style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" name="consent" value="1" required style="width:auto"> <span>'+Lx('أقرّ بصحة البيانات، وبأنني اطلعت على الشروط والمتطلبات والتزمت بها، وبأنني سأرسل الوثائق المطلوبة بالبريد الإلكتروني.','I confirm the data is correct, I accept the conditions, and I will email the required documents.')+'</span></label>'+
+  '<div><button class="btn">'+Lx('إرسال الطلب','Submit application')+'</button></div></form>';
+ h+='<form class="box v51g" onsubmit="V51.h.ex234st(this);return false"><h3>'+Lx('الاستعلام عن حالة الطلب','Check application status')+'</h3><label>'+Lx('رقم الطلب','Application number')+'<input name="id" dir="ltr" required placeholder="EX-…"></label><label>'+Lx('البريد الإلكتروني المسجَّل','Registered email')+'<input name="email" type="email" dir="ltr" required></label><div><button class="btn s">'+Lx('استعلام','Check')+'</button></div>'+(EXP.st?'<div class="msg">'+EXP.st+'</div>':'')+'</form>';
+ h+='<p class="mu">'+Lx('تُتحقق صحة وثائق المعهد الصادرة (خطاب القبول وشهادة الإتمام) بمسح رمز الاستجابة السريعة فيها.','Documents issued by the Institute are verified by scanning their QR code.')+'</p>';
+ return h};
+var staffLink=function(){try{return typeof me!=='undefined'&&me&&(me.r==='admin'||(FT.ld&&exCap()))}catch(e){return false}};
+H.ex234apply=async function(f){var v=V8(f),p={};['nameAr','nameEn','nat','pid','email','phone','inst','level','major','field','from','to','hours','homeSup','homeSupEmail','langs','exp','notes'].forEach(function(k){if(v[k]!=null)p[k]=String(v[k]).trim()});
+ var sel=f.querySelector('[name=courses]');if(sel)p.courses=sel.multiple?[].slice.call(sel.selectedOptions).map(function(o){return o.value}).join('، '):sel.value.trim();
+ p.consent=!!(f.querySelector('[name=consent]')||{}).checked;
+ if(p.from&&p.to&&p.to<p.from){T(Lx('تاريخ النهاية قبل البداية.','End date is before start date.'));return}
+ try{var b=f.querySelector('button');if(b)b.disabled=true;var r=await sb.rpc('ext_apply',{p:p});if(r.error)throw new Error(r.error.message);EXP.res=r.data.id;f.reset();go();setTimeout(function(){var e=document.getElementById('exok');if(e)e.scrollIntoView({behavior:'smooth'})},100)}
+ catch(e){T(exErr(e));var b2=f.querySelector('button');if(b2)b2.disabled=false}};
+H.ex234st=async function(f){var v=V8(f);try{var r=await sb.rpc('ext_status',{p_id:String(v.id||'').trim(),p_email:String(v.email||'').trim()});if(r.error)throw new Error(r.error.message);var d=r.data||{};
+ EXP.st=d.found?(Lx('حالة الطلب ','Status of ')+'<b dir="ltr">'+e9(d.id)+'</b>: '+e9(Lx((EXS[d.st]||[d.st])[0],(EXS[d.st]||[d.st,d.st])[1]))+(d.from?Lx(' — مدة التدريب من ',' — training from ')+e9(d.from)+Lx(' إلى ',' to ')+e9(d.to):'')+Lx(' (آخر تحديث ',' (updated ')+e9(d.updated)+')'):Lx('لا يوجد طلب بهذا الرقم وهذا البريد.','No application matches this number and email.');go()}catch(e){T(exErr(e))}};
+
+/* ---------- الإدارة والمتابعة ---------- */
+var exRow=function(r){var a=exA(r),g=exG(r);return '<tr><td><b dir="ltr">'+e9(r.id)+'</b><br><small>'+e9(String(r.created_at||'').slice(0,10))+'</small></td><td>'+e9(a.nameAr)+'<br><small dir="ltr">'+e9(a.nameEn)+'</small></td><td>'+e9(a.inst)+'</td><td>'+e9(Lx((EXF[a.field]||[''])[0],(EXF[a.field]||['',''])[1]))+'</td><td>'+(g.isup?e9(exNm(r,g.isup)):'—')+'</td><td>'+exTag(r.st)+'</td><td><a class="btn s" href="'+exLink('r/'+encodeURIComponent(r.id))+'">'+Lx('فتح','Open')+'</a></td></tr>'};
+var exAdmin=function(){var A=exAll(),f=EXP.f||'';var cnt={};A.forEach(function(r){cnt[r.st]=(cnt[r.st]||0)+1});
+ var h='<h2>'+Lx('إدارة بوابة التدريب الميداني الخارجي','External Field Training — management')+'</h2><p><a class="btn s" href="'+exLink('')+'">'+Lx('الصفحة العامة','Public page')+'</a> '+btn(Lx('الشروط والوثائق وبريد الاستلام','Conditions, documents & email'),'V51.h.ex234cfg()','s')+' <a class="btn s" href="#/graduates/forms">'+Lx('مراجعة النماذج واعتمادها','Review & approve forms')+'</a></p>';
+ h+='<p>'+[''].concat(Object.keys(EXS)).map(function(s){return '<a class="btn s'+(f===s?'':' o')+'" href="javascript:V51.h.ex234f(\''+s+'\')">'+(s?e9(Lx(EXS[s][0].split(' — ')[0],EXS[s][1].split(' — ')[0])):Lx('الكل','All'))+' ('+(s?(cnt[s]||0):A.length)+')</a>'}).join(' ')+'</p>';
+ var late=A.filter(function(r){return r.st==='submitted'&&(Date.now()-new Date(r.created_at).getTime())>7*864e5});
+ if(late.length)h+='<div class="msg er">'+Lx('طلبات لم تصل وثائقها منذ أكثر من أسبوع: ','Applications without documents for over a week: ')+late.length+'</div>';
+ return h+tbl([Lx('رقم الطلب','No.'),Lx('المتدرب','Trainee'),Lx('الجهة','Institution'),Lx('المجال','Field'),Lx('المشرف الأكاديمي','Supervisor'),Lx('الحالة','Status'),''],A.filter(function(r){return !f||r.st===f}).map(exRow))};
+H.ex234f=function(s){EXP.f=s;go()};
+H.ex234cfg=function(){var c=EXC();modal(Lx('الشروط والوثائق وبريد الاستلام','Conditions, documents & email'),'<form class="v51g" onsubmit="V51.h.ex234cfgS(this);return false"><label>'+Lx('بريد استلام الوثائق','Documents email')+'<input name="email" dir="ltr" value="'+e9(c.email)+'"></label><label>'+Lx('النص التعريفي','Introduction')+'<textarea name="intro" rows="3">'+e9(c.intro)+'</textarea></label><label>'+Lx('الشروط والمتطلبات (شرط في كل سطر)','Conditions (one per line)')+'<textarea name="conds" rows="8">'+e9(c.conds.join('\n'))+'</textarea></label><label>'+Lx('الوثائق المطلوبة (وثيقة في كل سطر)','Documents (one per line)')+'<textarea name="docs" rows="6">'+e9(c.docs.join('\n'))+'</textarea></label><div><button class="btn">'+Lx('حفظ','Save')+'</button></div></form>')};
+H.ex234cfgS=function(f){var v=V8(f);closeM();return cfgSave({ext:{email:String(v.email||'').trim(),intro:String(v.intro||'').trim(),conds:lines(v.conds),docs:lines(v.docs)}})};
+var exAct=function(id,act,p,ok){return FT.run(function(){return FT.rpc('ext_act',{p_id:id,p_act:act,p:p||{}})},ok||Lx('تم.','Done.')).catch(function(){})};
+var exDocs=function(r){var ed=central()||roles().indexOf('edit')>=0,rows=[];NFO.filter(function(c){return NF[c].k==='ex'}).forEach(function(c){var D=NF[c],ok=nfAllowed(c,r),ap=(formsOk2()[c]||{}).ok,key=r.id+'|'+c+'|';
+  rows.push('<tr'+(ok?'':' class="mu"')+'><td><b>'+c+'</b></td><td>'+e9(Lx(D.t[0],D.t[1]))+(D.conf?' <span class="tag er">'+Lx('سري','Confidential')+'</span>':'')+(ok&&!ap?' <span class="tag warn">'+Lx('بانتظار اعتماد الإدارة','Awaiting approval')+'</span>':'')+'</td><td>'+(FT.docs[key]?'<small dir="ltr">'+e9(FT.docs[key])+'</small>':'')+'</td><td>'+(ok?btn('PDF','V51.h.nfdoc(\''+c+'\',\''+r.id+'\')','s'):'<span class="tag">'+Lx('يُتاح عند بلوغ مرحلته','Available at its stage')+'</span>')+'</td></tr>')});
+ return '<details class="box" open><summary><b>'+Lx('الوثائق الرسمية (PDF عند الطلب)','Official documents (PDF on demand)')+'</b></summary>'+tbl([Lx('الرمز','Code'),Lx('الوثيقة','Document'),Lx('آخر رقم','Last no.'),''],rows)+'</details>'};
+var exRec=function(r){var a=exA(r),g=exG(r),d=r.data||{},cap=exCap(),sup=(r.sup||[]).indexOf(myRef())>=0,c=EXC(),L=d.log||[],Vs=d.visits||[];
+ var h='<h2>'+Lx('ملف متدرب خارجي','External trainee file')+' <small dir="ltr">'+e9(r.id)+'</small></h2><p><a class="btn s" href="'+exLink(cap?'admin':'my')+'">'+Lx('رجوع','Back')+'</a></p>'+exStage(r);
+ h+='<div class="box"><h3>'+e9(a.nameAr)+' <small dir="ltr">'+e9(a.nameEn)+'</small></h3>'+tbl([Lx('البيان','Item'),Lx('القيمة','Value')],[['الجنسية',a.nat],['رقم الهوية / الجواز',a.pid],['البريد',a.email],['الهاتف',a.phone],['الجهة',a.inst],['المرحلة والتخصص',[a.level,a.major].filter(Boolean).join(' — ')],['مجال التدريب',(EXF[a.field]||[''])[0]],['المقررات المرغوبة',a.courses],['المدة المقترحة',[a.from,a.to].filter(Boolean).join(' — ')],['الساعات المطلوبة',a.hours],['المشرف من الجهة',[a.homeSup,a.homeSupEmail].filter(Boolean).join(' — ')],['اللغات',a.langs],['الخبرات',a.exp],['ملاحظات',a.notes]].filter(function(x){return x[1]}).map(function(x){return '<tr><td>'+e9(x[0])+'</td><td>'+e9(x[1])+'</td></tr>'}))+'</div>';
+ /* الإجراءات حسب المرحلة */
+ var acts=[];
+ if(cap&&['submitted','docs','review'].indexOf(r.st)>=0)acts.push(btn(Lx('تأكيد استلام الوثائق بالبريد','Confirm documents received by email'),'V51.h.ex234docs(\''+r.id+'\')','s'));
+ if(cap&&['submitted','docs'].indexOf(r.st)>=0)acts.push(btn(Lx('بدء الدراسة','Start review'),'V51.h.ex234do(\''+r.id+'\',\'review\')','s'));
+ if(cap&&['docs','review'].indexOf(r.st)>=0)acts.push(btn(Lx('قبول','Accept'),'V51.h.ex234dec(\''+r.id+'\',\'accept\')'));
+ if(cap&&['submitted','docs','review'].indexOf(r.st)>=0)acts.push(btn(Lx('اعتذار','Decline'),'V51.h.ex234dec(\''+r.id+'\',\'reject\')','s'));
+ if(cap&&['accepted','active'].indexOf(r.st)>=0)acts.push(btn(r.st==='active'?Lx('تعديل الإسناد','Edit assignment'):Lx('إسناد المقرر والمشرف','Assign course & supervisor'),'V51.h.ex234asg(\''+r.id+'\')'));
+ if((cap||sup)&&r.st==='active')acts.push(btn(Lx('تسجيل أسبوع','Log a week'),'V51.h.ex234log(\''+r.id+'\')','s'));
+ if((cap||sup)&&['active','evaluated'].indexOf(r.st)>=0)acts.push(btn(Lx('زيارة صفية','Class visit'),'V51.h.ex234vis(\''+r.id+'\')','s'));
+ if((cap||sup)&&['active','evaluated'].indexOf(r.st)>=0)acts.push(btn(Lx('التقويم الختامي','Final evaluation'),'V51.h.ex234ev(\''+r.id+'\')'));
+ if(cap&&r.st==='evaluated')acts.push(btn(Lx('اعتماد الإتمام','Approve completion'),'V51.h.ex234done(\''+r.id+'\')'));
+ if(cap&&['completed','withdrawn','rejected'].indexOf(r.st)<0)acts.push(btn(Lx('إنهاء / انسحاب','End / withdraw'),'V51.h.ex234wd(\''+r.id+'\')','s'));
+ if(cap||sup)acts.push(btn(Lx('ملاحظة','Note'),'V51.h.ex234note(\''+r.id+'\')','s'));
+ if(acts.length)h+='<div class="box"><h3>'+Lx('الإجراءات','Actions')+'</h3><p>'+acts.join(' ')+'</p>'+(r.st==='submitted'?'<p class="mu">'+Lx('ينتظر الطلب وصول الوثائق إلى ','Waiting for the documents at ')+'<b dir="ltr">'+e9(c.email)+'</b>'+Lx(' برقم الطلب في عنوان الرسالة.',' with the application number in the subject.')+'</p>':'')+'</div>';
+ if(d.docs)h+='<div class="box"><b>'+Lx('الوثائق المستلمة بالبريد','Documents received by email')+'</b> <small>'+e9(String(d.docs.at||'').slice(0,10))+'</small><ul>'+c.docs.map(function(x,i){return '<li>'+((d.docs.items||[])[i]?'✓ ':'✗ ')+e9(x)+'</li>'}).join('')+'</ul>'+(d.docs.note?'<p>'+e9(d.docs.note)+'</p>':'')+'</div>';
+ if(d.dec)h+='<div class="box"><b>'+Lx('القرار: ','Decision: ')+'</b>'+(d.dec.to==='accept'?Lx('مقبول','Accepted'):Lx('معتذر عنه','Declined'))+' <small>'+e9(String(d.dec.at||'').slice(0,10))+'</small>'+(d.dec.note?'<p>'+e9(d.dec.note)+'</p>':'')+'</div>';
+ if(g.course)h+='<div class="box"><b>'+Lx('الإسناد','Assignment')+'</b>'+tbl([Lx('المقرر','Course'),Lx('الشعبة','Section'),Lx('الأيام','Days'),Lx('المدة','Period'),Lx('الساعات','Hours'),Lx('المشرف الأكاديمي','Supervisor')],['<tr><td>'+e9(exCourseName(g.course))+'</td><td>'+e9(g.section)+'</td><td>'+e9(g.days)+'</td><td>'+e9(g.from)+' — '+e9(g.to)+'</td><td>'+e9(g.hours)+'</td><td>'+e9(exNm(r,g.isup))+'</td></tr>'])+'</div>';
+ if(L.length||r.st==='active'){var need=exNeed(r),done=exHrs(r);h+='<div class="box"><b>'+Lx('السجل الأسبوعي','Weekly log')+'</b> — '+Lx('المنجز ','Done ')+done+' / '+need+Lx(' ساعة',' h')+'<div style="height:8px;background:#e6eaf0;border-radius:4px;margin:6px 0"><div style="height:8px;border-radius:4px;background:#1B3560;width:'+Math.min(100,need?Math.round(done/need*100):0)+'%"></div></div>'+tbl([Lx('الأسبوع','Week'),Lx('المدة','Period'),Lx('الساعات','Hours'),Lx('الحصص والموضوعات','Classes & topics'),Lx('ملاحظة','Note')],L.map(function(x){return '<tr><td>'+e9(x.wk)+'</td><td>'+e9([x.from,x.to].filter(Boolean).join(' — '))+'</td><td>'+e9(x.hrs)+'</td><td>'+e9(x.topics)+'</td><td>'+e9(x.note)+'</td></tr>'}))+'</div>'}
+ if(Vs.length)h+='<div class="box"><b>'+Lx('الزيارات الصفية','Class visits')+'</b>'+tbl([Lx('التاريخ','Date'),Lx('النسبة','Score'),Lx('ملاحظات','Notes')],Vs.map(function(x){return '<tr><td>'+e9(x.date)+'</td><td>'+e9(exPct(x.c))+'%</td><td>'+e9(x.notes)+'</td></tr>'}))+'</div>';
+ if(d.ev){var p=exPct(d.ev.c);h+='<div class="box"><b>'+Lx('التقويم الختامي: ','Final evaluation: ')+'</b>'+p+'% — '+e9(exGrade(p))+'</div>'}
+ if((d.notes||[]).length)h+='<div class="box"><b>'+Lx('الملاحظات','Notes')+'</b>'+tbl([Lx('التاريخ','Date'),Lx('الملاحظة','Note')],d.notes.map(function(x){return '<tr><td>'+e9(String(x.at||'').slice(0,10))+'</td><td>'+e9(x.t)+'</td></tr>'}))+'</div>';
+ h+=exDocs(r);
+ h+='<details class="box"><summary>'+Lx('سجل المراحل','Stage history')+'</summary>'+tbl([Lx('المرحلة','Stage'),Lx('التاريخ','Date')],(d.hist||[]).map(function(x){return '<tr><td>'+exTag(x.st)+'</td><td>'+e9(String(x.at||'').replace('T',' ').slice(0,16))+'</td></tr>'}))+'</details>';
+ return h};
+H.ex234do=function(id,act){return exAct(id,act,{})};
+H.ex234docs=function(id){var c=EXC(),r=REC(id),d=(r&&r.data.docs)||{};modal(Lx('تأكيد استلام الوثائق بالبريد','Confirm documents received'),'<form class="v51g" onsubmit="V51.h.ex234docsS(this,\''+id+'\');return false"><p class="mu">'+Lx('حدّد ما وصل بالبريد الإلكتروني من الوثائق:','Tick the documents received by email:')+'</p>'+c.docs.map(function(x,i){return '<label style="display:flex;gap:8px"><input type="checkbox" name="d'+i+'" value="1" style="width:auto"'+((d.items||[])[i]?' checked':'')+'> <span>'+e9(x)+'</span></label>'}).join('')+'<label>'+Lx('ملاحظة','Note')+'<input name="note" value="'+e9(d.note||'')+'"></label><div><button class="btn">'+Lx('حفظ','Save')+'</button></div></form>')};
+H.ex234docsS=function(f,id){var v=V8(f),c=EXC();closeM();return exAct(id,'docs',{items:c.docs.map(function(x,i){return v['d'+i]?1:0}),note:String(v.note||'').trim()},Lx('سُجّل استلام الوثائق.','Documents recorded.'))};
+H.ex234dec=function(id,dec){var note=prompt(dec==='accept'?Lx('ملاحظة القبول (اختياري):','Acceptance note (optional):'):Lx('سبب الاعتذار:','Reason for declining:'));if(dec==='reject'&&!note)return;return exAct(id,'decide',{dec:dec,note:note||''},dec==='accept'?Lx('قُبل الطلب. يمكن إصدار خطاب القبول (خ-1).','Accepted. The acceptance letter (خ-1) can be issued.'):Lx('سُجّل الاعتذار.','Declined.'))};
+H.ex234asg=function(id){var r=REC(id),a=exA(r),g=exG(r),cr=exCourses(),fac=((FT.ppl&&FT.ppl.fac)||[]);if(!FT.ppl){FT.rpc('ft_people').then(function(d){FT.ppl=d;H.ex234asg(id)}).catch(function(){});return}
+ var o=function(v,t,s){return '<option value="'+e9(v)+'"'+(s?' selected':'')+'>'+e9(t)+'</option>'};
+ modal(Lx('إسناد المقرر والمشرف الأكاديمي','Assign course & supervisor'),'<form class="v51g" onsubmit="V51.h.ex234asgS(this,\''+id+'\');return false">'+
+  '<label>'+Lx('المقرر *','Course *')+(cr.length?'<select name="course" required>'+o('','—')+cr.map(function(c){return o(c.code,c.name+' ('+c.code+')',String(g.course)===String(c.code))}).join('')+'</select>':'<input name="course" required value="'+e9(g.course||'')+'">')+'</label>'+
+  '<label>'+Lx('الشعبة / المستوى','Section / level')+'<input name="section" value="'+e9(g.section||'')+'"></label>'+
+  '<label>'+Lx('المشرف الأكاديمي *','Academic supervisor *')+'<select name="isup" required>'+o('','—')+fac.map(function(x){return o(x.id,x.ar+' ('+x.id+')',x.id===g.isup)}).join('')+'</select></label>'+
+  '<label>'+Lx('البداية *','Start *')+'<input name="from" type="date" required value="'+e9(g.from||a.from||'')+'"></label><label>'+Lx('النهاية *','End *')+'<input name="to" type="date" required value="'+e9(g.to||a.to||'')+'"></label>'+
+  '<label>'+Lx('الساعات المطلوبة','Required hours')+'<input name="hours" type="number" min="1" value="'+e9(g.hours||a.hours||'')+'"></label><label>'+Lx('الأيام والأوقات','Days & times')+'<input name="days" value="'+e9(g.days||'')+'"></label><label>'+Lx('المهام','Tasks')+'<textarea name="tasks" rows="3">'+e9(g.tasks||'')+'</textarea></label><div><button class="btn">'+Lx('حفظ الإسناد','Save assignment')+'</button></div></form>')};
+H.ex234asgS=function(f,id){var v=V8(f);if(v.to<v.from){T(Lx('تاريخ النهاية قبل البداية.','End before start.'));return}closeM();var p={};['course','section','isup','from','to','hours','days','tasks'].forEach(function(k){p[k]=String(v[k]||'').trim()});return exAct(id,'assign',p,Lx('حُفظ الإسناد وبدأ التدريب.','Assignment saved; training started.'))};
+H.ex234log=function(id){var r=REC(id),n=((r.data.log||[]).length)+1;modal(Lx('تسجيل أسبوع تدريب','Log a training week'),'<form class="v51g" onsubmit="V51.h.ex234logS(this,\''+id+'\');return false"><label>'+Lx('الأسبوع','Week')+'<input name="wk" value="'+n+'" required></label><label>'+Lx('من','From')+'<input name="from" type="date" required></label><label>'+Lx('إلى','To')+'<input name="to" type="date" required></label><label>'+Lx('الساعات','Hours')+'<input name="hrs" type="number" step="0.5" min="0.5" max="99" required></label><label>'+Lx('الحصص والموضوعات','Classes & topics')+'<textarea name="topics" rows="3" required></textarea></label><label>'+Lx('ملاحظة المشرف','Supervisor note')+'<input name="note"></label><div><button class="btn">'+Lx('حفظ','Save')+'</button></div></form>')};
+H.ex234logS=function(f,id){var v=V8(f);closeM();return exAct(id,'log',{wk:String(v.wk),from:v.from,to:v.to,hrs:String(v.hrs),topics:String(v.topics||'').trim(),note:String(v.note||'').trim()},Lx('سُجّل الأسبوع.','Week logged.'))};
+var exCritForm=function(pre){return EXCR.map(function(c,i){return '<label>'+e9(Lx(c[0],c[1]))+'<select name="'+pre+i+'" required><option value="">—</option>'+[5,4,3,2,1].map(function(n){return '<option>'+n+'</option>'}).join('')+'</select></label>'}).join('')};
+H.ex234vis=function(id){modal(Lx('زيارة صفية','Class visit'),'<form class="v51g" onsubmit="V51.h.ex234visS(this,\''+id+'\');return false"><label>'+Lx('التاريخ','Date')+'<input name="date" type="date" required></label><p class="mu">'+Lx('التقدير من 5','Rating out of 5')+'</p>'+exCritForm('c')+'<label>'+Lx('الملاحظات والتوجيهات','Notes & guidance')+'<textarea name="notes" rows="3"></textarea></label><div><button class="btn">'+Lx('حفظ','Save')+'</button></div></form>')};
+H.ex234visS=function(f,id){var v=V8(f);closeM();return exAct(id,'visit',{date:v.date,c:EXCR.map(function(c,i){return +v['c'+i]}),notes:String(v.notes||'').trim()},Lx('سُجّلت الزيارة.','Visit saved.'))};
+H.ex234ev=function(id){modal(Lx('التقويم الختامي','Final evaluation'),'<form class="v51g" onsubmit="V51.h.ex234evS(this,\''+id+'\');return false"><p class="mu">'+Lx('التقدير من 5 لكل معيار. التقويم سري يُرسل إلى الجهة عند طلبها.','Each criterion out of 5. Confidential.')+'</p>'+exCritForm('c')+'<label>'+Lx('أبرز نقاط القوة','Strengths')+'<textarea name="strong" rows="2" required></textarea></label><label>'+Lx('ما يحتاج إلى تحسين','To improve')+'<textarea name="improve" rows="2"></textarea></label><label>'+Lx('التوصية','Recommendation')+'<textarea name="rec" rows="2"></textarea></label><div><button class="btn">'+Lx('حفظ التقويم','Save evaluation')+'</button></div></form>')};
+H.ex234evS=function(f,id){var v=V8(f);closeM();return exAct(id,'eval',{c:EXCR.map(function(c,i){return +v['c'+i]}),strong:String(v.strong||'').trim(),improve:String(v.improve||'').trim(),rec:String(v.rec||'').trim()},Lx('حُفظ التقويم الختامي.','Evaluation saved.'))};
+H.ex234done=function(id){var r=REC(id),need=exNeed(r),done=exHrs(r),p=exPct((r.data.ev||{}).c);if(done<need&&!confirm(Lx('الساعات المنجزة ('+done+') أقل من المطلوبة ('+need+'). المتابعة؟','Completed hours are below the requirement. Continue?')))return;
+ var g=prompt(Lx('التقدير في الشهادة:','Grade on the certificate:'),exGrade(p));if(g===null)return;return exAct(id,'complete',{grade:g,hrs:done},Lx('اعتُمد الإتمام. يمكن إصدار الشهادة (خ-5).','Completion approved. The certificate (خ-5) can be issued.'))};
+H.ex234wd=function(id){var why=prompt(Lx('سبب الإنهاء أو الانسحاب:','Reason:'));if(!why)return;return exAct(id,'withdraw',{reason:why})};
+H.ex234note=function(id){var t=prompt(Lx('الملاحظة:','Note:'));if(!t)return;return exAct(id,'note',{t:t})};
+
+V['ext-training']=function(){var p=parts(),v=p[1]||'',id=p[2]||'';
+ if(!v)return exPublic();
+ if(typeof me==='undefined'||!me)return loginCard();
+ if(!FT.ld){if(FT.err&&!FT.busy)return '<div class="msg er">'+Lx('تعذّر التحميل.','Could not load.')+'</div><p>'+btn(Lx('إعادة المحاولة','Try again'),'V51.h.ft231retry()')+'</p>';FT.load().then(function(){window.__force71=1;go()});return '<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>'}
+ try{
+ if(v==='admin'){if(!exCap())return '<div class="msg er">'+Lx('هذه الصفحة للإدارة المركزية ومنسق التدريب ورئيس القسم.','For central administration, the training coordinator and the head of department.')+'</div>';return exAdmin()}
+ if(v==='r'&&id){var r=REC(id);if(!r||r.kind!=='ex')return '<div class="msg er">'+Lx('غير موجود أو لا صلاحية.','Not found or no access.')+'</div>';return exRec(r)}
+ if(v==='my'){var A=exMine();return '<h2>'+Lx('المتدربون الخارجيون المسندون إليّ','External trainees assigned to me')+'</h2>'+tbl([Lx('رقم الطلب','No.'),Lx('المتدرب','Trainee'),Lx('الجهة','Institution'),Lx('المجال','Field'),Lx('المشرف','Supervisor'),Lx('الحالة','Status'),''],A.map(exRow))}
+ }catch(e){console.error('ext234',e);return '<div class="msg er">'+e9(e.message)+'</div>'}
+ return exPublic()};
+
 X.ft225forms=FD;
 }catch(e){console.error('v225',e)}})();
 

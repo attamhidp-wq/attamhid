@@ -129,7 +129,7 @@ def page(path, title, desc, body, ld, en_title=''):
         '<style>%s</style><script type="application/ld+json">%s</script></head><body>'
         '<header><div class="w"><a href="/" aria-label="معهد التمهيد"><img src="/img/logo-a8d46018.webp" alt="معهد التمهيد — At Tamhid Institute" width="163" height="44"></a>'
         '<nav><a href="/">الرئيسية</a><a href="/programs/">البرامج</a><a href="/news/">الأخبار</a><a href="/#/register">التقديم</a><a href="/#/verify">التحقق من وثيقة</a></nav></div></header>'
-        '<main class="w">%s</main><footer><div class="w"><p><a href="/student-services/">الخدمات الذاتية للطلاب والطالبات</a> · <a href="/faculty-services/">الخدمات الذاتية لأعضاء هيئة التدريس</a> · <a href="/training/">بوابة التدريب</a> · <a href="/graduates/">بوابة الخريجين</a></p>© %d معهد التمهيد — At Tamhid Institute (ATI) · <a href="/">attamhid.com</a></div></footer></body></html>') % (
+        '<main class="w">%s</main><footer><div class="w"><p><a href="/student-services/">الخدمات الذاتية للطلاب والطالبات</a> · <a href="/faculty-services/">الخدمات الذاتية لأعضاء هيئة التدريس</a> · <a href="/training/">بوابة التدريب</a> · <a href="/graduates/">بوابة الخريجين</a> · <a href="/external-training/">بوابة التدريب الميداني الخارجي</a></p>© %d معهد التمهيد — At Tamhid Institute (ATI) · <a href="/">attamhid.com</a></div></footer></body></html>') % (
         E(title), E(desc), E(url), E(title), E(desc), E(url), SITE, CSS, json.dumps(ld, ensure_ascii=False).replace('</', '<\\/'), body, datetime.date.today().year)
 
 ORG = {'@type': 'EducationalOrganization', 'name': 'معهد التمهيد', 'alternateName': ['At Tamhid Institute', 'ATI', 'আত তামহীদ ইনস্টিটিউট'], 'url': SITE + '/', 'logo': SITE + '/img/app-512-v132.png', 'address': {'@type': 'PostalAddress', 'addressCountry': 'BD'}}
@@ -292,6 +292,16 @@ PORTALS = [
    ('خدمات التخرج', 'Graduation services', 'স্নাতক সেবা'),
    ('التحقق من الوثائق برمز QR', 'QR document verification', 'QR কোডে নথি যাচাই'),
    ('سجل المرشحين', 'Candidates register', 'প্রার্থী তালিকা')]),
+ ('external-training', '/#/ext-training',
+  ('بوابة التدريب الميداني الخارجي', 'External Field Training Portal', 'External Field Training Portal'),
+  ('التدريب الميداني في معهد التمهيد لطلاب الجامعات والمؤسسات التعليمية وحديثي التخرج من خارج المعهد: تدريس مقررات الدبلوم العام، والتعليم، وإدارة المحتوى، والترجمة، بإشراف أكاديمي وشهادة إتمام موثقة برمز QR.',
+   'Field training at At Tamhid Institute for university students, educational institutions and recent graduates: teaching diploma courses, education, content management and translation, under academic supervision with a QR-verified completion certificate.',
+   'আত তামহীদ ইনস্টিটিউটে বাইরের বিশ্ববিদ্যালয় শিক্ষার্থী ও সদ্য স্নাতকদের মাঠ প্রশিক্ষণ: ডিপ্লোমা কোর্স পাঠদান, শিক্ষা, কনটেন্ট ব্যবস্থাপনা ও অনুবাদ, একাডেমিক তত্ত্বাবধানে এবং QR-যাচাইযোগ্য সমাপনী সনদসহ।'),
+  [('تدريس مقررات الدبلوم العام', 'Teaching diploma courses', 'ডিপ্লোমা কোর্স পাঠদান'),
+   ('التعليم وإدارة المحتوى والترجمة', 'Education, content management & translation', 'শিক্ষা, কনটেন্ট ব্যবস্থাপনা ও অনুবাদ'),
+   ('التقديم في الموقع وإرسال الوثائق بالبريد الإلكتروني', 'Apply online and email the documents', 'অনলাইনে আবেদন ও ইমেইলে নথি প্রেরণ'),
+   ('الإشراف الأكاديمي والمتابعة', 'Academic supervision & follow-up', 'একাডেমিক তত্ত্বাবধান ও অনুসরণ'),
+   ('شهادة إتمام التدريب الميداني', 'Field-training completion certificate', 'মাঠ প্রশিক্ষণ সমাপনী সনদ')]),
 ]
 PL = {'ar': ('ar', 'rtl', 0, '', 'ar_AR'), 'en': ('en', 'ltr', 1, '/en', 'en_US'), 'bn': ('bn', 'ltr', 2, '/bn', 'bn_BD')}
 UI = {'home': ('الرئيسية', 'Home', 'হোম'), 'prog': ('البرامج', 'Programmes', 'প্রোগ্রাম'), 'news': ('الأخبار', 'News', 'সংবাদ'),
@@ -324,9 +334,9 @@ def portal_page(P, lang):
                       '<nav><a href="/">%s</a><a href="/programs/">%s</a><a href="/news/">%s</a><a href="/#/verify">%s</a></nav>' % (E(UI['home'][i]), E(UI['prog'][i]), E(UI['news'][i]), E(UI['verify'][i])), 1)
         h = h.replace("font-family:'IBM Plex Sans Arabic',system-ui,sans-serif", "font-family:system-ui,'Noto Sans Bengali','IBM Plex Sans Arabic',sans-serif", 1)
     if lang != 'ar':
-        for a, b in (('الخدمات الذاتية للطلاب والطالبات', 'Student Self-Service'), ('الخدمات الذاتية لأعضاء هيئة التدريس', 'Faculty Self-Service'), ('>بوابة التدريب<', '>Training Portal<'), ('>بوابة الخريجين<', '>Graduates Portal<')):
+        for a, b in (('الخدمات الذاتية للطلاب والطالبات', 'Student Self-Service'), ('الخدمات الذاتية لأعضاء هيئة التدريس', 'Faculty Self-Service'), ('>بوابة التدريب<', '>Training Portal<'), ('>بوابة الخريجين<', '>Graduates Portal<'), ('>بوابة التدريب الميداني الخارجي<', '>External Field Training Portal<')):
             h = h.replace(a, b) if a.startswith('>') else h.replace('>' + a + '</a> ·', '>' + b + '</a> ·', 1)
-        h = h.replace('href="/student-services/"', 'href="%s/student-services/"' % pre).replace('href="/faculty-services/"', 'href="%s/faculty-services/"' % pre).replace('href="/training/"', 'href="%s/training/"' % pre).replace('href="/graduates/"', 'href="%s/graduates/"' % pre)
+        h = h.replace('href="/student-services/"', 'href="%s/student-services/"' % pre).replace('href="/faculty-services/"', 'href="%s/faculty-services/"' % pre).replace('href="/training/"', 'href="%s/training/"' % pre).replace('href="/graduates/"', 'href="%s/graduates/"' % pre).replace('href="/external-training/"', 'href="%s/external-training/"' % pre)
     return path, h
 
 def portal_pages():
