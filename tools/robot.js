@@ -53,7 +53,12 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     const v1 = await p.evaluate(() => { try { const h = V.graduates(); return 'OK ' + String(h).replace(/<[^>]+>/g, ' ').slice(0, 200); } catch (e) { return 'ERR ' + e.message + ' || ' + String(e.stack || '').split('\n').slice(0, 4).join(' < '); } });
     await p.waitForTimeout(6000);
     const v2 = await p.evaluate(() => { try { const h = V.graduates(); return 'OK ' + String(h).replace(/<[^>]+>/g, ' ').slice(0, 200); } catch (e) { return 'ERR ' + e.message + ' || ' + String(e.stack || '').split('\n').slice(0, 4).join(' < '); } });
-    console.log('DIAG view1', v1); console.log('DIAG view2', v2); if (cons.length) console.log('DIAG console', cons.slice(0, 8).join(' | '));
+    console.log('DIAG view1', v1); console.log('DIAG view2', v2);
+    const d3 = await p.evaluate(async () => { const T = () => ((document.querySelector('#app') || {}).innerText || '').slice(0, 80).replace(/\s+/g, ' ');
+      const o = { st: JSON.stringify(V51.stab71 || {}), before: T(), hasMain: !!document.getElementById('app'), apps: document.querySelectorAll('#app').length };
+      try { go(); } catch (e) { o.goErr = e.message; } await new Promise((r) => setTimeout(r, 2500)); o.afterGo = T();
+      window.__force71 = 1; try { go(); } catch (e) { o.goErr2 = e.message; } await new Promise((r) => setTimeout(r, 1500)); o.afterForce = T(); return o; });
+    console.log('DIAG render', JSON.stringify(d3)); if (cons.length) console.log('DIAG console', cons.slice(0, 8).join(' | '));
   }
   await p.evaluate(() => { try { save(); } catch (e) {} });
   await p.waitForTimeout(8000);
