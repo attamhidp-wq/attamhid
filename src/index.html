@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v235';
+window.__BUILD__='v235b';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -31350,7 +31350,7 @@ var dlDays=function(txt){var t=String(txt||'').replace(/الإثنين/g,'الا
 var dlTerms=function(){try{var c=V5.cal61&&V5.cal61();var T=[];((c&&c.years)||[]).forEach(function(Y){(Y.terms||[]).forEach(function(t){if(t.start&&t.end)T.push(t)})});return T.sort(function(a,b){return a.start<b.start?-1:1})}catch(e){return []}};
 var dlAdd=function(d,n){var x=new Date(d+'T12:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
 var dlHol=function(d,T){return T.some(function(t){return (t.events||[]).some(function(e){return e.cat==='holiday'&&e.start<=d&&d<=(e.end||e.start)})})};
-var dlSpan=function(from,sems,to){var T=dlTerms(),i=T.findIndex(function(t){return from<=t.end}),tt=i>=0?T.slice(i,i+Math.max(1,sems||1)):[];
+var dlSpan=function(from,sems,to){if(!/^\d{4}-\d{2}-\d{2}/.test(String(from||'')))return {from:'',to:'',terms:[],name:''};from=String(from).slice(0,10);var T=dlTerms(),i=T.findIndex(function(t){return from<=t.end}),tt=i>=0?T.slice(i,i+Math.max(1,sems||1)):[];
  var end=tt.length?tt[tt.length-1].end:(to||dlAdd(from,90));var st=from<(tt[0]||{}).start?tt[0].start:from;
  var nm='';try{nm=tt.map(function(t){return V5.termNames61(t).ar}).join(' + ')}catch(e){}return {from:st,to:end,terms:tt,name:nm}};
 var dlRows=function(from,to,days){var T=dlTerms(),R=[];if(!from||!to||to<from)return R;for(var d=from,g=0;d<=to&&g<400;d=dlAdd(d,1),g++){var w=new Date(d+'T12:00:00Z').getUTCDay();if(days.indexOf(w)<0||dlHol(d,T))continue;R.push([d,w])}return R};
@@ -31359,7 +31359,7 @@ var dlTable=function(R){var W=[5,11,23,10,10,8,19,14],H=['م','اليوم','ال
  rows.push('<tr><td></td><td></td><td><b>المجموع</b></td><td></td><td></td><td></td><td></td><td></td></tr>');
  for(var i=0;i<rows.length;i+=4)out.push('<table class="tb"'+(i?' data-cont="1"':'')+'>'+cg+th+rows.slice(i,i+4).join('')+'</table>');return out};
 nfDef('ت-6',{k:'tr',t:['سجل الحضور والمتابعة اليومية للتدريب الميداني','Daily Attendance & Follow-up Log — Field Training'],parts:[],
- when:function(r){var d=r.data||{};return !!(d.start||d.plan||(d.app&&d.app.ent&&d.app.from))},
+ when:function(r){var d=r.data||{};return !!((d.start&&d.start.date)||(d.app&&d.app.ent&&/^\d{4}-\d{2}-\d{2}/.test(d.app.from||'')))},
  miss:function(r){return []},
  vals:function(r){var d=r.data||{};return {a:d.app,s:d.start,p:(d.plan||{}).at}},
  body:function(r){var d=r.data||{},a=d.app||{},s=d.s||{},st=d.start||{},from=st.date||a.from,sp=dlSpan(from,+a.sems||1,a.to),days=dlDays(st.days||a.days),R=dlRows(sp.from,sp.to,days),B=[];
@@ -31673,6 +31673,8 @@ var sentLog=async function(){var M={};try{var r=await V5.fn63({action:'mail_log'
 var campaign=async function(force){if(running||!central()||!V5.fn63)return 0;running=1;var L=LOG(),n=0,now=Date.now();try{var SL=await sentLog();if(!SL&&!force){return 0}for(var x of people()){var m=missing(x.kind,x.o);if(!m.length||!x.o.email)continue;var p=(SL&&SL[String(x.o.email).toLowerCase()])||L.mail[x.o.id];
    if(!force&&p&&((p.n||0)>=4||now-new Date(p.at).getTime()<7*864e5))continue;var r=await sendOne(x);if(r&&r.ok)n++;await new Promise(function(r){setTimeout(r,1200)})}}finally{running=0}return n};
 H.idn235all=async function(){if(!confirm(Lx('إرسال بريد الاستكمال لكل من نقصت بياناته الآن؟','Email everyone with missing data now?')))return;T(Lx('… جارٍ الإرسال','… Sending'));var n=await campaign(1);T(Lx('أُرسلت رسائل: ','Emails sent: ')+n);go()};
+/* نقل بيانات طلبات الالتحاق (المؤهل وغيره) إلى ملفات الطلاب بعد تحميل البيانات */
+setInterval(function(){try{if(V5._idnFill||!central()||!V5.fill75)return;if(!((S.requests||[]).length&&(S.students||[]).length))return;V5._idnFill=1;var n=0;(S.requests||[]).forEach(function(r){if(!r||!r.sid)return;var o=(S.students||[]).find(function(x){return String(x.id)===String(r.sid)});if(o){var k=V5.fill75(o,r);if(k){n+=k;try{touch(o)}catch(e){}}}});if(n)try{save()}catch(e){}}catch(e){}},5000);
 /* الإرسال الآلي: عند فتح الإدارة المركزية (ومنها المنفّذ الآلي كل 5 دقائق): أول مرة لكل ناقص، ثم تذكير أسبوعي حتى ثلاث مرات */
 setInterval(function(){try{if(!central())return;if(!(S.students&&S.students.length))return;if(V5._idnLast&&Date.now()-V5._idnLast<6*3600e3)return;V5._idnLast=Date.now();campaign(0).then(function(n){if(n)try{console.log('idn235 campaign',n)}catch(e){}})}catch(e){}},20000);
 /* رابط في الإدارة المركزية */
