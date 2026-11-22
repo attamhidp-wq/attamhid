@@ -21,7 +21,7 @@ concurrency:
 jobs:
   vault:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     env:
       FN: https://ttuelhswxyjbjdnydmns.supabase.co/functions/v1/v231-vault
       OP: ${{ github.event.inputs.op }}
@@ -69,24 +69,28 @@ jobs:
           DBX=https://ttuelhswxyjbjdnydmns.supabase.co/functions/v1/v231-dbx
           SET="${NAME:-db}-$(date -u +%Y%m%d-%H%M%S)"
           tok(){ curl -fsS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=attamhid-vault" | jq -r .value; }
-          dbx(){ T=$(tok); jq -c --arg o "$T" --arg set "$SET" '. + {oidc:$o,set:$set}' | curl -sS --max-time 150 -X POST -H 'Content-Type: application/json' --data-binary @- "$DBX"; }
+          dbx(){ T=$(tok); jq -c --arg o "$T" --arg set "$SET" '. + {oidc:$o,set:$set}' | curl -sS --max-time 120 --retry 2 -X POST -H 'Content-Type: application/json' --data-binary @- "$DBX"; }
           js(){ jq -e 'type=="object"' >/dev/null 2>&1 <<<"$1" && jq -c . <<<"$1" || echo '{"ok":false,"detail":"bad response"}'; }
           echo '{"op":"plan"}' | dbx > plan.json; jq -e .ok plan.json >/dev/null || { cat plan.json; exit 1; }
           echo "SET=$SET tables=$(jq '.plan|length' plan.json) rows=$(jq '[.plan[].rows]|add' plan.json) parts=$(jq '[.plan[].parts]|add' plan.json)"
           echo '{"op":"ddl"}' | dbx | tee ddl.json | jq -c '{ok,roundtrip,counts,error,detail}'
           jq -e '.ok and .roundtrip' ddl.json >/dev/null
-          : > parts.jsonl; FAIL=0
-          for row in $(jq -c '.plan[]' plan.json); do
-            P=$(jq -r .parts <<<"$row")
-            for ((i=0;i<P;i++)); do
-              REQ=$(jq -c --argjson i $i '{s,t,per,part:$i}' <<<"$row")
-              E=$(js "$(jq -c '. + {op:"export"}' <<<"$REQ" | dbx)")
-              R=$(js "$(jq -c '. + {op:"restore"}' <<<"$REQ" | dbx)")
-              OK=$(jq -n --argjson e "$E" --argjson r "$R" '($e.ok and $r.ok and $e.sha256==$r.sha256 and $e.rows==$r.rows)')
-              jq -cn --argjson q "$REQ" --argjson e "$E" --argjson r "$R" --argjson ok "$OK" '{s:$q.s,t:$q.t,part:$q.part,rows:$e.rows,bytes:$e.bytes,sha256:$e.sha256,restored:$r.rows,ok:$ok,err:($e.detail // $r.detail)}' >> parts.jsonl
-              [ "$OK" = true ] || { FAIL=$((FAIL+1)); tail -1 parts.jsonl; }
-            done
+          export -f tok dbx js; export DBX SET
+          cat > /tmp/part.sh <<'EOF2'
+          REQ="$1"
+          for try in 1 2 3; do
+            E=$(js "$(jq -c '. + {op:"export"}' <<<"$REQ" | dbx)")
+            R=$(js "$(jq -c '. + {op:"restore"}' <<<"$REQ" | dbx)")
+            OK=$(jq -n --argjson e "$E" --argjson r "$R" '($e.ok and $r.ok and $e.sha256==$r.sha256 and $e.rows==$r.rows)')
+            [ "$OK" = true ] && break; sleep $((try*5))
           done
+          jq -cn --argjson q "$REQ" --argjson e "$E" --argjson r "$R" --argjson ok "$OK" '{s:$q.s,t:$q.t,part:$q.part,rows:$e.rows,bytes:$e.bytes,sha256:$e.sha256,restored:$r.rows,ok:$ok,err:($e.detail // $r.detail)}'
+          EOF2
+          jq -c '.plan[] as $r | range(0;$r.parts) as $i | {s:$r.s,t:$r.t,per:$r.per,part:$i}' plan.json > reqs.jsonl
+          echo "parts to export: $(wc -l < reqs.jsonl)"
+          tr '\n' '\0' < reqs.jsonl | xargs -0 -P 4 -I{} bash /tmp/part.sh {} > parts.jsonl
+          FAIL=$(jq -s 'map(select(.ok|not))|length' parts.jsonl)
+          jq -c 'select(.ok|not)' parts.jsonl | head -20
           jq -s --slurpfile p plan.json --slurpfile d ddl.json '{set:env.SET, at:(now|todate), tables:($p[0].plan|length), parts:length, rows:(map(.rows)|add), failed:(map(select(.ok|not))|length), ddl:$d[0].sha256, files:.}' parts.jsonl > manifest.json
           jq -c '{manifest:.,op:"manifest"}' manifest.json | dbx | jq -c .
           jq -r '"exported parts=\(.parts) rows=\(.rows) failed=\(.failed)"' manifest.json
