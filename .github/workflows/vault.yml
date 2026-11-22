@@ -48,7 +48,7 @@ jobs:
           N="${NAME:-repo-full}-$(date -u +%Y%m%dT%H%M%SZ)"
           git clone --mirror "https://github.com/${GITHUB_REPOSITORY}" m.git
           git -C m.git bundle create "$PWD/$N.bundle" --all
-          git bundle verify "$N.bundle" >/dev/null
+          git -C m.git bundle verify "$PWD/$N.bundle" >/dev/null
           { echo "commits $(git -C m.git rev-list --all --count)"; echo "objects $(git -C m.git count-objects -v | awk '/in-pack/{print $2}')"; git -C m.git show-ref | sort; } > "$N.manifest"
           sha256sum "$N.bundle" | awk '{print $1}' > "$N.sha256"
           put "$N.bundle" "$N.bundle"; put "$N.manifest" "$N.manifest"; put "$N.sha256" "$N.sha256"
@@ -70,7 +70,7 @@ jobs:
           [ -n "$NAME" ] || { echo "name required"; exit 1; }
           get "$NAME.bundle" r.bundle; get "$NAME.manifest" r.manifest; get "$NAME.sha256" r.sha256
           [ "$(sha256sum r.bundle | awk '{print $1}')" = "$(cat r.sha256)" ] && echo "sha256 OK"
-          git bundle verify r.bundle >/dev/null && echo "bundle verify OK"
+          git init -q -b x vtmp && git -C vtmp bundle verify "$PWD/r.bundle" >/dev/null && echo "bundle verify OK"
           git clone --mirror r.bundle restored.git
           git -C restored.git fsck --full --no-progress && echo "fsck OK"
           C=$(git -C restored.git rev-list --all --count); E=$(awk '/^commits/{print $2}' r.manifest)
