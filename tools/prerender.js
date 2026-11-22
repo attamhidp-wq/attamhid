@@ -7,6 +7,8 @@
 const fs = require('fs'), path = require('path'), http = require('http');
 const { chromium } = require('playwright');
 const R = path.join(__dirname, '..');
+// انتظار يتحمّل استبدال المستند (document.open) أثناء الانتظار
+async function until(page, fn, ms) { const t0 = Date.now(); while (Date.now() - t0 < ms) { try { if (await page.evaluate(fn)) return true; } catch (e) { } await page.waitForTimeout(500); } return false; }
 const PORT = 8731, BASE = 'http://127.0.0.1:' + PORT;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff': 'font/woff', '.woff2': 'font/woff2', '.jpg': 'image/jpeg', '.ico': 'image/x-icon' };
 function serve(rootFile) {
@@ -113,7 +115,8 @@ async function check(browser) {
   const c3 = await browser.newContext({ locale: 'ar', serviceWorkers: 'block' }); const p3 = await c3.newPage();
   await p3.goto(BASE + '/', { waitUntil: 'load' });
   const link = await p3.$('#nav a[href^="#/"]:visible, #app a[href^="#/"]:visible, #nav a[href^="/#/"]:visible, #app a[href^="/#/"]:visible');
-  if (link) { await link.click(); res.push(['click on in-app link boots app', await p3.waitForFunction(() => typeof go === 'function', null, { timeout: 90000 }).then(() => true).catch(() => false)]); }
+  if (link) { const href = await link.getAttribute('href'); await link.click(); const ok = await until(p3, () => typeof go === 'function' && location.pathname === '/', 90000); console.log('clicked', href, '→', await p3.evaluate(() => location.hash).catch(() => '?')); res.push(['click on in-app link boots app', ok]); }
+  else res.push(['in-app link present in shell', false]);
   await c3.close();
   const c4 = await browser.newContext({ locale: 'ar', serviceWorkers: 'block' }); const p4 = await c4.newPage();
   await p4.addInitScript(() => { try { localStorage.setItem('tl', 'en'); } catch (e) {} });
