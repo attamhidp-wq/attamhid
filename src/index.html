@@ -30983,45 +30983,50 @@ function docPanel(r){return r?docList(r):''}
    ويُبنى النموذج كتلاً تُوزَّع آلياً على صفحات A4 مع ترويسة وتذييل وترقيم «صفحة س من ع» ورمز تحقق.
    ===================================================================== */
 var NF={},NFO=[];
-var NAVY='#1c3664',BLUE='#2a4d8f',LINE='#c9d3e3',SOFT='#f3f6fb';
-var nfCSS='.nfp{font-family:"Sakkal Majalla","Traditional Arabic","Amiri","Noto Naskh Arabic",serif;color:#14181f;direction:rtl}'+
- '.nfp *{box-sizing:border-box}'+
- '.nfp .frm{position:absolute;inset:14px;border:2px solid '+NAVY+';border-radius:4px}.nfp .frm:after{content:"";position:absolute;inset:4px;border:.8px solid '+NAVY+';border-radius:2px;opacity:.7}'+
- '.nfp .hd{position:absolute;top:30px;left:34px;right:34px;height:112px;background:#f1f3f6;border-radius:3px;display:grid;grid-template-columns:1fr 210px 1fr;align-items:center;padding:0 18px}'+
- '.nfp .ha,.nfp .he{line-height:1.55}.nfp .ha b,.nfp .ha span,.nfp .he b,.nfp .he span{display:block}.nfp .ha b{font-size:19px;color:'+NAVY+'}.nfp .ha span{font-size:15px;color:#2b3445;font-weight:700}'+
- '.nfp .he{text-align:left;font-family:Georgia,"Times New Roman",serif}.nfp .he b{font-size:14.5px;color:'+NAVY+'}.nfp .he span{font-size:12.5px;color:#2b3445;font-weight:700}'+
- '.nfp .hc{text-align:center}.nfp .hc img{height:52px;max-width:200px;object-fit:contain}'+
- '.nfp .bd{position:absolute;top:158px;left:48px;right:48px;bottom:108px}'+
- '.nfp .ft{position:absolute;bottom:26px;left:34px;right:34px;height:72px;border-top:1.2px solid '+NAVY+';display:grid;grid-template-columns:1fr 120px 1fr;align-items:center;padding-top:6px;font-size:12px;color:#3a4558}'+
- '.nfp .ft .fa{line-height:1.6}.nfp .ft .fa b{color:'+NAVY+';font-size:13px}.nfp .ft .nt{font-size:10.5px;color:#6a748a}.nfp .ft .pg{text-align:center;font-size:13px;color:'+NAVY+';font-weight:700}'+
- '.nfp .ft .q{display:flex;align-items:center;gap:8px;justify-content:flex-start;direction:ltr;font-size:11px;line-height:1.3;text-align:left}.nfp .ft .q img{width:58px;height:58px}'+
- '.nfp .wm{position:absolute;top:50%;left:50%;width:420px;transform:translate(-50%,-50%);opacity:.04;pointer-events:none}'+
- '.nfp .pvm{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%) rotate(-28deg);font-size:84px;font-weight:700;color:#b42318;opacity:.07;white-space:nowrap;pointer-events:none}'+
- '.nfp .tt{text-align:center;margin:0 0 10px}.nfp .tt .bs{font-family:"Aref Ruqaa","Amiri",serif;font-size:17px;color:'+NAVY+';margin-bottom:2px}.nfp .tt h1{margin:0;font-size:27px;color:'+NAVY+';line-height:1.3;display:inline-block;border-bottom:2.5px solid '+NAVY+';padding:0 14px 3px}.nfp .tt .en{direction:ltr;font-family:Georgia,serif;font-size:13px;color:#56627a;margin-top:4px}'+
- '.nfp .tt2{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid '+LINE+';font-size:14px;color:'+NAVY+'}.nfp .tt2 span{font-size:12px;color:#5a6680}'+
- '.nfp .meta{display:grid;grid-template-columns:1.25fr 1.4fr 1fr .7fr;border:1px solid '+LINE+';border-radius:6px;overflow:hidden;margin-bottom:12px;background:'+SOFT+'}'+
- '.nfp .meta div{padding:5px 10px;border-inline-start:1px solid '+LINE+';font-size:12.5px;line-height:1.35}.nfp .meta div:first-child{border-inline-start:0}.nfp .meta small{display:block;color:#5a6680;font-size:11px}.nfp .meta b{color:'+NAVY+';font-size:13.5px}'+
- '.nfp .conf{display:inline-block;border:1.5px solid #8a1c1c;color:#8a1c1c;border-radius:6px;padding:0 10px;font-size:14px;font-weight:700;margin-inline-start:10px;vertical-align:middle}'+
- '.nfp .sec{display:flex;align-items:center;gap:10px;margin:12px 0 8px}.nfp .sec .n{flex:0 0 26px;height:26px;border-radius:50%;background:'+NAVY+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}'+
- '.nfp .sec h2{margin:0;font-size:18.5px;color:'+NAVY+';flex:1;border-bottom:1.5px solid '+LINE+';padding-bottom:3px}.nfp .sec .en{direction:ltr;unicode-bidi:isolate;display:inline-block;font-family:Georgia,serif;font-size:11.5px;color:#6a748a;margin:0 12px;font-weight:400}'+
- '.nfp .kv{display:grid;grid-template-columns:1fr 1fr;border:1px solid '+LINE+';border-radius:6px;overflow:hidden}'+
- '.nfp .kv>div{padding:5px 12px;border-bottom:1px solid '+LINE+';min-height:42px}.nfp .kv>div.a{border-inline-end:1px solid '+LINE+'}.nfp .kv>div.w{grid-column:1/-1}'+
- '.nfp .kv small{display:block;color:#5a6680;font-size:12px;line-height:1.3}.nfp .kv b{font-size:15.5px;font-weight:700;line-height:1.45}'+
- '.nfp .blank{display:inline-block;min-width:60%;border-bottom:1px dotted #8b94a6;height:18px}'+
- '.nfp p.tx{margin:6px 0;font-size:15.5px;line-height:1.85;text-align:justify}.nfp p.tx .blank{min-width:130px}'+
- '.nfp table.tb{width:100%!important;display:table!important;table-layout:fixed;border-collapse:collapse;font-size:14px;margin:0}.nfp table.tb th{background:'+NAVY+';color:#fff;font-weight:700;padding:6px 8px;text-align:right;font-size:13.5px}'+
- '.nfp table.tb td{border-bottom:1px solid '+LINE+';padding:6px 8px;vertical-align:top;line-height:1.5}.nfp table.tb tr:nth-child(even) td{background:'+SOFT+'}'+
- '.nfp .sig{display:grid;gap:10px;margin-top:10px}.nfp .sig>div{border:1px dashed #aab4c6;border-radius:6px;padding:7px 10px;min-height:96px}'+
- '.nfp .sig .r{font-size:12.5px;color:'+BLUE+';font-weight:700}.nfp .sig .nm{font-size:14.5px;font-weight:700;margin:2px 0 18px;min-height:20px}.nfp .sig .ln{border-top:1px dotted #8b94a6;font-size:11.5px;color:#5a6680;padding-top:2px;display:flex;justify-content:space-between}'+
- '.nfp .apv{display:grid;grid-template-columns:1.1fr .9fr 1.2fr;gap:14px;align-items:center;border:1.2px solid '+NAVY+';border-radius:6px;padding:10px 14px;margin-top:6px;background:#fbfcfe}'+
- '.nfp .apv .r{font-size:13px;color:'+NAVY+';font-weight:700}.nfp .apv .ap1,.nfp .apv .ap2{text-align:center}.nfp .apv .sg{height:64px;max-width:190px;object-fit:contain;display:block;margin:2px auto}.nfp .apv .se{height:112px;width:112px;object-fit:contain;display:block;margin:4px auto 0}'+
- '.nfp .apv .nm{font-size:15px;font-weight:700;border-top:1px solid '+LINE+';padding-top:3px}.nfp .apv .tl{font-size:13.5px;color:#2b3445}.nfp .apv .tle{font-family:Georgia,serif;font-size:11px;color:#5a6680}.nfp .apv .ap3{font-size:12.5px;line-height:1.75;color:#3a4558;text-align:justify}'+
- '.nfp .box{border:1px solid '+LINE+';border-radius:6px;padding:8px 12px;background:#fff}.nfp .boxs{background:'+SOFT+';border-color:#dbe3ef}'+
- '.nfp .chk{display:inline-flex;align-items:center;gap:4px;margin-inline-end:14px;font-size:15px}.nfp .chk i{display:inline-block;width:13px;height:13px;border:1.4px solid '+NAVY+';border-radius:3px;font-style:normal;font-size:11px;line-height:11px;text-align:center}';
+var NAVY='#14284B',BLUE='#1B3560',LINE='#5d6a78',SOFT='#f3f5f7';
+/* v233: مطابق لتصميم الخطابات الرسمية المعتمد في المعهد (خطاب القبول والتعيين وشهادة التعريف): شريطان علوي وسفلي، ترويسة ثلاثية، جداول بحدود، توقيع رئيس المعهد وختمه، رقم المرجع والتاريخ ورمز التحقق */
+var nfCSS='.nfp{font-family:Amiri,"Noto Naskh Arabic",serif;color:#16202E;direction:rtl}.nfp *{box-sizing:border-box}'+
+ '.nfp .l59-band{position:absolute;left:0;width:794px;height:34px}.nfp .l59-band.top{top:0}.nfp .l59-band.bot{bottom:0}'+
+ '.nfp .l59-ha{position:absolute;top:44px;right:42px;width:280px;text-align:right;font-family:Amiri,serif;font-weight:700;color:'+NAVY+'}'+
+ '.nfp .l59-he{position:absolute;top:44px;left:42px;width:280px;text-align:left;font-family:Tinos,"Times New Roman",serif;font-weight:700;color:'+NAVY+';direction:ltr}'+
+ '.nfp .l59-ha>div,.nfp .l59-he>div{white-space:nowrap}.nfp .l59-hc{position:absolute;top:40px;left:332px;width:130px;text-align:center}.nfp .l59-bs{display:block;margin:0 auto 4px}'+
+ '.nfp .l59-lg{display:block;margin:0 auto;max-width:118px;max-height:70px;object-fit:contain}'+
+ '.nfp .rule{position:absolute;top:150px;left:42px;right:42px;height:1px;background:linear-gradient(90deg,transparent,#9AA6AE 12%,#9AA6AE 88%,transparent)}'+
+ '.nfp .tt{text-align:center;color:'+NAVY+';margin:0 0 8px}.nfp .tt .ar{font:700 24px "Aref Ruqaa",Amiri,serif;line-height:1.35}.nfp .tt .en{font:700 13.5px Tinos,"Times New Roman",serif;letter-spacing:.6px}'+
+ '.nfp .tt .conf{display:inline-block;border:1.5px solid #8a1c1c;color:#8a1c1c;border-radius:4px;padding:0 8px;font:700 13px Amiri,serif;margin-inline-start:8px;vertical-align:middle}'+
+ '.nfp .tm{display:flex;justify-content:space-between;font:700 12.5px Amiri,serif;color:'+NAVY+';border-top:1px solid #d6dbe0;border-bottom:1px solid #d6dbe0;padding:2px 4px;margin:0 0 6px}.nfp .tm .e{font:700 11.5px Tinos,"Times New Roman",serif;direction:ltr}'+
+ '.nfp .tt2{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 8px;padding-bottom:3px;border-bottom:1px solid #d6dbe0;color:'+NAVY+';font:700 15px Amiri,serif}.nfp .tt2 span{font:700 11.5px Tinos,"Times New Roman",serif}'+
+ '.nfp .nfbd{position:absolute!important;left:71px!important;right:auto!important;width:652px!important;padding:0!important;margin:0!important;border:0!important;background:none!important}'+
+ '.nfp .sec h2{border:0!important;padding:0!important;background:none!important}.nfp .sec{display:flex;align-items:baseline;justify-content:space-between;margin:10px 0 5px;color:'+NAVY+';border-bottom:1.5px solid '+NAVY+';padding-bottom:1px}.nfp .sec h2{margin:0;font:700 16px Amiri,serif}.nfp .sec .n{margin-inline-end:6px}.nfp .sec .en{font:700 12px Tinos,"Times New Roman",serif;direction:ltr}'+
+ '.nfp table.kv,.nfp table.tb{width:100%!important;display:table!important;border-collapse:collapse;table-layout:fixed;margin:0}'+
+ '.nfp table.kv th,.nfp table.kv td,.nfp table.tb th,.nfp table.tb td{border:1px solid '+LINE+';padding:3px 8px;vertical-align:middle;line-height:1.35;height:30px;word-wrap:break-word;background:#fff}'+
+ '.nfp table.kv th,.nfp table.tb th{background:'+SOFT+'!important;color:'+NAVY+';font:700 13px Amiri,serif;text-align:right}.nfp table.kv td,.nfp table.tb td{font:700 14px Amiri,serif;text-align:right}'+
+ '.nfp .blank{display:inline-block;min-width:70%;height:16px}.nfp p.tx .blank{min-width:130px;border-bottom:1px dotted #8b94a6}'+
+ '.nfp p.tx{margin:6px 0;font:700 14.5px Amiri,serif;line-height:1.8;text-align:justify}'+
+ '.nfp .sig{display:grid;gap:10px;margin-top:8px}.nfp .sig>div{border:1px dashed #8b94a6;padding:5px 9px;min-height:82px}'+
+ '.nfp .sig .r{font:700 13px Amiri,serif;color:'+NAVY+'}.nfp .sig .nm{font:700 14px Amiri,serif;margin:1px 0 14px;min-height:19px}.nfp .sig .ln{border-top:1px dotted #8b94a6;font:700 11px Amiri,serif;color:#5a6680;padding-top:1px;display:flex;justify-content:space-between}'+
+ '.nfp .box{border:1px solid '+LINE+';padding:6px 10px}.nfp .boxs{background:#fafbfc}'+
+ '.nfp .chk{display:inline-flex;align-items:center;gap:4px;margin-inline-end:14px}.nfp .chk i{display:inline-block;width:12px;height:12px;border:1.3px solid '+NAVY+';font-style:normal;font-size:10px;line-height:10px;text-align:center}'+
+ '.nfp .l59-sgs{position:absolute;top:722px;left:52px;width:380px;display:flex;justify-content:center;color:'+NAVY+'}.nfp .l59-sg{flex:1;text-align:center}'+
+ '.nfp .l59-sg .t,.nfp .l59-sg .n{font:700 16px Amiri,serif;line-height:1.35}.nfp .l59-sg .te,.nfp .l59-sg .ne{font:700 12.5px Tinos,"Times New Roman",serif;line-height:1.3}'+
+ '.nfp .l59-sg .im{height:62px;display:flex;align-items:center;justify-content:center;margin:2px 0}.nfp .l59-sg .im img{max-height:62px;max-width:200px;object-fit:contain}'+
+ '.nfp .l59-seal{position:absolute;top:726px;right:86px;width:200px;height:124px;object-fit:contain;opacity:.95}'+
+ '.nfp .wet{position:absolute;top:862px;left:52px;right:52px;text-align:center;font:700 11px Amiri,serif;color:#5a6680}'+
+ '.nfp .l59-qr{position:absolute;top:888px;left:364px;width:66px;height:66px}'+
+ '.nfp .l59-mr{position:absolute;top:896px;right:42px;width:300px;text-align:right;font:700 12.5px Amiri,serif;line-height:1.75}'+
+ '.nfp .l59-ml{position:absolute;top:898px;left:42px;width:300px;text-align:left;font:700 11.5px Tinos,"Times New Roman",serif;line-height:1.9}'+
+ '.nfp .l59-vb{position:absolute;top:972px;left:32px;right:32px;height:30px;background:#eef1f4;border-top:1px solid #c9d1d8;border-bottom:1px solid #c9d1d8;display:flex;align-items:center;justify-content:space-between;padding:0 14px;color:'+NAVY+'}'+
+ '.nfp .l59-vb .ar{font:700 12px Amiri,serif}.nfp .l59-vb .en{font:700 11px Tinos,"Times New Roman",serif}.nfp .l59-vb .pg{font:700 12.5px Amiri,serif;background:#fff;border:1px solid #c9d1d8;padding:0 10px;border-radius:10px}'+
+ '.nfp .pgn{position:absolute;top:954px;left:300px;width:194px;text-align:center;font:700 11px Amiri,serif;color:'+NAVY+'}.nfp .l59-ct{position:absolute;bottom:42px;left:42px;right:42px;text-align:center;font:700 11.5px Amiri,serif;color:'+NAVY+';border-top:1px solid #d6dbe0;padding-top:5px}'+
+ '.nfp div,.nfp table,.nfp p{transform:none!important;zoom:1!important;box-shadow:none!important}.nfp .box{margin:0!important;border-radius:0!important}.nfp div.pvm{position:absolute;top:470px;left:0;right:0;text-align:center;font:700 80px Amiri,serif;color:rgba(180,0,0,.10);transform:rotate(-20deg)!important;pointer-events:none;z-index:5}'+
+ '.nfp.ce .nfbd p.tx{text-align:center}';
 var nfE=function(v){return v==null?'':e9(String(v))};
 var nfV=function(v){v=v==null?'':String(v);return v.trim()&&!/^[\s\-–—]+$/.test(v)?nfE(v):'<span class="blank"></span>'};
-var nfSec=function(n,ar,en){return '<div class="sec"><span class="n">'+n+'</span><h2>'+ar+(en?'<span class="en">'+en+'</span>':'')+'</h2></div>'};
-var nfKV=function(items){/* items: [label, value, wide] — الحقل المنفرد قبل حقل عريض يمتد ليملأ السطر */var col=0;items=items.map(function(x,i){x=x.slice();if(x[2]){col=0;return x}var nx=items[i+1];if(col===0&&(!nx||nx[2]))x[2]=1;else{x[4]=col===0;col=1-col}return x});return '<div class="kv">'+items.map(function(x){return '<div'+(x[2]?' class="w"':x[4]?' class="a"':'')+'><small>'+x[0]+'</small><b>'+(x[3]?x[1]:nfV(x[1]))+'</b></div>'}).join('')+'</div>'};
+var nfSec=function(n,ar,en){return '<div class="sec"><h2><span class="n">'+n+'.</span>'+ar+'</h2>'+(en?'<span class="en">'+en+'</span>':'')+'</div>'};
+var nfKV=function(items){/* جدول بيانات بحدود على نمط خطابات المعهد: [العنوان، القيمة، عريض، قيمة HTML] */var rows=[],cur=[];var cell=function(x){return x[3]?x[1]:nfV(x[1])};
+ items.forEach(function(x,i){if(x[2]){if(cur.length){rows.push('<tr><th>'+cur[0][0]+'</th><td colspan="3">'+cell(cur[0])+'</td></tr>');cur=[]}rows.push('<tr><th>'+x[0]+'</th><td colspan="3">'+cell(x)+'</td></tr>');return}cur.push(x);if(cur.length===2){rows.push('<tr><th>'+cur[0][0]+'</th><td>'+cell(cur[0])+'</td><th>'+cur[1][0]+'</th><td>'+cell(cur[1])+'</td></tr>');cur=[]}});
+ if(cur.length)rows.push('<tr><th>'+cur[0][0]+'</th><td colspan="3">'+cell(cur[0])+'</td></tr>');
+ return '<table class="kv"><colgroup><col style="width:118px"><col><col style="width:118px"><col></colgroup>'+rows.join('')+'</table>'};
 var nfP=function(t){return '<p class="tx">'+t+'</p>'};
 var nfCK=function(opts,val){return opts.map(function(o){var on=String(val||'')===String(o[0]);return '<span class="chk"><i>'+(on?'✓':'')+'</i>'+o[1]+'</span>'}).join('')};
 var nfTB=function(heads,rows,per,blankN){/* جدول يُقسَّم كتلاً حتى يتوزع على الصفحات مع تكرار العناوين؛ وإن كان فارغاً طُبعت أسطر للتعبئة */per=per||10;var out=[],th='<tr>'+heads.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr>';
@@ -31041,7 +31046,7 @@ nfDef('ت-1',{k:'tr',t:['طلب الالتحاق بالتدريب الميدان
  when:function(r){return nfWhen('ت-1',r)},
  body:function(r){var a=nfF('ت-1',r),l=nfF('ت-2',r),c=nfF('ت-3',r),i=nfF('ت-16',r),B=[],int=(r.data||{}).ext==='int';
   B.push(nfSec('١','بيانات الطالب','Student')+nfKV([['اسم الطالب',a.name],['الرقم الأكاديمي',a.sid],['الاسم بالإنجليزية',a.nameEn],['الجنسية',a.nat],['الفصل الدراسي',a.term],['وسيلة التواصل',a.contact]]));
-  B.push(nfSec('٢','التدريب المقترح','Proposed training')+nfKV([['جهة التدريب',nfCK([['ext','جهة خارجية'],['int','داخل معهد التمهيد']],int?'int':'ext')+'<br>'+nfV(a.ent),1,1],['نوع الجهة ومدينتها',a.typeCity],['مجال التدريب',a.dom],['المدة',(a.from||a.to)?('من '+nfE(a.from)+' إلى '+nfE(a.to)):'',0,!!(a.from||a.to)],['الأيام والساعات اليومية',[a.days,a.dhrs?(a.dhrs+' ساعات يومياً'):''].filter(Boolean).join(' — ')],['شخص التواصل في الجهة وصفته',a.contactP,1]]));
+  B.push(nfSec('٢','التدريب المقترح','Proposed training')+nfKV([['جهة التدريب',nfCK([['ext','جهة خارجية'],['int','داخل معهد التمهيد']],int?'int':(a.ent?'ext':''))+'<br>'+nfV(a.ent),1,1],['نوع الجهة ومدينتها',a.typeCity],['مجال التدريب',a.dom],['المدة',(a.from||a.to)?('من '+nfE(a.from)+' إلى '+nfE(a.to)):'',0,!!(a.from||a.to)],['الأيام والساعات اليومية',[a.days,a.dhrs?(a.dhrs+' ساعات يومياً'):''].filter(Boolean).join(' — ')],['شخص التواصل في الجهة وصفته',a.contactP,1]]));
   B.push(nfSec('٣','أهداف التدريب','Training objectives')+'<div class="box">'+['g1','g2','g3'].map(function(k,n){return '<p class="tx" style="margin:3px 0"><b>'+(n+1)+'.</b> '+nfV(a[k])+'</p>'}).join('')+'</div>'+nfP('أتعهد بالالتزام بأنظمة المعهد والجهة وآداب المتدرب، وبتسجيل سجل التدريب بصدق، وتسليم متطلباته في مواعيدها.'));
   B.push(nfSec('٤','التوصية والاعتماد','Recommendation & approval')+nfKV([['قرار القسم',nfCK([['معتمد','معتمد'],['معاد للتعديل','معاد للتعديل'],['مرفوض','مرفوض']],a.dec),1,1],['السبب (عند الإعادة أو الرفض)',a.reason,1]])+nfSIG([['الطالب',a.sStu,a.dStu],['المشرف الأكاديمي (التوصية)',a.sSup,a.dSup]]));
   if(int){B.push(nfSec('٥','قرار التكليف داخل المعهد','Internal assignment decision')+nfKV([['الوحدة المستضيفة',i.unit],['مشرف الوحدة',i.usup],['المجال والمهام',i.tasks,1],['المدة',(i.from||'')+(i.to?' — '+i.to:'')],['الأيام والساعات',[i.days,i.hrs].filter(Boolean).join(' — ')],['الحد الأدنى للساعات',i.need],['المكافأة',i.reward]])+nfSIG([['مشرف الوحدة المستضيفة',i.usup,'']]))}
@@ -31113,7 +31118,7 @@ nfDef('م-3',{k:'gp',t:['محضر مناقشة مشروع التخرج وتقو�
   B.push(nfSec('١','قرار تشكيل اللجنة','Committee')+nfKV([['اسم الطالب',c.name||m.name],['عنوان المشروع',c.title||m.title,1],['رئيس اللجنة (المشرف)',c.chair],['عضو مناقش',c.m1],['عضو مناقش',c.m2],['موعد المناقشة',[c.date,c.time].filter(Boolean).join(' — ')],['المكان أو الرابط',c.place,1]])+'');
   B.push(nfSec('٢','تقويم أعضاء اللجنة (سري)','Members’ evaluations (confidential)'));
   nfTB(['العضو وصفته','الملاحظات والتعديلات المقترحة'],e.map(function(x){var V=nfF('م-8',r,x[0]);return [nfE(V.mem),nfE(V.notes)]}),6,3).forEach(function(x){B.push(x)});
-  B.push(nfSec('٣','محضر المناقشة والنتيجة','Minutes & result')+nfKV([['تاريخ الاجتماع',m.date],['درجة المشروع المكتوب (متوسط الأعضاء)',m.w],['درجة العرض والمناقشة (متوسط الأعضاء)',m.o],['النتيجة',m.res],['مهلة التعديلات (أيام)',m.days],['ملخص التعديلات المطلوبة',m.rev,1],['اعتماد النسخة المعدلة',[m.fin,m.finS,m.finD].filter(Boolean).join(' — '),1]])+nfSIG([['رئيس اللجنة (المشرف)',m.s1,''],['عضو مناقش',m.s2,''],['عضو مناقش',m.s3,'']]));
+  B.push(nfSec('٣','محضر المناقشة والنتيجة','Minutes & result')+nfKV([['تاريخ الاجتماع',m.date],['درجة المكتوب',m.w],['درجة العرض والمناقشة',m.o],['النتيجة',m.res],['مهلة التعديلات (أيام)',m.days],['ملخص التعديلات المطلوبة',m.rev,1],['اعتماد النسخة المعدلة',[m.fin,m.finS,m.finD].filter(Boolean).join(' — '),1]])+nfSIG([['رئيس اللجنة (المشرف)',m.s1,''],['عضو مناقش',m.s2,''],['عضو مناقش',m.s3,'']]));
   return B}});
 nfDef('م-4',{k:'gp',t:['قرار النتيجة النهائية لمقرر 4401','Final Result Decision — Course 4401'],parts:['م-10'],
  when:function(r){return nfWhen('م-10',r)},
@@ -31123,32 +31128,48 @@ nfDef('م-4',{k:'gp',t:['قرار النتيجة النهائية لمقرر 440
    nfP('قرر القسم اعتماد نتيجة الطالب في مقرر 4401 «مشروع التخرج والتدريب الميداني» على النحو المبين أعلاه.')]}});
 
 /* ---------- الإخراج: توزيع الكتل على صفحات A4 ---------- */
-/* v233: هوية المعهد الرسمية — ترويسة ثلاثية، إطار، تذييل برقم الوثيقة ورمز التحقق، واعتماد إلكتروني واحد لرئيس المعهد (توقيعه وختمه الرسمي) */
-var nfPres=function(){var o={n:'أ. المفتي منير الإسلام بن معيذ الدين',ne:'Mufti Munirul Islam Ibn Moiez Uddin',t:'رئيس المعهد',te:'Chairman of At Tamhid Institute',sig:'',seal:''};
- try{var V=window.V51||{},g=(V.resolveSigners&&V.resolveSigners('_default'))||[],p=g.filter(function(x){return /رئيس/.test(x.t||'')})[0]||g[0];if(p){if(p.n)o.n=p.n;if(p.ne)o.ne=p.ne;if(p.te)o.te=p.te;o.sig=V.imgOf?V.imgOf(p.img):''}}catch(e){}
- try{var V2=window.V51||{},se=(V2.resolveSeals&&V2.resolveSeals('_default'))||[];if(se[0])o.seal=V2.imgOf?V2.imgOf(se[0]):''}catch(e){}
+/* v233: هوية المعهد الرسمية — نفس قالب الخطابات المعتمد؛ اعتماد إلكتروني واحد لرئيس المعهد (توقيعه وختمه الرسمي) */
+var nfPres=function(){var o={n:'أ. المفتي منير الإسلام بن معيذ الدين',ne:'Mufti Munirul Islam Ibn Moiez Uddin',t:'رئيس المعهد',te:'Chairman of At Tamhid Institute',sig:'',seal:''},V=window.V51||{};
+ try{var g=(V.resolveSigners&&V.resolveSigners('_default'))||[],p=g.filter(function(x){return /رئيس/.test(x.t||'')})[0]||g[0];if(p){if(p.n)o.n=p.n;if(p.ne)o.ne=p.ne;if(p.t)o.t=p.t;if(p.te)o.te=p.te;o.sig=V.imgOf?V.imgOf(p.img):''}}catch(e){}
+ try{var se=(V.resolveSeals&&V.resolveSeals('_default'))||[];if(se[0])o.seal=V.imgOf?V.imgOf(typeof se[0]==='string'?se[0]:se[0].img):''}catch(e){}
  try{if(!o.sig)o.sig=SIG}catch(e){}try{if(!o.seal)o.seal=SEAL}catch(e){}return o};
-var nfApprove=function(){var P=nfPres();return '<div class="apv"><div class="ap1"><div class="r">اعتماد رئيس المعهد</div>'+(P.sig?'<img class="sg" src="'+P.sig+'" alt="">':'<div style="height:64px"></div>')+'<div class="nm">'+e9(P.n)+'</div><div class="tl">'+e9(P.t)+'</div><div class="tle" dir="ltr">'+e9(P.te)+'</div></div>'+
- '<div class="ap2"><div class="r">الختم الرسمي</div>'+(P.seal?'<img class="se" src="'+P.seal+'" alt="">':'')+'</div>'+
- '<div class="ap3">اعتُمدت هذه الوثيقة إلكترونياً بتوقيع رئيس المعهد وختمه الرسمي. التوقيعات الأخرى فيها خطية تُضاف بعد الطباعة. ويُتحقق من صحة الوثيقة وحالتها بمسح رمز الاستجابة السريعة في أسفل الصفحة.</div></div>'};
-var nfHead=function(D){var lg='';try{lg=LOGO}catch(e){}
- return '<div class="hd"><div class="ha"><b>معهد التمهيد</b><span>مجلس الشؤون التعليمية</span><span>قسم الدراسات اللغوية والترجمة</span></div><div class="hc">'+(lg?'<img src="'+lg+'" alt="">':'')+'</div><div class="he" dir="ltr"><b>At Tamhid Institute</b><span>Board of Educational Affairs</span><span>Dept. of Linguistic Studies &amp; Translation</span></div></div>'};
-var nfTitle=function(D,ref,issued,term){return '<div class="tt"><div class="bs">بسم الله الرحمن الرحيم</div><h1>'+e9(D.t[0])+(D.conf?'<span class="conf">سري</span>':'')+'</h1><div class="en">'+e9(D.t[1])+'</div></div>'+
- '<div class="meta"><div><small>رقم الوثيقة</small><b dir="ltr">'+e9(ref||'—')+'</b></div><div><small>تاريخ الإصدار</small><b>'+e9(nfHijri(issued))+'</b> <small dir="ltr" style="display:inline">'+e9(nfGreg(issued))+' م</small></div><div><small>الفصل الدراسي</small><b>'+e9(term||'—')+'</b></div><div><small>رمز النموذج</small><b>'+e9(D.code)+'</b></div></div>'};
-var nfFoot=function(ref,n,N){var qs='',url=location.origin+'/#/ft-verify/'+encodeURIComponent(ref||'');try{qs=qr(url)}catch(e){}
- return '<div class="ft"><div class="fa"><div>رقم الوثيقة: <b dir="ltr">'+e9(ref||'')+'</b></div><div class="nt">أي كشط أو تعديل يلغي هذه الوثيقة — Any alteration voids this document</div></div><div class="pg">صفحة '+n+' من '+N+'</div><div class="q">'+(qs?'<img src="'+qs+'" alt="">':'')+'<div>امسح الرمز<br>للتحقق</div></div></div>'};
-var nfPage=function(inner,D,pv){var lg='';try{lg=LOGO}catch(e){}
- return '<div class="g9p pt nfp'+(D.cert?' ce':'')+'" style="width:794px;height:1123px;position:relative;overflow:hidden;background:#fff"><style>'+nfCSS+'</style><div class="frm"></div>'+(lg?'<img class="wm" src="'+lg+'" alt="">':'')+(pv?'<div class="pvm">نسخة للمراجعة</div>':'')+inner+'</div>'};
-/* يقيس الكتل في المتصفح ويوزعها على الصفحات؛ يعيد HTML وثيقة متعددة الصفحات يفهمها محرك PDF في الموقع */
-var nfBuild=async function(code,r,ref,issued,pv){var D=NF[code],term='';try{term=termS()}catch(e){}var blocks=[];(D.body(r)||[]).concat([nfApprove()]).forEach(function(b){/* لا يبقى عنوان قسم وحده في آخر الصفحة */var L=blocks[blocks.length-1];if(L&&/^<div class="sec">[\s\S]*<\/h2><\/div>$/.test(L))blocks[blocks.length-1]=L+b;else blocks.push(b)});
- var host=document.createElement('div');host.style.cssText='position:fixed;left:-9000px;top:0;width:794px';host.innerHTML=nfPage('<div class="bd" style="position:relative;top:0;left:0;right:0;width:'+NFW+'px" id="nfm"></div>',D);document.body.appendChild(host);
- try{try{await document.fonts.ready}catch(e){}var m=host.querySelector('#nfm'),pages=[[]],used=0;
-  m.innerHTML=nfTitle(D,ref,issued,term);var th=m.offsetHeight;m.innerHTML='<div class="tt2"><b>x</b></div>';var t2=m.offsetHeight;m.innerHTML='';var cap=NFH-th-6,Hn=NFH-t2-6;
-  blocks.forEach(function(b){m.innerHTML='<div style="padding-bottom:8px">'+b+'</div>';var h=m.offsetHeight;if(used+h>cap&&pages[pages.length-1].length){pages.push([]);used=0;cap=Hn}pages[pages.length-1].push(b);used+=h});
+var nfHDR=function(){var H=[];try{H=((S.v51&&S.v51.inst&&S.v51.inst.hdr)||[]).filter(function(h){return h.id!=='h-adm'&&h.on!==0&&h.on!==false})}catch(e){}
+ if(!H.length)H=[{id:'h-inst',ar:'معهد التمهيد',en:'At Tamhid Institute'},{id:'h-board',ar:'مجلس الشؤون التعليمية',en:'Board of Educational Affairs'}];
+ return H.concat([{id:'h-dept',ar:'قسم الدراسات اللغوية والترجمة',en:'Dept. of Linguistic Studies & Translation'}])};
+var nfHead=function(){try{var V=window.V51||{};if(V.head59&&V.band59)return V.band59(1)+V.head59(nfHDR()).html}catch(e){}
+ var lg='';try{lg=LOGO}catch(e){}var H=nfHDR();return '<div class="l59-band top" style="background:'+NAVY+';height:22px"></div><div class="l59-ha" style="font-size:18px;line-height:30px">'+H.map(function(h){return '<div>'+e9(h.ar)+'</div>'}).join('')+'</div><div class="l59-hc">'+(lg?'<img class="l59-lg" src="'+lg+'" alt="">':'')+'</div><div class="l59-he" style="font-size:14px;line-height:30px">'+H.map(function(h){return '<div>'+e9(h.en)+'</div>'}).join('')+'</div>'};
+var nfBand0=function(){try{var V=window.V51||{};if(V.band59)return V.band59(0)}catch(e){}return '<div class="l59-band bot" style="background:'+NAVY+';height:22px"></div>'};
+var nfDMY=function(d){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(d||''));return m?m[3]+'-'+m[2]+'-'+m[1]:''};
+var nfHIJ=function(d){try{var p=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'2-digit',month:'2-digit',year:'numeric'}).formatToParts(new Date(String(d).slice(0,10)+'T12:00:00')),g=function(t){return (p.find(function(x){return x.type===t})||{}).value||''};return g('day')+'-'+g('month')+'-'+g('year')}catch(e){return ''}};
+var nfTitle=function(D,ref,issued,term){return '<div class="tt"><div class="ar">'+e9(D.t[0])+(D.conf?'<span class="conf">سري</span>':'')+'</div><div class="en">'+e9(D.t[1])+'</div></div>'+
+ '<div class="tm"><span>رمز النموذج: '+e9(D.code)+(term?' &nbsp;·&nbsp; الفصل الدراسي: '+e9(term):'')+'</span><span class="e">Form '+e9(D.code.replace('ت-','T').replace('م-','G'))+' · Course 4401</span></div>'};
+var nfFoot=function(D,ref,issued,n,N,last){var iso=nfGreg(issued),url=location.origin+'/#/ft-verify/'+encodeURIComponent(ref||''),q='';try{q=qr(url)}catch(e){}
+ var I={},Hm={};try{I=(S.v51&&S.v51.inst)||{};Hm=S.home||{}}catch(e){}
+ var ct=[I.addrAr?e9(I.addrAr):'دكا - بنغلاديش',Hm.p1?'<bdi dir="ltr">'+e9(Hm.p1)+'</bdi>':'<bdi dir="ltr">+8801822510180</bdi>',Hm.em?'<bdi dir="ltr">'+e9(Hm.em)+'</bdi>':'<bdi dir="ltr">attamhidp@gmail.com</bdi>'].join(' &nbsp;|&nbsp; ');
+ var h='';
+ if(last){var P=nfPres();h+='<div class="l59-sgs"><div class="l59-sg"><div class="t">'+e9(P.t)+'</div><div class="te" dir="ltr">'+e9(P.te)+'</div><div class="im">'+(P.sig?'<img src="'+P.sig+'" alt="">':'')+'</div><div class="n">'+e9(P.n)+'</div><div class="ne" dir="ltr">'+e9(P.ne)+'</div></div></div>'+(P.seal?'<img class="l59-seal" src="'+P.seal+'" alt="">':'')+
+  '<div class="wet">التوقيع الإلكتروني المعتمد في هذه الوثيقة هو توقيع رئيس المعهد وختمه الرسمي، وما سواه من توقيعات يُضاف بخط اليد بعد الطباعة.</div>'}
+ h+=(q?'<img class="l59-qr" src="'+q+'" alt="">':'')+
+  '<div class="l59-mr"><div>رقم الوثيقة: <bdi dir="ltr">'+e9(ref||'')+'</bdi></div><div>التاريخ: <bdi dir="ltr">'+nfHIJ(iso)+'</bdi> هـ الموافق <bdi dir="ltr">'+nfDMY(iso)+'</bdi> م</div></div>'+
+  '<div class="l59-ml" dir="ltr"><div>Ref: '+e9(ref||'')+'</div><div>Date: '+nfDMY(iso)+'</div></div>'+
+  '<div class="l59-vb"><span class="ar">'+e9((typeof QRTXT59!=='undefined'&&QRTXT59.ar)||'للتحقق من صحة الوثيقة يرجى مسح رمز الاستجابة السريعة.')+'</span><span class="en" dir="ltr">'+e9((typeof QRTXT59!=='undefined'&&QRTXT59.en)||'To verify this document, please scan the QR code.')+'</span></div>'+
+  '<div class="pgn">صفحة '+n+' من '+N+' — Page '+n+' of '+N+'</div><div class="l59-ct">'+ct+'</div>'+nfBand0();
+ return h};
+var nfPage=function(inner,D,pv){return '<div class="g9p pt nfp'+(D.cert?' ce':'')+'" style="width:794px;height:1123px;position:relative;overflow:hidden;background:#fff"><style>'+nfCSS+'</style>'+(pv?'<div class="pvm">نسخة للمراجعة</div>':'')+inner+'</div>'};
+var NFW=652,NFT1=160,NFTn=162,NFB=878,NFL=712;
+/* يقيس الكتل في المتصفح ويوزعها على الصفحات؛ الصفحة الأخيرة تحجز مكان توقيع رئيس المعهد وختمه */
+var nfBuild=async function(code,r,ref,issued,pv){var D=NF[code],term='';try{term=termS()}catch(e){}var blocks=[];(D.body(r)||[]).filter(Boolean).forEach(function(b){var L=blocks[blocks.length-1];if(L&&/^<div class="sec">[\s\S]*<\/h2>(<span class="en">[^<]*<\/span>)?<\/div>$/.test(L))blocks[blocks.length-1]=L+b;else blocks.push(b)});
+ var host=document.createElement('div');host.style.cssText='position:fixed;left:-9000px;top:0;width:794px';host.innerHTML=nfPage('<div class="nfbd" style="position:relative;left:0;top:0;width:'+NFW+'px" id="nfm"></div>',D);document.body.appendChild(host);
+ try{try{await document.fonts.ready}catch(e){}var m=host.querySelector('#nfm'),H=function(x){m.innerHTML=x;return m.offsetHeight};
+  var th=H(nfTitle(D,ref,issued,term)),t2=H('<div class="tt2"><b>x</b></div>'),hs=blocks.map(function(b){return H('<div style="padding-bottom:6px">'+b+'</div>')});
+  var pages=[[]],used=0,cap=NFB-NFT1-th,cap1=cap,capN=NFB-NFTn-t2;
+  blocks.forEach(function(b,i){if(used+hs[i]>cap&&pages[pages.length-1].length){pages.push([]);used=0;cap=capN}pages[pages.length-1].push(i);used+=hs[i]});
+  /* الصفحة الأخيرة: يجب أن ينتهي المحتوى قبل خانة الاعتماد */
+  var lastCap=function(k){return NFL-(k===0?NFT1+th:NFTn+t2)},sum=function(a){return a.reduce(function(s,i){return s+hs[i]},0)};
+  while(sum(pages[pages.length-1])>lastCap(pages.length-1)){var lp=pages[pages.length-1],mv=[];while(lp.length>1&&sum(lp)>lastCap(pages.length-1))mv.unshift(lp.pop());if(!mv.length){pages.push([]);break}pages.push(mv);if(mv.length&&sum(mv)<=lastCap(pages.length-1))break}
   var N=pages.length;
-  return '<div class="g9-doc" data-nf="1" dir="rtl" style="background:#fff">'+pages.map(function(p,i){return nfPage(nfHead(D)+'<div class="bd">'+(i===0?nfTitle(D,ref,issued,term):'<div class="tt2"><b>'+e9(D.t[0])+'</b><span>تابع — رقم الوثيقة <span dir="ltr">'+e9(ref||'')+'</span></span></div>')+p.map(function(b){return '<div style="padding-bottom:8px">'+b+'</div>'}).join('')+'</div>'+nfFoot(ref,i+1,N),D,pv)}).join('')+'</div>'}
+  return '<div class="g9-doc" data-nf="1" dir="rtl" style="background:#fff">'+pages.map(function(p,i){return nfPage(nfHead()+'<i class="rule"></i><div class="nfbd" style="top:'+(i===0?NFT1:NFTn)+'px">'+(i===0?nfTitle(D,ref,issued,term):'<div class="tt2"><b>'+e9(D.t[0])+'</b><span>'+e9(D.t[1])+' — Page '+(i+1)+'</span></div>')+p.map(function(k){return '<div style="padding-bottom:6px">'+blocks[k]+'</div>'}).join('')+'</div>'+nfFoot(D,ref,issued,i+1,N,i===N-1),D,pv)}).join('')+'</div>'}
  finally{host.remove()}};
-var NFW=794-2*48,NFH=1123-168-108;
 
 var nfMissing=function(code,r){var D=NF[code],out=[];(D.parts||[]).forEach(function(p){if(!nfWhen(p,r))return;var ss=FD[p].subs?nfSubs(p,r).map(function(x){return x[0]}):[''];ss.forEach(function(s){try{missing(fieldsOf(p,r,s)).forEach(function(x){out.push(x)})}catch(e){}})});return out};
 var nfAllowed=function(code,r){var D=NF[code],R=rolesOn(r);if(!D||D.k!==r.kind||!D.when(r)||!R.length)return false;if(R.indexOf('stu')>=0&&R.length===1&&D.conf)return false;return true};
