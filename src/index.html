@@ -30246,13 +30246,21 @@ var dd=function(iso){iso=String(iso||'').slice(0,10);if(!iso)return '';var h=hj(
 
 /* ---------- البيانات ---------- */
 FT.rpc=async function(n,a){if(typeof sb==='undefined'||!sb)throw new Error(Lx('يتطلب الاتصال بالخادم.','Requires a server connection.'));var r=await sb.rpc(n,a||{});if(r.error){throw new Error(msgOf(r.error))}return r.data};
-FT.load=async function(force){if(typeof sb==='undefined'||!sb||!me)return;if(FT.busy)return;if(FT.ld&&!force&&Date.now()-FT.ld<15000)return;FT.busy=1;
- try{var a=await Promise.all([sb.rpc('ft_whoami'),sb.rpc('ft_cfg_get'),sb.from('ft_rec').select('*').order('updated_at',{ascending:false}),sb.from('ft_note').select('*').order('id',{ascending:false}).limit(60),sb.rpc('ft_signers')]);
+FT.load=async function(force){if(typeof sb==='undefined'||!sb||!me)return;if(FT.busy&&Date.now()-(FT.busyAt||0)<15000)return;if(FT.ld&&!force&&Date.now()-FT.ld<15000)return;FT.busy=1;FT.busyAt=Date.now();FT.err='';
+ /* v231: مهلة 15 ثانية؛ إن تعذّر التحميل تظهر رسالة وزر إعادة المحاولة بدل «جارٍ التحميل» الدائم */
+ var TO=function(pr){return Promise.race([Promise.resolve(pr),new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'))},15000)})])};
+ try{var a=await TO(Promise.all([sb.rpc('ft_whoami'),sb.rpc('ft_cfg_get'),sb.from('ft_rec').select('*').order('updated_at',{ascending:false}),sb.from('ft_note').select('*').order('id',{ascending:false}).limit(60),sb.rpc('ft_signers')]));
+  if(a[0].error)throw a[0].error;
   FT.who=a[0].data||{};FT.cfg=a[1].data||{};FT.recs=a[2].data||[];FT.notes=a[3].data||[];FT.sig=a[4].data||{};FT.ld=Date.now();
   if(staff()&&!FT.ppl){try{FT.ppl=(await sb.rpc('ft_people')).data||null}catch(e){}}
- }catch(e){console.error('ft225 load',e)}finally{FT.busy=0}};
+ }catch(e){console.error('ft225 load',e);FT.err=String((e&&e.message)||e||'error')}finally{FT.busy=0}};
 FT.run=async function(fn,ok){try{var r=await fn();if(ok)T(ok);await FT.load(1);go();return r}catch(e){T(msgOf(e));throw e}};
 FT.act=function(id,act,p,ok){return FT.run(function(){return FT.rpc('ft_act',{p_id:id,p_act:act,p:p||{}})},ok||Lx('تم.','Done.'))};
+H.ft231retry=function(){FT.err='';FT.ld=0;FT.busy=0;FT.load(1).then(function(){window.__force71=1;go()});window.__force71=1;go()};
+/* v231: الخدمة تظهر للجميع، وغير المستحق يرى سبب عدم الاستحقاق عند الضغط */
+H.ft231na=function(k){var M={stu:[Lx('هذه الخدمة غير مستحقة لك حالياً','This service is not available to you yet'),Lx('خدمات التدريب الميداني ومشروع التخرج متاحة للطلاب المسجلين في مقرر 4401 «مشروع التخرج والتدريب الميداني» في الفصل الحالي بعد اجتياز 3102. إذا كنت ترى أنك مستحق فراجع القبول والتسجيل.','Field-training and graduation-project services are for students registered in course 4401 this semester after passing 3102. If you believe you are eligible, contact Admission & Registration.')],
+ fac:[Lx('هذه الخدمة غير مستحقة لك حالياً','This service is not available to you yet'),Lx('خدمات الإشراف متاحة لأعضاء الهيئة المسند إليهم مقرر 4401 أو المرتبطين بطلاب فيه، وللجهات المخوّلة من الإدارة المركزية. إذا كنت ترى أنك مستحق فراجع الإدارة المركزية.','Supervision services are for faculty assigned to course 4401 or linked to its students, and for bodies authorized by central administration.')]}[k]||[Lx('غير مستحقة','Not available'),''];
+ try{modal(M[0],'<p>'+M[1]+'</p>')}catch(e){alert(M[0]+'\n'+M[1])}};
 FT.neu=function(kind,p,ok){return FT.run(function(){return FT.rpc('ft_new',{p_kind:kind,p:p||{}})},ok||Lx('تم.','Done.'))};
 
 /* ---------- الأدوار ---------- */
@@ -30338,7 +30346,11 @@ var notesBox=function(){var n=FT.notes.slice(0,8);if(!n.length)return '';return 
 V.graduates=function(){
  if(typeof me==='undefined'||!me)return loginCard();
  if(typeof sb==='undefined'||!sb)return '<div class="msg er">'+Lx('البوابة تتطلب الاتصال بالخادم.','The portal requires a server connection.')+'</div>';
- if(!FT.ld){FT.load().then(function(){if(FT.ld)window.__force71=1;go()});return '<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>'}
+ if(!FT.ld){if(FT.err&&!FT.busy)return '<div class="msg er">'+Lx('تعذّر تحميل البوابة. تحقق من الاتصال ثم أعد المحاولة.','The portal could not be loaded. Check your connection and try again.')+'</div><p>'+btn(Lx('إعادة المحاولة','Try again'),'V51.h.ft231retry()')+'</p>';
+  FT.load().then(function(){window.__force71=1;go()});
+  /* حارس: إن اكتمل التحميل ولم تُرسم الصفحة لأي سبب تُرسم بالقوة */
+  if(!FT.wd)FT.wd=setTimeout(function(){FT.wd=0;if(/#\/graduates/.test(location.hash)&&(FT.ld||FT.err)){window.__force71=1;try{go()}catch(e){}}},6000);
+  return '<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>'}
  var w=who();if(me.r==='admin'&&me.unit&&!roles().length)return '<div class="msg er">'+Lx('هذه البوابة للطلاب وأعضاء الهيئة، وللإدارة المركزية والجهات المخوّلة منها.','This portal is for students and faculty, and for central administration and the bodies it authorizes.')+'</div>';
  var p=parts(),v=p[1]||'',id=p[2]||'',h='<h2>'+Lx('بوابة الخريجين','Graduates Portal')+'</h2><p class="mu">'+e9(w.name||'')+(roles().length?' — '+roles().filter(function(x){return x!=='staff'}).map(function(x){return RL[x]?Lx(RL[x][0],RL[x][1]):x}).join('، '):'')+'</p>'+navB();
  try{
@@ -30361,7 +30373,9 @@ var RL={tc:['منسق التدريب','Training coordinator'],pc:['منسق ال
 /* ---------- الرئيسة ---------- */
 function homeView(){var w=who(),o=notesBox();
  if(w.role==='student'){
-  if(!w.elig)return o+'<div class="msg">'+Lx('مرحباً بك في البوابة. الخدمات متاحة فقط للطلاب المسجلين في مقرر 4401 «مشروع التخرج والتدريب الميداني» في الفصل الحالي بعد اجتياز 3102. وإذا انسحبت من المقرر جُمّدت ملفاتك.','Welcome. Services are available only to students registered in course 4401 “Graduation Project and Field Training” this semester after passing 3102. Withdrawing from the course freezes your files.')+'</div>'+myOld();
+  if(!w.elig){var NA=function(t,b){return '<div class="box"><h3>'+t+'</h3><p class="mu">'+Lx('غير مستحقة حالياً','Not available yet')+'</p>'+btn(b,'V51.h.ft231na(\'stu\')','s')+'</div>'};
+   return o+'<div class="msg">'+Lx('مرحباً بك في البوابة. الخدمات متاحة للطلاب المسجلين في مقرر 4401 «مشروع التخرج والتدريب الميداني» في الفصل الحالي بعد اجتياز 3102.','Welcome. Services are available to students registered in course 4401 “Graduation Project and Field Training” this semester after passing 3102.')+'</div>'+
+    '<div class="cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">'+NA(Lx('التدريب الميداني','Field training'),Lx('طلب التحاق بالتدريب (ت-1)','Apply for training (T-1)'))+NA(Lx('مشروع التخرج','Graduation project'),Lx('تسجيل مشروع التخرج (م-1)','Register a graduation project (G-1)'))+NA(Lx('الفرص الداخلية','Internal opportunities'),Lx('عرض الفرص','View opportunities'))+NA(Lx('التوصية بالتعاون','Cooperation recommendation'),Lx('طلب التوصية','Recommendation'))+'</div>'+myOld()}
   var tr=mine('tr').filter(active)[0],gp=mine('gp').filter(function(r){return r.st!=='rejected'})[0],ap=mine('app'),rc=mine('rec');
   o+='<div class="cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">';
   o+='<div class="box"><h3>'+Lx('التدريب الميداني','Field training')+'</h3>'+(tr?'<p>'+chip(tr)+'</p><p>'+e9((tr.data.app||{}).ent||'')+'</p>'+(tr.data.log?'<p>'+Lx('الساعات: ','Hours: ')+hrs(tr)+' / '+need(tr)+'</p>':'')+'<a class="btn" href="'+link('r/'+tr.id)+'">'+Lx('فتح الملف','Open file')+'</a>':
@@ -30371,7 +30385,9 @@ function homeView(){var w=who(),o=notesBox();
   o+='<div class="box"><h3>'+Lx('الفرص الداخلية','Internal opportunities')+'</h3><p>'+FT.recs.filter(function(r){return r.kind==='opp'&&r.st==='pub'}).length+' '+Lx('فرصة منشورة','published')+'</p>'+(ap.length?'<ul>'+ap.map(function(a){var op=REC(a.data.opp);return '<li>'+e9(op?op.data.o.title:a.data.opp)+' — '+chip(a)+'</li>'}).join('')+'</ul>':'')+'<a class="btn s" href="'+link('opp')+'">'+Lx('عرض الفرص','View opportunities')+'</a></div>';
   if(rc.length)o+='<div class="box"><h3>'+Lx('التوصية بالتعاون','Cooperation recommendation')+'</h3>'+rc.map(function(r){return '<p>'+chip(r)+' '+(r.st==='approved'?btn(Lx('أوافق على الإدراج في سجل المرشحين','I consent to being listed'),'V51.h.ft225act(\''+r.id+'\',\'rec_consent\',{ok:1})','s'):'')+(r.st==='listed'?btn(Lx('سحب موافقتي','Withdraw my consent'),'V51.h.ft225act(\''+r.id+'\',\'rec_withdraw\',{})','s'):'')+'</p>'}).join('')+'</div>';
   return o+'</div>'+myOld()}
- if(w.role==='faculty'&&!staff()&&!w.sup)return o+'<div class="msg">'+Lx('مرحباً بك. لا خدمات لك في هذه البوابة: الخدمات للمشرفين المسند إليهم مقرر 4401 والمرتبطين بطلاب، وللجهات المخوّلة من الإدارة المركزية.','Welcome. You have no services here: they are for supervisors assigned to course 4401 and linked to students, and for bodies authorized by central administration.')+(w.expired?' '+Lx('انتهت مدة تعيينك مشرفاً خارجياً.','Your external-supervisor appointment has ended.'):'')+'</div>';
+  if(w.role==='faculty'&&!staff()&&!w.sup){var NF=function(t){return '<div class="box"><h3>'+t+'</h3><p class="mu">'+Lx('غير مستحقة حالياً','Not available yet')+'</p>'+btn(Lx('فتح','Open'),'V51.h.ft231na(\'fac\')','s')+'</div>'};
+  return o+'<div class="msg">'+Lx('مرحباً بك في بوابة الخريجين.','Welcome to the Graduates Portal.')+(w.expired?' '+Lx('انتهت مدة تعيينك مشرفاً خارجياً.','Your external-supervisor appointment has ended.'):'')+'</div><div class="cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">'+
+   NF(Lx('الطلاب المرتبطون بي','Students linked to me'))+NF(Lx('الإشراف على التدريب الميداني','Field-training supervision'))+NF(Lx('الإشراف على مشاريع التخرج','Graduation-project supervision'))+NF(Lx('لجان المناقشة','Defence committees'))+'</div>'}
  return o+myView()+(has('tc')?tcSummary():'')+(has('pc')?pcSummary():'')}
 function myOld(){var a=mine('tr').filter(function(r){return !active(r)}).concat(mine('gp').filter(function(r){return !active(r)}));if(!a.length)return '';return '<h3>'+Lx('ملفات سابقة','Previous files')+'</h3>'+tbl([Lx('الملف','File'),Lx('الحالة','Status'),''],a.map(function(r){return '<tr><td>'+e9(r.id)+'</td><td>'+chip(r)+'</td><td><a href="'+link('r/'+r.id)+'">'+Lx('فتح','Open')+'</a></td></tr>'}))}
 function rowR(r){var d=r.data||{},s=d.s||{},t=r.kind==='tr'?((d.ext==='int'?Lx('داخلي: ','Internal: '):'')+(d.app&&d.app.ent||'')):r.kind==='gp'?(d.reg&&d.reg.title||''):r.kind==='app'?((REC(d.opp)||{data:{o:{}}}).data.o.title||d.opp):r.kind==='opp'?(d.o&&d.o.title):'';
