@@ -49,7 +49,11 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       o.me = JSON.stringify(me).slice(0, 120);
       return o;
     });
-    console.log('DIAG calls', JSON.stringify(calls)); if (cons.length) console.log('DIAG console', cons.slice(0, 8).join(' | '));
+    console.log('DIAG calls', JSON.stringify(calls));
+    const v1 = await p.evaluate(() => { try { const h = V.graduates(); return 'OK ' + String(h).replace(/<[^>]+>/g, ' ').slice(0, 200); } catch (e) { return 'ERR ' + e.message + ' || ' + String(e.stack || '').split('\n').slice(0, 4).join(' < '); } });
+    await p.waitForTimeout(6000);
+    const v2 = await p.evaluate(() => { try { const h = V.graduates(); return 'OK ' + String(h).replace(/<[^>]+>/g, ' ').slice(0, 200); } catch (e) { return 'ERR ' + e.message + ' || ' + String(e.stack || '').split('\n').slice(0, 4).join(' < '); } });
+    console.log('DIAG view1', v1); console.log('DIAG view2', v2); if (cons.length) console.log('DIAG console', cons.slice(0, 8).join(' | '));
   }
   await p.evaluate(() => { try { save(); } catch (e) {} });
   await p.waitForTimeout(8000);
