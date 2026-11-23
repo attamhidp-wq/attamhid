@@ -16,7 +16,7 @@ const STATIC = ['/programs/', '/programs/diploma.html', '/news/', '/student-serv
     const t0 = Date.now(); await p.goto(SITE + '/', { waitUntil: 'load', timeout: 90000 }); await p.waitForTimeout(4000); const first = Date.now() - t0;
     for (const h of HASH) {
       const n0 = errs.length; await p.evaluate((x) => { location.hash = x }, h); await p.waitForTimeout(1800);
-      const o = await p.evaluate((OLD) => { const t = document.body.innerText; return { h: location.hash, len: t.length, old: OLD.filter((k) => t.includes(k)), ovf: document.documentElement.scrollWidth - innerWidth, title: document.title.slice(0, 60), dir: document.documentElement.dir } }, OLD);
+      const o = await p.evaluate((OLD) => { const t = document.body.innerText.replace(/بوابة التدريب الميداني الخارجي/g, '').replace(/External Field Training Portal/gi, ''); /* v252: الاسم الحالي لبوابة التدريب الخارجي ليس اسماً قديماً */ return { h: location.hash, len: t.length, old: OLD.filter((k) => t.includes(k)), ovf: document.documentElement.scrollWidth - innerWidth, title: document.title.slice(0, 60), dir: document.documentElement.dir } }, OLD);
       R.pages.push(Object.assign({ lang, w: vp[0], go: h || '/', errs: errs.slice(n0) }, o));
     }
     R.pages.push({ lang, w: vp[0], go: 'first-load-ms', ms: first });
