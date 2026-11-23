@@ -23,6 +23,7 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
   const p = await ctx.newPage();
   const errs = [];
   p.on('pageerror', (e) => errs.push(e.message));
+  p.on('console', (m) => { if (m.type() === 'error' && /v51|core|is not|undefined|TypeError|ReferenceError/i.test(m.text())) errs.push('console: ' + m.text().slice(0, 300)); });
   p.on('dialog', (d) => d.accept().catch(() => {}));
   await p.goto(SITE + '?robot=1', { waitUntil: 'load', timeout: 90000 });
   try { await p.waitForFunction(() => typeof sbAdminLogin === 'function' && window.V51 && V51.robot134, null, { timeout: 90000 }); }
