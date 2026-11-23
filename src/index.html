@@ -98,7 +98,10 @@ window.__bx69=function(t){var b=t&&t.nextElementSibling;while(b&&!(b.classList&&
  var stub=function(k,name){return new Proxy({},{get:function(t,p){if(p==='__lazy69')return 1;if(p===Symbol.toPrimitive||p==='then')return undefined;load(k);msg();throw new Error(name+' loading')}})};
  window.jspdf=stub('pdf','jsPDF');window.XLSX=stub('xls','XLSX');
  window.libs69={load:load,ready:function(){return Promise.all([load('h2c'),load('pdf'),load('xls')])},ok:ok};
- var go=function(){setTimeout(function(){load('h2c').then(function(){return load('pdf')}).then(function(){return load('xls')}).catch(function(){})},400)};
+ var pre=function(){setTimeout(function(){load('h2c').then(function(){return load('pdf')}).then(function(){return load('xls')}).catch(function(){})},400)};
+ /* v251: التحميل المسبق لمن له جلسة أو فتح بوابة فقط */
+ var d9=0,PT=/^#\/(admin|fp|student|training|ft|graduates|idn|staff|unit)/,chk=function(){if(d9)return;var k=0;try{for(var i=0;i<localStorage.length;i++)if(/^sb-.*-auth-token$/.test(localStorage.key(i)))k=1}catch(e){}if(k||PT.test(location.hash)){d9=1;pre()}};
+ var go=function(){chk();addEventListener('hashchange',chk);setInterval(chk,15000)};
  if(document.readyState==='complete')go();else window.addEventListener('load',go)})();
 </script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -19538,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v250';
+window.__BUILD__='v251';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
