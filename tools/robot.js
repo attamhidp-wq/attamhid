@@ -25,7 +25,9 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
   p.on('pageerror', (e) => errs.push(e.message));
   p.on('console', (m) => { if (m.type() === 'error' && /v51|core|is not|undefined|TypeError|ReferenceError/i.test(m.text())) errs.push('console: ' + m.text().slice(0, 300)); });
   p.on('dialog', (d) => d.accept().catch(() => {}));
-  await p.goto(SITE + '?robot=1', { waitUntil: 'load', timeout: 90000 });
+  // صفحة التجربة تحمل إصداراً أحدث من version.json المنشور؛ نمرر _b حتى لا يعيد الموقع تحميلها أثناء الفحص
+  let liveV = ''; try { liveV = (await (await fetch(new URL('/version.json?t=' + Date.now(), SITE))).json()).v || ''; } catch (e) {}
+  await p.goto(SITE + '?robot=1' + (liveV ? '&_b=' + liveV : ''), { waitUntil: 'load', timeout: 90000 });
   try { await p.waitForFunction(() => typeof sbAdminLogin === 'function' && window.V51 && V51.robot134, null, { timeout: 90000 }); }
   catch (e) { const st = await p.evaluate(() => ({ url: location.href, sbAdminLogin: typeof sbAdminLogin, V51: !!window.V51, core: !!(window.V51 && V51.core), robot134: !!(window.V51 && V51.robot134), scripts: document.scripts.length, ready: window.__ready173, build: window.__BUILD__ })).catch((x) => String(x)); console.log('BOOT-FAIL', JSON.stringify(st), 'errors:', errs.slice(0, 8).join(' | ')); throw e; }
   await p.evaluate((c) => sbAdminLogin({ u: c.email, p: c.password }), cred);
@@ -100,7 +102,7 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       if (!pw) { console.log('CHECK e2e-' + role, 'FAIL', 'no initial password'); continue; }
       const c2 = await b.newContext({ viewport: { width: 412, height: 860 }, serviceWorkers: 'block', locale: 'ar' }); const q = await c2.newPage(); const e2 = [];
       q.on('pageerror', (e) => e2.push(e.message)); q.on('dialog', (d) => d.accept().catch(() => {}));
-      await q.goto(SITE + '?e2e=1#/login/' + role, { waitUntil: 'load', timeout: 90000 });
+      await q.goto(SITE + '?e2e=1' + (liveV ? '&_b=' + liveV : '') + '#/login/' + role, { waitUntil: 'load', timeout: 90000 });
       await q.waitForFunction(() => typeof loginAny === 'function' && document.querySelector('#app input[name=u]'), null, { timeout: 90000 });
       await q.fill('#app input[name=u]', ref); await q.fill('#app input[name=p]', pw); await q.click('#app button.go');
       await q.waitForFunction(() => /^#\/(pwchange|student|fp|idn)/.test(location.hash), null, { timeout: 60000 }).catch(() => {});
