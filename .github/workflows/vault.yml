@@ -89,7 +89,7 @@ jobs:
           EOF2
           jq -c '.plan[] as $r | range(0;$r.parts) as $i | {s:$r.s,t:$r.t,per:$r.per,part:$i}' plan.json > reqs.jsonl
           echo "parts to export: $(wc -l < reqs.jsonl)"
-          tr '\n' '\0' < reqs.jsonl | xargs -0 -P 4 -I{} bash /tmp/part.sh {} > parts.jsonl
+          tr '\n' '\0' < reqs.jsonl | xargs -0 -P 2 -I{} bash /tmp/part.sh {} > parts.jsonl
           FAIL=$(jq -s 'map(select(.ok|not))|length' parts.jsonl)
           jq -c 'select(.ok|not)' parts.jsonl | head -20
           jq -s --slurpfile p plan.json --slurpfile d ddl.json '{set:env.SET, at:(now|todate), tables:($p[0].plan|length), parts:length, rows:(map(.rows)|add), failed:(map(select(.ok|not))|length), ddl:$d[0].sha256, files:.}' parts.jsonl > manifest.json
