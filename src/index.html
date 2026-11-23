@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v243';
+window.__BUILD__='v244';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -31735,6 +31735,17 @@ var tdCard=function(o,kind){var today=new Date().toISOString().slice(0,10),C=tdC
  return st+'<section class="td241" aria-label="'+Lx('يومي','My day')+'"><h3>'+gr+(nm?'، '+e9(nm):'')+'</h3><div class="su">'+e9(new Date().toLocaleDateString(Lx('ar-SA-u-ca-gregory-nu-latn','en-GB'),{weekday:'long',year:'numeric',month:'long',day:'numeric'}))+'</div><div class="g">'+g+'</div>'+(ul?'<div style="margin-top:12px;font-weight:700;font-size:14px">'+Lx('مواعيد قادمة','Upcoming dates')+'</div>'+ul:'')+(m?'<a class="w" href="#/idn">'+Lx('أكمل بياناتك الآن','Complete your data now')+'</a>':'')+'</section>'};
 var tdWrap=function(view,kind,tb){(function w(n){if(typeof V!=='undefined'&&typeof V[view]==='function'&&!V[view]['__td'+view]){var _v=V[view];V[view]=function(){var h=_v.apply(this,arguments);try{if(typeof me==='undefined'||!me||me.r!==kind||(typeof taking!=='undefined'&&taking))return h;if(String(location.hash).replace(/^#\/?/,'').split('/').length>1)return h;var o=(S[tb]||[]).find(function(x){return String(x.id)===String(me.id)});if(!o)return h;var c=tdCard(o,kind);var i=h.indexOf('</h2>');return i>-1?h.slice(0,i+5)+c+h.slice(i+5):c+h}catch(e){console.error('td241',e);return h}};V[view]['__td'+view]=1;return}if(n<400)setTimeout(function(){w(n+1)},50)})(0)};
 tdWrap('student','student','students');tdWrap('fp','faculty','faculty');V5.td241=tdCard;
+
+/* ---------- v244: رأس موحّد لصفحات الخدمات العامة (الالتحاق، متابعة الطلب، تحديد المستوى، التحقق، القبول) بنمط البوابات ---------- */
+var SVC={register:['قدّم طلب الالتحاق ببرامج المعهد في دقائق، وتابع حالته برقم الطلب.','Apply to the Institute’s programmes in minutes and track your application by its number.'],
+ review:['تابع حالة طلب الالتحاق، واطّلع على خطاب القبول، وعدّل طلبك إن أُعيد إليك.','Track your application, view your acceptance letter, and edit your application if it is returned to you.'],
+ plt:['سجّل في اختبار تحديد المستوى في اللغة العربية واختبر مستواك عن بُعد.','Register for the Arabic placement test and take it remotely.'],
+ verify:['تحقق من صحة وثائق المعهد وشهاداته برقم الوثيقة أو برمز الاستجابة السريعة.','Verify the Institute’s documents and certificates by their number or QR code.'],
+ admission:['شروط القبول في برامج المعهد، والمواعيد، والمنح الدراسية.','Admission requirements, dates and scholarships.']};
+GOHpush(function(){try{var seg=String(location.hash||'').replace(/^#\/?/,'').split(/[\/?]/)[0];document.documentElement.setAttribute('data-route',seg||'home');if(!SVC[seg])return;var a=document.querySelector('#app');if(!a||a.querySelector('.svc244'))return;
+ var h=null;for(var i=0;i<Math.min(3,a.children.length);i++){var c=a.children[i];if(c.tagName==='H2'){h=c;break}if(c.firstElementChild&&c.firstElementChild.tagName==='H2'&&c.children.length<=3){h=c.firstElementChild;break}}if(!h)return;
+ var d=document.createElement('section');d.className='svc244';d.innerHTML='<div class="k">'+Lx('معهد التمهيد','At Tamhid Institute')+'</div><h2>'+h.innerHTML+'</h2><p>'+e9(Lx(SVC[seg][0],SVC[seg][1]))+'</p>';h.parentNode.insertBefore(d,h);h.remove();
+ if(!document.getElementById('svc244css')){var st=document.createElement('style');st.id='svc244css';st.textContent='.svc244{background:linear-gradient(135deg,#14284B,#24467f);color:#eef2f8;border-radius:20px;padding:20px;margin:6px auto 18px;max-width:1100px}.svc244 .k{color:#9fb7e6;font-size:13px;font-weight:700}.svc244 h2{color:#fff!important;margin:6px 0 6px!important;font-size:25px;border:0!important;padding:0!important;text-align:start}.svc244 h2:after{display:none!important}.svc244 p{color:#d3dbea;margin:0;line-height:1.8}';document.head.appendChild(st)}}catch(e){}});
 
 /* الإلزام: من نقصت بياناته يُحوَّل إلى صفحة الاستكمال قبل أي خدمة */
 var FREE=/^(idn|idn-fill|login|logout|pwchange|reset|recover|2fa|verify|ft-verify|privacy|terms|)$/;
