@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
         order by 1,2`;
       const plan = [];
       // v248: نطاق «core» = البيانات الأساسية دون النسخ الداخلية القديمة وسجل التغييرات الضخم (يُنسخان في مجموعة مستقلة «logs»)
-      const BIG = ["public.v79_change_log", "public.v79_backups"];
+      const BIG = ["public.v79_change_log", "public.v79_backups", "public.audit_log"];
       const scope = String(body.scope || "all");
       const pick = (r: { s: string; t: string }) => scope === "core" ? !/^bk_/.test(r.s) && !BIG.includes(r.s + "." + r.t) : scope === "logs" ? BIG.includes(r.s + "." + r.t) : true;
       for (const r of rows.filter(pick)) {
