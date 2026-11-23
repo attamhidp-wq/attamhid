@@ -101,13 +101,13 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       const pw = await p.evaluate(async (ref) => { try { await V51.fn63({ action: 'ensure', items: [{ ref_id: ref }] }); const r = await V51.fn63({ action: 'reveal', ref_id: ref }); return (r && r.password) || ''; } catch (e) { return ''; } }, ref);
       if (!pw) { console.log('CHECK e2e-' + role, 'FAIL', 'no initial password'); continue; }
       const c2 = await b.newContext({ viewport: { width: 412, height: 860 }, serviceWorkers: 'block', locale: 'ar' }); const q = await c2.newPage(); const e2 = [];
-      q.on('pageerror', (e) => e2.push(e.message)); q.on('dialog', (d) => d.accept().catch(() => {}));
+      q.on('pageerror', (e) => e2.push(e.message)); q.on('console', (m) => { if (m.type() === 'error') e2.push('console: ' + m.text().slice(0, 250)); }); q.on('dialog', (d) => d.accept().catch(() => {}));
       await q.goto(SITE + '?e2e=1' + (liveV ? '&_b=' + liveV : '') + '#/login/' + role, { waitUntil: 'load', timeout: 90000 });
       await q.waitForFunction(() => typeof loginAny === 'function' && document.querySelector('#app input[name=u]'), null, { timeout: 90000 });
       await q.fill('#app input[name=u]', ref); await q.fill('#app input[name=p]', pw); await q.click('#app button.go').catch(async (e) => { console.log('E2E-DIAG', JSON.stringify(await q.evaluate(() => ({ hash: location.hash, btn: [...document.querySelectorAll('#app button')].map((x) => x.className + ':' + x.textContent.trim().slice(0, 20)).slice(0, 10), forms: document.querySelectorAll('#app form').length, html: ((document.querySelector('#app') || {}).innerHTML || '').slice(0, 600) }))), 'errs', e2.slice(0, 5).join(' | ')); throw e; });
       await q.waitForFunction(() => /^#\/(pwchange|student|fp|idn)/.test(location.hash), null, { timeout: 60000 }).catch(() => {});
       const np = 'Tst' + Math.random().toString(36).slice(2, 10) + '9a';
-      if (/pwchange/.test(await q.evaluate(() => location.hash))) { await q.fill('#app input[name=a]', np); await q.fill('#app input[name=b]', np); await q.click('#app form button.btn'); await q.waitForTimeout(6000); }
+      if (/pwchange/.test(await q.evaluate(() => location.hash))) { await q.fill('#app input[name=a]', np); await q.fill('#app input[name=b]', np); await q.click('#app form button.btn'); await q.waitForTimeout(6000); if (/pwchange/.test(await q.evaluate(() => location.hash))) console.log('E2E-PW', JSON.stringify(await q.evaluate(() => ({ out: ((document.getElementById('out') || {}).innerText || '').slice(0, 300), toast: [...document.querySelectorAll('.toast,[class*=toast]')].map((x) => x.innerText).join('|').slice(0, 200) }))), 'errs', e2.slice(0, 6).join(' | ')); }
       await q.waitForTimeout(4000);
       const at = await q.evaluate(() => location.hash);
       if (/#\/idn/.test(at)) { await q.evaluate((r) => { location.hash = r; }, route); await q.waitForTimeout(5000); }
