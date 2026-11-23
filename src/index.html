@@ -864,7 +864,7 @@ V.fp=()=>{if(!me||me.r!='faculty')return V.login();const f=S.faculty.find(x=>x.i
 return `<h2>الخدمات الذاتية لأعضاء هيئة التدريس</h2><div class="box"><h3>${esc(f.name)}</h3><p>${f.id} · ${esc(f.role)} · ${esc(f.spec)}</p><button class="btn" onclick="seeCard('f','${f.id}')">بطاقة العضوية</button></div><h3>المقررات المسندة</h3><div class="grid">${f.courses.map(c=>progBox(S.programs.find(p=>p.id==c)||{name:'—',desc:'',from:'',to:'',hours:'',fee:''})).join('')}</div>${schedTbl(crs().filter(c=>(f.teach||[]).includes(c.id)),'جدولي التدريسي','لم تُسنَد إليك مقررات بعد. تسندها الإدارة.')}<h3>وثائقي الصادرة</h3><div class="box">${tbl(['رقم السجل','الوثيقة','التاريخ',''],S.certs.filter(c=>c.uid==f.id&&!c.revoked).map(c=>`<tr><td>${c.rec}</td><td>${ctN(c.type)}</td><td>${c.date}</td><td>${docBtns(c.rec)}</td></tr>`))}</div>${reqPanel('faculty')}`};
 
 /* ---------- actions ---------- */
-const out=h=>$('#out').innerHTML=h;
+const out=h=>{const o=$('#out');if(o)o.innerHTML=h};
 function ver(f){const q=fv(f).n.toUpperCase();const byId=S.certs.filter(x=>x.type=='exam'&&String(x.pid||'').toUpperCase()==q);if(byId.length)return out(byId.map(exVer).join('')),false;const c=S.certs.find(x=>x.rec==q),m=!c&&[...S.students,...S.faculty].find(x=>x.id==q&&x.active!==false);if(m)return out(`<div class="msg"><b style="color:var(--ok)">✔ بطاقة سارية</b><br>الاسم: ${esc(m.name)}<br>الرقم: ${m.id}</div>`),false;out(c?`<div class="msg${c.revoked?' er':''}"><b style="color:var(${c.revoked?'--er':'--ok'})">${c.revoked?'✖ وثيقة ملغاة'+(c.reason?' — '+esc(c.reason):'')+(c.rdate?' ('+c.rdate+')':''):'✔ وثيقة معتمدة'}</b><br>الاسم: ${esc(c.name)}<br>${c.type=='exam'?'الاختبار: '+esc(c.examTitle)+'<br>تاريخ الاختبار: '+c.testDate+' · الدرجة: '+c.score+'/'+c.max+' · المستوى: '+esc(c.level):'البرنامج: '+esc(P(c.prog).name)+'<br>الساعات: '+c.hours+' · التقدير: '+c.grade} · الإصدار: ${c.date}</div>`:'<div class="msg er">رقم السجل غير موجود. تحقق من الرقم المطبوع على الوثيقة.</div>');return false}
 const SB_URL='https://ttuelhswxyjbjdnydmns.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0dWVsaHN3eHlqYmpkbnlkbW5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NDk3MDYsImV4cCI6MjEwNzUyNTcwNn0.tkO2kZLHpKbgPx_II4cepqCVftjjG46oseR6aGGCbPA';
 let sb=null;try{sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{lock:function(n,t,f){return f()}}})}catch(e){console.error('Supabase init failed',e)}
@@ -1047,6 +1047,7 @@ function exAppr(id){const s=S.subs.find(x=>x.id==id),e=exFind(s.eid),u=S.student
 S.certs.push({type:'exam',lang:en?'bi':'',sid:u.id,pid:u.pid,nat:u.nat,name:u.name,nameEn:en,prog:0,examTitle:e.title,examTitleEn:e.titleEn||'',score:s.total,max,pct,level:exLvl(pct),levelEn:exLvlE(pct),grade:s.total+'/'+max,testDate:s.date,rec,date:exToday()});s.st='معتمد';s.rec=rec;save();flash=`اعتُمدت النتيجة وصدرت الشهادة برقم السجل <b>${rec}</b> وتظهر الآن في الخدمات الذاتية للطلاب والطالبات.`;go()}
 function exDs(id){if(confirm('حذف التسليم؟')){S.subs=S.subs.filter(x=>x.id!=id);save();go()}}
 /* ---- الطالب ---- */
+window.exDone=window.exDone||((e,sid)=>(S.subs||[]).some(b=>b.eid==e.id&&b.sid==sid&&(!e.date||String(b.date||'')>=String(e.date).slice(0,10))));
 function exStud(s){const mine=S.subs.filter(x=>x.sid==s.id),done=new Set(S.exams.filter(e=>exDone(e,s.id)).map(e=>e.id)),av=S.exams.filter(e=>e.pub&&exWin(e)=='open'&&(e.ready||exReady(e))&&!done.has(e.id)&&(!s.exlang||s.exlang==e.lang));
 return `<h3>الاختبارات المتاحة</h3><div class="box">${av.map(e=>`<p><b>${esc(e.title)}</b> — ${EXL[e.lang]} — ${e.min} دقيقة <button class="btn" onclick="exStart(${e.id})">${S.dr[s.id+'_'+e.id]?'متابعة الاختبار':'ابدأ الاختبار'}</button></p>`).join('')||'<p class="mu">لا توجد اختبارات متاحة حالياً</p>'}${mine.length?'<hr>'+mine.map(x=>`<p>${esc((exFind(x.eid)||{title:'—'}).title)} — ${x.date} — <span class="tag ${x.st=='معتمد'?'ok':''}">${x.st=='معتمد'?'معتمد (الشهادة أدناه)':(x.st=='تم الاعتماد والنشر'?'معتمدة ومنشورة':'مُقيَّم آلياً')}</span></p>`).join(''):''}</div>`}
 function exStart(id){const k=me.id+'_'+id;S.dr[k]=S.dr[k]||{t:Date.now(),a:{}};save();taking=id;go()}
@@ -28633,7 +28634,7 @@ try{GOH.post.push(function(){if(on)requestAnimationFrame(hide)})}catch(e){}
 /* v124 — البرامج القصيرة والدورات وورش العمل (النظام الجديد) تظهر للزوار في الصفحة الرئيسية وصفحة البرامج، مع رابط التسجيل */
 (function(){
 var e0=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
-var V5=window.V51,L=function(a,b){try{return V5.L?V5.L(a,b):a}catch(e){return a}};var K0=[{id:'lec',ar:'محاضرة',en:'Lecture'},{id:'ws',ar:'ورشة عمل',en:'Workshop'},{id:'crs',ar:'دورة تدريبية',en:'Training course'},{id:'sem',ar:'ندوة',en:'Seminar'},{id:'frm',ar:'ملتقى',en:'Forum'},{id:'prg',ar:'برنامج',en:'Programme'}];
+var V5=window.V51=window.V51||{},L=function(a,b){try{return V5.L?V5.L(a,b):a}catch(e){return a}};var K0=[{id:'lec',ar:'محاضرة',en:'Lecture'},{id:'ws',ar:'ورشة عمل',en:'Workshop'},{id:'crs',ar:'دورة تدريبية',en:'Training course'},{id:'sem',ar:'ندوة',en:'Seminar'},{id:'frm',ar:'ملتقى',en:'Forum'},{id:'prg',ar:'برنامج',en:'Programme'}];
 function X(){var v=S.v51=S.v51||{};v.sp=v.sp||[];return v}
 function kind(P){var ks=(X().spCfg&&X().spCfg.kinds)||K0,k=ks.find(function(x){return x.id===P.kind})||K0.find(function(x){return x.id===P.kind})||K0[5];var en=String(k.en||'');return L(k.ar,en.charAt(0).toUpperCase()+en.slice(1))}
 function regOpen(P){if(+P.selfReg===0)return false;var n=Date.now(),off=(P.tzOff==null?-180:+P.tzOff)*60000,t=function(x){return x?Date.parse(x+':00Z')+off:null},a=t(P.regFrom),b=t(P.regTo)||t(P.end||P.start);return (!a||n>=a)&&(!b||n<=b)}
@@ -28722,7 +28723,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v245';
+window.__BUILD__='v246';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
