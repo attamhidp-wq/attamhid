@@ -110,6 +110,8 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       for (const L of links) { await q.evaluate((h) => { location.hash = h; }, L); await q.waitForTimeout(2500); pages[L] = await q.evaluate(() => { const t = (document.querySelector('#app') || {}).innerText || ''; return t.length + (/undefined|NaN|\[object Object\]/.test(t) ? ' BAD' : ''); }); }
       console.log('CHECK e2e-' + role, st.me === role && st.len > 200 && !st.bad && !e2.length ? 'OK' : 'FAIL', JSON.stringify({ first: at, st, pages, errs: e2.slice(0, 5) }));
       await c2.close();
+      const rm = await p.evaluate(async (ref) => { try { const r = await V51.fn63({ action: 'remove', ref_id: ref }); return r && (r.ok || r.removed || r.items) ? 'removed' : JSON.stringify(r).slice(0, 120); } catch (e) { return String(e).slice(0, 120); } }, ref);
+      console.log('CHECK e2e-cleanup-' + role, /removed/.test(rm) ? 'OK' : 'FAIL', rm);
     }
   } catch (e) { console.log('CHECK e2e', 'FAIL', String(e).slice(0, 300)); }
   await p.evaluate(() => { try { save(); } catch (e) {} });
