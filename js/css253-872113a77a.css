@@ -23,3 +23,9 @@ html:root body #app>.hero.h120.h120 .hc a small{color:#AEBBD1!important}
 html:root body #app>.hero.h120.h120 .hc a .i{background:transparent!important;color:#CDB27A!important;border:1px solid rgba(205,178,122,.35)!important;border-radius:4px!important;width:34px!important;height:34px!important}
 html:root body #app>.hero.h120.h120 .hc a .i svg{width:18px!important;height:18px!important}
 html:root body #app>.hero.h120.h120 .hc a .ar svg{opacity:.45!important;color:#FFFFFF!important}
+html:root body #app>.hero.h120.h120 h1::after{background:#CDB27A!important;height:2px!important;width:64px!important;border-radius:0!important;box-shadow:none!important}
+@media (max-width:600px){html:root body #app>.hero.h120.h120 .cta .btn{flex:1 1 100%!important;justify-content:center!important;text-align:center!important}}
+
+#nb248 .nb248b{background:transparent!important;border:0!important;box-shadow:none!important;width:44px;height:44px;display:inline-flex!important;align-items:center;justify-content:center;color:inherit!important;cursor:pointer;border-radius:8px!important;position:relative}
+#nb248 .nb248b:hover,#nb248 .nb248b:focus-visible{background:rgba(18,48,107,.08)!important}
+@media (max-width:760px){#nb248 .nb248p{position:fixed!important;top:64px!important;left:10px!important;right:10px!important;inset-inline-end:auto!important;width:auto!important;max-height:calc(100vh - 150px)!important;z-index:10050!important}}

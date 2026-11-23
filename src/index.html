@@ -19541,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v253';
+window.__BUILD__='v254';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -21083,7 +21083,7 @@ FT.load=async function(force){if(typeof sb==='undefined'||!sb||!me)return;if(FT.
  try{var a=await TO(Promise.all([sb.rpc('ft_whoami'),sb.rpc('ft_cfg_get'),sb.from('ft_rec').select('*').order('updated_at',{ascending:false}),sb.from('ft_note').select('*').order('id',{ascending:false}).limit(60),sb.rpc('ft_signers')]));
   if(a[0].error)throw a[0].error;
   FT.who=a[0].data||{};FT.cfg=a[1].data||{};FT.recs=a[2].data||[];FT.notes=a[3].data||[];FT.sig=a[4].data||{};FT.ld=Date.now();
-  if(staff()&&!FT.ppl){try{FT.ppl=(await sb.rpc('ft_people')).data||null}catch(e){}}
+  if(staff()&&!FT.ppl){try{FT.ppl=(await TO(sb.rpc('ft_people'))).data||null}catch(e){}}
  }catch(e){console.error('ft225 load',e);FT.err=String((e&&e.message)||e||'error')}finally{FT.busy=0}};
 FT.run=async function(fn,ok){try{var r=await fn();if(ok)T(ok);await FT.load(1);go();return r}catch(e){T(msgOf(e));throw e}};
 FT.act=function(id,act,p,ok){return FT.run(function(){return FT.rpc('ft_act',{p_id:id,p_act:act,p:p||{}})},ok||Lx('تم.','Done.'))};
@@ -21180,7 +21180,8 @@ V.graduates=function(){
  if(!FT.ld){if(FT.err&&!FT.busy)return '<div class="msg er">'+Lx('تعذّر تحميل البوابة. تحقق من الاتصال ثم أعد المحاولة.','The portal could not be loaded. Check your connection and try again.')+'</div><p>'+btn(Lx('إعادة المحاولة','Try again'),'V51.h.ft231retry()')+'</p>';
   FT.load().then(function(){window.__force71=1;go()});
   /* حارس: إن اكتمل التحميل ولم تُرسم الصفحة لأي سبب تُرسم بالقوة */
-  if(!FT.wd)FT.wd=setTimeout(function(){FT.wd=0;if(/#\/graduates/.test(location.hash)&&(FT.ld||FT.err)){window.__force71=1;try{go()}catch(e){}}},6000);
+  /* v253: حارس متكرر — كل 3 ثوانٍ ما دامت الصفحة على «جارٍ التحميل»: إن اكتمل التحميل تُرسم الصفحة (وإن مُنع العرض تُكتب مباشرة)، ويُبلَّغ سجل الأخطاء إن طال التعليق */
+  if(!FT.wd){FT.wdn=0;FT.wd=setInterval(function(){var a=document.getElementById('app'),st=function(){a=document.getElementById('app');return !!a&&/جارٍ التحميل|Loading/.test(String(a.innerText||'').slice(0,80))};if(!/#\/graduates/.test(location.hash)||!st()){clearInterval(FT.wd);FT.wd=0;return}FT.wdn++;if(FT.ld||(FT.err&&!FT.busy)){window.__force71=1;try{go()}catch(e){}if(st()){try{a.innerHTML=V.graduates()}catch(e){}}}else if(!FT.busy){FT.load().then(function(){window.__force71=1;go()})}if(FT.wdn===7){try{window.__rep175&&window.__rep175('stuck','graduates ld='+(!!FT.ld)+' err='+String(FT.err||'')+' busy='+(!!FT.busy),String(location.hash))}catch(e){}}},3000)}
   return '<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>'}
  var w=who();if(me.r==='admin'&&me.unit&&!roles().length)return '<div class="msg er">'+Lx('هذه البوابة للطلاب وأعضاء الهيئة، وللإدارة المركزية والجهات المخوّلة منها.','This portal is for students and faculty, and for central administration and the bodies it authorizes.')+'</div>';
  var p=parts(),v=p[1]||'',id=p[2]||'',h='<h2>'+Lx('بوابة الخريجين','Graduates Portal')+'</h2><p class="mu">'+e9(w.name||'')+(roles().length?' — '+roles().filter(function(x){return x!=='staff'}).map(function(x){return RL[x]?Lx(RL[x][0],RL[x][1]):x}).join('، '):'')+'</p>'+navB();
