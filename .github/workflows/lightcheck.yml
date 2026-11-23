@@ -1,0 +1,35 @@
+# v252 — مقارنة التحقق السريع بالتطبيق الكامل (يدوي). لا يطبع بيانات شخصية ولا أرقام وثائق.
+name: lightcheck
+on:
+  workflow_dispatch:
+    inputs:
+      light:
+        description: 'رابط الصفحة الخفيفة'
+        required: false
+        default: 'https://attamhid.com/'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Cache browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-1.48.2-chromium
+      - name: Install
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1.48.2
+          timeout 240 npx playwright install --with-deps chromium || npx playwright install chromium
+      - name: Compare
+        env:
+          LIGHT: ${{ github.event.inputs.light }}
+        run: node tools/lightcheck.js
