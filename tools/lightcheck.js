@@ -2,7 +2,7 @@
 // يجد السكربت أرقاماً حقيقية بنفسه عبر دالة التحقق العامة، ويطبع لكل وثيقة نوعها ونتيجة المطابقة والزمن فقط.
 const { chromium } = require('playwright');
 const LIGHT = process.env.LIGHT || 'https://attamhid.com/';
-const FULL = 'https://attamhid.com/';
+const FULL = 'https://attamhid.com/app.html'; // التطبيق الكامل مباشرة
 const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co/rest/v1/rpc/verify_cert';
 const norm = (t) => String(t || '').replace(/[‎‏⁦-⁩]/g, '').replace(/\s+/g, ' ').trim();
 (async () => {
