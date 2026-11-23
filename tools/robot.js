@@ -104,7 +104,7 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       q.on('pageerror', (e) => e2.push(e.message)); q.on('dialog', (d) => d.accept().catch(() => {}));
       await q.goto(SITE + '?e2e=1' + (liveV ? '&_b=' + liveV : '') + '#/login/' + role, { waitUntil: 'load', timeout: 90000 });
       await q.waitForFunction(() => typeof loginAny === 'function' && document.querySelector('#app input[name=u]'), null, { timeout: 90000 });
-      await q.fill('#app input[name=u]', ref); await q.fill('#app input[name=p]', pw); await q.click('#app button.go');
+      await q.fill('#app input[name=u]', ref); await q.fill('#app input[name=p]', pw); await q.click('#app button.go').catch(async (e) => { console.log('E2E-DIAG', JSON.stringify(await q.evaluate(() => ({ hash: location.hash, btn: [...document.querySelectorAll('#app button')].map((x) => x.className + ':' + x.textContent.trim().slice(0, 20)).slice(0, 10), forms: document.querySelectorAll('#app form').length, html: ((document.querySelector('#app') || {}).innerHTML || '').slice(0, 600) }))), 'errs', e2.slice(0, 5).join(' | ')); throw e; });
       await q.waitForFunction(() => /^#\/(pwchange|student|fp|idn)/.test(location.hash), null, { timeout: 60000 }).catch(() => {});
       const np = 'Tst' + Math.random().toString(36).slice(2, 10) + '9a';
       if (/pwchange/.test(await q.evaluate(() => location.hash))) { await q.fill('#app input[name=a]', np); await q.fill('#app input[name=b]', np); await q.click('#app form button.btn'); await q.waitForTimeout(6000); }
