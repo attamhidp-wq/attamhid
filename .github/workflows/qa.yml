@@ -2,6 +2,11 @@
 name: qa
 on:
   workflow_dispatch:
+    inputs:
+      urls:
+        description: 'مسارات Lighthouse مفصولة بمسافة (فارغ = الافتراضي)'
+        required: false
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -24,7 +29,8 @@ jobs:
       - name: Lighthouse
         run: |
           CH=$(node -e "console.log(require('playwright').chromium.executablePath())")
-          for u in / /programs/diploma.html /student-services/ /en/graduates/; do
+          U="${{ github.event.inputs.urls }}"; [ -z "$U" ] && U="/ /programs/diploma.html /student-services/ /en/graduates/"
+          for u in $U; do
             for ff in mobile desktop; do
               P=""; [ "$ff" = desktop ] && P="--preset=desktop"
               npx lighthouse "https://attamhid.com$u" --chrome-path="$CH" --chrome-flags="--headless=new --no-sandbox" $P --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=lh.json --quiet || continue
