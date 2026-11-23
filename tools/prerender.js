@@ -177,7 +177,7 @@ async function check(browser) {
     L.head.replace(/(<meta name="referrer"[^>]*>)/, '$1\n' + fb) + '\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
 
     '<script>' + theme + '</script>\n' +
-    '<style>' + fontCss + css + '\nhtml.ati-hide body{visibility:hidden}html.ati-booting body{cursor:progress}html.ati-booting body:before{content:"";position:fixed;top:0;inset-inline:0;height:3px;background:#2f6fd0;z-index:99999;animation:atib 1.2s ease-in-out infinite}@keyframes atib{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}</style>\n' +
+    '<style>' + fontCss + css + '\n#app>:not(:first-child),#ft{content-visibility:auto;contain-intrinsic-size:auto 700px}html.ati-hide body{visibility:hidden}html.ati-booting body{cursor:progress}html.ati-booting body:before{content:"";position:fixed;top:0;inset-inline:0;height:3px;background:#2f6fd0;z-index:99999;animation:atib 1.2s ease-in-out infinite}@keyframes atib{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}</style>\n' +
     '<script>' + loader + '</script>\n</head>\n<body>\n' + L.body + '\n</body>\n</html>\n';
   if (/127\.0\.0\.1|localhost:/.test(html)) throw new Error('local URL left in shell');
   const tmp = path.join(R, 'index.prerender.html');
