@@ -83,7 +83,7 @@
   var V252 = (function () {
     try {
       var sp = new URLSearchParams(location.search), q = (sp.get('v') || '').trim();
-      if (!q || q.length > 80 || [].slice.call(sp.keys()).length !== 1) return null;
+      if (!q || q.length > 80 || String(location.search).split('&').length !== 1) return null;
       if (location.hash && !/^#\/?(home)?$/.test(location.hash)) return null;
       var tl = localStorage.getItem('tl'); if ((tl && tl !== 'ar') || localStorage.getItem('tl3')) return null;
       for (var i = 0; i < localStorage.length; i++) { if (/^sb-.+-auth-token$/.test(localStorage.key(i) || '')) return null; }
