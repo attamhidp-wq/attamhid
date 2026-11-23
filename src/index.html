@@ -31742,6 +31742,9 @@ var SVC={register:['قدّم طلب الالتحاق ببرامج المعهد �
  plt:['سجّل في اختبار تحديد المستوى في اللغة العربية واختبر مستواك عن بُعد.','Register for the Arabic placement test and take it remotely.'],
  verify:['تحقق من صحة وثائق المعهد وشهاداته برقم الوثيقة أو برمز الاستجابة السريعة.','Verify the Institute’s documents and certificates by their number or QR code.'],
  admission:['شروط القبول في برامج المعهد، والمواعيد، والمنح الدراسية.','Admission requirements, dates and scholarships.']};
+/* v245: علامة الإلزام تضيفها أنماط الموقع للحقل المطلوب؛ تُحذف النجمة المكتوبة في نص التسمية حتى لا تتكرر */
+var starFix=function(){try{[].forEach.call(document.querySelectorAll('#app label'),function(l){if(l.dataset.sf245||!l.querySelector('input:required,select:required,textarea:required'))return;l.dataset.sf245=1;[].forEach.call(l.childNodes,function(n){if(n.nodeType===3&&/\s\*\s*$/.test(n.nodeValue))n.nodeValue=n.nodeValue.replace(/\s*\*\s*$/,'')})})}catch(e){}};
+GOHpush(function(){starFix();setTimeout(starFix,600)});
 GOHpush(function(){try{var seg=String(location.hash||'').replace(/^#\/?/,'').split(/[\/?]/)[0];document.documentElement.setAttribute('data-route',seg||'home');if(!SVC[seg])return;var a=document.querySelector('#app');if(!a||a.querySelector('.svc244'))return;
  var h=null;for(var i=0;i<Math.min(3,a.children.length);i++){var c=a.children[i];if(c.tagName==='H2'){h=c;break}if(c.firstElementChild&&c.firstElementChild.tagName==='H2'&&c.children.length<=3){h=c.firstElementChild;break}}if(!h)return;
  var d=document.createElement('section');d.className='svc244';d.innerHTML='<div class="k">'+Lx('معهد التمهيد','At Tamhid Institute')+'</div><h2>'+h.innerHTML+'</h2><p>'+e9(Lx(SVC[seg][0],SVC[seg][1]))+'</p>';h.parentNode.insertBefore(d,h);h.remove();
