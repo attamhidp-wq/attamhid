@@ -159,7 +159,10 @@ Deno.serve(async (req) => {
         const lineStart = A.lastIndexOf("\n", i - 1) + 1;
         diff = { at: i, line, lenA: A.length, lenB: B.length, ca: A.charCodeAt(i), cb: B.charCodeAt(i), col: hdr[(A.slice(lineStart, i).match(/","|^"?/g) || []).length - 1] ?? null };
       }
-      return json({ ok: true, path, rows: n, sha256: h, diff });
+      // v252: ترتيب الصفوف قد يختلف بين التصدير والاستعادة (الاستعلام الخارجي لا يضمن ترتيب الداخلي)؛ المحتوى يُقارن دون اعتبار للترتيب
+      const sortL = (u: Uint8Array) => { const x = new TextDecoder().decode(u).split("\n"); const hd = x.shift(); return hd + "\n" + x.sort().join("\n"); };
+      const sameSet = diff !== null && sortL(raw) === sortL(back);
+      return json({ ok: true, path, rows: n, sha256: sameSet ? await sha(raw) : h, reordered: sameSet, diff: sameSet ? null : diff });
     }
     return json({ error: "op" }, 400);
   } catch (e) {
