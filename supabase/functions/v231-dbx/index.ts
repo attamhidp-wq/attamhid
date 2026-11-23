@@ -118,8 +118,17 @@ Deno.serve(async (req) => {
     const path = `${set}/${s}.${t}.${String(part).padStart(4, "0")}.csv`;
     // ترتيب المعرّفات الفيزيائية وحدها (خفيف) ثم جلب الصفوف بها، بدل فرز الصفوف كاملة
     const sel = (src: string) => `select * from ${src} where ctid = any(array(select ctid from ${src} order by ctid offset ${part * per} limit ${per})) order by ctid`;
+    // v248: تصدير CSV بالاستعلام العادي بدل COPY TO (تدفّق COPY كان يعلق في بعض الجداول حتى تنتهي مهلة الدالة)
+    const csvOf = async (schema: string, table: string, query: string) => {
+      const cols = (await sql`select column_name c from information_schema.columns where table_schema=${schema} and table_name=${table} order by ordinal_position`).map((r) => String(r.c));
+      const rows = await sql.unsafe(`select ${cols.map((c) => qi(c) + "::text as " + qi(c)).join(", ")} from (${query}) z`);
+      const q = (v: unknown) => v === null || v === undefined ? "" : '"' + String(v).replace(/"/g, '""') + '"';
+      const lines = [cols.map(q).join(",")];
+      for (const r of rows) lines.push(cols.map((c) => q((r as Record<string, unknown>)[c])).join(","));
+      return new TextEncoder().encode(lines.join("\n") + "\n");
+    };
     if (op === "export") {
-      const raw = await readAll(await sql.unsafe(`copy (${sel(qi(s) + "." + qi(t))}) to stdout with (format csv, header)`).readable());
+      const raw = await csvOf(s, t, sel(qi(s) + "." + qi(t)));
       const [{ n }] = await sql.unsafe(`select count(*)::int n from (${sel(qi(s) + "." + qi(t))}) x`);
       const h = await sha(raw);
       await put(path, raw, "text/csv");
@@ -136,7 +145,8 @@ Deno.serve(async (req) => {
       const w = await sql.unsafe(`copy ${tmp} from stdin with (format csv, header)`).writable();
       await new Promise<void>((res, rej) => { w.on("error", rej); w.on("finish", () => res()); w.write(raw); w.end(); });
       const [{ n }] = await sql.unsafe(`select count(*)::int n from ${tmp}`);
-      const back = await readAll(await sql.unsafe(`copy (select * from ${tmp} order by ctid) to stdout with (format csv, header)`).readable());
+      const tname = (s + "__" + t).slice(0, 52) + "_" + part;
+      const back = await csvOf(SCRATCH, tname, `select * from ${tmp} order by ctid`);
       const h = await sha(back);
       await sql.unsafe(`drop table ${tmp}`);
       return json({ ok: true, path, rows: n, sha256: h });
