@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v244';
+window.__BUILD__='v245';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -31629,7 +31629,7 @@ document.addEventListener('submit',function(ev){var f=ev.target;if(!f||!f.queryS
 var mkSel=function(inp,list,pairName){if(!inp||inp.tagName==='SELECT')return;var s=document.createElement('select');s.name=inp.name;s.required=true;s.setAttribute('data-idn-list',list===CTRY?'ctry':'lang');s.setAttribute('data-idn-pair',pairName);s.innerHTML=opt('','—')+list.map(function(x){return opt(x[0],x[0]+' — '+x[1],x[0]===inp.value)}).join('');inp.parentNode.replaceChild(s,inp);
  var f=s.form,p=f&&f.elements[pairName];if(!p){p=document.createElement('input');p.type='hidden';p.name=pairName;s.parentNode.appendChild(p)}p.value=enOf(list,s.value)};
 var addAfter=function(el,lab,html){var l=document.createElement('label');l.innerHTML=lab+html;var ref=el.closest('label')||el;ref.parentNode.insertBefore(l,ref.nextSibling);return l};
-var reqOn=function(el){if(!el||el.dataset.idnReq)return;el.dataset.idnReq=1;el.required=true;var l=el.closest('label');if(l&&!/\*/.test(l.firstChild&&l.firstChild.textContent||''))l.insertAdjacentHTML('afterbegin','<span style="color:#b42318">* </span>')};
+var reqOn=function(el){if(!el||el.dataset.idnReq)return;el.dataset.idnReq=1;el.required=true};/* v244: علامة الإلزام تضيفها أنماط الموقع تلقائياً للحقول المطلوبة؛ لا تُكرَّر */
 function upReg(f){if(!f)return;var E=f.elements;
  if(E.name)E.name.setAttribute('data-idn-script','ar');if(E.nameEn)E.nameEn.setAttribute('data-idn-script','en');
  if(E.pob){E.pob.setAttribute('data-idn-script','ar');reqOn(E.pob)}if(E.pobEn){E.pobEn.setAttribute('data-idn-script','en');reqOn(E.pobEn)}
