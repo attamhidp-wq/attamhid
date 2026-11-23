@@ -73,6 +73,10 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     await p.evaluate(() => { location.hash = '#/plt'; }); await p.waitForTimeout(4000);
     const pl = await p.evaluate(() => { const f = document.querySelector('#app form[onsubmit*="plt210reg"]'); return f ? { q64: !!f.querySelector('fieldset.q64'), req: ['dob', 'nat', 'idno', 'idType', 'tongue', 'country'].filter((k) => f.elements[k] && f.elements[k].required).length } : 'noform'; });
     console.log('CHECK idn', idn.page && rg === 'all' && pl.q64 === false && pl.req === 6 ? 'OK' : 'FAIL', JSON.stringify({ idn, rg, pl }));
+    // v246: صفحة التحقق العامة: النموذج ومكان النتيجة
+    await p.evaluate(() => { location.hash = '#/verify'; }); await p.waitForTimeout(4000);
+    const vf = await p.evaluate(() => { const a = document.querySelector('#app'); const f = a && a.querySelector('form'); return { out: !!document.getElementById('out'), outs: document.querySelectorAll('#out').length, form: f ? f.getAttribute('onsubmit') : null, html: a ? a.innerHTML.replace(/<svg[\s\S]*?<\/svg>/g, '').slice(0, 900) : '' }; });
+    console.log('CHECK verify', vf.out ? 'OK' : 'FAIL', JSON.stringify(vf));
     // v241: بطاقة «يومي» للطالب وعضو هيئة التدريس (تُرسم من بيانات حقيقية في الذاكرة دون دخول بحساب أحد)
     const td = await p.evaluate(() => { try { const s = (S.students || [])[0], f = (S.faculty || [])[0]; const a = s ? V51.td241(s, 'student') : '', b = f ? V51.td241(f, 'faculty') : '';
       return { s: /td241/.test(a) && a.indexOf('undefined') < 0 && a.indexOf('NaN') < 0, f: /td241/.test(b) && b.indexOf('undefined') < 0 && b.indexOf('NaN') < 0, len: a.length, ev: (a.match(/<li>/g) || []).length }; } catch (e) { return { err: String(e) }; } });
