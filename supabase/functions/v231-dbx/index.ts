@@ -70,7 +70,11 @@ Deno.serve(async (req) => {
         where c.relkind in ('r','p') and (n.nspname = any(${SCHEMAS}) or (n.nspname||'.'||c.relname) = any(${EXTRA.map((x) => x.join("."))}))
         order by 1,2`;
       const plan = [];
-      for (const r of rows) {
+      // v248: نطاق «core» = البيانات الأساسية دون النسخ الداخلية القديمة وسجل التغييرات الضخم (يُنسخان في مجموعة مستقلة «logs»)
+      const BIG = ["public.v79_change_log", "public.v79_backups"];
+      const scope = String(body.scope || "all");
+      const pick = (r: { s: string; t: string }) => scope === "core" ? !/^bk_/.test(r.s) && !BIG.includes(r.s + "." + r.t) : scope === "logs" ? BIG.includes(r.s + "." + r.t) : true;
+      for (const r of rows.filter(pick)) {
         const [{ n }] = await sql.unsafe(`select count(*)::bigint n from ${qi(r.s)}.${qi(r.t)}`);
         const per = Number(n) === 0 ? 1 : Math.max(1, Math.ceil(Number(n) * TARGET / Math.max(1, Number(r.sz))));
         const parts = Math.max(1, Math.ceil(Number(n) / per));

@@ -71,7 +71,8 @@ jobs:
           tok(){ curl -fsS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=attamhid-vault" | jq -r .value; }
           dbx(){ T=$(tok); jq -c --arg o "$T" --arg set "$SET" '. + {oidc:$o,set:$set}' | curl -sS --max-time 145 --retry 2 -X POST -H 'Content-Type: application/json' --data-binary @- "$DBX"; }
           js(){ jq -e 'type=="object"' >/dev/null 2>&1 <<<"$1" && jq -c . <<<"$1" || echo '{"ok":false,"detail":"bad response"}'; }
-          echo '{"op":"plan"}' | dbx > plan.json; jq -e .ok plan.json >/dev/null || { cat plan.json; exit 1; }
+          SCOPE=all; case "$NAME" in core*) SCOPE=core;; logs*) SCOPE=logs;; esac; echo "scope=$SCOPE"
+          jq -cn --arg sc "$SCOPE" '{op:"plan",scope:$sc}' | dbx > plan.json; jq -e .ok plan.json >/dev/null || { cat plan.json; exit 1; }
           echo "SET=$SET tables=$(jq '.plan|length' plan.json) rows=$(jq '[.plan[].rows]|add' plan.json) parts=$(jq '[.plan[].parts]|add' plan.json)"
           echo '{"op":"ddl"}' | dbx | tee ddl.json | jq -c '{ok,roundtrip,counts,error,detail}'
           jq -e '.ok and .roundtrip' ddl.json >/dev/null
