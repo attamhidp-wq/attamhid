@@ -94,7 +94,7 @@
   })();
   if (V252) {
     try { var hs252 = D.createElement('style'); hs252.textContent = '#app>*:not(.v252){display:none!important}'; (D.head || D.documentElement).appendChild(hs252); } catch (e) { }
-    var CT252 = { part: 'شهادة مشاركة', pass: 'شهادة اجتياز', grad: 'وثيقة تخرج', rec: 'خطاب توصية', thanks: 'شهادة شكر وتقدير', exp: 'شهادة خبرة', dec: 'قرار إداري', stmt: 'بيان', appt: 'خطاب تعيين', intro: 'شهادة تعريف', fin: 'إفادة مستحق مالي', acc: 'خطاب قبول', dgrad: 'وثيقة تخرج', ggrad: 'وثيقة تخرج', gtr: 'السجل الأكاديمي الرسمي', spa: 'شهادة حضور', spp: 'شهادة مشاركة (برنامج قصير)', spc: 'شهادة اجتياز (برنامج قصير)', skill77: 'السجل المهاري' };
+    var CT252 = { part: 'شهادة مشاركة', rec: 'خطاب توصية', thanks: 'شهادة شكر وتقدير', exp: 'شهادة خبرة', appt: 'خطاب تعيين', intro: 'شهادة تعريف', fin: 'إفادة مستحق مالي', acc: 'خطاب قبول', spa: 'شهادة حضور', spp: 'شهادة مشاركة (برنامج قصير)', skill77: 'السجل المهاري' };
     var e252 = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
     var card252 = function (c) {
       var fr = c.type === 'free' || c.type === 'blank';
@@ -124,7 +124,7 @@
       .then(function (r) { if (!r.ok) throw new Error('rpc ' + r.status); return r.json(); })
       .then(function (rows) {
         return ready252.then(function (u) { if (booted || !u) return;
-        var ok = Array.isArray(rows) && rows.length && rows.every(function (c) { return c && c.rec && c.type !== 'exam' && c.type !== 'plt' && CT252[c.type || 'part']; });
+        var ok = Array.isArray(rows) && rows.length && rows.every(function (c) { return c && c.rec && c.type !== 'exam' && c.type !== 'plt' && c.type && CT252[c.type]; });
         if (!ok) throw new Error('fallback');
         clearTimeout(t252);
         D.getElementById('o252').innerHTML = rows.map(card252).join('') + '<div class="more"><a class="btn" id="m252" href="/#/verify/' + encodeURIComponent(V252) + '">مشاركة الشهادة وخيارات أخرى</a></div>';
