@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
+    inputs:
+      site:
+        description: 'عنوان التطبيق المراد فحصه (فارغ = الموقع الحي)'
+        required: false
+        default: ''
 permissions:
   contents: read
   id-token: write
@@ -36,3 +41,5 @@ jobs:
           timeout 240 npx playwright install --with-deps chromium || npx playwright install chromium
       - name: Run
         run: node tools/robot.js
+        env:
+          SITE: ${{ github.event.inputs.site || 'https://attamhid.com/' }}
