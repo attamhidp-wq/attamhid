@@ -118,6 +118,10 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       try { await q.evaluate(() => { location.hash = '#/graduates'; }); await q.waitForTimeout(20000);
         const gr = await q.evaluate(() => { const a = document.querySelector('#app'); const t = ((a && a.innerText) || '').replace(/\s+/g, ' ').trim(); return { loading: /جارٍ التحميل|Loading/.test(t.slice(0, 200)) && t.length < 400, len: t.length, h: [...document.querySelectorAll('#app h2,#app h3')].map((x) => x.textContent.trim()).slice(0, 4), ft: typeof FT !== 'undefined' ? { ld: !!FT.ld, err: FT.err || '', busy: !!FT.busy } : 'no-FT' }; });
         console.log('CHECK e2e-graduates-' + role, gr.loading ? 'FAIL' : 'OK', JSON.stringify(gr), 'errs', e2.slice(0, 6).join(' | ').slice(0, 600));
+        // فتح مباشر للرابط بعد إعادة تحميل الصفحة (كما يفعل المستخدم من الجوال)
+        await q.goto(SITE.replace(/app\.html.*$/, '') + '?gd=1' + (liveV ? '&_b=' + liveV : '') + '#/graduates', { waitUntil: 'load', timeout: 90000 }); await q.waitForTimeout(25000);
+        const gd = await q.evaluate(() => { const a = document.querySelector('#app'); const t = ((a && a.innerText) || '').replace(/\s+/g, ' ').trim(); return { url: location.pathname + location.hash, loading: /جارٍ التحميل|Loading/.test(t.slice(0, 200)) && t.length < 400, len: t.length, h: [...document.querySelectorAll('#app h2,#app h3')].map((x) => x.textContent.trim()).slice(0, 3), me: typeof me !== 'undefined' && me ? me.r : null }; });
+        console.log('CHECK e2e-graduates-direct-' + role, gd.loading || !gd.len ? 'FAIL' : 'OK', JSON.stringify(gd), 'errs', e2.slice(0, 8).join(' | ').slice(0, 900));
         await q.evaluate((r) => { location.hash = r; }, route); await q.waitForTimeout(3000);
       } catch (e) { console.log('CHECK e2e-graduates-' + role, 'FAIL', String(e).slice(0, 200)); }
       const links = await q.evaluate(() => [...new Set([...document.querySelectorAll('#app a[href^="#/"], nav a[href^="#/"]')].map((a) => a.getAttribute('href')).filter((h) => /^#\/(student|fp|idn|studyplan|exams|calendar|me)/.test(h)))].slice(0, 12));
