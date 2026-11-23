@@ -149,7 +149,17 @@ Deno.serve(async (req) => {
       const back = await csvOf(SCRATCH, tname, `select * from ${tmp} order by ctid`);
       const h = await sha(back);
       await sql.unsafe(`drop table ${tmp}`);
-      return json({ ok: true, path, rows: n, sha256: h });
+      // v252: عند اختلاف البصمة يُعاد موضع أول اختلاف (رقم السطر واسم العمود وأطوال القيمتين فقط، بلا أي بيانات)
+      let diff: Record<string, unknown> | null = null;
+      if (h !== (await sha(raw))) {
+        const A = new TextDecoder().decode(raw), B = new TextDecoder().decode(back);
+        let i = 0; while (i < A.length && A[i] === B[i]) i++;
+        const line = A.slice(0, i).split("\n").length - 1;
+        const hdr = A.slice(0, A.indexOf("\n")).split(",").map((x) => x.replace(/^"|"$/g, ""));
+        const lineStart = A.lastIndexOf("\n", i - 1) + 1;
+        diff = { at: i, line, lenA: A.length, lenB: B.length, ca: A.charCodeAt(i), cb: B.charCodeAt(i), col: hdr[(A.slice(lineStart, i).match(/","|^"?/g) || []).length - 1] ?? null };
+      }
+      return json({ ok: true, path, rows: n, sha256: h, diff });
     }
     return json({ error: "op" }, 400);
   } catch (e) {
