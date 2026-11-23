@@ -86,9 +86,10 @@ jobs:
             OK=$(jq -n --argjson e "$E" --argjson r "$R" '($e.ok and $r.ok and $e.sha256==$r.sha256 and $e.rows==$r.rows)' 2>/dev/null || echo false)
             [ "$OK" = true ] && break; sleep $((try*5))
           done
-          jq -cn --argjson q "$REQ" --argjson e "$E" --argjson r "$R" --argjson ok "$OK" '{s:$q.s,t:$q.t,part:$q.part,rows:$e.rows,bytes:$e.bytes,sha256:$e.sha256,restored:$r.rows,ok:$ok,err:($e.detail // $r.detail)}' 2>/dev/null || jq -cn --argjson q "$REQ" '{s:$q.s,t:$q.t,part:$q.part,rows:0,restored:0,ok:false,err:"bad json"}'
+          jq -cn --argjson q "$REQ" --argjson e "$E" --argjson r "$R" --argjson ok "$OK" '{s:$q.s,t:$q.t,part:$q.part,rows:$e.rows,bytes:$e.bytes,sha256:$e.sha256,restored:$r.rows,ok:$ok,err:($e.detail // $r.detail),diff:$r.diff}' 2>/dev/null || jq -cn --argjson q "$REQ" '{s:$q.s,t:$q.t,part:$q.part,rows:0,restored:0,ok:false,err:"bad json"}'
           EOF2
           jq -c '.plan[] as $r | range(0;$r.parts) as $i | {s:$r.s,t:$r.t,per:$r.per,part:$i}' plan.json > reqs.jsonl
+          case "$NAME" in *dbg*) jq -c 'select(.part<4)' reqs.jsonl > r2.jsonl && mv r2.jsonl reqs.jsonl;; esac  # تشغيل تشخيصي قصير
           echo "parts to export: $(wc -l < reqs.jsonl)"
           P=2; [ "$SCOPE" = logs ] && P=3
           tr '\n' '\0' < reqs.jsonl | xargs -0 -P $P -I{} bash /tmp/part.sh {} > parts.jsonl || echo "some part scripts exited non-zero (recorded as failed)"
