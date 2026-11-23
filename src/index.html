@@ -28723,7 +28723,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v248';
+window.__BUILD__='v249';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -29831,7 +29831,8 @@ body #app .lb185>.box .tx185 p{font:400 15px/1.9 'IBM Plex Sans Arabic',sans-ser
 /* v240: تباين وأهداف لمس (Lighthouse) */
 .ft77>span,.ft77 span:not(.seal span){color:#D9E1EC!important;opacity:1!important}.dt138x small{opacity:1!important;color:#3b4a66}html[data-theme=dark] .dt138x small{color:#c7d2e3}.h69-ic{min-height:44px;min-width:44px}
 </style>
-<script>
+<!-- v249: كانت كتلة s35 واحدة؛ صارت سكربتات مستقلة بالترتيب نفسه (لا متغيرات مشتركة بينها). كل إصدار جديد يُضاف في سكربت جديد خاص به. -->
+<script id="p138">
 /* v138 — بوابة التدريب الزائرين (حساب واحد بالبريد وكلمة المرور، تسجيل بضغطة، الشهادات فور صدورها)
    + تصميم جديد لبطاقات إعلانات البرامج القصيرة والدورات وورش العمل والأخبار */
 (function(){
@@ -30133,6 +30134,8 @@ setTimeout(function(){loadPU().then(function(p){if(p)rerender();else hdrFix()})}
 try{GOH.post.push(function(){hdrFix();var k=location.hash.replace(/^#\/?/,'').split('/')[0];if((k==='me'||k==='training')&&PU&&Date.now()-PST.at>60000)loadPU(1).then(rerender)})}catch(e){}
 try{if(hasSb()&&sb.auth.onAuthStateChange)sb.auth.onAuthStateChange(function(ev){if(ev==='SIGNED_OUT'){if(PU){PU=null;V5.p138=null}}})}catch(e){}
 })();
+</script>
+<script id="p139">
 /* v221: في الواجهة الإنجليزية تظهر أسماء المقررات بالإنجليزية في كل عرض (الجداول، مقررات الطلاب وهيئة التدريس، الحزم، الدرجات، التسكين، التسجيل) */
 (function(){try{
  var map=function(){var A=[];try{A=(window.V51&&V51.allCourses65?V51.allCourses65():[]).filter(function(c){return c&&!c.deleted&&c.name&&c.nameEn&&/[؀-ۿ]/.test(c.name)})}catch(e){}return A.map(function(c){return [String(c.name).trim(),String(c.nameEn).trim()]}).sort(function(a,b){return b[0].length-a[0].length})};
@@ -30142,6 +30145,8 @@ try{if(hasSb()&&sb.auth.onAuthStateChange)sb.auth.onAuthStateChange(function(ev)
   r.querySelectorAll&&r.querySelectorAll('option').forEach(function(op){var v=op.textContent,o=v;M.forEach(function(m){if(o.indexOf(m[0])>-1)o=o.split(m[0]).join(m[1])});if(o!==v)op.textContent=o})}catch(e){}return x};
  try{Object.assign(EN,{'دون المستوى A2':'Below level A2','المستوى التمهيدي — غير معتمد (فصل مكثف، 20 ساعة اتصال أسبوعياً) ثم اختبار انتقال بمستوى A2':'Preparatory Level — non-credit (intensive semester, 20 contact hours a week), then a transition test at level A2','70 فأقل':'70 or below','المستوى الأول — 84 ساعة':'Level One — 84 hours','أكثر من 70':'Above 70','المستوى الثاني — 63 ساعة':'Level Two — 63 hours','أكثر من 80':'Above 80','المستوى الثالث — 42 ساعة':'Level Three — 42 hours','أكثر من 90':'Above 90','المستوى الرابع — 21 ساعة':'Level Four — 21 hours','معايير التسكين حسب اختبار تحديد المستوى':'Placement criteria by placement test','الدرجة':'Score','الخطة':'Plan'})}catch(e){}
 }catch(e){console.error('v221 en',e)}})();
+</script>
+<script id="p140">
 /* =====================================================================
    v223 — تصحيح تطبيق الخطة: اختبارات الكفاية في المهارات الأربع، المستوى التمهيدي واختبار الانتقال (A2)،
    شروط وثيقة التخرج، مراجعة الطالب لإجاباته والتغذية الراجعة بعد انتهاء نافذة الاختبار، والمحاولات الإضافية.
@@ -30231,6 +30236,8 @@ function tab223(){if(!central())return '<div class="msg er">'+Lx('للإدارة
  return o}
 try{var TB=V.TABS51,TL=V.TABLBL51||{};if(TB&&!TB.some(function(x){return x[0]==='v223'})){TB.push(['v223','الكفاية والانتقال والتخرج','Proficiency, Progression & Graduation',tab223]);TL['الكفاية والانتقال والتخرج']='v223';TL['Proficiency, Progression & Graduation']='v223'}}catch(e){}
 }catch(e){console.error('v223',e)}})();
+</script>
+<script id="p225">
 /* =====================================================================
    v225 — بوابة الخريجين (مقرر 4401)
    الدخول بحساب الخدمات الذاتية للطلاب والطالبات أو الهيئة نفسه. البوابة مفتوحة لكل الطلاب وأعضاء الهيئة المسجلين بلا خدمات،
@@ -31548,6 +31555,8 @@ V['ext-training']=function(){var p=parts(),v=p[1]||'',id=p[2]||'';
 
 X.ft225forms=FD;
 }catch(e){console.error('v225',e)}})();
+</script>
+<script id="p235">
 /* =====================================================================
    v235 — الهوية الموحدة ثنائية اللغة (Unified bilingual identity)
    القاعدة المعتمدة: كل بيان تحتاجه أي وثيقة أو شهادة بالعربية أو الإنجليزية يُطلب مرة واحدة عند التسجيل الأول،
@@ -31881,6 +31890,8 @@ GOHpush(function(){try{if(!central()||!/^#\/admin/.test(location.hash))return;va
 setTimeout(function(){try{if(/^#\/(idn-fill|idn|idn-admin)(\/|$)/.test(location.hash)){W.__force71=1;go()}}catch(e){}},0);
 V5.idn235={missing:missing,fieldsFor:fieldsFor,people:people,mailBody:mailBody,okAr:okAr,okEn:okEn,CTRY:CTRY,LANGS:LANGS};
 }catch(e){console.error('idn235',e)}})();
+</script>
+<script id="p236">
 
 
 /* =====================================================================
@@ -31981,6 +31992,8 @@ var winBox=function(){if(!central())return '';var LV=[[0,'التمهيدي (اخ
 wrapTab('v223',winBox);
 X.win226=winBox;X.bankImp226={fromXlsx:fromXlsx,fromGift:fromGift,validate:validate};
 }catch(e){console.error('v226a',e)}})();
+</script>
+<script id="p237">
 
 /* =====================================================================
    v226 (ب) — أسماء البوابات وروابطها، وصفحة «إدارة الصلاحيات» (التفويض من الإدارة المركزية)
@@ -32039,11 +32052,16 @@ var tab=function(){if(!central())return '<div class="msg er">'+Lx('للإدار�
 try{var TB=X.TABS51||window.V51TABS,TL=X.TABLBL51||{};if(TB&&!TB.some(function(x){return x[0]==='v226g'})){TB.push(['v226g','إدارة الصلاحيات','Permissions management',tab]);TL['إدارة الصلاحيات']='Permissions management'}}catch(e){}
 X.grants226={load:load};
 }catch(e){console.error('v226b',e)}})();
+</script>
+<script id="r173">
 
 /* v173: اكتمل التحميل — أعد العرض مرة واحدة بكل الدوال معرّفة */
 try{window.__ready173=1;window.go()}catch(e){console.error('v173 ready',e);try{window.__rep175('ready',String(e&&e.message||e),'')}catch(_){}}
+</script>
+<script id="c175">
 /* v175: فحص ذاتي بعد اكتمال التحميل — يبلّغ إن غابت دالة أساسية (مثل معالج الدخول الحديث) */
 try{setTimeout(function(){try{var bad=[];if(typeof window.loginAny!=='function'||String(window.loginAny).indexOf('adm63')<0)bad.push('loginAny');['go','certHTML','mkBlob','dl','fv','toast','mdl','__foCanvas'].forEach(function(f){if(typeof window[f]!=='function')bad.push(f)});if(typeof V51==='undefined'||!V51.h)bad.push('V51.h');if(typeof sb==='undefined'||!sb)bad.push('sb');if(bad.length&&window.__rep175)window.__rep175('selfcheck','missing: '+bad.join(','),'')}catch(e){}},4000)}catch(e){}
+
 </script>
 </body>
 </html>

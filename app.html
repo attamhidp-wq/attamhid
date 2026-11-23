@@ -57,7 +57,7 @@ if(v&&(!o||Date.now()-o.at>2592e6))localStorage.setItem(k,JSON.stringify({s:v,at
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>(function(){try{var t=localStorage.getItem("tth");if(t!="dark"&&t!="light")t=(window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)?"dark":"light";document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","light")}})()</script>
-<link rel="stylesheet" href="js/c36-ba0477d9cd.css">
+<link rel="stylesheet" href="js/c41-ba0477d9cd.css">
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;700&family=Noto+Kufi+Arabic:wght@400;700&family=EB+Garamond:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=Cinzel:wght@600;700&family=Aref+Ruqaa:wght@400;700&family=Tinos:wght@400;700&family=Arimo:wght@400;700&family=PT+Sans+Narrow:wght@400;700&display=swap">
 <style>
 .g112{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:10px 0}
@@ -109,7 +109,7 @@ window.hydrate108=function(){if(P)return P;var fs={};window.__IH108.forEach(func
 </script>
 <script charset="utf-8" src="js/s04-1b3454e17a.js"></script>
 <script charset="utf-8" src="js/s05-140ee3d9b9.js"></script>
-<link rel="stylesheet" href="js/c37-a3c33a7382.css">
+<link rel="stylesheet" href="js/c42-a3c33a7382.css">
 <script charset="utf-8" src="js/s06-e3d7d84888.js"></script>
 <link rel="stylesheet" id="lux" href="js/lux-a7ba5fd04e.css">
 <script charset="utf-8" src="js/s07-67eeef7d23.js"></script>
@@ -513,7 +513,7 @@ function walk(o,d){if(!o||typeof o!=='object'||d>12||seen.has(o))return;seen.add
 walk(S,0);X.n121=1;X.n126=1;try{save()}catch(e){}if(n)console.info('v121 rename',n)}catch(e){console.warn('v121 rename',e)}})();
 try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A valid graduation certificate has already been issued','الصورة ✓':'Photo ✓','+ صورة':'+ Photo','معاينة — غير معتمدة':'Preview — not approved'})}catch(e){}
 </script>
-<script charset="utf-8" src="js/s33-a97f3b190b.js"></script>
+<script charset="utf-8" src="js/s33-0a03901e83.js"></script>
 <script charset="utf-8" src="js/s34-ba2ad4d222.js"></script>
 <script>
 /* v100: شريط «جارٍ تحميل أحدث البيانات» أثناء التحميل الخلفي بعد الدخول */
@@ -564,6 +564,33 @@ try{var _mb=window.mkBlob;if(typeof _mb==='function'){window.mkBlob=async functi
 <link rel="stylesheet" id="css181" href="js/css181-5485453e5e.css">
 <link rel="stylesheet" id="css184" href="js/css184-05f74af7eb.css">
 <link rel="stylesheet" id="css185" href="js/css185-a716426463.css">
-<script charset="utf-8" src="js/s35-d04b570f3f.js"></script>
+<!-- v249: كانت كتلة s35 واحدة؛ صارت سكربتات مستقلة بالترتيب نفسه (لا متغيرات مشتركة بينها). كل إصدار جديد يُضاف في سكربت جديد خاص به. -->
+<script id="p138" charset="utf-8" src="js/p138-e22a4e9dd7.js"></script>
+<script id="p139">
+/* v221: في الواجهة الإنجليزية تظهر أسماء المقررات بالإنجليزية في كل عرض (الجداول، مقررات الطلاب وهيئة التدريس، الحزم، الدرجات، التسكين، التسجيل) */
+(function(){try{
+ var map=function(){var A=[];try{A=(window.V51&&V51.allCourses65?V51.allCourses65():[]).filter(function(c){return c&&!c.deleted&&c.name&&c.nameEn&&/[؀-ۿ]/.test(c.name)})}catch(e){}return A.map(function(c){return [String(c.name).trim(),String(c.nameEn).trim()]}).sort(function(a,b){return b[0].length-a[0].length})};
+ var t0=window.trn;if(typeof t0!=='function')return;
+ window.trn=function(r){var x=t0.apply(this,arguments);try{if(typeof LG==='undefined'||LG!=='en'||!r)return x;var M=map();if(!M.length)return x;var w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT),n,A=[];while(n=w.nextNode())A.push(n);
+  A.forEach(function(n){var v=n.nodeValue;if(!v||!/[؀-ۿ]/.test(v))return;var p=n.parentElement;if(p&&p.closest&&p.closest('textarea,[contenteditable="true"],.tmw,.cert,.cert2,[data-noi18n]'))return;var o=v;M.forEach(function(m){if(o.indexOf(m[0])>-1)o=o.split(m[0]).join(m[1])});if(o!==v)n.nodeValue=o});
+  r.querySelectorAll&&r.querySelectorAll('option').forEach(function(op){var v=op.textContent,o=v;M.forEach(function(m){if(o.indexOf(m[0])>-1)o=o.split(m[0]).join(m[1])});if(o!==v)op.textContent=o})}catch(e){}return x};
+ try{Object.assign(EN,{'دون المستوى A2':'Below level A2','المستوى التمهيدي — غير معتمد (فصل مكثف، 20 ساعة اتصال أسبوعياً) ثم اختبار انتقال بمستوى A2':'Preparatory Level — non-credit (intensive semester, 20 contact hours a week), then a transition test at level A2','70 فأقل':'70 or below','المستوى الأول — 84 ساعة':'Level One — 84 hours','أكثر من 70':'Above 70','المستوى الثاني — 63 ساعة':'Level Two — 63 hours','أكثر من 80':'Above 80','المستوى الثالث — 42 ساعة':'Level Three — 42 hours','أكثر من 90':'Above 90','المستوى الرابع — 21 ساعة':'Level Four — 21 hours','معايير التسكين حسب اختبار تحديد المستوى':'Placement criteria by placement test','الدرجة':'Score','الخطة':'Plan'})}catch(e){}
+}catch(e){console.error('v221 en',e)}})();
+</script>
+<script id="p140" charset="utf-8" src="js/p140-53c7cb621f.js"></script>
+<script id="p225" charset="utf-8" src="js/p225-6d20f09789.js"></script>
+<script id="p235" charset="utf-8" src="js/p235-821f856e6c.js"></script>
+<script id="p236" charset="utf-8" src="js/p236-77cc934dd3.js"></script>
+<script id="p237" charset="utf-8" src="js/p237-aab4f426c5.js"></script>
+<script id="r173">
+
+/* v173: اكتمل التحميل — أعد العرض مرة واحدة بكل الدوال معرّفة */
+try{window.__ready173=1;window.go()}catch(e){console.error('v173 ready',e);try{window.__rep175('ready',String(e&&e.message||e),'')}catch(_){}}
+</script>
+<script id="c175">
+/* v175: فحص ذاتي بعد اكتمال التحميل — يبلّغ إن غابت دالة أساسية (مثل معالج الدخول الحديث) */
+try{setTimeout(function(){try{var bad=[];if(typeof window.loginAny!=='function'||String(window.loginAny).indexOf('adm63')<0)bad.push('loginAny');['go','certHTML','mkBlob','dl','fv','toast','mdl','__foCanvas'].forEach(function(f){if(typeof window[f]!=='function')bad.push(f)});if(typeof V51==='undefined'||!V51.h)bad.push('V51.h');if(typeof sb==='undefined'||!sb)bad.push('sb');if(bad.length&&window.__rep175)window.__rep175('selfcheck','missing: '+bad.join(','),'')}catch(e){}},4000)}catch(e){}
+
+</script>
 </body>
 </html>
