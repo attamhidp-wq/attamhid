@@ -12,6 +12,7 @@ const STATIC = ['/programs/', '/programs/diploma.html', '/news/', '/student-serv
     await ctx.addInitScript((l) => { try { localStorage.setItem('tl', l) } catch (e) {} }, lang);
     const p = await ctx.newPage(); const errs = [];
     p.on('pageerror', (e) => errs.push('E:' + e.message.slice(0, 160)));
+    p.on('response', (r) => { if (r.status() >= 400 && r.status() !== 404) errs.push('R:' + r.status() + ' ' + r.request().method() + ' ' + r.url().replace(/\?.*$/, '').slice(0, 140)); });
     p.on('console', (m) => { if (m.type() === 'error' && !/favicon|ERR_BLOCKED|net::/.test(m.text())) errs.push('C:' + m.text().slice(0, 160)) });
     const t0 = Date.now(); await p.goto(SITE + '/', { waitUntil: 'load', timeout: 90000 }); await p.waitForTimeout(4000); const first = Date.now() - t0;
     for (const h of HASH) {
