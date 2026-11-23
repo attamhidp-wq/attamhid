@@ -114,6 +114,12 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       const st = await q.evaluate(() => { const a = document.querySelector('#app'); const t = (a && a.innerText) || ''; return { hash: location.hash, me: typeof me !== 'undefined' && me ? me.r : null, today: !!document.querySelector('.td241'), bell: !!document.getElementById('nb248'), bellItems: (window.V51 && V51.nb248 ? V51.nb248().length : -1),
         h: [...document.querySelectorAll('#app h2,#app h3')].map((x) => x.textContent.trim()).filter(Boolean).slice(0, 14), len: t.length, bad: /undefined|NaN|\[object Object\]/.test(t), err: [...document.querySelectorAll('#app .msg.er')].map((x) => x.textContent.trim().slice(0, 80)).slice(0, 3) }; });
       // الانتقال بين أقسام البوابة: كل رابط داخلي في القائمة يُفتح ويُفحص
+      // v253: بوابة الخريجين من حساب الطالب/العضو: يجب ألا تبقى على «جارٍ التحميل»
+      try { await q.evaluate(() => { location.hash = '#/graduates'; }); await q.waitForTimeout(20000);
+        const gr = await q.evaluate(() => { const a = document.querySelector('#app'); const t = ((a && a.innerText) || '').replace(/\s+/g, ' ').trim(); return { loading: /جارٍ التحميل|Loading/.test(t.slice(0, 200)) && t.length < 400, len: t.length, h: [...document.querySelectorAll('#app h2,#app h3')].map((x) => x.textContent.trim()).slice(0, 4), ft: typeof FT !== 'undefined' ? { ld: !!FT.ld, err: FT.err || '', busy: !!FT.busy } : 'no-FT' }; });
+        console.log('CHECK e2e-graduates-' + role, gr.loading ? 'FAIL' : 'OK', JSON.stringify(gr), 'errs', e2.slice(0, 6).join(' | ').slice(0, 600));
+        await q.evaluate((r) => { location.hash = r; }, route); await q.waitForTimeout(3000);
+      } catch (e) { console.log('CHECK e2e-graduates-' + role, 'FAIL', String(e).slice(0, 200)); }
       const links = await q.evaluate(() => [...new Set([...document.querySelectorAll('#app a[href^="#/"], nav a[href^="#/"]')].map((a) => a.getAttribute('href')).filter((h) => /^#\/(student|fp|idn|studyplan|exams|calendar|me)/.test(h)))].slice(0, 12));
       const pages = {};
       for (const L of links) { await q.evaluate((h) => { location.hash = h; }, L); await q.waitForTimeout(2500); pages[L] = await q.evaluate(() => { const t = (document.querySelector('#app') || {}).innerText || ''; return t.length + (/undefined|NaN|\[object Object\]/.test(t) ? ' BAD' : ''); }); }
