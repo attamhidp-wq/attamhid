@@ -28723,7 +28723,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v247';
+window.__BUILD__='v248';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -31750,6 +31750,26 @@ GOHpush(function(){try{var seg=String(location.hash||'').replace(/^#\/?/,'').spl
  var h=null;for(var i=0;i<Math.min(3,a.children.length);i++){var c=a.children[i];if(c.tagName==='H2'){h=c;break}if(c.firstElementChild&&c.firstElementChild.tagName==='H2'&&c.children.length<=3){h=c.firstElementChild;break}}if(!h)return;
  var d=document.createElement('section');d.className='svc244';d.innerHTML='<div class="k">'+Lx('معهد التمهيد','At Tamhid Institute')+'</div><h2>'+h.innerHTML+'</h2><p>'+e9(Lx(SVC[seg][0],SVC[seg][1]))+'</p>';h.parentNode.insertBefore(d,h);h.remove();
  if(!document.getElementById('svc244css')){var st=document.createElement('style');st.id='svc244css';st.textContent='.svc244{background:linear-gradient(135deg,#14284B,#24467f);color:#eef2f8;border-radius:20px;padding:20px;margin:6px auto 18px;max-width:1100px}.svc244 .k{color:#9fb7e6;font-size:13px;font-weight:700}.svc244 h2{color:#fff!important;margin:6px 0 6px!important;font-size:25px;border:0!important;padding:0!important;text-align:start}.svc244 h2:after{display:none!important}.svc244 p{color:#d3dbea;margin:0;line-height:1.8}';document.head.appendChild(st)}}catch(e){}});
+
+/* ---------- v248: مركز الإشعارات داخل الموقع للطالب وعضو هيئة التدريس (جرس في الترويسة) ---------- */
+var NB={};
+var nbItems=function(){var I=[];try{if(typeof me==='undefined'||!me||(me.r!=='student'&&me.r!=='faculty'))return I;var tb=me.r==='student'?'students':'faculty',o=(S[tb]||[]).find(function(x){return String(x.id)===String(me.id)})||{};
+ var m=0;try{m=missing(me.r,o).length}catch(e){}if(m)I.push({id:'idn-'+m,ic:'!',t:Lx('أكمل بياناتك الأساسية ('+m+' حقول ناقصة)','Complete your core data ('+m+' missing fields)'),h:'#/idn',d:''});
+ var today=new Date().toISOString().slice(0,10),wk=new Date(Date.now()+7*864e5).toISOString().slice(0,10);
+ tdCal().E.filter(function(e){return e.start>=today&&e.start<=wk}).sort(function(a,b){return a.start<b.start?-1:1}).slice(0,5).forEach(function(e){I.push({id:'ev-'+(e.id||e.start+e.ar),ic:'📅',t:Lx(e.ar||'',e.en||e.ar||''),h:'#/calendar',d:e.start})});
+ var old=new Date(Date.now()-14*864e5).toISOString().slice(0,10);
+ (S.news||[]).filter(function(n){return n&&!n.deleted&&String(n.date||'')>=old}).sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''))}).slice(0,5).forEach(function(n){I.push({id:'nw-'+n.id,ic:'📰',t:Lx(n.title||n.name||'',n.titleEn||n.title||n.name||''),h:'#/news',d:String(n.date||'').slice(0,10)})})}catch(e){}return I};
+var nbSeen=function(){try{return JSON.parse(localStorage.getItem('nb248')||'[]')}catch(e){return []}};
+H.nb248=function(ev){try{if(ev)ev.stopPropagation()}catch(e){}var p=document.getElementById('nb248p');if(!p)return;var open=p.hidden;p.hidden=!open;if(open){var I=nbItems();try{localStorage.setItem('nb248',JSON.stringify(I.map(function(x){return x.id})))}catch(e){}var c=document.querySelector('#nb248 .c');if(c)c.remove()}};
+var nbDraw=function(){try{var ac=document.querySelector('#nav .h69-ac');var on=typeof me!=='undefined'&&me&&(me.r==='student'||me.r==='faculty');var ex=document.getElementById('nb248');
+ if(!on||!ac){if(ex)ex.remove();return}var I=nbItems(),S0=nbSeen(),n=I.filter(function(x){return S0.indexOf(x.id)<0}).length;
+ var list=I.length?I.map(function(x){return '<a href="'+x.h+'" onclick="document.getElementById(\'nb248p\').hidden=true"><span class="i">'+x.ic+'</span><span class="t">'+e9(x.t)+(x.d?'<small dir="ltr">'+e9(x.d)+'</small>':'')+'</span></a>'}).join(''):'<p class="mu" style="padding:12px;margin:0">'+Lx('لا إشعارات جديدة.','No new notifications.')+'</p>';
+ var html='<button type="button" class="h69-ic nb248b" aria-label="'+Lx('الإشعارات','Notifications')+'" onclick="V51.h.nb248(event)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>'+(n?'<span class="c">'+n+'</span>':'')+'</button><div id="nb248p" class="nb248p" hidden><b>'+Lx('الإشعارات','Notifications')+'</b>'+list+'</div>';
+ if(ex){var wasOpen=!document.getElementById('nb248p').hidden;ex.innerHTML=html;if(wasOpen)document.getElementById('nb248p').hidden=false;return}
+ var w=document.createElement('span');w.id='nb248';w.style.position='relative';w.innerHTML=html;ac.insertBefore(w,ac.firstChild);
+ if(!document.getElementById('nb248css')){var st=document.createElement('style');st.id='nb248css';st.textContent='#nb248 .c{position:absolute;top:4px;inset-inline-end:2px;min-width:18px;height:18px;border-radius:9px;background:#d92d20;color:#fff;font-size:11px;font-weight:800;line-height:18px;text-align:center;padding:0 4px}.nb248p{position:absolute;top:calc(100% + 8px);inset-inline-end:0;width:min(340px,90vw);max-height:70vh;overflow:auto;background:#fff;color:#14284B;border:1px solid #e3e8f1;border-radius:14px;box-shadow:0 18px 40px rgba(10,22,45,.25);z-index:9999;padding:8px}.nb248p>b{display:block;padding:6px 8px 8px;font-size:15px}.nb248p a{display:flex;gap:10px;align-items:flex-start;padding:9px 8px;border-radius:10px;color:inherit;text-decoration:none;font-size:13.5px;line-height:1.5}.nb248p a:hover{background:#f3f6fb}.nb248p .i{flex:none;width:24px;text-align:center}.nb248p small{display:block;color:#6b7a93;font-size:11.5px}html[data-theme=dark] .nb248p{background:#16223a;color:#e6ecf6;border-color:#2a3a5a}html[data-theme=dark] .nb248p a:hover{background:#1e2d4a}';document.head.appendChild(st)}}catch(e){console.error('nb248',e)}};
+GOHpush(function(){nbDraw()});document.addEventListener('click',function(e){var p=document.getElementById('nb248p');if(p&&!p.hidden&&!e.target.closest('#nb248'))p.hidden=true});
+V5.nb248=nbItems;
 
 /* الإلزام: من نقصت بياناته يُحوَّل إلى صفحة الاستكمال قبل أي خدمة */
 var FREE=/^(idn|idn-fill|login|logout|pwchange|reset|recover|2fa|verify|ft-verify|privacy|terms|)$/;
