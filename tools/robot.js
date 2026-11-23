@@ -25,7 +25,8 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
   p.on('pageerror', (e) => errs.push(e.message));
   p.on('dialog', (d) => d.accept().catch(() => {}));
   await p.goto(SITE + '?robot=1', { waitUntil: 'load', timeout: 90000 });
-  await p.waitForFunction(() => typeof sbAdminLogin === 'function' && window.V51 && V51.robot134, null, { timeout: 90000 });
+  try { await p.waitForFunction(() => typeof sbAdminLogin === 'function' && window.V51 && V51.robot134, null, { timeout: 90000 }); }
+  catch (e) { const st = await p.evaluate(() => ({ url: location.href, sbAdminLogin: typeof sbAdminLogin, V51: !!window.V51, core: !!(window.V51 && V51.core), robot134: !!(window.V51 && V51.robot134), scripts: document.scripts.length, ready: window.__ready173, build: window.__BUILD__ })).catch((x) => String(x)); console.log('BOOT-FAIL', JSON.stringify(st), 'errors:', errs.slice(0, 8).join(' | ')); throw e; }
   await p.evaluate((c) => sbAdminLogin({ u: c.email, p: c.password }), cred);
   await p.waitForFunction(() => typeof me !== 'undefined' && me && me.r === 'admin' && /^#\/admin/.test(location.hash), null, { timeout: 120000 });
   await p.waitForTimeout(12000);
