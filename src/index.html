@@ -19541,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v251';
+window.__BUILD__='v252';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -22495,7 +22495,7 @@ H.idn235save=async function(f){var R=myRec();if(!R)return;var o=read(f,R.kind),b
  catch(e){b.disabled=false;out.innerHTML='<div class="msg er">'+e9(e.message||String(e))+'</div>'}};
 /* مشاركو بوابة التدريب (البرامج القصيرة): صفحة استكمال داخل البوابة نفسها تُلزم قبل الخدمات */
 var PT={d:null,at:0,busy:0};
-var ptLoad=function(){if(PT.busy||typeof sb==='undefined')return;if(PT.at&&Date.now()-PT.at<60000)return;PT.busy=1;sb.rpc('idn_part').then(function(r){PT.busy=0;PT.at=Date.now();var old=JSON.stringify(PT.d);PT.d=r.error?null:r.data;if(JSON.stringify(PT.d)!==old&&/^#\/training/.test(location.hash))try{go()}catch(e){}},function(){PT.busy=0;PT.at=Date.now()})};
+var ptLoad=function(){if(PT.busy||typeof sb==='undefined')return;/* v252: لا طلب بلا جلسة دخول (كان يعيد 401 للزائر والنتيجة نفسها: لا بيانات) */try{var hs=0;for(var i=0;i<localStorage.length;i++)if(/^sb-.*-auth-token$/.test(localStorage.key(i)||''))hs=1;if(!hs){PT.d=null;return}}catch(e){}if(PT.at&&Date.now()-PT.at<60000)return;PT.busy=1;sb.rpc('idn_part').then(function(r){PT.busy=0;PT.at=Date.now();var old=JSON.stringify(PT.d);PT.d=r.error?null:r.data;if(JSON.stringify(PT.d)!==old&&/^#\/training/.test(location.hash))try{go()}catch(e){}},function(){PT.busy=0;PT.at=Date.now()})};
 var ptView=function(){var d=PT.d.data||{},m=missing('part',d);if(!m.length)return '';
  return '<section class="box narrow"><span class="mu">'+Lx('بوابة التدريب','Training Portal')+'</span><h2>'+Lx('استكمال البيانات الأساسية','Complete your core data')+'</h2>'+
   '<div class="msg er">'+Lx('يلزم إكمال بياناتك بدقة قبل التسجيل في البرامج وإصدار الشهادات؛ فهي تُطبع كما هي في شهاداتك بالعربية والإنجليزية. الناقص: ','Please complete your data accurately before registering and receiving certificates; it is printed as entered on your certificates in Arabic and English. Missing: ')+m.length+'</div>'+
