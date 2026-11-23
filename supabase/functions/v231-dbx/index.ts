@@ -23,7 +23,7 @@ const WF = REPO + "/.github/workflows/vault.yml@refs/heads/main";
 const SCRATCH = "rst_v231";
 const SCHEMAS = ["public", "bk_v226", "bk_v230", "supabase_migrations"];
 const EXTRA = [["auth", "users"], ["auth", "identities"], ["auth", "mfa_factors"], ["storage", "buckets"], ["storage", "objects"], ["cron", "job"]];
-const TARGET = 1536 * 1024; // حجم تقريبي لكل جزء قبل الضغط
+const TARGET = 256 * 1024; // v240: حجم تقريبي لكل جزء من حجم الجدول المضغوط (النص المصدَّر أكبر بأضعاف؛ الأجزاء الصغيرة لا تتجاوز مهلة الدالة)
 const json = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { "Content-Type": "application/json" } });
 const b64u = (s: string) => { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return Uint8Array.from(atob(s), (c) => c.charCodeAt(0)); };
 let JWKS: { keys: Array<Record<string, unknown>> } | null = null;
