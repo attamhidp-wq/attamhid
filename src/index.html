@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v241';
+window.__BUILD__='v242';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -29825,6 +29825,8 @@ body #app .lb185>.box .tx185 p{font:400 15px/1.9 'IBM Plex Sans Arabic',sans-ser
  html.mb185on footer{padding-bottom:12px}}
 
 .cm183 .k3-r .e:empty,.cm183 .k3-hn .e:empty,.cm183 .k3-hn .ce:empty,.cm183 .k3-sg .ne:empty,.cm183 .k3-sg .te:empty{display:none}
+/* v242: «الخدمات» في التذييل بنمط «روابط سريعة» نفسه */
+#ft .ftr .ftl a.chip{display:flex!important;align-items:center;gap:7px;width:fit-content;max-width:100%;padding:0!important;margin:0 0 9px!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;color:#D6DEEA!important;font-size:14.5px;text-decoration:none!important;white-space:normal;text-align:start}#ft .ftr .ftl a.chip:before{content:"";width:5px;height:5px;border-radius:50%;background:#2F5FB3;flex:none}#ft .ftr .ftl a.chip:hover{color:#fff!important;text-decoration:underline!important}#ft .ftr .ftl:has(> a.chip){display:block!important}
 /* v240: تباين وأهداف لمس (Lighthouse) */
 .ft77>span,.ft77 span:not(.seal span){color:#D9E1EC!important;opacity:1!important}.dt138x small{opacity:1!important;color:#3b4a66}html[data-theme=dark] .dt138x small{color:#c7d2e3}.h69-ic{min-height:44px;min-width:44px}
 </style>
@@ -30325,7 +30327,7 @@ var V8=function(f){return fv(f)};
 var lines=function(v){return String(v||'').split(/\n+/).map(function(x){return x.trim()}).filter(Boolean)};
 
 /* ---------- الدخول ---------- */
-var loginCard=function(){return '<section class="box" style="max-width:520px;margin:24px auto"><h2>'+Lx('بوابة الخريجين','Graduates Portal')+'</h2>'+
+var loginCard=function(){var W=window.V51||{};if(W.lgHTML)try{return W.lgHTML({title:Lx('بوابة الخريجين','Graduates Portal'),sub:Lx('التدريب الميداني ومشروع التخرج لطلاب المعهد وأعضاء هيئة التدريس، بالرقم وكلمة المرور نفسيهما المستعملين في الخدمات الذاتية.','Field training and graduation project for Institute students and faculty, with the same ID and password used in the self-services.'),roles:['student','faculty'],role:'student',hiddenR:1,submit:'V51.h.ft225login(this);return false'})}catch(e){}return '<section class="box" style="max-width:520px;margin:24px auto"><h2>'+Lx('بوابة الخريجين','Graduates Portal')+'</h2>'+
  '<p class="mu">'+Lx('الدخول لطلاب المعهد المسجلين وأعضاء هيئة التدريس فقط، بالرقم الأكاديمي أو الرقم العضوي وكلمة المرور نفسها المستعملة في بوابتَي الطلاب والهيئة. لا يدخلها الزوار.','Sign-in is for the institute’s registered students and faculty only, with the same academic/member number and password used in the student and Faculty Self-Services. Visitors cannot enter.')+'</p>'+
  '<form class="v51g" onsubmit="V51.h.ft225login(this);return false"><label>'+Lx('الصفة','I am')+'<select name="r">'+opt('student',Lx('طالب','Student'))+opt('faculty',Lx('عضو هيئة تدريس / مشرف','Faculty / supervisor'))+'</select></label>'+
  '<label>'+Lx('الرقم الأكاديمي أو الرقم العضوي','Academic or member number')+'<input name="u" required autocomplete="username" dir="ltr"></label><label>'+Lx('كلمة المرور','Password')+'<input name="p" type="password" required autocomplete="current-password" dir="ltr"></label><div><button class="btn">'+Lx('دخول','Sign in')+'</button></div></form><div id="out"></div>'+
@@ -31693,21 +31695,23 @@ var lgRole=function(){var r=(location.hash.replace(/^#\/?/,'').split('/')[1]||''
 H.lg238role=function(r){if(!LGR[r])return;try{sessionStorage.setItem('lg238',r)}catch(e){}var R=LGR[r],box=document.querySelector('.lg238');if(!box)return;box.setAttribute('data-role',r);
  [].slice.call(box.querySelectorAll('.lg238r button')).forEach(function(b){var on=b.getAttribute('data-r')===r;b.classList.toggle('on',on);b.setAttribute('aria-checked',on?'true':'false')});
  var l=box.querySelector('#lg238u'),i=box.querySelector('input[name=u]');if(l)l.textContent=Lx(R[5],R[6]);if(i){i.placeholder=Lx(R[7],R[8]);i.inputMode=r==='staff'?'text':'numeric';i.focus()}
- try{history.replaceState(null,'','#/login/'+r)}catch(e){}};
+ var hr=box.querySelector('input[name=r]');if(hr)hr.value=r;if(box.getAttribute('data-nav')==='1')try{history.replaceState(null,'','#/login/'+r)}catch(e){}};
 H.lg238eye=function(b){var i=b.parentNode.querySelector('input');if(!i)return;i.type=i.type==='password'?'text':'password';b.setAttribute('aria-label',i.type==='password'?Lx('إظهار كلمة المرور','Show password'):Lx('إخفاء كلمة المرور','Hide password'))};
+/* v242: بانٍ موحّد لبطاقات الدخول (الدخول العام، وبوابة الخريجين…) */
+var lgHTML=function(O){var keys=O.roles||Object.keys(LGR),r=keys.indexOf(O.role)>-1?O.role:keys[0],R=LGR[r],logo=(typeof LOGO!=='undefined'?LOGO:''),pre=O.pre||'';
+ return LGCSS+'<section class="lg238" data-role="'+r+'" data-nav="'+(O.nav?1:0)+'"><div class="lg238c">'+
+  '<div class="lg238h">'+(logo?'<img src="'+logo+'" alt="'+Lx('معهد التمهيد','At Tamhid Institute')+'">':'<span></span>')+'<div class="lg238t">'+(V5.l3menu?V5.l3menu(true):'')+'</div></div>'+
+  '<h2 class="lg238ti">'+(O.title||Lx('تسجيل الدخول','Sign in'))+'</h2><p class="lg238su">'+(O.sub||Lx('أهلاً بعودتك! يُرجى إدخال بياناتك للمتابعة','Welcome back! Please enter your details to continue'))+'</p>'+
+  '<div class="lg238r" role="radiogroup" aria-label="'+Lx('الصفة','I am')+'" style="grid-template-columns:repeat('+keys.length+',1fr)">'+keys.map(function(k){var x=LGR[k];return '<button type="button" role="radio" data-r="'+k+'" class="'+(k===r?'on':'')+'" aria-checked="'+(k===r)+'" onclick="V51.h.lg238role(\''+k+'\')"><span class="ck">'+lgi('check',16)+'</span><span class="i">'+lgi(x[0],19)+'</span><b>'+Lx(x[1],x[2])+'</b><small>'+Lx(x[3],x[4])+'</small></button>'}).join('')+'</div>'+
+  '<form onsubmit="'+O.submit+'" autocomplete="on">'+(O.hiddenR?'<input type="hidden" name="r" value="'+r+'">':'')+'<label><span id="lg238u">'+Lx(R[5],R[6])+'</span><span class="fi"><input name="u" required autocomplete="username" dir="ltr" value="'+e9(pre)+'" placeholder="'+e9(Lx(R[7],R[8]))+'" inputmode="'+(r==='staff'?'text':'numeric')+'"><span class="ic">'+lgi('id',18)+'</span></span></label>'+
+  '<label>'+Lx('كلمة المرور','Password')+'<span class="fi"><input name="p" type="password" required autocomplete="current-password" placeholder="'+e9(Lx('أدخل كلمة المرور','Enter your password'))+'"'+(pre?' autofocus':'')+'><span class="ic">'+lgi('lock',18)+'</span><button type="button" class="ey" aria-label="'+Lx('إظهار كلمة المرور','Show password')+'" onclick="V51.h.lg238eye(this)">'+lgi('eye',18)+'</button></span></label>'+
+  '<button class="go">'+lgi('in',19)+' '+Lx('تسجيل الدخول','Sign in')+'</button></form><div id="out"></div>'+(O.extra||'')+
+  '<div class="lg238q"><a href="#/recover"><span class="i">'+lgi('key')+'</span>'+Lx('نسيت كلمة المرور؟','Forgot password?')+'</a><a href="#/register"><span class="i">'+lgi('plus')+'</span>'+Lx('التسجيل في المعهد','Apply to the Institute')+'</a><a href="#/"><span class="i">'+lgi('globe')+'</span>'+Lx('الموقع الرئيسي','Main website')+'</a><button type="button" onclick="window.cbOpen&&cbOpen()"><span class="i">'+lgi('chat')+'</span>'+Lx('الدعم والتواصل','Support')+'</button></div>'+
+  '<p class="nt">'+Lx('لمشكلات الدخول يُرجى التواصل مع قسم القبول والتسجيل.','For login issues, please contact the Admission & Registration Department.')+'</p></div></section>'};
+V5.lgHTML=lgHTML;
 (function wrapLg(n){if(typeof V!=='undefined'&&typeof V.login==='function'&&!V.login.__lg238){var _l=V.login;V.login=function(){var h=_l.apply(this,arguments);try{if(h.indexOf('loginAny')<0||h.indexOf('name="u"')<0)return h;
-  var pre=(h.match(/name="u"[^>]*value="([^"]*)"/)||[])[1]||'',r=lgRole(),R=LGR[r],en=Lx('a','b')==='b',logo=(typeof LOGO!=='undefined'?LOGO:'');
-  var o=LGCSS+'<section class="lg238" data-role="'+r+'"><div class="lg238c">'+
-   '<div class="lg238h">'+(logo?'<img src="'+logo+'" alt="'+Lx('معهد التمهيد','At Tamhid Institute')+'">':'<span></span>')+'<div class="lg238t">'+(V5.l3menu?V5.l3menu(true):'')+'</div></div>'+
-   '<h2 class="lg238ti">'+Lx('تسجيل الدخول','Sign in')+'</h2><p class="lg238su">'+Lx('أهلاً بعودتك! يُرجى إدخال بياناتك للمتابعة','Welcome back! Please enter your details to continue')+'</p>'+
-   '<div class="lg238r" role="radiogroup" aria-label="'+Lx('الصفة','I am')+'">'+Object.keys(LGR).map(function(k){var x=LGR[k];return '<button type="button" role="radio" data-r="'+k+'" class="'+(k===r?'on':'')+'" aria-checked="'+(k===r)+'" onclick="V51.h.lg238role(\''+k+'\')"><span class="ck">'+lgi('check',16)+'</span><span class="i">'+lgi(x[0],19)+'</span><b>'+Lx(x[1],x[2])+'</b><small>'+Lx(x[3],x[4])+'</small></button>'}).join('')+'</div>'+
-   '<form onsubmit="return loginAny(this)" autocomplete="on"><label><span id="lg238u">'+Lx(R[5],R[6])+'</span><span class="fi"><input name="u" required autocomplete="username" dir="ltr" value="'+e9(pre)+'" placeholder="'+e9(Lx(R[7],R[8]))+'" inputmode="'+(r==='staff'?'text':'numeric')+'"><span class="ic">'+lgi('id',18)+'</span></span></label>'+
-   '<label>'+Lx('كلمة المرور','Password')+'<span class="fi"><input name="p" type="password" required autocomplete="current-password" placeholder="'+e9(Lx('أدخل كلمة المرور','Enter your password'))+'"'+(pre?' autofocus':'')+'><span class="ic">'+lgi('lock',18)+'</span><button type="button" class="ey" aria-label="'+Lx('إظهار كلمة المرور','Show password')+'" onclick="V51.h.lg238eye(this)">'+lgi('eye',18)+'</button></span></label>'+
-   '<button class="go">'+lgi('in',19)+' '+Lx('تسجيل الدخول','Sign in')+'</button></form><div id="out"></div>'+
-   '<a class="lg238p" href="#/training"><span class="i">'+lgi('award',22)+'</span><span><b>'+Lx('مشارك في البرامج القصيرة والدورات؟','Short-programme or course participant?')+'</b><small>'+Lx('ادخل ببريدك إلى بوابة التدريب، أو أنشئ حساباً مرة واحدة.','Sign in with your email to the Training Portal, or create an account once.')+'</small></span></a>'+
-   '<div class="lg238q"><a href="#/recover"><span class="i">'+lgi('key')+'</span>'+Lx('نسيت كلمة المرور؟','Forgot password?')+'</a><a href="#/register"><span class="i">'+lgi('plus')+'</span>'+Lx('التسجيل في المعهد','Apply to the Institute')+'</a><a href="#/"><span class="i">'+lgi('globe')+'</span>'+Lx('الموقع الرئيسي','Main website')+'</a><button type="button" onclick="window.cbOpen&&cbOpen()"><span class="i">'+lgi('chat')+'</span>'+Lx('الدعم والتواصل','Support')+'</button></div>'+
-   '<p class="nt">'+Lx('لمشكلات الدخول يُرجى التواصل مع قسم القبول والتسجيل.','For login issues, please contact the Admission & Registration Department.')+'</p></div></section>';
-  return o}catch(e){console.error('lg238',e);return h}};V.login.__lg238=1;if(n&&/^#\/login/.test(location.hash))try{go()}catch(e){}return}if(n<400)setTimeout(function(){wrapLg(n+1)},50)})(0);
+  var pre=(h.match(/name="u"[^>]*value="([^"]*)"/)||[])[1]||'';
+  return lgHTML({role:lgRole(),pre:pre,nav:1,submit:'return loginAny(this)',extra:'<a class="lg238p" href="#/training"><span class="i">'+lgi('award',22)+'</span><span><b>'+Lx('مشارك في البرامج القصيرة والدورات؟','Short-programme or course participant?')+'</b><small>'+Lx('ادخل ببريدك إلى بوابة التدريب، أو أنشئ حساباً مرة واحدة.','Sign in with your email to the Training Portal, or create an account once.')+'</small></span></a>'})}catch(e){console.error('lg238',e);return h}};V.login.__lg238=1;if(n&&/^#\/login/.test(location.hash))try{go()}catch(e){}return}if(n<400)setTimeout(function(){wrapLg(n+1)},50)})(0);
 
 /* ---------- v241: بطاقة «يومي» في أعلى بوابتي الطالب وعضو هيئة التدريس: التحية، الفصل الحالي وما بقي منه، أقرب مواعيد التقويم، واكتمال البيانات ---------- */
 var tdCal=function(){try{var c=V5.cal61&&V5.cal61();var T=[],E=[];((c&&c.years)||[]).forEach(function(Y){(Y.terms||[]).forEach(function(t){if(t.start&&t.end)T.push(t);(t.events||[]).forEach(function(e){if(e&&e.start)E.push(e)})})});return {T:T,E:E}}catch(e){return {T:[],E:[]}}};
