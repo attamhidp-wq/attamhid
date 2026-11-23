@@ -9,12 +9,12 @@ const norm = (t) => String(t || '').replace(/[‎‏⁦-⁩]/g, '').replace(/\s+
   const html = await fetch(LIGHT.replace(/\?.*$/, '') + '?t=' + Date.now()).then((x) => x.text());
   const key = (html.match(/apikey: ?'([^']+)'/) || [])[1];
   if (!key) throw new Error('no public key in light page');
-  const pre = ['10', '12', '13', '14', '15', '16', '19'], seen = {}, picks = [];
-  for (const p of pre) for (let i = 1; i <= (p === '15' || p === '19' ? 90 : 12) && picks.length < 60; i++) {
+  const pre = ['10', '12', '13', '14', '15', '16', '19'], seen = {}, picks = []; let calls = 0; // حدّ الخادم 150 طلباً لكل عنوان في 10 دقائق
+  for (const p of pre) for (let i = 1; i <= (p === '15' ? 20 : p === '19' ? 30 : 3) && calls < 70; i++) { calls++;
     const q = p + '2026' + String(i).padStart(5, '0');
     const r = await fetch(SB, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key, Authorization: 'Bearer ' + key }, body: JSON.stringify({ q }) }).then((x) => x.json()).catch(() => []);
     const t = Array.isArray(r) && r[0] && r[0].type; if (!t) continue;
-    seen[t] = (seen[t] || 0) + 1; if (seen[t] <= 2) picks.push([q, t]);
+    seen[t] = (seen[t] || 0) + 1; if (seen[t] <= 1) picks.push([q, t]);
   }
   picks.push(['00000000000', 'none']);
   const b = await chromium.launch();
