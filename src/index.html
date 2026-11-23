@@ -28722,7 +28722,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v240';
+window.__BUILD__='v241';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -31708,6 +31708,23 @@ H.lg238eye=function(b){var i=b.parentNode.querySelector('input');if(!i)return;i.
    '<div class="lg238q"><a href="#/recover"><span class="i">'+lgi('key')+'</span>'+Lx('نسيت كلمة المرور؟','Forgot password?')+'</a><a href="#/register"><span class="i">'+lgi('plus')+'</span>'+Lx('التسجيل في المعهد','Apply to the Institute')+'</a><a href="#/"><span class="i">'+lgi('globe')+'</span>'+Lx('الموقع الرئيسي','Main website')+'</a><button type="button" onclick="window.cbOpen&&cbOpen()"><span class="i">'+lgi('chat')+'</span>'+Lx('الدعم والتواصل','Support')+'</button></div>'+
    '<p class="nt">'+Lx('لمشكلات الدخول يُرجى التواصل مع قسم القبول والتسجيل.','For login issues, please contact the Admission & Registration Department.')+'</p></div></section>';
   return o}catch(e){console.error('lg238',e);return h}};V.login.__lg238=1;if(n&&/^#\/login/.test(location.hash))try{go()}catch(e){}return}if(n<400)setTimeout(function(){wrapLg(n+1)},50)})(0);
+
+/* ---------- v241: بطاقة «يومي» في أعلى بوابتي الطالب وعضو هيئة التدريس: التحية، الفصل الحالي وما بقي منه، أقرب مواعيد التقويم، واكتمال البيانات ---------- */
+var tdCal=function(){try{var c=V5.cal61&&V5.cal61();var T=[],E=[];((c&&c.years)||[]).forEach(function(Y){(Y.terms||[]).forEach(function(t){if(t.start&&t.end)T.push(t);(t.events||[]).forEach(function(e){if(e&&e.start)E.push(e)})})});return {T:T,E:E}}catch(e){return {T:[],E:[]}}};
+var tdCard=function(o,kind){var today=new Date().toISOString().slice(0,10),C=tdCal(),cur=C.T.find(function(t){return t.start<=today&&today<=t.end});
+ var hr=new Date().getHours(),gr=hr<12?Lx('صباح الخير','Good morning'):Lx('مساء الخير','Good evening'),nm=Lx(o.name||o.nameAr||'',o.nameEn||o.name||'');
+ var dd=function(a,b){return Math.round((new Date(b+'T12:00:00Z')-new Date(a+'T12:00:00Z'))/864e5)};
+ var tn='';try{tn=cur?Lx(V5.termNames61(cur).ar,V5.termNames61(cur).en):''}catch(e){}
+ var ev=C.E.filter(function(e){return (e.end||e.start)>=today&&e.start<=new Date(Date.now()+45*864e5).toISOString().slice(0,10)}).sort(function(a,b){return a.start<b.start?-1:1}).slice(0,4);
+ var m=0;try{m=missing(kind,o).length}catch(e){}
+ var st='<style>.td241{background:linear-gradient(135deg,#14284B,#1f3f78);color:#eef2f8;border-radius:18px;padding:16px 16px 12px;margin:0 0 16px}.td241 h3{margin:0 0 2px;color:#fff;font-size:19px}.td241 .su{color:#b8c3d6;font-size:13px}.td241 .g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:12px}.td241 .c{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:9px 11px}.td241 .c b{display:block;color:#fff;font-size:15px}.td241 .c small{color:#a9b6cc;font-size:12px}.td241 ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}.td241 li{display:flex;gap:10px;align-items:baseline;font-size:13.5px}.td241 li time{flex:none;min-width:86px;color:#8fb0ff;direction:ltr;text-align:start;font-variant-numeric:tabular-nums}.td241 a.w{display:inline-block;margin-top:10px;background:#f3b43f;color:#14284B;border-radius:10px;padding:7px 12px;font-weight:700;text-decoration:none}</style>';
+ var g='';if(cur){var left=dd(today,cur.end);g+='<div class="c"><small>'+Lx('الفصل الحالي','Current term')+'</small><b>'+e9(tn||'—')+'</b><small>'+Lx('بقي ','')+left+Lx(' يوماً',' days left')+'</small></div>'}
+ if(kind==='student'){var rg=(o.reg||[]).length;g+='<div class="c"><small>'+Lx('المقررات المسجّلة','Registered courses')+'</small><b>'+rg+'</b><small>'+e9(o.status||'')+'</small></div>'}
+ g+='<div class="c"><small>'+Lx('البيانات الأساسية','Core data')+'</small><b>'+(m?Lx('ناقصة ('+m+')','Incomplete ('+m+')'):Lx('مكتملة ✓','Complete ✓'))+'</b><small>'+Lx('تُطبع في وثائقك كما هي','Printed on your documents as entered')+'</small></div>';
+ var ul=ev.length?'<ul>'+ev.map(function(e){return '<li><time>'+e9(e.start)+(e.end&&e.end!==e.start?' → '+e9(e.end.slice(5)):'')+'</time><span>'+e9(Lx(e.ar||'',e.en||e.ar||''))+'</span></li>'}).join('')+'</ul>':'';
+ return st+'<section class="td241" aria-label="'+Lx('يومي','My day')+'"><h3>'+gr+(nm?'، '+e9(nm):'')+'</h3><div class="su">'+e9(new Date().toLocaleDateString(Lx('ar-SA-u-ca-gregory-nu-latn','en-GB'),{weekday:'long',year:'numeric',month:'long',day:'numeric'}))+'</div><div class="g">'+g+'</div>'+(ul?'<div style="margin-top:12px;font-weight:700;font-size:14px">'+Lx('مواعيد قادمة','Upcoming dates')+'</div>'+ul:'')+(m?'<a class="w" href="#/idn">'+Lx('أكمل بياناتك الآن','Complete your data now')+'</a>':'')+'</section>'};
+var tdWrap=function(view,kind,tb){(function w(n){if(typeof V!=='undefined'&&typeof V[view]==='function'&&!V[view]['__td'+view]){var _v=V[view];V[view]=function(){var h=_v.apply(this,arguments);try{if(typeof me==='undefined'||!me||me.r!==kind||(typeof taking!=='undefined'&&taking))return h;if(String(location.hash).replace(/^#\/?/,'').split('/').length>1)return h;var o=(S[tb]||[]).find(function(x){return String(x.id)===String(me.id)});if(!o)return h;var c=tdCard(o,kind);var i=h.indexOf('</h2>');return i>-1?h.slice(0,i+5)+c+h.slice(i+5):c+h}catch(e){console.error('td241',e);return h}};V[view]['__td'+view]=1;return}if(n<400)setTimeout(function(){w(n+1)},50)})(0)};
+tdWrap('student','student','students');tdWrap('fp','faculty','faculty');
 
 /* الإلزام: من نقصت بياناته يُحوَّل إلى صفحة الاستكمال قبل أي خدمة */
 var FREE=/^(idn|idn-fill|login|logout|pwchange|reset|recover|2fa|verify|ft-verify|privacy|terms|)$/;
