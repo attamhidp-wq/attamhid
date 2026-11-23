@@ -31789,6 +31789,20 @@ var running=0;
 var sentLog=async function(ty){ty=ty||MT;var M={};try{var r=await V5.fn63({action:'mail_log',limit:500});((r&&r.items)||[]).forEach(function(it){if(it.type!==ty||it.status==='failed')return;var k=String(it.to_addr||it.to||'').toLowerCase(),p=M[k]||{n:0,at:''};p.n++;if(String(it.at)>p.at)p.at=String(it.at);M[k]=p})}catch(e){return null}return M};
 var campaign=async function(force){if(running||!central()||!V5.fn63)return 0;running=1;var L=LOG(),n=0,now=Date.now();try{var SL=await sentLog();if(!SL&&!force){return 0}for(var x of people()){var m=missing(x.kind,x.o);if(!m.length||!x.o.email)continue;var p=(SL&&SL[String(x.o.email).toLowerCase()])||L.mail[x.o.id];
    if(!force&&p&&((p.n||0)>=4||now-new Date(p.at).getTime()<7*864e5))continue;var r=await sendOne(x);if(r&&r.ok)n++;await new Promise(function(r){setTimeout(r,1200)})}}finally{running=0}return n};
+/* v240: تقرير يومي مختصر إلى بريد المعهد (مرة كل يوم؛ الحارس سجل البريد في الخادم بالنوع daily240) */
+var daily240=async function(){if(running||!central()||!V5.fn63)return 0;people();if(PX.parts===null)return 0;
+ var SL=await sentLog('daily240');if(!SL)return 0;var to=String(((S.v51&&S.v51.inst)||{}).email||'attamhidp@gmail.com').trim();var last=SL[to.toLowerCase()];if(last&&Date.now()-new Date(last.at).getTime()<20*3600e3)return 0;
+ var P=people(),miss={},tot={};P.forEach(function(x){tot[x.kind]=(tot[x.kind]||0)+1;if(missing(x.kind,x.o).length)miss[x.kind]=(miss[x.kind]||0)+1});
+ var req=(S.requests||[]).filter(function(r){return r&&/مراجعة/.test(String(r.status||''))}).length;
+ var errs='—';try{var er=await sb.rpc('v240_err_count');if(!er.error&&er.data!=null)errs=String(er.data)}catch(e){}
+ var day=new Date().toISOString().slice(0,10),K={student:'الطلاب',faculty:'أعضاء هيئة التدريس',staff:'الموظفون',part:'مشاركو البرامج القصيرة',trainer:'المدربون'};
+ var rows=Object.keys(tot).map(function(k){return '<tr><td style="padding:4px 10px;border:1px solid #ddd">'+(K[k]||k)+'</td><td style="padding:4px 10px;border:1px solid #ddd;text-align:center">'+tot[k]+'</td><td style="padding:4px 10px;border:1px solid #ddd;text-align:center">'+(miss[k]||0)+'</td></tr>'}).join('');
+ var html='<div dir="rtl" style="font-family:Tahoma,Arial;font-size:14px;color:#14284B"><h3 style="margin:0 0 8px">التقرير اليومي — معهد التمهيد ('+day+')</h3>'+
+  '<p>طلبات الالتحاق قيد المراجعة: <b>'+req+'</b><br>أخطاء الواجهة المسجّلة في آخر 24 ساعة: <b>'+errs+'</b></p>'+
+  '<p><b>اكتمال البيانات الأساسية</b></p><table style="border-collapse:collapse"><tr><th style="padding:4px 10px;border:1px solid #ddd">الفئة</th><th style="padding:4px 10px;border:1px solid #ddd">العدد</th><th style="padding:4px 10px;border:1px solid #ddd">ناقصو البيانات</th></tr>'+rows+'</table>'+
+  '<p style="color:#666;font-size:12px">تقرير آلي يومي من نظام المعهد. التفاصيل في الإدارة المركزية.</p></div>';
+ var r=await V5.fn63({action:'mail',type:'daily240',to:to,subject:'التقرير اليومي — معهد التمهيد — '+day,html:html,text:'التقرير اليومي '+day+' — طلبات قيد المراجعة: '+req,cred_with:'',cred_without:'',cred_with_text:'',cred_without_text:'',from_name:'معهد التمهيد'});return r&&r.ok?1:0};
+setInterval(function(){try{if(!central()||V5._d240)return;if(V5._d240at&&Date.now()-V5._d240at<3600e3)return;if(!(S.students&&S.students.length))return;V5._d240=1;daily240().then(function(){V5._d240=0;V5._d240at=Date.now()},function(){V5._d240=0;V5._d240at=Date.now()})}catch(e){}},40000);
 /* جولة إعادة الإرسال (v238): مرة واحدة لكل من نقصت بياناته، برابط مباشر جديد؛ الحارس سجل البريد في الخادم بالنوع idn16r2 */
 var R2='idn16r2';
 var round2=async function(){if(running||!central()||!V5.fn63)return 0;people();if(PX.parts===null||PX.ext===null)return 0;running=1;var n=0;try{var SL=await sentLog(R2);if(!SL)return 0;
