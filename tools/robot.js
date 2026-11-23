@@ -73,6 +73,11 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     await p.evaluate(() => { location.hash = '#/plt'; }); await p.waitForTimeout(4000);
     const pl = await p.evaluate(() => { const f = document.querySelector('#app form[onsubmit*="plt210reg"]'); return f ? { q64: !!f.querySelector('fieldset.q64'), req: ['dob', 'nat', 'idno', 'idType', 'tongue', 'country'].filter((k) => f.elements[k] && f.elements[k].required).length } : 'noform'; });
     console.log('CHECK idn', idn.page && rg === 'all' && pl.q64 === false && pl.req === 6 ? 'OK' : 'FAIL', JSON.stringify({ idn, rg, pl }));
+    // v249: بصمة الواجهات العامة (مفاتيح window وV وH وV51) لمقارنة ما قبل التقسيم وما بعده
+    const keys = await p.evaluate(async () => { const k = (o) => Object.keys(o || {}).sort(); const all = { win: k(window).filter((x) => !/^(__|webkit|on)/.test(x)), V: k(window.V), H: k(window.V51 && V51.h), V51: k(window.V51) };
+      const s = JSON.stringify(all); const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return { n: { win: all.win.length, V: all.V.length, H: all.H.length, V51: all.V51.length }, sha: [...new Uint8Array(d)].slice(0, 8).map((x) => x.toString(16).padStart(2, '0')).join(''), V: all.V.join(','), H: all.H.length > 0 ? all.H.join(',').slice(0, 4000) : '' }; });
+    console.log('CHECK keys OK', JSON.stringify({ n: keys.n, sha: keys.sha }));
+    console.log('KEYS-V', keys.V); console.log('KEYS-H', keys.H);
     // v246: صفحة التحقق العامة: النموذج ومكان النتيجة
     await p.evaluate(() => { location.hash = '#/verify'; }); await p.waitForTimeout(4000);
     const vf = await p.evaluate(() => { const a = document.querySelector('#app'); const f = a && a.querySelector('form'); return { out: !!document.getElementById('out'), outs: document.querySelectorAll('#out').length, form: f ? f.getAttribute('onsubmit') : null, html: a ? a.innerHTML.replace(/<svg[\s\S]*?<\/svg>/g, '').slice(0, 900) : '' }; });
