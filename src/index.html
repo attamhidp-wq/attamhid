@@ -31614,7 +31614,7 @@ var form=function(kind,o,opts){opts=opts||{};return fieldsFor(kind).map(function
  if(ro&&(f[3]==='ctry'||f[3]==='lang')&&!enOf(f[3]==='ctry'?CTRY:LANGS,v))ro=false;
  if(ro&&f[3]==='nat'&&(!okAr(v)||!String(val(o,'natEn')||'').trim()))ro=false;
  if(ro&&f[6]&&!String(val(o,f[6])||'').trim()&&!enOf(f[3]==='ctry'?CTRY:LANGS,v))ro=false;
- return '<label'+(String(v).trim()?'':' class="idn-miss"')+'>'+e9(Lx(f[1],f[2]))+(f[5]?' *':'')+ctrl(f,v,ro)+(ro?'<small class="mu">'+Lx('مسجّل — يصحّحه المعهد عند الحاجة','Recorded — corrected by the Institute if needed')+'</small>':'')+'</label>'}).join('')};
+ return '<label'+(String(v).trim()?'':' class="idn-miss"')+'>'+e9(Lx(f[1],f[2]))+ctrl(f,v,ro)+(ro?'<small class="mu">'+Lx('مسجّل — يصحّحه المعهد عند الحاجة','Recorded — corrected by the Institute if needed')+'</small>':'')+'</label>'}).join('')};
 V5.idnForm=form;
 var toSrv=function(kind,o){if(kind!=='part'&&kind!=='trainer')return o;var x={};Object.keys(o).forEach(function(k){x[k==='name'?'nameAr':k]=o[k]});if(kind==='part'&&x.sex)x.sex=/أنثى/.test(x.sex)?'f':/ذكر/.test(x.sex)?'m':x.sex;return x};V5.idnToSrv=toSrv;
 var read=function(f,kind){var o={};fieldsFor(kind).forEach(function(x){var el=f.elements[x[0]];if(el&&!el.disabled)o[x[0]]=String(el.value||'').trim()});return o};
@@ -31642,8 +31642,8 @@ function upReg(f){if(!f)return;var E=f.elements;
 function upPlt(f){if(!f)return;var E=f.elements;if(!E.natEn){var ne=document.createElement('input');ne.type='hidden';ne.name='natEn';f.appendChild(ne)}
  ['dob','nat','idno','sex'].forEach(function(k){reqOn(E[k])});if(E.nameAr)E.nameAr.setAttribute('data-idn-script','ar');if(E.nameEn)E.nameEn.setAttribute('data-idn-script','en');
  if(E.tongue){mkSel(E.tongue,LANGS,'tongueEn');reqOn(f.elements.tongue)}
- if(E.idno&&!E.idType){var l=document.createElement('label');l.innerHTML=Lx('نوع وثيقة الهوية *','ID document type *')+'<select name="idType" required>'+opt('','—')+IDT.map(function(x){return opt(x[0],x[0]+' — '+x[1])}).join('')+'</select>';var r=E.idno.closest('label');r.parentNode.insertBefore(l,r)}
- if(!E.country&&E.idno){var l3=addAfter(E.idno,Lx('بلد الإقامة *','Country of residence *'),'<input name="country">');mkSel(l3.querySelector('input'),CTRY,'countryEn')}
+ if(E.idno&&!E.idType){var l=document.createElement('label');l.innerHTML=Lx('نوع وثيقة الهوية','ID document type')+'<select name="idType" required>'+opt('','—')+IDT.map(function(x){return opt(x[0],x[0]+' — '+x[1])}).join('')+'</select>';var r=E.idno.closest('label');r.parentNode.insertBefore(l,r)}
+ if(!E.country&&E.idno){var l3=addAfter(E.idno,Lx('بلد الإقامة','Country of residence'),'<input name="country">');mkSel(l3.querySelector('input'),CTRY,'countryEn')}
  var q=f.querySelector('fieldset.q64');if(q)q.remove()}
 var GOHpush=function(fn){try{GOH.post.push(fn)}catch(e){setTimeout(function(){try{GOH.post.push(fn)}catch(x){}},1500)}};
 GOHpush(function(){try{upReg(document.querySelector('#app form[onsubmit="return reg(this)"]'));upPlt(document.querySelector('#app form[onsubmit*="plt210reg"]'))}catch(e){console.error('idn235 up',e)}});
