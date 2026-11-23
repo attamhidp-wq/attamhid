@@ -70,7 +70,8 @@ jobs:
           SET="${NAME:-db}-$(date -u +%Y%m%d-%H%M%S)"
           tok(){ curl -fsS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=attamhid-vault" | jq -r .value; }
           dbx(){ T=$(tok); jq -c --arg o "$T" --arg set "$SET" '. + {oidc:$o,set:$set}' | curl -sS --max-time 145 --retry 2 -X POST -H 'Content-Type: application/json' --data-binary @- "$DBX"; }
-          js(){ jq -e 'type=="object"' >/dev/null 2>&1 <<<"$1" && jq -c . <<<"$1" || echo '{"ok":false,"detail":"bad response"}'; }
+          # v252: الرد قد يحوي أكثر من قيمة JSON (محاولات curl المتكررة) أو نصاً غير JSON؛ نأخذ آخر كائن صالح فقط
+          js(){ local o; o=$(jq -cs 'map(select(type=="object"))|last' 2>/dev/null <<<"$1"); [ -n "$o" ] && [ "$o" != null ] && echo "$o" || echo '{"ok":false,"detail":"bad response"}'; }
           SCOPE=all; case "$NAME" in core*) SCOPE=core;; logs*) SCOPE=logs;; esac; echo "scope=$SCOPE"
           jq -cn --arg sc "$SCOPE" '{op:"plan",scope:$sc}' | dbx > plan.json; jq -e .ok plan.json >/dev/null || { cat plan.json; exit 1; }
           echo "SET=$SET tables=$(jq '.plan|length' plan.json) rows=$(jq '[.plan[].rows]|add' plan.json) parts=$(jq '[.plan[].parts]|add' plan.json)"
@@ -82,14 +83,15 @@ jobs:
           for try in 1 2 3; do
             E=$(js "$(jq -c '. + {op:"export"}' <<<"$REQ" | dbx)")
             R=$(js "$(jq -c '. + {op:"restore"}' <<<"$REQ" | dbx)")
-            OK=$(jq -n --argjson e "$E" --argjson r "$R" '($e.ok and $r.ok and $e.sha256==$r.sha256 and $e.rows==$r.rows)')
+            OK=$(jq -n --argjson e "$E" --argjson r "$R" '($e.ok and $r.ok and $e.sha256==$r.sha256 and $e.rows==$r.rows)' 2>/dev/null || echo false)
             [ "$OK" = true ] && break; sleep $((try*5))
           done
-          jq -cn --argjson q "$REQ" --argjson e "$E" --argjson r "$R" --argjson ok "$OK" '{s:$q.s,t:$q.t,part:$q.part,rows:$e.rows,bytes:$e.bytes,sha256:$e.sha256,restored:$r.rows,ok:$ok,err:($e.detail // $r.detail)}'
+          jq -cn --argjson q "$REQ" --argjson e "$E" --argjson r "$R" --argjson ok "$OK" '{s:$q.s,t:$q.t,part:$q.part,rows:$e.rows,bytes:$e.bytes,sha256:$e.sha256,restored:$r.rows,ok:$ok,err:($e.detail // $r.detail)}' 2>/dev/null || jq -cn --argjson q "$REQ" '{s:$q.s,t:$q.t,part:$q.part,rows:0,restored:0,ok:false,err:"bad json"}'
           EOF2
           jq -c '.plan[] as $r | range(0;$r.parts) as $i | {s:$r.s,t:$r.t,per:$r.per,part:$i}' plan.json > reqs.jsonl
           echo "parts to export: $(wc -l < reqs.jsonl)"
-          tr '\n' '\0' < reqs.jsonl | xargs -0 -P 2 -I{} bash /tmp/part.sh {} > parts.jsonl
+          P=2; [ "$SCOPE" = logs ] && P=3
+          tr '\n' '\0' < reqs.jsonl | xargs -0 -P $P -I{} bash /tmp/part.sh {} > parts.jsonl || echo "some part scripts exited non-zero (recorded as failed)"
           FAIL=$(jq -s 'map(select(.ok|not))|length' parts.jsonl)
           jq -c 'select(.ok|not)' parts.jsonl | head -20
           jq -s --slurpfile p plan.json --slurpfile d ddl.json '{set:env.SET, at:(now|todate), tables:($p[0].plan|length), parts:length, rows:(map(.rows)|add), failed:(map(select(.ok|not))|length), ddl:$d[0].sha256, files:.}' parts.jsonl > manifest.json
