@@ -78,7 +78,7 @@ async function capture(browser, scheme) {
   if (scheme === 'light') {
     ({ body, head } = await p.evaluate(() => {
       const b = document.body.cloneNode(true);
-      b.querySelectorAll('script,noscript[data-x],template,#mod,iframe,[aria-live]:empty,#ts,.toast').forEach((e) => e.remove());
+      b.querySelectorAll('script,noscript[data-x],template,#mod,iframe,[aria-live]:empty,#ts,.toast,link[rel=stylesheet],link[rel=preload][as=style]').forEach((e) => e.remove()); // v240: أنماط الصفحة الخفيفة مضمّنة كلها؛ أوراق التطبيق الكاملة تأتي مع app.html عند الحاجة
       b.querySelectorAll('*').forEach((e) => { for (const a of [...e.attributes]) { if (/^on/i.test(a.name)) e.removeAttribute(a.name); } });
       b.querySelectorAll('[style*="display: none"],[hidden]').forEach((e) => { if (!e.closest('#nav,#app,#ft')) e.remove(); });
       const keep = [];
@@ -102,6 +102,7 @@ async function check(browser) {
   await p.screenshot({ path: path.join(R, 'tools/tmp/shell-mobile.png'), fullPage: true });
   const st = await p.evaluate(() => ({ app: typeof go === 'function', text: document.body.innerText.length, nav: !!document.querySelector('#nav'), ft: !!document.querySelector('#ft') }));
   res.push(['static home renders without the app', !st.app && st.text > 300 && st.nav && st.ft && !errs.length]);
+  res.push(['no render-blocking stylesheet in shell', !reqs.some((u) => /\/js\/[^/]+\.css/.test(u))]);
   res.push(['no admin/portal code requested', !reqs.some((u) => /\/js\/(v51|adm|s35|s04|doc14)-/.test(u) || /supabase/.test(u))]);
   await p.evaluate(() => { location.hash = '#/login'; });
   await p.waitForFunction(() => typeof go === 'function' && /#\/login/.test(location.hash), null, { timeout: 90000 }).catch(() => {});
