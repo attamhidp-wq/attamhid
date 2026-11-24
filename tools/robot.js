@@ -91,7 +91,8 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       return { s: /td241/.test(a) && a.indexOf('undefined') < 0 && a.indexOf('NaN') < 0, f: /td241/.test(b) && b.indexOf('undefined') < 0 && b.indexOf('NaN') < 0, len: a.length, ev: (a.match(/<li>/g) || []).length }; } catch (e) { return { err: String(e) }; } });
     console.log('CHECK today', td.s && td.f ? 'OK' : 'FAIL', JSON.stringify(td));
     try { await p.evaluate(() => { location.hash = '#/admin'; }); await p.waitForTimeout(5000);
-      const ad = await p.evaluate(() => { const a = document.getElementById('app'); const s = a && a.querySelector('.adm255'); const bx = [...document.querySelectorAll('#app .ft231adm,#app .idn235adm')]; return { sec: !!s, inSec: bx.filter((b) => s && s.contains(b)).length, boxes: bx.length, last: !!(s && a.lastElementChild === s) }; });
+      const ad = await p.evaluate(() => { const a = document.getElementById('app'); const s = a && a.querySelector('.adm255'); const bx = [...document.querySelectorAll('#app .ft231adm,#app .idn235adm')]; return { sec: !!s, inSec: bx.filter((b) => s && s.contains(b)).length, boxes: bx.length, last: !!(s && a.lastElementChild === s), fin: !!(s && s.querySelector('.fin263adm')) }; });
+      console.log('CHECK fin-adm-box', ad.fin ? 'OK' : 'FAIL', JSON.stringify({ fin: ad.fin }));
       console.log('CHECK adm255', ad.sec && ad.inSec === ad.boxes ? 'OK' : 'FAIL', JSON.stringify(ad)); } catch (e) { console.log('CHECK adm255 FAIL', String(e).slice(0, 150)); }
     // v255: الوضع البنغالي — نصوص بقيت بالإنجليزية في الصفحات العامة (لا بيانات شخصية: صفحات عامة فقط)
     try {
@@ -119,7 +120,6 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       const vs = {}; for (const v of ['dash', 'claims', 'stmts', 'sch', 'rep', 'set']) { await p.evaluate((v) => V51.h.fin263v(v), v); await p.waitForTimeout(700); vs[v] = await p.evaluate(() => { const a = document.querySelector('#app .fin263'); return a ? a.innerText.replace(/\s+/g, ' ').length : 0; }); }
       const grp = await p.evaluate(() => { const t = document.getElementById('tabs69'); return t ? /السجل المالي/.test(t.innerText) : null; });
       console.log('CHECK fin-tab', Object.values(vs).every((n) => n > 300) ? 'OK' : 'FAIL', JSON.stringify({ vs, grp })); } catch (e) { console.log('CHECK fin-tab FAIL', String(e).slice(0, 200)); }
-    try { await p.reload({ waitUntil: 'load', timeout: 90000 }); await p.evaluate(() => { location.hash = '#/admin'; }); await p.waitForTimeout(9000); const fa = await p.evaluate(() => { const b = document.querySelector('#app .fin263adm'); return { box: !!b, inSec: !!(b && b.closest('.adm255')), t: b ? b.innerText.replace(/\s+/g, ' ').slice(0, 120) : '' }; }); console.log('CHECK fin-adm-box', fa.box && fa.inSec ? 'OK' : 'FAIL', JSON.stringify(fa)); } catch (e) { console.log('CHECK fin-adm-box FAIL', String(e).slice(0, 150)); }
   }
   // v247: فحص شامل بحسابين تجريبيين (يعملان فقط ما دام السجلان التجريبيان موجودين؛ يُحذفان بعد الفحص)
   try {
