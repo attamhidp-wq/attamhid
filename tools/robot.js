@@ -114,6 +114,11 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     try { await p.evaluate(() => { location.hash = '#/fin'; }); await p.waitForFunction(() => /السجل المالي/.test((document.querySelector('#app') || {}).innerText || '') && document.querySelector('#app .fin263g'), null, { timeout: 45000 });
       const fz = await p.evaluate(() => { const a = document.querySelector('#app'); const k = [...a.querySelectorAll('.fin263k')].map((x) => x.innerText.replace(/\s+/g, ' ')); return { cards: k.length, cum: k[0] || '', rows: a.querySelectorAll('.fin263t tbody tr').length, adm: !!a }; });
       console.log('CHECK fin-admin', fz.cards >= 6 && /BDT/.test(fz.cum) ? 'OK' : 'FAIL', JSON.stringify(fz)); } catch (e) { console.log('CHECK fin-admin FAIL', String(e).slice(0, 200)); }
+    // v269: السجل المالي قسم في بوابة الإدارة، بأقسامه الستة
+    try { await p.evaluate(() => { location.hash = '#/admin'; }); await p.waitForTimeout(5000); await p.evaluate(() => { tab = 'v263f'; window.__force71 = 1; go(); }); await p.waitForSelector('#app .fin263nav', { timeout: 40000 });
+      const vs = {}; for (const v of ['dash', 'claims', 'stmts', 'sch', 'rep', 'set']) { await p.evaluate((v) => V51.h.fin263v(v), v); await p.waitForTimeout(700); vs[v] = await p.evaluate(() => { const a = document.querySelector('#app .fin263'); return a ? a.innerText.replace(/\s+/g, ' ').length : 0; }); }
+      const grp = await p.evaluate(() => { const t = document.getElementById('tabs69'); return t ? /السجل المالي/.test(t.innerText) : null; });
+      console.log('CHECK fin-tab', Object.values(vs).every((n) => n > 300) ? 'OK' : 'FAIL', JSON.stringify({ vs, grp })); } catch (e) { console.log('CHECK fin-tab FAIL', String(e).slice(0, 200)); }
     try { await p.evaluate(() => { location.hash = '#/admin'; }); await p.waitForTimeout(6000); const fa = await p.evaluate(() => { const b = document.querySelector('#app .fin263adm'); return { box: !!b, inSec: !!(b && b.closest('.adm255')), t: b ? b.innerText.replace(/\s+/g, ' ').slice(0, 120) : '' }; }); console.log('CHECK fin-adm-box', fa.box && fa.inSec ? 'OK' : 'FAIL', JSON.stringify(fa)); } catch (e) { console.log('CHECK fin-adm-box FAIL', String(e).slice(0, 150)); }
   }
   // v247: فحص شامل بحسابين تجريبيين (يعملان فقط ما دام السجلان التجريبيان موجودين؛ يُحذفان بعد الفحص)
