@@ -826,6 +826,7 @@ async function staffRun(q: Array<Record<string, any>>) {
         ar: intA, extraAr: card([["طلبات تسجيل جديدة", n("apps_new")], ["الطلبات حسب البرنامج", pA], ["طلبات مفتوحة لم يُبتّ فيها", n("apps_open")], ["منها بقبول مبدئي ينتظر القرار النهائي", n("apps_pre")], ["طلاب جدد", n("students_new")], ["إجمالي الطلاب", n("students")], ["وثائق صادرة", n("certs_new")], ["طلبات وثائق قيد المراجعة", n("docreq_open")], ["تسليمات اختبارات جديدة", n("subs_new")], ["رسائل أُرسلت / تعذّر إرسالها / ارتدّت", `${n("mail_sent")} / ${n("mail_failed")} / ${n("mail_bounced")}`], ["آخر نسخة احتياطية (مكة)", lb]], "rtl") + finAr,
         en: intE, extraEn: card([["New applications", n("apps_new")], ["Applications by programme", pE], ["Open applications", n("apps_open")], ["Provisionally accepted, awaiting final decision", n("apps_pre")], ["New students", n("students_new")], ["Total students", n("students")], ["Documents issued", n("certs_new")], ["Document requests under review", n("docreq_open")], ["New exam submissions", n("subs_new")], ["Emails sent / failed / bounced", `${n("mail_sent")} / ${n("mail_failed")} / ${n("mail_bounced")}`], ["Last backup (Makkah time)", lb]], "ltr") + finEn,
         btn: { url: B.base + "#/fin", ar: "فتح السجل المالي", en: "Open the finance ledger" } };
+    }
     let extra: Att[] = [];
     if (r.kind === "reg_pend" || r.kind === "risk" || r.kind === "alumni") {
       const { data: srow } = await admin.from("students").select("id,data").eq("id", String(r.ref_id)).maybeSingle();
