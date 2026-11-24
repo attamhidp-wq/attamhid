@@ -110,6 +110,11 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
 
     await p.evaluate(() => { location.hash = '#/graduates'; }); await p.waitForTimeout(8000);
     console.log('CHECK graduates', /بوابة الخريجين/.test(t) && !/جارٍ التحميل/.test(t) ? 'OK' : 'FAIL', t);
+    // v263: السجل المالي — يفتح للإدارة المركزية، والإجمالي التراكمي من التأكيدات فقط
+    try { await p.evaluate(() => { location.hash = '#/fin'; }); await p.waitForFunction(() => /السجل المالي/.test((document.querySelector('#app') || {}).innerText || '') && document.querySelector('#app .fin263g'), null, { timeout: 45000 });
+      const fz = await p.evaluate(() => { const a = document.querySelector('#app'); const k = [...a.querySelectorAll('.fin263k')].map((x) => x.innerText.replace(/\s+/g, ' ')); return { cards: k.length, cum: k[0] || '', rows: a.querySelectorAll('.fin263t tbody tr').length, adm: !!a }; });
+      console.log('CHECK fin-admin', fz.cards >= 6 && /BDT/.test(fz.cum) ? 'OK' : 'FAIL', JSON.stringify(fz)); } catch (e) { console.log('CHECK fin-admin FAIL', String(e).slice(0, 200)); }
+    try { await p.evaluate(() => { location.hash = '#/admin'; }); await p.waitForTimeout(6000); const fa = await p.evaluate(() => { const b = document.querySelector('#app .fin263adm'); return { box: !!b, inSec: !!(b && b.closest('.adm255')), t: b ? b.innerText.replace(/\s+/g, ' ').slice(0, 120) : '' }; }); console.log('CHECK fin-adm-box', fa.box && fa.inSec ? 'OK' : 'FAIL', JSON.stringify(fa)); } catch (e) { console.log('CHECK fin-adm-box FAIL', String(e).slice(0, 150)); }
   }
   // v247: فحص شامل بحسابين تجريبيين (يعملان فقط ما دام السجلان التجريبيان موجودين؛ يُحذفان بعد الفحص)
   try {
@@ -152,16 +157,35 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       const pages = {};
       for (const L of links) { await q.evaluate((h) => { location.hash = h; }, L); await q.waitForTimeout(2500); pages[L] = await q.evaluate(() => { const t = (document.querySelector('#app') || {}).innerText || ''; return t.length + (/undefined|NaN|\[object Object\]/.test(t) ? ' BAD' : ''); }); }
       console.log('CHECK e2e-' + role, st.me === role && st.len > 200 && !st.bad && !e2.length ? 'OK' : 'FAIL', JSON.stringify({ first: at, st, pages, errs: e2.slice(0, 5) }));
+      // v263: دورة الرسوم كاملة للطالب التجريبي: إصدار ← يدخل الطالب بيانات الدفع ← رفض ← إعادة ← تأكيد ← الحالة عند الطالب
+      if (role === 'student') { try {
+        const term = await p.evaluate(() => { try { return __c51.V5.curTerm61().id; } catch (e) { return ''; } });
+        const g1 = await p.evaluate(async (a) => { const r = await sb.rpc('fin_admin', { act: 'sem', p_id: null, p: { items: [{ ref: a.ref, name: 'TEST', term: a.term, base: 6000, pct: 25, cur: 'BDT' }] } }); return r.data || r.error; }, { ref, term });
+        const fid = await p.evaluate(async (a) => { const r = await sb.from('fin263').select('id,due,status').eq('ref', a.ref).eq('term', a.term).maybeSingle(); return r.data; }, { ref, term });
+        await q.evaluate(() => { location.hash = '#/fin'; }); await q.waitForSelector('#app .fin263s form', { timeout: 30000 });
+        const sv = await q.evaluate(() => (document.querySelector('#app .fin263s') || {}).innerText.replace(/\s+/g, ' ').slice(0, 200));
+        const trx = 'T' + Date.now().toString(36).toUpperCase();
+        await q.fill('#app .fin263s input[name=trx]', trx); await q.fill('#app .fin263s input[name=from]', '01700000000'); await q.click('#app .fin263s form button');
+        await q.waitForFunction(() => /بانتظار التأكيد/.test((document.querySelector('#app .fin263s') || {}).innerText || ''), null, { timeout: 30000 });
+        const rj = await p.evaluate(async (id) => (await sb.rpc('fin_admin', { act: 'reject', p_id: id, p: { note: 'test' } })).data, fid.id);
+        const cl2 = await q.evaluate(async (a) => (await sb.rpc('fin_claim', { p_id: a.id, trx: a.trx + 'B', sender: '01700000000' })).data, { id: fid.id, trx });
+        const cf = await p.evaluate(async (id) => (await sb.rpc('fin_admin', { act: 'confirm', p_id: id, p: {} })).data, fid.id);
+        await q.evaluate(() => { F263S.ld = 0; location.hash = '#/student'; }); await q.waitForTimeout(2500); await q.evaluate(() => { location.hash = '#/fin'; }); await q.waitForTimeout(5000);
+        const sv2 = await q.evaluate(() => (document.querySelector('#app .fin263s') || {}).innerText.replace(/\s+/g, ' ').slice(0, 200));
+        const ok = fid && +fid.due === 4500 && /4,500/.test(sv) && rj && rj.ok && cl2 && cl2.ok && cf && cf.ok && /مؤكَّدة/.test(sv2);
+        console.log('CHECK fin-cycle', ok ? 'OK' : 'FAIL', JSON.stringify({ g1, fid, sv: sv.slice(0, 120), rj, cl2, cf, sv2: sv2.slice(0, 120) }));
+      } catch (e) { console.log('CHECK fin-cycle FAIL', String(e).slice(0, 300)); } }
       // v261: الدخول من نموذج بوابة الخريجين نفسه (كما يفعل المستخدم)، بمتصفح جوال في وضع «سطح المكتب»، مع ضغطتين متتاليتين
       try { const c4 = await b.newContext({ viewport: { width: 412, height: 915 }, userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', serviceWorkers: 'allow', locale: 'ar' }); const q4 = await c4.newPage(); const e4 = [];
         q4.on('pageerror', (e) => e4.push(e.message)); q4.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') e4.push(m.type() + ': ' + m.text().slice(0, 200)); });
         await q4.goto(SITE.replace(/app\.html.*$/, '') + (liveV ? '?_b=' + liveV : '') + '#/graduates', { waitUntil: 'load', timeout: 90000 });
         await q4.waitForFunction(() => document.querySelector('#app input[name=p]'), null, { timeout: 60000 });
+        if (role === 'faculty') { await q4.click('#app .lg238r button[data-r=faculty]').catch(() => {}); await q4.waitForTimeout(500); }
         await q4.fill('#app input[name=u]', ref); await q4.fill('#app input[name=p]', np);
         await q4.evaluate(() => { const f = document.querySelector('#app input[name=p]').form; f.requestSubmit(); setTimeout(() => { try { f.requestSubmit(); } catch (e) {} }, 300); });
         const snap = async () => q4.evaluate(() => { const a = document.querySelector('#app'); const t = ((a && a.innerText) || '').replace(/\s+/g, ' ').trim(); const F = (window.V51 && V51.FT225) || {}; return { t: t.slice(0, 90), apps: document.querySelectorAll('#app').length, hash: location.hash, me: typeof me !== 'undefined' && me ? me.r : null, ld: !!F.ld, busy: !!F.busy, err: F.err || '', wd: !!F.wd, wdn: F.wdn || 0, B: window.__BUILD__ }; });
         const tl = []; for (const w of [3, 6, 10, 20, 35]) { await q4.waitForTimeout(w === 3 ? 3000 : (w - [3, 6, 10, 20, 35][[3, 6, 10, 20, 35].indexOf(w) - 1]) * 1000); tl.push(w + ':' + JSON.stringify(await snap())); }
-        const last = await snap(); console.log('FTTRACE-' + role, JSON.stringify(await q4.evaluate(() => window.__ft261 || [])).slice(0, 3000)); console.log('CHECK e2e-gradlogin-' + role, /جارٍ التحميل/.test(last.t) || !/بوابة الخريجين/.test(last.t) ? 'FAIL' : 'OK', tl.join(' || '), 'errs', e4.slice(0, 10).join(' | ').slice(0, 1500));
+        const last = await snap(); console.log('FTTRACE-' + role, JSON.stringify(await q4.evaluate(() => window.__ft261 || [])).slice(0, 3000)); console.log('CHECK e2e-gradlogin-' + role, /جارٍ التحميل/.test(last.t) || !/بوابة الخريجين/.test(last.t) || last.me !== role ? 'FAIL' : 'OK', tl.join(' || '), 'errs', e4.slice(0, 10).join(' | ').slice(0, 1500));
         await c4.close(); } catch (e) { console.log('CHECK e2e-gradlogin-' + role, 'FAIL', String(e).slice(0, 300)); }
       try { await q.evaluate(() => { localStorage.setItem('act260', String(Date.now() - 31 * 60000)); });
         const q3 = await c2.newPage(); await q3.goto(SITE.replace(/app\.html.*$/, '') + '?nt=2' + (liveV ? '&_b=' + liveV : '') + '#/student', { waitUntil: 'load', timeout: 90000 }); await q3.waitForTimeout(12000);
