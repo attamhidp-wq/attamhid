@@ -250,7 +250,7 @@ Deno.serve(async (req) => {
     if (me.mfa && me.aal !== "aal2") return json({ error: "mfa_required" });
     return json(await accAdmin(action, body, me));
   }
-  const known = ["mail_status", "mail_ready", "mail", "mail_log", "retry_due", "mail_test"];
+  const known = ["mail_status", "mail_ready", "mail", "mail_log", "retry_due", "mail_test", "samples"];
   if (!known.includes(action)) return json({ error: "fn_unavailable" });
 
   if (action === "mail_status") return json({ ok: true, on: ON, from: PROVIDER() === "resend" ? MFROM : (GUSER || null), provider: PROVIDER() });
@@ -263,6 +263,44 @@ Deno.serve(async (req) => {
       await admin.from("v63_mail_log").insert({ type: "test", to_addr: to, msg_id: mid || null, subject: "mail_test " + via, error: via === "resend" ? null : (LAST_RESEND_ERR || null), status: "sent", sent_at: new Date().toISOString(), attempts: 1, by_user: me.id });
       return json({ ok: true, to, provider: via, from: via === "resend" ? MFROM : GUSER, resend_error: via === "resend" ? undefined : (LAST_RESEND_ERR || (RESEND ? "" : "no_key")) });
     } catch (e) { return json({ error: "send_failed", detail: String((e as Error)?.message || e).slice(0, 400) }); }
+  }
+
+  // v274: نماذج رسائل الخادم للمراجعة — تُرسل إلى بريد المعهد الرسمي فقط
+  if (action === "samples") {
+    if (!ON) return json({ error: "mail_off" });
+    const { data: hm } = await admin.from("settings").select("data").eq("key", "home").maybeSingle();
+    const to = String((hm?.data as Record<string, unknown> | null)?.em || "").trim();
+    if (!EMAIL.test(to)) return json({ error: "no_email" });
+    const B = await brand(), tag = "[نموذج للمراجعة / Sample] ";
+    const pS: Person = { id: "202600000", email: to, name: "محمد عبد الله (نموذج)", nameEn: "Mohammad Abdullah (sample)", f: false };
+    const pF: Person = { id: "12000000", email: to, name: "أحمد كريم (نموذج)", nameEn: "Ahmad Karim (sample)", f: false };
+    const portal = (id: string) => B.base + "?p=" + encodeURIComponent(id);
+    const cN = (id: string) => ({ ar: id, en: id, code: "" });
+    const L: Array<[string, Tpl]> = [];
+    const tt = termTpl(pS, { term: "2026-1", tn: "الفصل الدراسي الأول 2026", tnEn: "First Semester 2026", sum: { rows: [
+      { id: "a", code: "1101", name: "مهارة القراءة 1", nameEn: "Reading Skills 1", hrs: 3, score: 90, gl: "أ", glEn: "A" },
+      { id: "b", code: "1102", name: "مهارة الكتابة 1", nameEn: "Writing Skills 1", hrs: 3, score: 80, gl: "ب", glEn: "B" },
+      { id: "c", code: "1103", name: "الاستماع والمحادثة 1", nameEn: "Listening and Speaking 1", hrs: 4, score: 70, gl: "ج", glEn: "C" }],
+      tg: "3.83", th: 10, cg: "3.83", ch: 10, cgl: "جيد جداً", cglEn: "Very good" } }, {}, cN, portal, BG);
+    L.push(["1 term", tt]);
+    L.push(["2 exam", { subject: "تذكير بموعد اختبار — معهد التمهيد / Exam Reminder — At Tamhid", titleAr: "تذكير بموعد الاختبار", titleEn: "Exam Reminder", dearAr: dearA(pS, "student"), dearEn: dearE(pS),
+      ar: "نذكّركم بموعد الاختبار القادم: الاختبار النهائي — مهارة القراءة 1، يوم الأحد 30 نوفمبر 2026، الساعة 10:00، المدة 90 دقيقة.", en: "This is a reminder of your upcoming exam: Final exam — Reading Skills 1, Sunday 30 November 2026, 10:00, 90 minutes.",
+      btn: { url: portal(pS.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" }, from: D_REG }]);
+    L.push(["3 fee", { subject: "تذكير بسداد الرسوم الدراسية / Tuition fee reminder", titleAr: "تذكير بسداد الرسوم الدراسية", titleEn: "Tuition fee reminder", dearAr: dearA(pS, "student"), dearEn: dearE(pS),
+      ar: "نذكّركم بأن الرسوم الدراسية للفصل الدراسي الأول 2026 (4,500 BDT) مستحقة الدفع حتى 8 ديسمبر 2026. يمكنكم الدفع عبر بيكاش ثم إدخال رقم العملية في «مستحقاتي المالية». لا تُعرض نتائج الفصل إلا بعد تأكيد الدفع أو تطبيق المنحة.", en: "This is a reminder that the tuition fees for the First Semester 2026 (4,500 BDT) are due by 8 December 2026. Pay via bKash and enter the transaction number under “My dues”. Semester results are shown only after payment is confirmed or a scholarship is applied.",
+      btn: { url: portal(pS.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" }, from: D_FIN }]);
+    L.push(["4 news", { subject: "إعلان جديد — معهد التمهيد / New Announcement — At Tamhid: نموذج إعلان", titleAr: "إعلان جديد من المعهد", titleEn: "New Announcement", dearAr: dearA(pS, "student"), dearEn: dearE(pS),
+      ar: "نشر المعهد إعلاناً جديداً: بدء التسجيل في مقررات الفصل الدراسي الثاني.", en: "The Institute has published a new announcement (in Arabic above). Details are on the website.",
+      btn: { url: B.base + "#/news", ar: "قراءة الإعلان في الموقع", en: "Read it on the website" }, from: D_MED }]);
+    L.push(["5 msg", { subject: "تحديث في الجدول الدراسي / Timetable update", titleAr: "تحديث في الجدول الدراسي", titleEn: "Timetable update", dearAr: dearA(pF, "staff"), dearEn: dearE(pF),
+      ar: "نفيدكم بتحديث موعد محاضرة مقرر مهارة القراءة 1 إلى يوم الاثنين الساعة 9:00.", en: "Please note that the Reading Skills 1 lecture has moved to Monday at 9:00.",
+      btn: { url: portal(pF.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" } }]);
+    L.push(["6 reset", { subject: "إعادة تعيين كلمة المرور — معهد التمهيد / Reset Your Password — At Tamhid", titleAr: "إعادة تعيين كلمة المرور", titleEn: "Reset Your Password", dearAr: dearA(pS, "student"), dearEn: dearE(pS),
+      ar: "طُلبت إعادة تعيين كلمة المرور لحسابكم ذي الرقم 202600000. اضغطوا الزر أدناه لاختيار كلمة مرور جديدة. الرابط صالح 30 دقيقة ولمرة واحدة فقط.", en: "A password reset was requested for your account number 202600000. Press the button to choose a new password. The link is valid for 30 minutes and can be used once.",
+      btn: { url: B.base, ar: "تعيين كلمة مرور جديدة", en: "Set a new password" }, noteAr: "إن لم تطلبوا ذلك فتجاهلوا هذه الرسالة، ولن تتغير كلمة المرور.", noteEn: "If you did not request this, ignore this message; your password will not change." }]);
+    const out: Record<string, boolean> = {};
+    for (const [k, t] of L) { t.subject = tag + t.subject; const r = await sendLogged("sample", "sample", to, t, me.id); out[k] = !!r.ok; }
+    return json({ ok: true, sent: out });
   }
 
   if (action === "mail_ready") {
@@ -606,7 +644,9 @@ async function brand(): Promise<Brand> {
 }
 const P = (t: string, dir: "rtl" | "ltr") => t.split(/\n+/).filter((x) => x.trim()).map((x) =>
   `<p class="tx" dir="${dir}" style="margin:0 0 12px;font-size:16px;line-height:1.7;text-align:${dir === "rtl" ? "right" : "left"}">${esc(x)}</p>`).join("");
-type Tpl = { subject: string; titleAr: string; titleEn: string; dearAr: string; dearEn: string; ar: string; en: string; extraAr?: string; extraEn?: string; btn?: { url: string; ar: string; en: string }; noteAr?: string; noteEn?: string };
+type Tpl = { subject: string; titleAr: string; titleEn: string; dearAr: string; dearEn: string; ar: string; en: string; extraAr?: string; extraEn?: string; btn?: { url: string; ar: string; en: string }; noteAr?: string; noteEn?: string; from?: [string, string] };
+const FR = (t: Tpl): [string, string] => (t.from && t.from[0] && !/رئيس المعهد|President|Chairman/i.test(t.from.join(" ")) ? t.from : ["الإدارة العامة", "General Administration"]);
+const D_REG: [string, string] = ["قسم القبول والتسجيل", "Admission & Registration Department"], D_FIN: [string, string] = ["الإدارة المالية", "Finance Department"], D_MED: [string, string] = ["الإعلام والتواصل", "Media and Communication"];
 async function render(t: Tpl) {
   const B = await brand();
   const btn = t.btn ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 16px"><tr><td align="center"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:${NV};border-radius:8px"><a href="${esc(t.btn.url)}" target="_blank" style="display:inline-block;padding:12px 24px;color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;font-family:Tahoma,Arial,sans-serif"><span dir="rtl">${esc(t.btn.ar)}</span><br><span dir="ltr" style="font-size:14px;font-weight:600">${esc(t.btn.en)}</span></a></td></tr></table></td></tr></table>` : "";
@@ -624,18 +664,20 @@ async function render(t: Tpl) {
     btn +
     `<hr style="border:none;border-top:1px solid #D5DCE4;margin:16px 0">` +
     `<p class="tx" dir="ltr" style="margin:0 0 12px;font-size:16px;font-weight:700;text-align:left">${esc(t.dearEn)},</p>${P(t.en, "ltr")}${t.extraEn || ""}` +
+    // v274: التذييل باسم الجهة المختصة (وإلا «الإدارة العامة») — لا يُذكر اسم شخص ولا رئيس المعهد
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:22px;border-top:2px solid #8A97A8"><tr><td dir="rtl" class="tx" style="text-align:right;padding-top:12px"><div style="font-size:15px;font-weight:700;line-height:1.5">${esc(FR(t)[0])}</div><div class="mu" style="font-size:13.5px;line-height:1.5;color:#4a5a70">${esc(B.nameAr)}</div></td></tr><tr><td dir="ltr" class="tx" style="text-align:left;padding-top:8px"><div style="font-size:15px;font-weight:700;line-height:1.5">${esc(FR(t)[1])}</div><div class="mu" style="font-size:13.5px;line-height:1.5;color:#4a5a70">${esc(B.nameEn)}</div></td></tr></table>` +
     `</td></tr><tr><td class="ft" style="background:#F6F8FA;padding:16px 22px;border-radius:0 0 10px 10px;border-top:1px solid #E1E6EC">${note}` +
     `<p class="tx mu" dir="rtl" style="margin:8px 0 0;font-size:12.5px;line-height:1.5;color:#4a5a70;text-align:right">هذه رسالة آلية من معهد التمهيد، فلا تردّ عليها.</p><p class="tx mu" dir="ltr" style="margin:0;font-size:12.5px;line-height:1.5;color:#4a5a70;text-align:left">This is an automated message from At Tamhid Institute; please do not reply.</p>` +
     (B.contact ? `<p class="mu" style="margin:10px 0 0;font-size:12.5px;line-height:1.5;color:#4a5a70;text-align:center">${B.contact}</p>` : "") +
     `</td></tr></table></td></tr></table></body></html>`;
   const strip = (h: string) => h.replace(/<br>/g, "\n").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
-  const text = [t.titleAr + " / " + t.titleEn, "", t.dearAr + "،", t.ar, strip(t.extraAr || ""), t.btn ? t.btn.ar + ": " + t.btn.url : "", "", "------------------------------", t.dearEn + ",", t.en, strip(t.extraEn || ""), t.btn ? t.btn.en + ": " + t.btn.url : "", "", t.noteAr || "", t.noteEn || ""].join("\n");
+  const text = [t.titleAr + " / " + t.titleEn, "", t.dearAr + "،", t.ar, strip(t.extraAr || ""), t.btn ? t.btn.ar + ": " + t.btn.url : "", "", "------------------------------", t.dearEn + ",", t.en, strip(t.extraEn || ""), t.btn ? t.btn.en + ": " + t.btn.url : "", "", FR(t)[0] + " — " + B.nameAr, FR(t)[1] + " — " + B.nameEn, "", t.noteAr || "", t.noteEn || ""].join("\n");
   const attachments: Att[] = B.logo ? [{ filename: "logo.png", content: B.logo, content_type: "image/png", content_id: "logo64" }] : [];
   return { html, text, attachments };
 }
 async function sendLogged(type: string, ref: string, to: string, t: Tpl, by: string | null = null, extra: Att[] = []) {
   const { html, text, attachments } = await render(t);
-  const payload = { to, subject: t.subject, html, text, attachments: [...attachments, ...extra] };
+  const payload = { to, subject: t.subject, html, text, attachments: [...attachments, ...extra], from_name: FR(t)[1] + " — At Tamhid Institute" };
   const { data: row } = await admin.from("v63_mail_log").insert({ type, ref_id: ref, to_addr: to, subject: t.subject.slice(0, 300), by_user: by, payload, attempts: 1 }).select("id").single();
   try {
     const { via, id } = await deliver(payload);
@@ -648,6 +690,25 @@ async function sendLogged(type: string, ref: string, to: string, t: Tpl, by: str
   }
 }
 type Person = { id: string; email: string; name: string; nameEn: string; f: boolean };
+function termTpl(p: Person, data: Record<string, any>, sd: Record<string, any>, cName: (id: string) => { ar: string; en: string; code: string }, portal: (id: string) => string, BG: string): Tpl {
+      // v272: رسالة واحدة عند نشر نتائج الفصل: الفصل ومقرراته ودرجاته والمعدل الفصلي والتراكمي
+      const dd = (data || {}) as Record<string, any>, sm = (dd.sum || {}) as Record<string, any>;
+      const tn = String(dd.tn || dd.term || ""), tnEn = String(dd.tnEn || tn);
+      const G = ((sd.gr || {}) as Record<string, any>);
+      const list: Array<Record<string, any>> = Array.isArray(sm.rows) && sm.rows.length ? sm.rows : (Array.isArray(dd.cids) ? dd.cids : []).map((c: string) => ({ id: c, score: G[c]?.score, gl: G[c]?.gl }));
+      const td = (x: string, al: string, b = false) => `<td class="tx" style="padding:7px 10px;border-bottom:1px solid #E1E6EC;text-align:${al}${b ? ";font-weight:700" : ""}">${x}</td>`;
+      const th = (x: string, al: string) => `<th class="tx" style="padding:8px 10px;text-align:${al};font-size:14px">${x}</th>`;
+      const tbl = (lang: "ar" | "en") => { const ar = lang === "ar", al = ar ? "right" : "left";
+        const body = list.map((x) => { const c = cName(String(x.id || "")); const nm = ar ? String(x.name || c.ar) : String(x.nameEn || c.en); const code = String(x.code || c.code || "");
+          return `<tr>${td(esc((code ? code + " — " : "") + nm), al)}${td(esc(x.hrs ?? ""), "center")}${td(`<span dir="ltr">${esc(x.score ?? "")}</span>`, "center", true)}${td(esc(ar ? (x.gl ?? "") : (x.glEn || x.gl || "")), "center")}</tr>`; }).join("");
+        return `<table role="presentation" class="box" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:4px 0 14px;background:${BG};border:1px solid #D5DCE4;border-radius:8px" dir="${ar ? "rtl" : "ltr"}"><tr>${th(ar ? "المقرر" : "Course", al)}${th(ar ? "الساعات" : "Credits", "center")}${th(ar ? "الدرجة" : "Score", "center")}${th(ar ? "التقدير" : "Grade", "center")}</tr>${body}</table>`; };
+      const gbox = (lang: "ar" | "en") => { const ar = lang === "ar"; const it = (k: string, v: unknown) => v == null || v === "" ? "" : `<p class="tx" style="margin:0 0 4px;font-size:15px">${esc(k)}: <b dir="ltr">${esc(v)}</b></p>`;
+        return `<div class="box" dir="${ar ? "rtl" : "ltr"}" style="background:${BG};border:1px solid #D5DCE4;border-radius:8px;padding:12px 14px;margin:0 0 14px;text-align:${ar ? "right" : "left"}">${it(ar ? "المعدل الفصلي" : "Semester GPA", sm.tg)}${it(ar ? "ساعات الفصل" : "Semester credits", sm.th)}${it(ar ? "المعدل التراكمي" : "Cumulative GPA", sm.cg)}${it(ar ? "الساعات المحتسبة تراكمياً" : "Cumulative credits", sm.ch)}${it(ar ? "التقدير العام" : "Overall standing", ar ? sm.cgl : (sm.cglEn || sm.cgl))}</div>`; };
+      return { subject: "نتائج الفصل الدراسي " + tn + " — معهد التمهيد / Semester Results " + tnEn + " — At Tamhid", titleAr: "نتائج الفصل الدراسي", titleEn: "Semester Results", dearAr: dearA(p, "student"), dearEn: dearE(p),
+        ar: `اعتُمدت نتائج الفصل الدراسي (${tn}) ونُشرت، واحتُسب معدلكم الفصلي والتراكمي. وهذه نتائجكم في مقررات الفصل:`, extraAr: tbl("ar") + gbox("ar") + P("تجدون نتائجكم وسجلكم الأكاديمي كاملاً في «الخدمات الذاتية للطلاب والطالبات» تحت «درجاتي».", "rtl"),
+        en: `The results of the semester (${tnEn}) have been approved and published, and your semester and cumulative GPA calculated. Your results in the semester's courses:`, extraEn: tbl("en") + gbox("en") + P("Your results and full academic record are in the Student Self-Service under “My grades”.", "ltr"),
+        btn: { url: portal(p.id), ar: "عرض نتائجي في البوابة", en: "View my results in the portal" }, from: D_REG };
+}
 function person(id: string, d: Record<string, unknown>): Person {
   const sx = String(d.sex || d.gender || "").toLowerCase();
   return { id, email: String(d.email || "").trim(), name: String(d.name || ""), nameEn: String(d.nameEn || d.name || ""), f: /أنثى|female|^f$|انثى/.test(sx) };
@@ -709,25 +770,10 @@ async function notifyRun() {
       t = { subject: "رصد درجات جديدة — معهد التمهيد / New Grades Posted — At Tamhid", titleAr: "رُصدت لكم درجات جديدة", titleEn: "New Grades Posted", dearAr: dearA(p, "student"), dearEn: dearE(p),
         ar: `رُصدت في سجلكم الأكاديمي ${rows.length === 1 ? "درجة جديدة" : rows.length + " درجات جديدة"}، وهذه تفاصيلها:`, extraAr: tbl("ar") + P("يمكنكم الاطلاع على سجلكم كاملاً ومعدلكم في البوابة.", "rtl"),
         en: `${rows.length === 1 ? "A new grade has" : rows.length + " new grades have"} been posted to your academic record:`, extraEn: tbl("en") + P("You can view your full record and GPA in the portal.", "ltr"),
-        btn: { url: portal(p.id), ar: "عرض درجاتي في البوابة", en: "View my grades in the portal" } };
+        btn: { url: portal(p.id), ar: "عرض درجاتي في البوابة", en: "View my grades in the portal" }, from: D_REG };
     } else if (r0.kind === "term") {
-      // v272: رسالة واحدة عند نشر نتائج الفصل: الفصل ومقرراته ودرجاته والمعدل الفصلي والتراكمي
-      const dd = (r0.data || {}) as Record<string, any>, sm = (dd.sum || {}) as Record<string, any>;
-      const tn = String(dd.tn || dd.term || ""), tnEn = String(dd.tnEn || tn);
-      const G = ((d.gr || {}) as Record<string, any>);
-      const list: Array<Record<string, any>> = Array.isArray(sm.rows) && sm.rows.length ? sm.rows : (Array.isArray(dd.cids) ? dd.cids : []).map((c: string) => ({ id: c, score: G[c]?.score, gl: G[c]?.gl }));
-      const td = (x: string, al: string, b = false) => `<td class="tx" style="padding:7px 10px;border-bottom:1px solid #E1E6EC;text-align:${al}${b ? ";font-weight:700" : ""}">${x}</td>`;
-      const th = (x: string, al: string) => `<th class="tx" style="padding:8px 10px;text-align:${al};font-size:14px">${x}</th>`;
-      const tbl = (lang: "ar" | "en") => { const ar = lang === "ar", al = ar ? "right" : "left";
-        const body = list.map((x) => { const c = cName(String(x.id || "")); const nm = ar ? String(x.name || c.ar) : String(x.nameEn || c.en); const code = String(x.code || c.code || "");
-          return `<tr>${td(esc((code ? code + " — " : "") + nm), al)}${td(esc(x.hrs ?? ""), "center")}${td(`<span dir="ltr">${esc(x.score ?? "")}</span>`, "center", true)}${td(esc(ar ? (x.gl ?? "") : (x.glEn || x.gl || "")), "center")}</tr>`; }).join("");
-        return `<table role="presentation" class="box" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:4px 0 14px;background:${BG};border:1px solid #D5DCE4;border-radius:8px" dir="${ar ? "rtl" : "ltr"}"><tr>${th(ar ? "المقرر" : "Course", al)}${th(ar ? "الساعات" : "Credits", "center")}${th(ar ? "الدرجة" : "Score", "center")}${th(ar ? "التقدير" : "Grade", "center")}</tr>${body}</table>`; };
-      const gbox = (lang: "ar" | "en") => { const ar = lang === "ar"; const it = (k: string, v: unknown) => v == null || v === "" ? "" : `<p class="tx" style="margin:0 0 4px;font-size:15px">${esc(k)}: <b dir="ltr">${esc(v)}</b></p>`;
-        return `<div class="box" dir="${ar ? "rtl" : "ltr"}" style="background:${BG};border:1px solid #D5DCE4;border-radius:8px;padding:12px 14px;margin:0 0 14px;text-align:${ar ? "right" : "left"}">${it(ar ? "المعدل الفصلي" : "Semester GPA", sm.tg)}${it(ar ? "ساعات الفصل" : "Semester credits", sm.th)}${it(ar ? "المعدل التراكمي" : "Cumulative GPA", sm.cg)}${it(ar ? "الساعات المحتسبة تراكمياً" : "Cumulative credits", sm.ch)}${it(ar ? "التقدير العام" : "Overall standing", ar ? sm.cgl : (sm.cglEn || sm.cgl))}</div>`; };
-      t = { subject: "نتائج الفصل الدراسي " + tn + " — معهد التمهيد / Semester Results " + tnEn + " — At Tamhid", titleAr: "نتائج الفصل الدراسي", titleEn: "Semester Results", dearAr: dearA(p, "student"), dearEn: dearE(p),
-        ar: `اعتُمدت نتائج الفصل الدراسي (${tn}) ونُشرت، واحتُسب معدلكم الفصلي والتراكمي. وهذه نتائجكم في مقررات الفصل:`, extraAr: tbl("ar") + gbox("ar") + P("تجدون نتائجكم وسجلكم الأكاديمي كاملاً في «الخدمات الذاتية للطلاب والطالبات» تحت «درجاتي».", "rtl"),
-        en: `The results of the semester (${tnEn}) have been approved and published, and your semester and cumulative GPA calculated. Your results in the semester's courses:`, extraEn: tbl("en") + gbox("en") + P("Your results and full academic record are in the Student Self-Service under “My grades”.", "ltr"),
-        btn: { url: portal(p.id), ar: "عرض نتائجي في البوابة", en: "View my results in the portal" } };
+      // v274: القالب في termTpl (يُستعمل أيضاً في النماذج)
+      t = termTpl(p, r0.data || {}, d as Record<string, any>, cName, portal, BG);
     } else if (r0.kind === "news") {
       const n = NW.get(String(r0.data?.news || ""));
       if (!n) { await done(ids, false, 0, "news_gone", true); skipped++; continue; }
@@ -735,7 +781,7 @@ async function notifyRun() {
       t = { subject: "إعلان جديد — معهد التمهيد / New Announcement — At Tamhid: " + title.slice(0, 120), titleAr: "إعلان جديد من المعهد", titleEn: "New Announcement", dearAr: dearA(p, "student"), dearEn: dearE(p),
         ar: "نشر المعهد إعلاناً جديداً:", extraAr: `<div class="box" dir="rtl" style="background:${BG};border:1px solid #D5DCE4;border-radius:8px;padding:12px 14px;margin:0 0 14px;text-align:right"><p class="tx" style="margin:0 0 6px;font-size:17px;font-weight:700">${esc(title)}</p>${n.ev ? `<p class="tx mu" style="margin:0 0 6px;font-size:14px;color:#4a5a70">الموعد: <b dir="ltr">${esc(fmtDate(String(n.ev)))}</b></p>` : ""}${P(body, "rtl")}</div>`,
         en: "The Institute has published a new announcement (in Arabic above). Details are on the website.",
-        btn: { url: B.base + "#/news", ar: "قراءة الإعلان في الموقع", en: "Read it on the website" } };
+        btn: { url: B.base + "#/news", ar: "قراءة الإعلان في الموقع", en: "Read it on the website" }, from: D_MED };
     } else if (r0.kind === "exam") {
       const e = EX.get(String(r0.data?.exam || ""));
       if (!e) { await done(ids, false, 0, "exam_gone", true); skipped++; continue; }
@@ -744,7 +790,7 @@ async function notifyRun() {
       t = { subject: "تذكير بموعد اختبار — معهد التمهيد / Exam Reminder — At Tamhid", titleAr: "تذكير بموعد الاختبار", titleEn: "Exam Reminder", dearAr: dearA(p, "student"), dearEn: dearE(p),
         ar: "نذكّركم بموعد الاختبار القادم:", extraAr: box("ar") + P("يُفتح الاختبار في البوابة عند موعده. تأكدوا من اتصالكم بالإنترنت قبل البدء.", "rtl"),
         en: "This is a reminder of your upcoming exam:", extraEn: box("en") + P("The exam opens in the portal at its scheduled time. Please check your internet connection before you start.", "ltr"),
-        btn: { url: portal(p.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" } };
+        btn: { url: portal(p.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" }, from: D_REG };
     }
     if (!t) { await done(ids, false, 0, "unknown", true); skipped++; continue; }
     const r = await sendLogged("notify_" + r0.kind, p.id, p.email, t);
@@ -893,7 +939,8 @@ async function staffRun(q: Array<Record<string, any>>) {
       const d = (r.data || {}) as Record<string, string>;
       t = { subject: `${d.subj || "رسالة من المعهد"}${d.subjEn ? " / " + d.subjEn : ""}`, titleAr: d.subj || "رسالة من المعهد", titleEn: d.subjEn || "A Message from the Institute", dearAr: dearA(per, kind === "student" ? "student" : "staff"), dearEn: dearE(per),
         ar: d.body || "", en: d.bodyEn || "Details are in Arabic above.",
-        btn: { url: B.base + "?p=" + encodeURIComponent(per.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" } };
+        btn: { url: B.base + "?p=" + encodeURIComponent(per.id), ar: "الدخول إلى البوابة", en: "Sign in to the portal" },
+        from: d.fromAr ? [d.fromAr, d.fromEn || d.fromAr] : /^fin263/.test(String(r.k || "")) ? D_FIN : /^pub27/.test(String(r.k || "")) ? D_REG : undefined };
     } else if (r.kind === "backup") {
       to = central;
       const { data: bj, error: be } = await admin.rpc("v115_backup_json");

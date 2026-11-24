@@ -10,7 +10,7 @@ on:
         required: false
         default: ''
       task:
-        description: 'مهمة خاصة (rcpt-preview أو rcpt-send)'
+        description: 'مهمة خاصة (rcpt-preview أو rcpt-send أو mail-samples)'
         required: false
         default: ''
 permissions:

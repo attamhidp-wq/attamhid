@@ -34,6 +34,25 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
   await p.waitForFunction(() => typeof me !== 'undefined' && me && me.r === 'admin' && /^#\/admin/.test(location.hash), null, { timeout: 120000 });
   await p.waitForTimeout(12000);
   // v272: مهام خاصة بإذن الإدارة (لا تُطبع أسماء ولا عناوين)
+  // v274: نماذج كل رسائل البريد إلى بريد المعهد للمراجعة (لا يصل شيء لأحد غيره)
+  if (process.env.TASK === 'mail-samples') {
+    const r = await p.evaluate(async () => { const V = window.V51, out = {}; const to = String((S.home || {}).em || '').trim(); if (!/@/.test(to)) return { err: 'no_inst_email' };
+      const tag = '[نموذج للمراجعة / Sample] ', lg = V.logoPng70 ? await V.logoPng70().catch(() => '') : '';
+      const att = lg ? [{ filename: 'logo.png', content: lg, content_type: 'image/png', content_id: 'logo64' }] : [];
+      const go = async (k, B, subj) => { try { const x = await V.fn63({ action: 'mail', type: 'sample', ref_id: 'sample', to, subject: tag + subj, html: B.html, text: B.text, cred_without: '', cred_without_text: '', cred_with: '', cred_with_text: '', from_name: B.from_name, reply_to: B.reply_to || '', attachments: att }); out[k] = !!(x && x.ok); } catch (e) { out[k] = 'E'; } };
+      try { const x = await V.fn63({ action: 'samples' }); out.server = x && x.sent ? x.sent : (x && x.error) || 'x'; } catch (e) { out.server = 'E'; }
+      const D = (o) => V.mailDoc70(Object.assign({ dearAr: 'عزيزي الطالب محمد عبد الله (نموذج)،', dearEn: 'Dear Mohammad Abdullah (sample),' }, o));
+      await go('reg', D({ subject: 'اعتماد تسجيل المقررات — معهد التمهيد', titleAr: 'اعتماد تسجيل المقررات', titleEn: 'Course registration approved', bodyAr: 'اعتُمد تسجيلكم في مقررات الفصل الدراسي الأول 2026، ويمكنكم الاطلاع على جدولكم في البوابة.', bodyEn: 'Your registration in the courses of the First Semester 2026 has been approved; your timetable is in the portal.', sender: { title: 'قسم القبول والتسجيل', titleEn: 'Admission & Registration Department' } }), 'اعتماد تسجيل المقررات — معهد التمهيد');
+      await go('plt', D({ subject: 'نتيجة المفاضلة — معهد التمهيد', titleAr: 'نتيجة اختبار تحديد المستوى', titleEn: 'Placement test result', bodyAr: 'درجتك في اختبار تحديد المستوى: 78 / 100.', bodyEn: 'Your placement test score: 78 / 100.', sender: { title: 'قسم القبول والتسجيل', titleEn: 'Admission & Registration Department' } }), 'نتيجة المفاضلة — معهد التمهيد');
+      await go('general', D({ subject: 'رسالة من المعهد', titleAr: 'رسالة من المعهد', titleEn: 'A message from the Institute', bodyAr: 'نموذج رسالة عامة لا تُحدَّد فيها جهة: تُذيَّل باسم الإدارة العامة.', bodyEn: 'Sample general message with no specific department: signed by the General Administration.' }), 'رسالة من المعهد (بلا جهة محددة)');
+      try { if (V.mailText77) { for (const st of ['review', 'accepted', 'rejected']) { const T = V.mailText77({ id: 'A-SAMPLE', name: 'محمد عبد الله (نموذج)', nameEn: 'Mohammad Abdullah (sample)', email: to, prog: 1000 }, st, '', null); const B = V.mailDoc70(T); await go('app_' + st, B, T.subject); } } } catch (e) { out.app = 'E ' + String(e.message).slice(0, 60); }
+      try { const s0 = (S.students || []).find((x) => x && !x.deleted && x.email); const f0 = (S.faculty || []).find((x) => x && !x.deleted && x.email);
+        for (const [ty, id] of [['admit', s0 && s0.id], ['grad', s0 && s0.id], ['reset', s0 && s0.id], ['appoint', f0 && f0.id]]) { if (!id || !V.mailBuild64) continue; const B = V.mailBuild64(ty, id, {}); if (!B) { out['acc_' + ty] = 'nob'; continue; }
+          const strip = (h) => String(h || '').replace(/\[\[CRED\]\]/g, '(بيانات الدخول تظهر هنا في الرسالة الفعلية / Sign-in details appear here in the real message)');
+          await go('acc_' + ty, { html: strip(B.html), text: strip(B.text), from_name: B.from_name, reply_to: B.reply_to }, B.subject); } } catch (e) { out.acc = 'E ' + String(e.message).slice(0, 60); }
+      return out; });
+    console.log('TASK mail-samples', JSON.stringify(r)); await b.close(); process.exit(0);
+  }
   if (/^rcpt-(preview|send)$/.test(process.env.TASK || '')) {
     const r = await p.evaluate((m) => window.fin263rcptBatch ? window.fin263rcptBatch(m) : { err: ['nofn'] }, process.env.TASK.slice(5));
     console.log('TASK', process.env.TASK, JSON.stringify(r)); await b.close(); process.exit(0);
