@@ -115,6 +115,10 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     try { await p.evaluate(() => { location.hash = '#/fin'; }); await p.waitForFunction(() => /السجل المالي/.test((document.querySelector('#app') || {}).innerText || '') && document.querySelector('#app .fin263g'), null, { timeout: 45000 });
       const fz = await p.evaluate(() => { const a = document.querySelector('#app'); const k = [...a.querySelectorAll('.fin263k')].map((x) => x.innerText.replace(/\s+/g, ' ')); return { cards: k.length, cum: k[0] || '', rows: a.querySelectorAll('.fin263t tbody tr').length, adm: !!a }; });
       console.log('CHECK fin-admin', fz.cards >= 6 && /BDT/.test(fz.cum) ? 'OK' : 'FAIL', JSON.stringify(fz)); } catch (e) { console.log('CHECK fin-admin FAIL', String(e).slice(0, 200)); }
+    // v270: قسم «نشر نتائج الفصل»
+    try { await p.evaluate(() => { location.hash = '#/admin'; tab = 'v270r'; window.__force71 = 1; go(); }); await p.waitForSelector('#app .pub270', { timeout: 40000 });
+      const pz = await p.evaluate(() => { const a = document.querySelector('#app .pub270'); return { len: a.innerText.length, btn: !!a.querySelector('.pub270b button'), cards: a.querySelectorAll('.fin263k').length, grp: /نشر نتائج الفصل/.test((document.getElementById('tabs69') || {}).innerText || '') }; });
+      console.log('CHECK pub-tab', pz.btn && pz.cards >= 6 ? 'OK' : 'FAIL', JSON.stringify(pz)); } catch (e) { console.log('CHECK pub-tab FAIL', String(e).slice(0, 200)); }
     // v269: السجل المالي قسم في بوابة الإدارة، بأقسامه الستة
     try { await p.evaluate(() => { location.hash = '#/admin'; }); await p.waitForTimeout(5000); await p.evaluate(() => { tab = 'v263f'; window.__force71 = 1; go(); }); await p.waitForSelector('#app .fin263nav', { timeout: 40000 });
       const vs = {}; for (const v of ['dash', 'claims', 'stmts', 'sch', 'rep', 'set']) { await p.evaluate((v) => V51.h.fin263v(v), v); await p.waitForTimeout(700); vs[v] = await p.evaluate(() => { const a = document.querySelector('#app .fin263'); return a ? a.innerText.replace(/\s+/g, ' ').length : 0; }); }
