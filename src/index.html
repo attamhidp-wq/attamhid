@@ -19541,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v267';
+window.__BUILD__='v268';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -23071,7 +23071,7 @@ V.fin=function(){if(!isMe())return '<div class="box"><p>'+L('يلزم تسجيل
  if(F.err)return '<div class="msg er">'+L('تعذّر تحميل السجل المالي.','Could not load the finance ledger.')+'</div><p>'+bt(L('إعادة المحاولة','Try again'),'V51.h.fin263re()','')+'</p>';
  if(!F.ok)return '<div class="msg er">'+L('السجل المالي للإدارة المركزية والجهات المخوّلة فقط.','The finance ledger is for the central administration and authorised staff only.')+'</div>';
  return admView()};
-try{if(typeof NAV!=='undefined'&&!NAV.some(function(x){return x[0]==='fin'}))NAV.push(['fin','السجل المالي'])}catch(e){}
+/* v268: السجل المالي ليس في القائمة العامة — يُفتح من لوحة الإدارة، والطالب من صفحته */
 /* ---------- الربط بالصفحات ---------- */
 try{GOH.post.push(function(){try{if(!isMe())return;var a=document.getElementById('app');if(!a)return;var h=location.hash;
  if(stu()){if(!SS.ld&&!SS.busy){loadStu();return}

@@ -106,7 +106,7 @@ V.fin=function(){if(!isMe())return '<div class="box"><p>'+L('يلزم تسجيل
  if(F.err)return '<div class="msg er">'+L('تعذّر تحميل السجل المالي.','Could not load the finance ledger.')+'</div><p>'+bt(L('إعادة المحاولة','Try again'),'V51.h.fin263re()','')+'</p>';
  if(!F.ok)return '<div class="msg er">'+L('السجل المالي للإدارة المركزية والجهات المخوّلة فقط.','The finance ledger is for the central administration and authorised staff only.')+'</div>';
  return admView()};
-try{if(typeof NAV!=='undefined'&&!NAV.some(function(x){return x[0]==='fin'}))NAV.push(['fin','السجل المالي'])}catch(e){}
+/* v268: السجل المالي ليس في القائمة العامة — يُفتح من لوحة الإدارة، والطالب من صفحته */
 /* ---------- الربط بالصفحات ---------- */
 try{GOH.post.push(function(){try{if(!isMe())return;var a=document.getElementById('app');if(!a)return;var h=location.hash;
  if(stu()){if(!SS.ld&&!SS.busy){loadStu();return}
