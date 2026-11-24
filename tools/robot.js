@@ -90,6 +90,9 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     const td = await p.evaluate(() => { try { const s = (S.students || [])[0], f = (S.faculty || [])[0]; const a = s ? V51.td241(s, 'student') : '', b = f ? V51.td241(f, 'faculty') : '';
       return { s: /td241/.test(a) && a.indexOf('undefined') < 0 && a.indexOf('NaN') < 0, f: /td241/.test(b) && b.indexOf('undefined') < 0 && b.indexOf('NaN') < 0, len: a.length, ev: (a.match(/<li>/g) || []).length }; } catch (e) { return { err: String(e) }; } });
     console.log('CHECK today', td.s && td.f ? 'OK' : 'FAIL', JSON.stringify(td));
+    try { await p.evaluate(() => { location.hash = '#/admin'; }); await p.waitForTimeout(5000);
+      const ad = await p.evaluate(() => { const a = document.getElementById('app'); const s = a && a.querySelector('.adm255'); const bx = [...document.querySelectorAll('#app .ft231adm,#app .idn235adm')]; return { sec: !!s, inSec: bx.filter((b) => s && s.contains(b)).length, boxes: bx.length, last: !!(s && a.lastElementChild === s) }; });
+      console.log('CHECK adm255', ad.sec && ad.inSec === ad.boxes ? 'OK' : 'FAIL', JSON.stringify(ad)); } catch (e) { console.log('CHECK adm255 FAIL', String(e).slice(0, 150)); }
     // v255: الوضع البنغالي — نصوص بقيت بالإنجليزية في الصفحات العامة (لا بيانات شخصية: صفحات عامة فقط)
     try {
       const bc = await b.newContext({ viewport: { width: 412, height: 880 }, serviceWorkers: 'block' });
