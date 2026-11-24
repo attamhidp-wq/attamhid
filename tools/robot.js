@@ -183,6 +183,20 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
         const ok = fid && +fid.due === 4500 && /4,500/.test(sv) && rj && rj.ok && cl2 && cl2.ok && cf && cf.ok && /مؤكَّدة/.test(sv2) && cl[0] && cl[0].ok && cl[1] && cl[1].ok;
         console.log('CHECK fin-cycle', ok ? 'OK' : 'FAIL', JSON.stringify({ g1, fid, sv: sv.slice(0, 120), rj, cl2, cf, sv2: sv2.slice(0, 120), cl }));
       } catch (e) { console.log('CHECK fin-cycle FAIL', String(e).slice(0, 300)); } }
+      // v270: لا يرى الطالب أي درجة قبل النشر؛ النشر بالزر، والمعلّق يُنشر عند تأكيد الرسوم
+      if (role === 'student' && process.env.GITHUB_EVENT_NAME === 'workflow_dispatch') { try {
+        const T = 'T270-TEST', cid = 'P23-1101';
+        const set1 = await p.evaluate(async (a) => { const r = await sb.from('students').select('id,data').eq('id', a.ref).maybeSingle(); const d = r.data.data; d.gr = d.gr || {}; d.gr[a.cid] = { fin: 1, rel: 1, relDate: '2026-11-25', score: 85, gl: 'ب+', pts: 4.5, ok: true, src: 'exam' }; const u = await sb.from('students').update({ data: d }).eq('id', a.ref); const r2 = await sb.from('students').select('id,data').eq('id', a.ref).maybeSingle(); return { err: u.error && u.error.message, rel: r2.data.data.gr[a.cid].rel }; }, { ref, cid });
+        const see = async () => q.evaluate(async (cid) => { const r = await sb.from('students_me').select('id,data').maybeSingle(); const direct = await sb.from('students').select('id').limit(5); return { has: !!(r.data && r.data.data.gr && r.data.data.gr[cid]), direct: (direct.data || []).length }; }, cid);
+        const s0 = await see();
+        const pt = await p.evaluate(async (a) => (await sb.rpc('pub_term', { p_term: a.T, items: [{ sid: a.ref, cids: [a.cid], ok: false, termName: 'TEST' }], p_mail: false })).data, { ref, cid, T });
+        const s1 = await see();
+        const fi = await p.evaluate(async (a) => { await sb.rpc('fin_admin', { act: 'sem', p_id: null, p: { items: [{ ref: a.ref, name: 'TEST', term: a.T, base: 1000, pct: 0 }] } }); const r = await sb.from('fin263').select('id').eq('ref', a.ref).eq('term', a.T).maybeSingle(); const c = (await sb.rpc('fin_admin', { act: 'confirm', p_id: r.data.id, p: {} })).data; return { id: r.data.id, c }; }, { ref, T });
+        const s2 = await see();
+        await p.evaluate(async (id) => { await sb.rpc('fin_admin', { act: 'void', p_id: id, p: { note: 'robot test cleanup' } }); await sb.rpc('fin_admin', { act: 'cancel', p_id: id, p: { note: 'robot test cleanup' } }); }, fi.id);
+        const ok = !set1.err && +set1.rel === 0 && !s0.has && s0.direct === 0 && pt && pt.ok && pt.held === 1 && !s1.has && fi.c && fi.c.ok && s2.has;
+        console.log('CHECK pub-cycle', ok ? 'OK' : 'FAIL', JSON.stringify({ set1, s0, pt, s1, fi, s2 }));
+      } catch (e) { console.log('CHECK pub-cycle FAIL', String(e).slice(0, 300)); } }
       // v261: الدخول من نموذج بوابة الخريجين نفسه (كما يفعل المستخدم)، بمتصفح جوال في وضع «سطح المكتب»، مع ضغطتين متتاليتين
       try { const c4 = await b.newContext({ viewport: { width: 412, height: 915 }, userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', serviceWorkers: 'allow', locale: 'ar' }); const q4 = await c4.newPage(); const e4 = [];
         q4.on('pageerror', (e) => e4.push(e.message)); q4.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') e4.push(m.type() + ': ' + m.text().slice(0, 200)); });
