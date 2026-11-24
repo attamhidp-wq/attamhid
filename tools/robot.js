@@ -152,6 +152,17 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       const pages = {};
       for (const L of links) { await q.evaluate((h) => { location.hash = h; }, L); await q.waitForTimeout(2500); pages[L] = await q.evaluate(() => { const t = (document.querySelector('#app') || {}).innerText || ''; return t.length + (/undefined|NaN|\[object Object\]/.test(t) ? ' BAD' : ''); }); }
       console.log('CHECK e2e-' + role, st.me === role && st.len > 200 && !st.bad && !e2.length ? 'OK' : 'FAIL', JSON.stringify({ first: at, st, pages, errs: e2.slice(0, 5) }));
+      // v261: الدخول من نموذج بوابة الخريجين نفسه (كما يفعل المستخدم)، بمتصفح جوال في وضع «سطح المكتب»، مع ضغطتين متتاليتين
+      try { const c4 = await b.newContext({ viewport: { width: 412, height: 915 }, userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', serviceWorkers: 'allow', locale: 'ar' }); const q4 = await c4.newPage(); const e4 = [];
+        q4.on('pageerror', (e) => e4.push(e.message)); q4.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') e4.push(m.type() + ': ' + m.text().slice(0, 200)); });
+        await q4.goto(SITE.replace(/app\.html.*$/, '') + (liveV ? '?_b=' + liveV : '') + '#/graduates', { waitUntil: 'load', timeout: 90000 });
+        await q4.waitForFunction(() => document.querySelector('#app input[name=p]'), null, { timeout: 60000 });
+        await q4.fill('#app input[name=u]', ref); await q4.fill('#app input[name=p]', np);
+        await q4.evaluate(() => { const f = document.querySelector('#app input[name=p]').form; f.requestSubmit(); setTimeout(() => { try { f.requestSubmit(); } catch (e) {} }, 300); });
+        const snap = async () => q4.evaluate(() => { const a = document.querySelector('#app'); const t = ((a && a.innerText) || '').replace(/\s+/g, ' ').trim(); const F = (window.S && S.v51 && S.v51.ft225) || {}; return { t: t.slice(0, 90), apps: document.querySelectorAll('#app').length, hash: location.hash, me: typeof me !== 'undefined' && me ? me.r : null, ld: !!F.ld, busy: !!F.busy, err: F.err || '', wd: !!F.wd, wdn: F.wdn || 0, B: window.__BUILD__ }; });
+        const tl = []; for (const w of [3, 6, 10, 20, 35]) { await q4.waitForTimeout(w === 3 ? 3000 : (w - [3, 6, 10, 20, 35][[3, 6, 10, 20, 35].indexOf(w) - 1]) * 1000); tl.push(w + ':' + JSON.stringify(await snap())); }
+        const last = await snap(); console.log('CHECK e2e-gradlogin-' + role, /جارٍ التحميل/.test(last.t) || !/بوابة الخريجين/.test(last.t) ? 'FAIL' : 'OK', tl.join(' || '), 'errs', e4.slice(0, 10).join(' | ').slice(0, 1500));
+        await c4.close(); } catch (e) { console.log('CHECK e2e-gradlogin-' + role, 'FAIL', String(e).slice(0, 300)); }
       try { await q.evaluate(() => { localStorage.setItem('act260', String(Date.now() - 31 * 60000)); });
         const q3 = await c2.newPage(); await q3.goto(SITE.replace(/app\.html.*$/, '') + '?nt=2' + (liveV ? '&_b=' + liveV : '') + '#/student', { waitUntil: 'load', timeout: 90000 }); await q3.waitForTimeout(12000);
         const id3 = await q3.evaluate(() => ({ me: typeof me !== 'undefined' && me ? me.r : null })); console.log('CHECK e2e-idle-' + role, id3.me ? 'FAIL' : 'OK', JSON.stringify(id3)); } catch (e) { console.log('CHECK e2e-idle-' + role, 'FAIL', String(e).slice(0, 150)); }
