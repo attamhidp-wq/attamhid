@@ -44,12 +44,22 @@ function view(){if(!central())return '<div class="msg er">'+L('نشر نتائج
  h+='<p>'+bt(pb?L('نشر الدرجات الجديدة في هذا الفصل','Publish the new grades of this semester'):L('احتساب المعدل الفصلي ونشر الدرجات','Calculate the semester GPA and publish'),'V51.h.pub270go()','',!can)+'</p>';
  if(!can)h+='<p class="mu">'+(d.unpub===0?L('لا توجد درجات جديدة للنشر في هذا الفصل.','There are no new grades to publish in this semester.'):L('يتاح الزر بعد اكتمال رصد جميع الدرجات.','The button becomes available once all grades are recorded.'))+'</p>';
  return h+'</div></section>'}
+/* v272: ملخص نتيجة الطالب في الفصل لرسالة البريد الواحدة (المقررات والدرجات والمعدل الفصلي والتراكمي) */
+var GR0=function(g){return g>=4.5?['ممتاز','Excellent']:g>=3.75?['جيد جداً','Very good']:g>=2.75?['جيد','Good']:g>=2?['مقبول','Acceptable']:['راسب','Fail']};
+var glEn0={'أ+':'A+','أ':'A','ب+':'B+','ب':'B','ج+':'C+','ج':'C','د+':'D+','د':'D','هـ':'F','ممتاز':'Excellent','جيد جداً':'Very good','جيد جدا':'Very good','جيد':'Good','مقبول':'Acceptable','راسب':'Fail'};
+function sum272(s,term,cids){try{var c2=JSON.parse(JSON.stringify(s));var G=c2.gr||{};(cids||[]).forEach(function(c){if(G[c])G[c].rel=1});
+ var rows=[],H=0,Q=0;Object.keys(G).forEach(function(cid){var g=G[cid];if(!g||!g.fin||!g.rel)return;var t=termOf(s,cid);if(t==null&&(cids||[]).indexOf(cid)>=0)t=term;if(t!==term)return;var c=crsOf(s,cid)||{};var h=+c.hrs||0;var pt=W.ptsOf37?W.ptsOf37(g):+g.pts||0;H+=h;Q+=pt*h;
+  rows.push({id:cid,code:c.code||'',name:c.name||cid,nameEn:c.nameEn||c.name||cid,hrs:h||'',score:g.score!=null?Math.round(+g.score*100)/100:'',gl:g.gl||'',glEn:glEn0[g.gl]||g.gl||''})});
+ rows.sort(function(a,b){return String(a.code).localeCompare(String(b.code))});
+ var hs=W.hold263;W.hold263=function(){return false};var k=null;try{k=W.gpa5?W.gpa5(c2,0,1):null}catch(e){}W.hold263=hs;
+ var o={rows:rows,tg:H?(Q/H).toFixed(2):'',th:H||''};if(k&&k.gpa!=null&&isFinite(+k.gpa)){o.cg=(+k.gpa).toFixed(2);o.ch=k.E||k.H||'';var r=GR0(+k.gpa);o.cgl=r[0];o.cglEn=r[1]}return o}catch(e){return {rows:[]}}}
+W.sum272=sum272;
 var H=V5.h||{};
 H.pub270t=function(t){P.term=t;W.__force71=1;go()};
 H.pub270re=function(){P.ld=0;if(W.F263)F263.rows=null;load()};
 H.pub270go=async function(){var d=scan(P.term);if(d.miss>0||d.unpub===0)return;
  if(!confirm(L('نشر نتائج ','Publish the results of ')+tName(P.term)+L('؟ تُنشر '+d.unpub+' درجة لطلاب الفصل ('+d.ready+' طالباً فوراً'+(d.held?' و'+d.held+' عند تأكيد رسومهم':'')+')، ويُحتسب معدلهم الفصلي والتراكمي.','? '+d.unpub+' grades will be published ('+d.ready+' students now'+(d.held?', '+d.held+' once their fees are confirmed':'')+') and their semester and cumulative GPA calculated.')))return;
- var items=d.rows.filter(function(r){return r.cids.length}).map(function(r){return {sid:String(r.s.id),cids:r.cids,ok:r.fee===1,termName:tName(P.term)}});
+ var items=d.rows.filter(function(r){return r.cids.length}).map(function(r){var tt=null;try{tt=V5.termNames61(V5.termById61(P.term))}catch(e){}return {sid:String(r.s.id),cids:r.cids,ok:r.fee===1,termName:tt&&tt.ar||tName(P.term),termNameEn:tt&&tt.en||'',sum:sum272(r.s,P.term,r.cids)}});
  var res=null;try{res=await sb.rpc('pub_term',{p_term:P.term,items:items,p_mail:!!P.mail})}catch(e){res={error:e}}var x=res&&res.data;
  if(x&&x.ok){toast(L('نُشرت ','Published ')+x.grades+L(' درجة لـ ',' grades for ')+x.students+L(' طالباً',' students')+(x.held?L(' · معلّق حتى تأكيد الرسوم: ',' · held until fees are confirmed: ')+x.held:''));
   /* تحديث النسخة المحلية دون انتظار */try{items.forEach(function(it){if(!it.ok)return;var s=(S.students||[]).find(function(y){return String(y.id)===it.sid});if(!s)return;it.cids.forEach(function(c){var g=s.gr&&s.gr[c];if(g){g.rel=1;g.pub270=1;g.relDate=new Date().toISOString().slice(0,10)}})});save0&&save0()}catch(e){}

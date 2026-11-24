@@ -675,7 +675,7 @@ async function notifyRun() {
   const refs = [...new Set(q.map((r) => r.ref_id))];
   const { data: st } = await admin.from("students").select("id,data").in("id", refs);
   const S = new Map<string, Record<string, unknown>>((st || []).map((r) => [r.id, r.data as Record<string, unknown>]));
-  const cids = [...new Set(q.filter((r) => r.kind === "grade").map((r) => String(r.data?.course || "")))];
+  const cids = [...new Set([...q.filter((r) => r.kind === "grade").map((r) => String(r.data?.course || "")), ...q.filter((r) => r.kind === "term").flatMap((r) => (Array.isArray(r.data?.cids) ? r.data.cids : []).map(String))])];
   const exIds = [...new Set(q.filter((r) => r.kind === "exam").map((r) => String(r.data?.exam || "")))];
   const nwIds = [...new Set(q.filter((r) => r.kind === "news").map((r) => String(r.data?.news || "")))];
   const { data: ex } = exIds.length ? await admin.from("exams").select("id,data").in("id", exIds) : { data: [] };
@@ -710,6 +710,24 @@ async function notifyRun() {
         ar: `رُصدت في سجلكم الأكاديمي ${rows.length === 1 ? "درجة جديدة" : rows.length + " درجات جديدة"}، وهذه تفاصيلها:`, extraAr: tbl("ar") + P("يمكنكم الاطلاع على سجلكم كاملاً ومعدلكم في البوابة.", "rtl"),
         en: `${rows.length === 1 ? "A new grade has" : rows.length + " new grades have"} been posted to your academic record:`, extraEn: tbl("en") + P("You can view your full record and GPA in the portal.", "ltr"),
         btn: { url: portal(p.id), ar: "عرض درجاتي في البوابة", en: "View my grades in the portal" } };
+    } else if (r0.kind === "term") {
+      // v272: رسالة واحدة عند نشر نتائج الفصل: الفصل ومقرراته ودرجاته والمعدل الفصلي والتراكمي
+      const dd = (r0.data || {}) as Record<string, any>, sm = (dd.sum || {}) as Record<string, any>;
+      const tn = String(dd.tn || dd.term || ""), tnEn = String(dd.tnEn || tn);
+      const G = ((d.gr || {}) as Record<string, any>);
+      const list: Array<Record<string, any>> = Array.isArray(sm.rows) && sm.rows.length ? sm.rows : (Array.isArray(dd.cids) ? dd.cids : []).map((c: string) => ({ id: c, score: G[c]?.score, gl: G[c]?.gl }));
+      const td = (x: string, al: string, b = false) => `<td class="tx" style="padding:7px 10px;border-bottom:1px solid #E1E6EC;text-align:${al}${b ? ";font-weight:700" : ""}">${x}</td>`;
+      const th = (x: string, al: string) => `<th class="tx" style="padding:8px 10px;text-align:${al};font-size:14px">${x}</th>`;
+      const tbl = (lang: "ar" | "en") => { const ar = lang === "ar", al = ar ? "right" : "left";
+        const body = list.map((x) => { const c = cName(String(x.id || "")); const nm = ar ? String(x.name || c.ar) : String(x.nameEn || c.en); const code = String(x.code || c.code || "");
+          return `<tr>${td(esc((code ? code + " — " : "") + nm), al)}${td(esc(x.hrs ?? ""), "center")}${td(`<span dir="ltr">${esc(x.score ?? "")}</span>`, "center", true)}${td(esc(ar ? (x.gl ?? "") : (x.glEn || x.gl || "")), "center")}</tr>`; }).join("");
+        return `<table role="presentation" class="box" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:4px 0 14px;background:${BG};border:1px solid #D5DCE4;border-radius:8px" dir="${ar ? "rtl" : "ltr"}"><tr>${th(ar ? "المقرر" : "Course", al)}${th(ar ? "الساعات" : "Credits", "center")}${th(ar ? "الدرجة" : "Score", "center")}${th(ar ? "التقدير" : "Grade", "center")}</tr>${body}</table>`; };
+      const gbox = (lang: "ar" | "en") => { const ar = lang === "ar"; const it = (k: string, v: unknown) => v == null || v === "" ? "" : `<p class="tx" style="margin:0 0 4px;font-size:15px">${esc(k)}: <b dir="ltr">${esc(v)}</b></p>`;
+        return `<div class="box" dir="${ar ? "rtl" : "ltr"}" style="background:${BG};border:1px solid #D5DCE4;border-radius:8px;padding:12px 14px;margin:0 0 14px;text-align:${ar ? "right" : "left"}">${it(ar ? "المعدل الفصلي" : "Semester GPA", sm.tg)}${it(ar ? "ساعات الفصل" : "Semester credits", sm.th)}${it(ar ? "المعدل التراكمي" : "Cumulative GPA", sm.cg)}${it(ar ? "الساعات المحتسبة تراكمياً" : "Cumulative credits", sm.ch)}${it(ar ? "التقدير العام" : "Overall standing", ar ? sm.cgl : (sm.cglEn || sm.cgl))}</div>`; };
+      t = { subject: "نتائج الفصل الدراسي " + tn + " — معهد التمهيد / Semester Results " + tnEn + " — At Tamhid", titleAr: "نتائج الفصل الدراسي", titleEn: "Semester Results", dearAr: dearA(p, "student"), dearEn: dearE(p),
+        ar: `اعتُمدت نتائج الفصل الدراسي (${tn}) ونُشرت، واحتُسب معدلكم الفصلي والتراكمي. وهذه نتائجكم في مقررات الفصل:`, extraAr: tbl("ar") + gbox("ar") + P("تجدون نتائجكم وسجلكم الأكاديمي كاملاً في «الخدمات الذاتية للطلاب والطالبات» تحت «درجاتي».", "rtl"),
+        en: `The results of the semester (${tnEn}) have been approved and published, and your semester and cumulative GPA calculated. Your results in the semester's courses:`, extraEn: tbl("en") + gbox("en") + P("Your results and full academic record are in the Student Self-Service under “My grades”.", "ltr"),
+        btn: { url: portal(p.id), ar: "عرض نتائجي في البوابة", en: "View my results in the portal" } };
     } else if (r0.kind === "news") {
       const n = NW.get(String(r0.data?.news || ""));
       if (!n) { await done(ids, false, 0, "news_gone", true); skipped++; continue; }
