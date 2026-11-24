@@ -140,12 +140,21 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
         await q.goto(SITE.replace(/app\.html.*$/, '') + '?gd=1' + (liveV ? '&_b=' + liveV : '') + '#/graduates', { waitUntil: 'load', timeout: 90000 }); await q.waitForTimeout(25000);
         const gd = await q.evaluate(() => { const a = document.querySelector('#app'); const t = ((a && a.innerText) || '').replace(/\s+/g, ' ').trim(); return { url: location.pathname + location.hash, loading: /جارٍ التحميل|Loading/.test(t.slice(0, 200)) && t.length < 400, len: t.length, h: [...document.querySelectorAll('#app h2,#app h3')].map((x) => x.textContent.trim()).slice(0, 3), me: typeof me !== 'undefined' && me ? me.r : null }; });
         console.log('CHECK e2e-graduates-direct-' + role, gd.loading || !gd.len ? 'FAIL' : 'OK', JSON.stringify(gd), 'errs', e2.slice(0, 8).join(' | ').slice(0, 900));
+        // v260: تبويب جديد / إعادة فتح التطبيق: الجلسة تبقى، وزر الخروج ظاهر على الجوال، والبوابة تُفتح
+        try { const q2 = await c2.newPage(); await q2.goto(SITE.replace(/app\.html.*$/, '') + '?nt=1' + (liveV ? '&_b=' + liveV : '') + '#/graduates', { waitUntil: 'load', timeout: 90000 }); await q2.waitForTimeout(20000);
+          const nt = await q2.evaluate(() => { const a = document.querySelector('#app'); const t = ((a && a.innerText) || '').replace(/\s+/g, ' ').trim(); const o = document.querySelector('.h69-out'); return { me: typeof me !== 'undefined' && me ? me.r : null, loading: /جارٍ التحميل|Loading/.test(t.slice(0, 200)) && t.length < 400, portal: /بوابة الخريجين/.test(t) && !/كلمة المرور/.test(t.slice(0, 300)), out: !!(o && o.offsetWidth > 0) }; });
+          console.log('CHECK e2e-newtab-' + role, nt.me === role && !nt.loading && nt.portal && nt.out ? 'OK' : 'FAIL', JSON.stringify(nt));
+          await q2.close();
+        } catch (e) { console.log('CHECK e2e-newtab-' + role, 'FAIL', String(e).slice(0, 200)); }
         await q.evaluate((r) => { location.hash = r; }, route); await q.waitForTimeout(3000);
       } catch (e) { console.log('CHECK e2e-graduates-' + role, 'FAIL', String(e).slice(0, 200)); }
       const links = await q.evaluate(() => [...new Set([...document.querySelectorAll('#app a[href^="#/"], nav a[href^="#/"]')].map((a) => a.getAttribute('href')).filter((h) => /^#\/(student|fp|idn|studyplan|exams|calendar|me)/.test(h)))].slice(0, 12));
       const pages = {};
       for (const L of links) { await q.evaluate((h) => { location.hash = h; }, L); await q.waitForTimeout(2500); pages[L] = await q.evaluate(() => { const t = (document.querySelector('#app') || {}).innerText || ''; return t.length + (/undefined|NaN|\[object Object\]/.test(t) ? ' BAD' : ''); }); }
       console.log('CHECK e2e-' + role, st.me === role && st.len > 200 && !st.bad && !e2.length ? 'OK' : 'FAIL', JSON.stringify({ first: at, st, pages, errs: e2.slice(0, 5) }));
+      try { await q.evaluate(() => { localStorage.setItem('act260', String(Date.now() - 31 * 60000)); });
+        const q3 = await c2.newPage(); await q3.goto(SITE.replace(/app\.html.*$/, '') + '?nt=2' + (liveV ? '&_b=' + liveV : '') + '#/student', { waitUntil: 'load', timeout: 90000 }); await q3.waitForTimeout(12000);
+        const id3 = await q3.evaluate(() => ({ me: typeof me !== 'undefined' && me ? me.r : null })); console.log('CHECK e2e-idle-' + role, id3.me ? 'FAIL' : 'OK', JSON.stringify(id3)); } catch (e) { console.log('CHECK e2e-idle-' + role, 'FAIL', String(e).slice(0, 150)); }
       await c2.close();
       const rm = await p.evaluate(async (ref) => { try { const r = await V51.fn63({ action: 'remove', ref_id: ref }); return r && (r.ok || r.removed || r.items) ? 'removed' : JSON.stringify(r).slice(0, 120); } catch (e) { return String(e).slice(0, 120); } }, ref);
       console.log('CHECK e2e-cleanup-' + role, /removed/.test(rm) ? 'OK' : 'FAIL', rm);
