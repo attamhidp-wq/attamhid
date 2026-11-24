@@ -19541,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v258';
+window.__BUILD__='v259';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -21081,6 +21081,11 @@ FT.load=async function(force){if(typeof sb==='undefined'||!sb||!me)return;if(FT.
  /* v258: كل طلب بمهلته؛ الأساسيان (الهوية والسجلات) يُعادان تلقائياً حتى 3 مرات، وغيرهما يُستغنى عنه إن تعذّر؛ ويُسجَّل زمن كل طلب (بلا بيانات شخصية) إن تأخر أو فشل */
  var t0=Date.now(),lg=[],TO=function(pr,ms){return Promise.race([Promise.resolve(pr),new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'))},ms||12000)})])};
  var one=async function(k,mk,need){for(var i=0;i<(need?3:1);i++){var s0=Date.now();try{var r=await TO(mk(),need?[7000,10000,14000][i]:8000);if(r&&r.error)throw r.error;lg.push(k+':ok'+(Date.now()-s0));return r?r.data:null}catch(e){lg.push(k+':'+String((e&&e.message)||e).slice(0,30)+(Date.now()-s0));if(!need)return undefined;if(i<2)await new Promise(function(z){setTimeout(z,800*(i+1))});else throw e}}};
+ /* v259: طريق مباشر — طلب واحد (ft_boot) بـ fetch مباشرة دون مكتبة Supabase، بمهلة وإعادة؛ وإن تعذّر يُستعمل الطريق القديم */
+ var tok=async function(){try{var j=JSON.parse(localStorage.getItem('sb-ttuelhswxyjbjdnydmns-auth-token')||'null');if(j&&j.access_token&&(j.expires_at||0)*1000>Date.now()+30000)return j.access_token}catch(e){}try{var r=await TO(sb.auth.getSession(),5000);return r&&r.data&&r.data.session&&r.data.session.access_token}catch(e){return null}};
+ var boot=async function(){for(var i=0;i<3;i++){var s0=Date.now(),ac=typeof AbortController!=='undefined'?new AbortController():null,tm=setTimeout(function(){try{ac&&ac.abort()}catch(e){}},[6000,9000,12000][i]);try{var t=await tok();if(!t)throw new Error('notoken');var r=await TO(fetch(SB_URL+'/rest/v1/rpc/ft_boot',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+t},body:'{}',signal:ac?ac.signal:undefined,cache:'no-store'}),[6500,9500,12500][i]);if(!r.ok)throw new Error('http'+r.status);var d=await r.json();clearTimeout(tm);lg.push('boot:ok'+(Date.now()-s0));return d}catch(e){clearTimeout(tm);lg.push('boot:'+String((e&&e.message)||e).slice(0,24)+(Date.now()-s0));if(/notoken|http4/.test(String(e&&e.message)))return null;if(i<2)await new Promise(function(z){setTimeout(z,600)})}}return null};
+ var bd=await boot();if(bd&&bd.who){FT.who=bd.who||{};FT.cfg=bd.cfg||{};FT.recs=bd.recs||[];FT.notes=bd.notes||[];FT.sig=bd.sig||{};FT.ld=Date.now();try{sessionStorage.setItem('ft259c',JSON.stringify({u:String(me.id||me.u||''),d:bd}))}catch(e){}
+  if(staff()&&!FT.ppl){try{FT.ppl=(await TO(sb.rpc('ft_people'),12000)).data||null}catch(e){}}FT.busy=0;var tb=Date.now()-t0;if(tb>6000||lg.length>1){try{window.__rep175&&window.__rep175('ftload','boot '+tb+'ms '+lg.join(' '),String(location.hash).slice(0,40))}catch(e){}}return}
  try{var a=await Promise.all([one('who',function(){return sb.rpc('ft_whoami')},1),one('cfg',function(){return sb.rpc('ft_cfg_get')}),one('rec',function(){return sb.from('ft_rec').select('*').order('updated_at',{ascending:false})},1),one('note',function(){return sb.from('ft_note').select('*').order('id',{ascending:false}).limit(60)}),one('sig',function(){return sb.rpc('ft_signers')})]);
   FT.who=a[0]||{};if(a[1]!==undefined||!FT.cfg)FT.cfg=a[1]||FT.cfg||{};FT.recs=a[2]||[];if(a[3]!==undefined)FT.notes=a[3]||[];if(a[4]!==undefined)FT.sig=a[4]||{};FT.ld=Date.now();
   if(staff()&&!FT.ppl){try{FT.ppl=(await TO(sb.rpc('ft_people'),12000)).data||null}catch(e){}}
@@ -21177,6 +21182,7 @@ var notesBox=function(){var n=FT.notes.slice(0,8);if(!n.length)return '';return 
 V.graduates=function(){
  if(typeof me==='undefined'||!me)return loginCard();
  if(typeof sb==='undefined'||!sb)return '<div class="msg er">'+Lx('البوابة تتطلب الاتصال بالخادم.','The portal requires a server connection.')+'</div>';
+ if(!FT.ld&&!FT.c259){FT.c259=1;try{var c9=JSON.parse(sessionStorage.getItem('ft259c')||'null');if(c9&&c9.d&&c9.d.who&&c9.u===String(me.id||me.u||'')){var d9=c9.d;FT.who=d9.who;FT.cfg=d9.cfg||{};FT.recs=d9.recs||[];FT.notes=d9.notes||[];FT.sig=d9.sig||{};FT.ld=1;setTimeout(function(){FT.load(1).then(function(){window.__force71=1;go()})},50)}}catch(e){}}
  if(!FT.ld){if(FT.err&&!FT.busy)return '<div class="msg er">'+Lx('تعذّر تحميل البوابة. تحقق من الاتصال ثم أعد المحاولة.','The portal could not be loaded. Check your connection and try again.')+'</div><p>'+btn(Lx('إعادة المحاولة','Try again'),'V51.h.ft231retry()')+'</p>';
   FT.load().then(function(){window.__force71=1;go()});
   /* حارس: إن اكتمل التحميل ولم تُرسم الصفحة لأي سبب تُرسم بالقوة */
