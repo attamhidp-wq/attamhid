@@ -90,6 +90,21 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     const td = await p.evaluate(() => { try { const s = (S.students || [])[0], f = (S.faculty || [])[0]; const a = s ? V51.td241(s, 'student') : '', b = f ? V51.td241(f, 'faculty') : '';
       return { s: /td241/.test(a) && a.indexOf('undefined') < 0 && a.indexOf('NaN') < 0, f: /td241/.test(b) && b.indexOf('undefined') < 0 && b.indexOf('NaN') < 0, len: a.length, ev: (a.match(/<li>/g) || []).length }; } catch (e) { return { err: String(e) }; } });
     console.log('CHECK today', td.s && td.f ? 'OK' : 'FAIL', JSON.stringify(td));
+    // v255: الوضع البنغالي — نصوص بقيت بالإنجليزية في الصفحات العامة (لا بيانات شخصية: صفحات عامة فقط)
+    try {
+      const bc = await b.newContext({ viewport: { width: 412, height: 880 }, serviceWorkers: 'block' });
+      await bc.addInitScript(() => { try { localStorage.setItem('tl3', 'bn'); localStorage.setItem('tl', 'en'); } catch (e) {} });
+      const bp = await bc.newPage(); const left = {}; let pages = 0;
+      for (const r of ['#/', '#/programs', '#/admission', '#/verify', '#/register', '#/review', '#/plt', '#/training', '#/graduates', '#/ext-training', '#/news', '#/login/student']) {
+        await bp.goto(SITE.replace(/app\.html.*$/, '') + 'app.html' + (liveV ? '?_b=' + liveV : '') + r, { waitUntil: 'load', timeout: 90000 }).catch(() => {}); await bp.waitForTimeout(6000);
+        const t = await bp.evaluate(() => { const o = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { const p = n.parentElement; if (!p || p.closest('script,style,[data-noi18n],.l3,code,svg') || !p.offsetParent) continue; const v = n.nodeValue.replace(/\s+/g, ' ').trim(); if (v.length > 2 && /[A-Za-z]{3,}/.test(v) && !/[\u0980-\u09FF]/.test(v) && !/@|https?:|^[A-Z0-9 .:\/()+\-–—#]+$/.test(v)) o.push(v.slice(0, 90)); } return o; });
+        pages++; t.forEach((x) => { left[x] = (left[x] || 0) + 1; });
+      }
+      const k = Object.keys(left);
+      console.log('CHECK bn', k.length <= 25 ? 'OK' : 'WARN', JSON.stringify({ pages, untranslated: k.length, sample: k.slice(0, 60) }));
+      await bc.close();
+    } catch (e) { console.log('CHECK bn', 'FAIL', String(e).slice(0, 200)); }
+
     await p.evaluate(() => { location.hash = '#/graduates'; }); await p.waitForTimeout(8000);
     console.log('CHECK graduates', /بوابة الخريجين/.test(t) && !/جارٍ التحميل/.test(t) ? 'OK' : 'FAIL', t);
   }

@@ -25,3 +25,16 @@ html:root body #app>.hero.h120.h120 .hc a .i svg{width:18px!important;height:18p
 html:root body #app>.hero.h120.h120 .hc a .ar svg{opacity:.45!important;color:#FFFFFF!important}
 html:root body #app>.hero.h120.h120 h1::after{background:#CDB27A!important;height:2px!important;width:64px!important;border-radius:0!important;box-shadow:none!important}
 @media (max-width:600px){html:root body #app>.hero.h120.h120 .cta .btn{flex:1 1 100%!important;justify-content:center!important;text-align:center!important}}
+
+#nb248 .nb248b{background:transparent!important;border:0!important;box-shadow:none!important;width:44px;height:44px;display:inline-flex!important;align-items:center;justify-content:center;color:inherit!important;cursor:pointer;border-radius:8px!important;position:relative}
+#nb248 .nb248b:hover,#nb248 .nb248b:focus-visible{background:rgba(18,48,107,.08)!important}
+@media (max-width:760px){#nb248 .nb248p{position:fixed!important;top:64px!important;left:10px!important;right:10px!important;inset-inline-end:auto!important;width:auto!important;max-height:calc(100vh - 150px)!important;z-index:10050!important}}
+
+#app .adm255{margin:22px 0 6px}
+#app .adm255>h3{font-size:16px;margin:0 0 12px;padding-inline-start:10px;border-inline-start:3px solid #12306B}
+#app .adm255g{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+#app .adm255g>.box{margin:0!important;border:1px solid #E3E8F1!important;border-radius:8px!important;box-shadow:none!important;padding:14px 16px!important}
+#app .adm255g>.box b{display:block;margin-bottom:8px;font-size:15px}
+#app .adm255g>.box p{margin:6px 0 0}
+#app .adm255g .btn.s{margin:4px 0 0 4px}
+html[data-theme=dark] #app .adm255g>.box{border-color:#2a3a5a!important}

@@ -525,7 +525,7 @@ function walk(o,d){if(!o||typeof o!=='object'||d>12||seen.has(o))return;seen.add
 walk(S,0);X.n121=1;X.n126=1;try{save()}catch(e){}if(n)console.info('v121 rename',n)}catch(e){console.warn('v121 rename',e)}})();
 try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A valid graduation certificate has already been issued','الصورة ✓':'Photo ✓','+ صورة':'+ Photo','معاينة — غير معتمدة':'Preview — not approved'})}catch(e){}
 </script>
-<script charset="utf-8" src="js/s42-af7a10300a.js"></script>
+<script charset="utf-8" src="js/s42-28c187e51a.js"></script>
 <script charset="utf-8" src="js/s43-ba2ad4d222.js"></script>
 <script>
 /* v100: شريط «جارٍ تحميل أحدث البيانات» أثناء التحميل الخلفي بعد الدخول */
@@ -604,6 +604,16 @@ try{window.__ready173=1;window.go()}catch(e){console.error('v173 ready',e);try{w
 try{setTimeout(function(){try{var bad=[];if(typeof window.loginAny!=='function'||String(window.loginAny).indexOf('adm63')<0)bad.push('loginAny');['go','certHTML','mkBlob','dl','fv','toast','mdl','__foCanvas'].forEach(function(f){if(typeof window[f]!=='function')bad.push(f)});if(typeof V51==='undefined'||!V51.h)bad.push('V51.h');if(typeof sb==='undefined'||!sb)bad.push('sb');if(bad.length&&window.__rep175)window.__rep175('selfcheck','missing: '+bad.join(','),'')}catch(e){}},4000)}catch(e){}
 
 </script>
-<link rel="stylesheet" id="css253" href="js/css253-872113a77a.css">
+<link rel="stylesheet" id="css253" href="js/css253-019b503826.css">
+<script id="p255">
+/* v255 — لوحة الإدارة: صندوقا «البيانات الأساسية» و«بوابة الخريجين/التدريب الخارجي» كانا يُحقنان أعلى كل تبويب فيزدحم رأس الصفحة.
+   صارا قسماً واحداً مرتباً أسفل «لوحة البداية» فقط، ويُخفيان في بقية التبويبات (روابطهما موجودة في «أقسام اللوحة»). */
+(function(){function fix(){try{if(!/^#\/admin/.test(location.hash))return;var a=document.getElementById('app');if(!a)return;var bx=[].slice.call(a.querySelectorAll('.ft231adm,.idn235adm'));var sec=a.querySelector('.adm255');if(!bx.length&&!sec)return;
+var dash=/(اختصارات|Shortcuts|দ্রুত লিংক)/.test(String(a.innerText||'').slice(0,6000));
+if(!dash){bx.forEach(function(b){b.style.display='none'});if(sec)sec.style.display='none';return}
+if(!sec){sec=document.createElement('section');sec.className='adm255';sec.innerHTML='<h3>'+((window.LG==='en')?'Portals & services':'البوابات والخدمات الملحقة')+'</h3><div class="adm255g"></div>';a.appendChild(sec)}
+sec.style.display='';var g=sec.querySelector('.adm255g');bx.forEach(function(b){b.style.display='';if(b.parentNode!==g)g.appendChild(b)})}catch(e){}}
+try{GOH.post.push(function(){setTimeout(fix,0);setTimeout(fix,400)})}catch(e){}window.addEventListener('hashchange',function(){setTimeout(fix,300)});setTimeout(fix,1500)})();
+</script>
 </body>
 </html>
