@@ -4,6 +4,7 @@
 // بيانات Gmail: أسرار الدالة GMAIL_USER/GMAIL_APP_PASSWORD، أو الخزنة المشفّرة (vault: gmail_user, gmail_app_password)
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import nodemailer from "npm:nodemailer@6.9.16";
+import { nameEn274 } from "./tr274.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -711,7 +712,7 @@ function termTpl(p: Person, data: Record<string, any>, sd: Record<string, any>, 
 }
 function person(id: string, d: Record<string, unknown>): Person {
   const sx = String(d.sex || d.gender || "").toLowerCase();
-  return { id, email: String(d.email || "").trim(), name: String(d.name || ""), nameEn: String(d.nameEn || d.name || ""), f: /أنثى|female|^f$|انثى/.test(sx) };
+  return { id, email: String(d.email || "").trim(), name: String(d.name || ""), nameEn: nameEn274(String(d.nameEn || ""), String(d.name || "")), f: /أنثى|female|^f$|انثى/.test(sx) };
 }
 const dearA = (p: Person, kind: string) => (kind === "student" ? (p.f ? "عزيزتي الطالبة " : "عزيزي الطالب ") : (p.f ? "المكرمة الأستاذة " : "المكرم الأستاذ ")) + p.name;
 const dearE = (p: Person) => "Dear " + p.nameEn;
