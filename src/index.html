@@ -19541,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v264';
+window.__BUILD__='v265';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -23073,7 +23073,7 @@ H.fin263staff=function(){var t=(document.getElementById('fin263staff')||{}).valu
 H.fin263csv=function(){var R=filt(),q=function(x){x=String(x==null?'':x);return /[",\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x};var h=['id','kind','ref','name','term','base','pct','due','cur','status','trx','sender','claimed_at','confirmed_by','confirmed_at','confirmed_amount'];var lines=[h.join(',')].concat(R.map(function(r){var c=r.claim||{},k=r.conf||{};return [r.id,r.kind,r.ref,r.name,r.term,r.base,r.pct,r.due,r.cur,r.status,c.trx,c.from,c.at,k.by,k.at,k.amount].map(q).join(',')}));var b=new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='attamhid-finance-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
 /* ---------- المسار #/fin ---------- */
 V.fin=function(){if(!isMe())return '<div class="box"><p>'+L('يلزم تسجيل الدخول.','Please sign in.')+'</p><p><a class="btn" href="#/login">'+L('تسجيل الدخول','Sign in')+'</a></p></div>';
- if(stu()){if(!SS.ld)loadStu();return stuBox(true)}
+ if(stu()){if(!SS.busy&&(!SS.ld||Date.now()-SS.ld>30000))loadStu();return stuBox(true)}
  if(F.rows==null){load();return '<p class="mu">'+L('جارٍ التحميل…','Loading…')+'</p>'}
  if(F.err)return '<div class="msg er">'+L('تعذّر تحميل السجل المالي.','Could not load the finance ledger.')+'</div><p>'+bt(L('إعادة المحاولة','Try again'),'V51.h.fin263re()','')+'</p>';
  if(!F.ok)return '<div class="msg er">'+L('السجل المالي للإدارة المركزية والجهات المخوّلة فقط.','The finance ledger is for the central administration and authorised staff only.')+'</div>';
