@@ -19541,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v261';
+window.__BUILD__='v262';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -21091,6 +21091,8 @@ FT.load=async function(force){D9('load f='+(force?1:0)+' sb='+(typeof sb!=='unde
   FT.who=a[0]||{};if(a[1]!==undefined||!FT.cfg)FT.cfg=a[1]||FT.cfg||{};FT.recs=a[2]||[];if(a[3]!==undefined)FT.notes=a[3]||[];if(a[4]!==undefined)FT.sig=a[4]||{};FT.ld=Date.now();
   if(staff()&&!FT.ppl){try{FT.ppl=(await TO(sb.rpc('ft_people'),12000)).data||null}catch(e){}}
  }catch(e){console.error('ft225 load',e);FT.err=String((e&&e.message)||e||'error')}finally{FT.busy=0;var tt=Date.now()-t0;if(FT.err||tt>6000||lg.some(function(x){return !/:ok/.test(x)})){try{window.__rep175&&window.__rep175('ftload',(FT.err?'ERR ':'')+tt+'ms '+lg.join(' '),String(location.hash).slice(0,40))}catch(e){}}}};
+/* v262: تحميل واحد في الوقت نفسه — كل من يطلب التحميل أثناء جريانه ينتظر الطلب نفسه؛ كان الطلب المتكرر يعود فوراً فيُعاد الرسم بلا توقف وتتجمد الصفحة على «جارٍ التحميل» */
+(function(){var L0=FT.load;FT.load=function(f){if(FT.pr)return FT.pr;FT.busy=0;FT.pr=Promise.resolve().then(function(){return L0(f)}).catch(function(e){FT.err=String((e&&e.message)||e)}).then(function(){FT.pr=null;FT.busy=0;if(!FT.ld&&!FT.err)FT.err='load';D9('done ld='+(FT.ld?1:0)+' err='+(FT.err||''))});return FT.pr}})();
 FT.run=async function(fn,ok){try{var r=await fn();if(ok)T(ok);await FT.load(1);go();return r}catch(e){T(msgOf(e));throw e}};
 FT.act=function(id,act,p,ok){return FT.run(function(){return FT.rpc('ft_act',{p_id:id,p_act:act,p:p||{}})},ok||Lx('تم.','Done.'))};
 H.ft231retry=function(){FT.err='';FT.ld=0;FT.busy=0;FT.load(1).then(function(){window.__force71=1;go()});window.__force71=1;go()};
@@ -21164,7 +21166,7 @@ var loginCard=function(){var W=window.V51||{};if(W.lgHTML)try{return W.lgHTML({t
  '<form class="v51g" onsubmit="V51.h.ft225login(this);return false"><label>'+Lx('الصفة','I am')+'<select name="r">'+opt('student',Lx('طالب','Student'))+opt('faculty',Lx('عضو هيئة تدريس / مشرف','Faculty / supervisor'))+'</select></label>'+
  '<label>'+Lx('الرقم الأكاديمي أو الرقم العضوي','Academic or member number')+'<input name="u" required autocomplete="username" dir="ltr"></label><label>'+Lx('كلمة المرور','Password')+'<input name="p" type="password" required autocomplete="current-password" dir="ltr"></label><div><button class="btn">'+Lx('دخول','Sign in')+'</button></div></form><div id="out"></div>'+
  '</section>'};
-H.ft225login=async function(f){D9('login');var v=V8(f);try{sessionStorage.setItem('ft225ret','1')}catch(e){}try{await sbUserLogin({u:v.u,p:v.p,r:v.r})}catch(e){}if(typeof me!=='undefined'&&me&&(me.r==='student'||me.r==='faculty')){FT.ld=0;location.hash='#/graduates';go()}};
+H.ft225login=async function(f){D9('login');if(FT.lg262&&Date.now()-FT.lg262<15000)return;FT.lg262=Date.now();var v=V8(f);try{sessionStorage.setItem('ft225ret','1')}catch(e){}try{await sbUserLogin({u:v.u,p:v.p,r:v.r})}catch(e){}FT.lg262=0;if(typeof me!=='undefined'&&me&&(me.r==='student'||me.r==='faculty')){FT.ld=0;FT.err='';location.hash='#/graduates';window.__force71=1;go()}};
 
 /* ---------- المسار ---------- */
 var parts=function(){return location.hash.replace(/^#\/?/,'').split('/').map(function(x){try{return decodeURIComponent(x)}catch(e){return x}})};
