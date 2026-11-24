@@ -33,6 +33,11 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
   await p.evaluate((c) => sbAdminLogin({ u: c.email, p: c.password }), cred);
   await p.waitForFunction(() => typeof me !== 'undefined' && me && me.r === 'admin' && /^#\/admin/.test(location.hash), null, { timeout: 120000 });
   await p.waitForTimeout(12000);
+  // v272: مهام خاصة بإذن الإدارة (لا تُطبع أسماء ولا عناوين)
+  if (/^rcpt-(preview|send)$/.test(process.env.TASK || '')) {
+    const r = await p.evaluate((m) => window.fin263rcptBatch ? window.fin263rcptBatch(m) : { err: ['nofn'] }, process.env.TASK.slice(5));
+    console.log('TASK', process.env.TASK, JSON.stringify(r)); await b.close(); process.exit(0);
+  }
   const res = await p.evaluate(() => V51.robot134());
   console.log('result', JSON.stringify(res));
   await p.waitForTimeout(15000);

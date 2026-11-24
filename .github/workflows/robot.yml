@@ -9,6 +9,10 @@ on:
         description: 'عنوان التطبيق المراد فحصه (فارغ = الموقع الحي)'
         required: false
         default: ''
+      task:
+        description: 'مهمة خاصة (rcpt-preview أو rcpt-send)'
+        required: false
+        default: ''
 permissions:
   contents: read
   id-token: write
@@ -43,3 +47,4 @@ jobs:
         run: node tools/robot.js
         env:
           SITE: ${{ github.event.inputs.site || 'https://attamhid.com/' }}
+          TASK: ${{ github.event.inputs.task || '' }}

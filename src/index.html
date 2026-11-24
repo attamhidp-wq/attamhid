@@ -19541,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v272';
+window.__BUILD__='v273';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -23166,8 +23166,16 @@ async function receipt(r,o){o=o||{};var k=r.conf||{},nm=r.name,nmEn='',em='',sid
   var c=V5.issueReceipt71({name:nm,nameEn:nmEn,sid:sid,date:today(),pay:pay});save();
   await sb.rpc('fin_admin',{act:'rcpt',p_id:r.id,p:{rcpt:c.rec}});
   toast(L('صدر الإيصال رقم ','Receipt issued No. ')+c.rec);
-  if(em&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)&&V5.sendReceipt71){var x=await V5.sendReceipt71(c.rec,em);toast(x&&x.ok?L('أُرسل الإيصال إلى ','Receipt sent to ')+em:L('لم يُرسل الإيصال بالبريد؛ أرسله من «المدفوعات والإيصالات».','The receipt was not emailed; send it from “Payments & Receipts”.'))}
+  if(o.to)em=o.to;if(o.noSend)em='';if(em&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)&&V5.sendReceipt71){var x=await V5.sendReceipt71(c.rec,em);if(o.out)o.out.sent=!!(x&&x.ok);toast(x&&x.ok?L('أُرسل الإيصال إلى ','Receipt sent to ')+em:L('لم يُرسل الإيصال بالبريد؛ أرسله من «المدفوعات والإيصالات».','The receipt was not emailed; send it from “Payments & Receipts”.'))}
   return c}catch(e){toast(L('تعذّر إصدار الإيصال: ','Could not issue the receipt: ')+String((e&&e.message)||e))}}
+/* v272: إيصالات المدفوعات المؤكَّدة — معاينة إلى بريد المعهد أولاً، ثم الإرسال إلى الدافعين بعد موافقة الإدارة */
+W.fin263rcptBatch=async function(mode){var out={mode:mode,n:0,sent:0,err:[]};try{await load(1);var hm=await sb.from('settings').select('data').eq('key','home').maybeSingle();var inst=String((hm&&hm.data&&hm.data.data&&hm.data.data.em)||'').trim();
+ var R=(F.rows||[]).filter(function(r){return r.kind==='plt'&&r.status==='confirmed'});
+ if(mode==='preview'){for(var i=0;i<R.length;i++){var r=R[i];out.n++;if(r.rcpt){var x=await V5.sendReceipt71(r.rcpt,inst);if(x&&x.ok)out.sent++;else out.err.push(String(x&&x.error||'x'));continue}
+   var o={to:inst,out:{}};var c=await receipt(r,o);if(o.out.sent)out.sent++;else out.err.push(c?'mail':'issue');try{await sb.rpc('fin_admin',{act:'note',p_id:r.id,p:{note:'معاينة الإيصال '+(c&&c.rec||'')+' أُرسلت إلى بريد المعهد بانتظار موافقة الإدارة'}})}catch(e){}}}
+ else if(mode==='send'){for(var j=0;j<R.length;j++){var r2=R[j];if(!r2.rcpt)continue;if(JSON.stringify(r2.notes||'').indexOf('rcpt-sent')>=0)continue;out.n++;var q=await sb.from('v210_plt').select('id,data').eq('id',r2.ref).maybeSingle();var em=String((q&&q.data&&q.data.data&&q.data.data.email)||'').trim();
+   var y=await V5.sendReceipt71(r2.rcpt,em);if(y&&y.ok){out.sent++;try{await sb.rpc('fin_admin',{act:'note',p_id:r2.id,p:{note:'rcpt-sent: أُرسل الإيصال '+r2.rcpt+' إلى الدافع بعد موافقة الإدارة'}})}catch(e){}}else out.err.push(String(y&&y.error||'x'))}}
+ }catch(e){out.err.push(String(e&&e.message||e).slice(0,80))}return out};
 H.fin263rc=async function(id){var r=rowOf(id);if(!r||r.status!=='confirmed'||r.rcpt)return;if(!confirm(L('إصدار إيصال دفع رسمي لهذه الدفعة وإرساله بالبريد؟','Issue an official payment receipt for this payment and email it?')))return;await receipt(r);F.rows=null;load(1)};
 H.fin263remAll=async function(){var R=(F.rows||[]).filter(function(r){return r.kind==='sem'&&late(r)>0});if(!R.length)return;if(!confirm(L('إرسال تذكير بالبريد إلى '+R.length+' طالباً متأخراً؟','Email a reminder to '+R.length+' overdue students?')))return;var n=0;for(var i=0;i<R.length;i++){try{var x=await sb.rpc('fin_admin',{act:'remind',p_id:R[i].id,p:{}});if(x&&x.data&&x.data.ok)n++}catch(e){}}toast(L('أُرسل تذكير إلى ','Reminders sent: ')+n);F.rows=null;load(1)};
 H.fin263gen=async function(){var t=(document.getElementById('fin263term')||{}).value;if(!t)return;var it=(S.students||[]).filter(function(s){return regd(s)&&!s.test240}).map(function(s){return itemFor(s,t)}).filter(Boolean);if(!it.length){toast(L('لا يوجد طلاب منتظمون.','No registered students.'));return}
@@ -23203,6 +23211,7 @@ try{GOH.post.push(function(){try{if(!isMe())return;var a=document.getElementById
  if(me.r==='admin'&&/^#\/admin/.test(h)){if(central()&&F.rows==null&&!F.busy)load();if(!a.querySelector('.fin263adm')&&/(اختصارات|Shortcuts|দ্রুত লিংক)/.test(String(a.innerText||'').slice(0,6000))){var s2=F.rows?sums():null;var d=document.createElement('div');d.className='box ft231adm fin263adm';d.innerHTML='<b>'+L('السجل المالي','Finance ledger')+'</b><p>'+(s2?(s2.nClaimed?'<span class="tag wa">'+L(s2.nClaimed+' دفعة بانتظار التأكيد',s2.nClaimed+' payments awaiting confirmation')+'</span> ':'')+(s2.nLate?'<span class="tag er">'+L(s2.nLate+' مستحق متأخر',s2.nLate+' overdue')+'</span> ':'')+L('المؤكَّد التراكمي: ','Confirmed to date: ')+'<b dir="ltr">'+e0(s2.all)+'</b>':L('المستحقات، تأكيد الدفع، المنح، والتقارير المالية.','Dues, payment confirmation, scholarships and financial reports.'))+'</p><p><button type="button" class="btn s" onclick="tab=\'v263f\';go()">'+L('فتح السجل المالي','Open the finance ledger')+'</button></p>';var g=a.querySelector('.adm255 .adm255g');if(g)g.insertBefore(d,g.firstChild);else a.appendChild(d)}}
 }catch(e){}})}catch(e){}
 })();
+
 </script>
 <script id="p270">
 /* v270 — اعتماد ونشر نتائج الفصل (زر واحد لكل فصل)
