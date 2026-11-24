@@ -19541,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v263';
+window.__BUILD__='v264';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -22974,8 +22974,8 @@ try{GOH.post.push(function(){setTimeout(fix,0);setTimeout(fix,400)})}catch(e){}w
    (مستحق ← يدفع الطالب ويُدخل بيانات العملية ← تؤكد الإدارة المركزية أو الجهة المخوّلة ← يُحتسب المبلغ المؤكَّد وحده).
    درجات الفصل لا تظهر للطالب إلا بعد تأكيد دفع رسوم ذلك الفصل أو الإعفاء منها. */
 (function(){
-var W=window,V5=(W.__c51&&__c51.V5)||{};
-var L=function(a,e){try{return (0,__c51.L)(a,e)}catch(x){return a}};
+var W=window,V5=W.V51||{};
+var L=function(a,e){try{return W.V51&&V51.L?V51.L(a,e):a}catch(x){return a}};
 var e0=function(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
 var bt=function(t,on,c){return '<button type="button" class="btn'+(c?' '+c:'')+'" onclick="'+on+'">'+t+'</button>'};
 var num=function(n){return Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2})};
@@ -23011,7 +23011,7 @@ function stuBox(full){var rows=SS.rows||[],c=cfgOf(),pend=rows.filter(function(r
   h+='</div>'});
  if(full&&pend.length)h+='<p class="mu">'+L('درجات الفصل الدراسي تظهر في بوابتك بعد تأكيد دفع رسومه.','A semester’s grades appear in your portal once its fees are confirmed.')+'</p>';
  return h+'</div>'}
-var H=(W.V51&&V51.h)||(V5.h)||{};
+var H=V5.h||{};
 H.fin263claim=async function(f,id){var trx=f.trx.value,fr=f.from.value,b=f.querySelector('button');if(b)b.disabled=true;var r=null;try{r=await sb.rpc('fin_claim',{p_id:id,trx:trx,sender:fr})}catch(e){r={error:e}}var d=r&&r.data;if(d&&d.ok){toast(L('أُرسلت بيانات الدفع، وهي الآن بانتظار التأكيد.','Payment details sent; awaiting confirmation.'));SS.ld=0;loadStu()}else{var er=d&&d.error;toast(er==='trx'?L('رقم العملية غير صحيح.','Invalid transaction ID.'):er==='sender'?L('رقم المحوِّل غير صحيح.','Invalid sender number.'):er==='dup'?L('رقم العملية مستعمل من قبل.','This transaction ID was already used.'):er==='state'?L('حالة المطالبة لا تسمح بذلك الآن.','This claim cannot be paid now.'):L('تعذّر الإرسال، حاول مرة أخرى.','Could not send; try again.'));if(b)b.disabled=false}return false};
 /* ---------- الإدارة: إصدار مستحقات الفصل ---------- */
 function regd(s){try{return V5.registered72?V5.registered72(s):!!(s&&!s.deleted&&s.prog)}catch(e){return false}}

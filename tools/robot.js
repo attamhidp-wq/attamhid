@@ -159,7 +159,7 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       console.log('CHECK e2e-' + role, st.me === role && st.len > 200 && !st.bad && !e2.length ? 'OK' : 'FAIL', JSON.stringify({ first: at, st, pages, errs: e2.slice(0, 5) }));
       // v263: دورة الرسوم كاملة للطالب التجريبي: إصدار ← يدخل الطالب بيانات الدفع ← رفض ← إعادة ← تأكيد ← الحالة عند الطالب
       if (role === 'student') { try {
-        const term = await p.evaluate(() => { try { return __c51.V5.curTerm61().id; } catch (e) { return ''; } });
+        const term = await p.evaluate(() => { try { return V51.curTerm61().id; } catch (e) { return ''; } });
         const g1 = await p.evaluate(async (a) => { const r = await sb.rpc('fin_admin', { act: 'sem', p_id: null, p: { items: [{ ref: a.ref, name: 'TEST', term: a.term, base: 6000, pct: 25, cur: 'BDT' }] } }); return r.data || r.error; }, { ref, term });
         const fid = await p.evaluate(async (a) => { const r = await sb.from('fin263').select('id,due,status').eq('ref', a.ref).eq('term', a.term).maybeSingle(); return r.data; }, { ref, term });
         await q.evaluate(() => { location.hash = '#/fin'; }); await q.waitForSelector('#app .fin263s form', { timeout: 30000 });
