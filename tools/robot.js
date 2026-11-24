@@ -97,7 +97,7 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       const bp = await bc.newPage(); const left = {}; let pages = 0;
       for (const r of ['#/', '#/programs', '#/admission', '#/verify', '#/register', '#/review', '#/plt', '#/training', '#/graduates', '#/ext-training', '#/news', '#/login/student']) {
         await bp.goto(SITE.replace(/app\.html.*$/, '') + 'app.html' + (liveV ? '?_b=' + liveV : '') + r, { waitUntil: 'load', timeout: 90000 }).catch(() => {}); await bp.waitForTimeout(6000);
-        const t = await bp.evaluate(() => { const o = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { const p = n.parentElement; if (!p || p.closest('script,style,[data-noi18n],.l3,code,svg') || !p.offsetParent) continue; const v = n.nodeValue.replace(/\s+/g, ' ').trim(); if (v.length > 2 && /[A-Za-z]{3,}/.test(v) && !/[\u0980-\u09FF]/.test(v) && !/@|https?:|^[A-Z0-9 .:\/()+\-–—#]+$/.test(v)) o.push(v.slice(0, 90)); } return o; });
+        const t = await bp.evaluate(() => { const o = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { const p = n.parentElement; if (!p || p.closest('script,style,[data-noi18n],.l3,code,svg') || !p.offsetParent) continue; const v = n.nodeValue.replace(/\s+/g, ' ').trim(); if (v.length > 2 && /[A-Za-z]{3,}/.test(v) && !/[\u0980-\u09FF]/.test(v) && !/@|https?:|^[A-Z0-9 .:\/()+\-–—#]+$/.test(v)) o.push(v.slice(0, 400)); } return o; });
         pages++; t.forEach((x) => { left[x] = (left[x] || 0) + 1; });
       }
       const k = Object.keys(left);
