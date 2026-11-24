@@ -158,10 +158,11 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       for (const L of links) { await q.evaluate((h) => { location.hash = h; }, L); await q.waitForTimeout(2500); pages[L] = await q.evaluate(() => { const t = (document.querySelector('#app') || {}).innerText || ''; return t.length + (/undefined|NaN|\[object Object\]/.test(t) ? ' BAD' : ''); }); }
       console.log('CHECK e2e-' + role, st.me === role && st.len > 200 && !st.bad && !e2.length ? 'OK' : 'FAIL', JSON.stringify({ first: at, st, pages, errs: e2.slice(0, 5) }));
       // v263: دورة الرسوم كاملة للطالب التجريبي: إصدار ← يدخل الطالب بيانات الدفع ← رفض ← إعادة ← تأكيد ← الحالة عند الطالب
-      if (role === 'student') { try {
+      if (role === 'student' && process.env.GITHUB_EVENT_NAME === 'workflow_dispatch') { try {
         const term = await p.evaluate(() => { try { return V51.curTerm61().id; } catch (e) { return ''; } });
         const g1 = await p.evaluate(async (a) => { const r = await sb.rpc('fin_admin', { act: 'sem', p_id: null, p: { items: [{ ref: a.ref, name: 'TEST', term: a.term, base: 6000, pct: 25, cur: 'BDT' }] } }); return r.data || r.error; }, { ref, term });
         const fid = await p.evaluate(async (a) => { const r = await sb.from('fin263').select('id,due,status').eq('ref', a.ref).eq('term', a.term).maybeSingle(); return r.data; }, { ref, term });
+        if (fid && fid.status !== 'due') { await p.evaluate(async (id) => { await sb.rpc('fin_admin', { act: 'reject', p_id: id, p: { note: 'test reset' } }); await sb.rpc('fin_admin', { act: 'void', p_id: id, p: { note: 'test reset' } }); await sb.rpc('fin_admin', { act: 'restore', p_id: id, p: {} }); }, fid.id); }
         await q.evaluate(() => { location.hash = '#/fin'; }); await q.waitForSelector('#app .fin263s form', { timeout: 30000 });
         const sv = await q.evaluate(() => (document.querySelector('#app .fin263s') || {}).innerText.replace(/\s+/g, ' ').slice(0, 200));
         const trx = 'T' + Date.now().toString(36).toUpperCase();
@@ -172,8 +173,10 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
         const cf = await p.evaluate(async (id) => (await sb.rpc('fin_admin', { act: 'confirm', p_id: id, p: {} })).data, fid.id);
         await q.evaluate(() => { F263S.ld = 0; location.hash = '#/student'; }); await q.waitForTimeout(2500); await q.evaluate(() => { location.hash = '#/fin'; }); await q.waitForTimeout(5000);
         const sv2 = await q.evaluate(() => (document.querySelector('#app .fin263s') || {}).innerText.replace(/\s+/g, ' ').slice(0, 200));
-        const ok = fid && +fid.due === 4500 && /4,500/.test(sv) && rj && rj.ok && cl2 && cl2.ok && cf && cf.ok && /مؤكَّدة/.test(sv2);
-        console.log('CHECK fin-cycle', ok ? 'OK' : 'FAIL', JSON.stringify({ g1, fid, sv: sv.slice(0, 120), rj, cl2, cf, sv2: sv2.slice(0, 120) }));
+        // تنظيف: المبلغ التجريبي لا يبقى في الحسابات (إبطال ثم إلغاء)
+        const cl = await p.evaluate(async (id) => { const a = (await sb.rpc('fin_admin', { act: 'void', p_id: id, p: { note: 'robot test cleanup' } })).data; const b = (await sb.rpc('fin_admin', { act: 'cancel', p_id: id, p: { note: 'robot test cleanup' } })).data; return [a, b]; }, fid.id);
+        const ok = fid && +fid.due === 4500 && /4,500/.test(sv) && rj && rj.ok && cl2 && cl2.ok && cf && cf.ok && /مؤكَّدة/.test(sv2) && cl[0] && cl[0].ok && cl[1] && cl[1].ok;
+        console.log('CHECK fin-cycle', ok ? 'OK' : 'FAIL', JSON.stringify({ g1, fid, sv: sv.slice(0, 120), rj, cl2, cf, sv2: sv2.slice(0, 120), cl }));
       } catch (e) { console.log('CHECK fin-cycle FAIL', String(e).slice(0, 300)); } }
       // v261: الدخول من نموذج بوابة الخريجين نفسه (كما يفعل المستخدم)، بمتصفح جوال في وضع «سطح المكتب»، مع ضغطتين متتاليتين
       try { const c4 = await b.newContext({ viewport: { width: 412, height: 915 }, userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', serviceWorkers: 'allow', locale: 'ar' }); const q4 = await c4.newPage(); const e4 = [];
