@@ -104,9 +104,16 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
         (function walk(o, dep) { if (!o || typeof o !== 'object' || dep > 6) return; if (!Array.isArray(o) && o.at === undefined) o.at = '2026-12-01'; Object.keys(o).forEach((k) => { if (o[k] && typeof o[k] === 'object') walk(o[k], dep + 1); }); })(d, 0);
         d.app.entType = 'TEST'; d.app.city = 'TEST'; d.app.contact = 'TEST'; d.app.contactTitle = 'TEST'; d.m6 = d.m6 || {}; d.m6.m1 = S1; d.m6.m2 = S1; d.m7 = d.m7 || {}; d.m7.m1 = S1; d.m7.m2 = S1; d.cmt = [S1, S1]; d.reqs = []; d.final = { at: '2026-12-01' }; d.finalOk = { at: '2026-12-01' };
         for (const c of N.NFO.filter((c) => N.NF[c].k === kind)) { let m = [], h = '', err = ''; try { m = N.missing(c, r).map((x) => x[0]); } catch (e) { m = ['ERR ' + e.message]; } try { h = await N.build(c, r, (kind === 'tr' ? '20' : '21') + '202600000', new Date().toISOString()); } catch (e) { err = e.message; }
-          out[c] = { miss: m, pages: (h.match(/class="g9p/g) || []).length, vals: (h.match(/TEST-/g) || []).length, sig: /l59-sgs/.test(h) /* v288: لا ختم في النماذج؛ الختم في السجل الأكاديمي وحده */, qr: (h.match(/l59-qr/g) || []).length, term: /الفصل الدراسي: الفصل/.test(h), err }; } }
+          out[c] = { miss: m, pages: (h.match(/class="g9p/g) || []).length, vals: (h.match(/TEST-/g) || []).length, sig: /l59-sgs|data-sg289/.test(h) /* v288: لا ختم في النماذج؛ الختم في السجل الأكاديمي وحده */, seal: /l59-seal" src/.test(h), qr: (h.match(/l59-qr|data-qr289/g) || []).length, term: /الفصل الدراسي: الفصل/.test(h), err }; } }
       return out; });
-    console.log('CHECK autofill', Object.values(af).every((x) => !x.err && x.pages > 0 && x.sig && x.qr >= x.pages) ? 'OK' : 'FAIL', JSON.stringify(af));
+    console.log('CHECK autofill', Object.values(af).every((x) => !x.err && x.pages > 0 && x.sig && !x.seal && x.qr >= x.pages) ? 'OK' : 'FAIL', JSON.stringify(af));
+    // v291: الخطابات على نموذج خطاب التعيين: الإطار الرسمي، لا ختم ولا جداول، رابط الموقع وعبارة التحقق، ورابط الدخول حيث يلزم (لا إصدار ولا حفظ)
+    const lt = await p.evaluate(async () => { const out = {}; const st = (S.students || []).find((x) => !x.deleted) || {}, fa = (S.faculty || [])[0] || {}, mb = ((S.v51 || {}).members || [])[0];
+      const C = [['acc', { type: 'acc', rec: 'TEST-ACC', sid: st.id, uid: st.id, name: st.name, prog: st.prog, date: '2026-12-01', lang: 'ar' }, 'student-services'], ['rec', { type: 'rec', rec: 'TEST-REC', sid: st.id, uid: st.id, name: st.name, prog: st.prog, date: '2026-12-01', lang: 'ar' }, ''], ['appt-f', { type: 'appt', rec: 'TEST-APF', uid: fa.id, name: fa.name, date: '2026-12-01' }, 'faculty-services']];
+      if (mb) C.push(['appt-s', { type: 'appt', rec: 'TEST-APS', uid: mb.id, name: mb.name, date: '2026-12-01' }, 'login/staff']);
+      for (const [k, c, lg] of C) { try { const h = certHTML(c); out[k] = { frame: /data-l28[79]/.test(h), noTable: !/l59-tb/.test(h), noSeal: !/(l59|m9|k3|sp6|g6|g5)-seal" src/.test(h), site: /attamhid\.com/.test(h), verify: /للتحقق يرجى مسح الرمز/.test(h), login: !lg || h.indexOf(lg) >= 0 }; } catch (e) { out[k] = { err: e.message }; } }
+      return out; });
+    console.log('CHECK letters289', Object.values(lt).every((x) => !x.err && x.frame && x.noTable && x.noSeal && x.site && x.verify && x.login) ? 'OK' : 'FAIL', JSON.stringify(lt));
     // v234: بوابة التدريب الميداني الخارجي — الصفحة العامة وصفحة الإدارة
     await p.evaluate(() => { location.hash = '#/ext-training'; }); await p.waitForTimeout(5000);
     const ex1 = await p.evaluate(() => ({ form: !!document.querySelector('#exform'), conds: (document.querySelector('#app') || {}).innerText.indexOf('الشروط والمتطلبات') >= 0 }));
