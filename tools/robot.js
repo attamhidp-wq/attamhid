@@ -33,6 +33,28 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
   await p.evaluate((c) => sbAdminLogin({ u: c.email, p: c.password }), cred);
   await p.waitForFunction(() => typeof me !== 'undefined' && me && me.r === 'admin' && /^#\/admin/.test(location.hash), null, { timeout: 120000 });
   await p.waitForTimeout(12000);
+  // v284: نماذج وثائق بوابة الخريجين (النماذج الـ28 PDF بملف تجريبي) إلى بريد المعهد وحده — مرة واحدة تلقائياً، أو بالمهمة ft-samples
+  try { const fc = await p.evaluate(async () => { const r = await sb.rpc('ft_cfg_get'); return (r && r.data) || {}; });
+    if (process.env.TASK === 'ft-samples' || !fc.pdf279) {
+      const rs = await p.evaluate(async () => { const V = window.V51, N = window.__nf232, out = { sent: 0, bad: [] }; const to = String((S.home || {}).em || '').trim(); if (!/@/.test(to) || !N) return { err: !N ? 'no_nf' : 'no_inst_email' };
+        const set = (o, path, v) => { const pp = path.split('.'); let c = o; for (let i = 0; i < pp.length; i++) { let k = pp[i]; const last = i === pp.length - 1; if (k === '-1') { if (!Array.isArray(c)) return; if (!c.length) c.push({}); k = c.length - 1; } const nk = pp[i + 1]; if (last) { if (c[k] === undefined || c[k] === '' || c[k] === null) c[k] = v; } else { if (c[k] == null || typeof c[k] !== 'object') c[k] = (/^-?\d+$/.test(nk) ? [] : {}); c = c[k]; } } };
+        const val = (k, lab, src) => { if (/\.(c|s)\.\d+$|items\.\d+\.v$|weeks\.\d+\.h$|\.hrsWeek$|dailyHrs$|^m9\.(w|o)$/.test(src)) return '4'; if (/\.checks\.\d+$/.test(src)) return true; if (/(date|from|to|end|At|at|planDue)$/.test(src)) return '2026-12-01'; return '(نموذج)'; };
+        const b64 = (blob) => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1] || ''); fr.onerror = rej; fr.readAsDataURL(blob); });
+        const lg = V.logoPng70 ? await V.logoPng70().catch(() => '') : ''; const logo = lg ? [{ filename: 'logo.png', content: lg, content_type: 'image/png', content_id: 'logo64' }] : [];
+        for (const kind of ['tr', 'gp']) { const r = N.sample(kind); r.id = (kind === 'tr' ? 'TR' : 'GP') + '-SAMPLE'; r.sid = 'SAMPLE'; r.st = kind === 'tr' ? 'closed' : 'final_ok'; r.data.s = { ar: 'محمد عبد الله (نموذج)', en: 'Mohammad Abdullah (sample)', id: '000000000', nat: 'نموذج', ph: '—' };
+          for (let pass = 0; pass < 3; pass++) for (const c of Object.keys(N.FD)) { const D = N.FD[c]; if (D.k !== kind) continue; let L = []; try { L = D.f(r, D.subs ? ((D.subs(r) || [])[0] || [''])[0] : '') || []; } catch (e) { continue; } for (const x of L) { const src = x[4] || ''; if (!src || /^stu\./.test(src) || src === 'hrsNeed') continue; set(r.data, src, val(x[0], x[1], src)); } }
+          const d = r.data, S1 = '12026001'; d.isup = S1; d.gsup = S1; d.usup = S1; r.sup = [S1]; d.dec = { to: 'approved', at: '2026-12-01' }; d.isupRec = { rec: 'yes', at: '2026-12-01' };
+          (function walk(o, dep) { if (!o || typeof o !== 'object' || dep > 6) return; if (!Array.isArray(o) && o.at === undefined) o.at = '2026-12-01'; Object.keys(o).forEach((k) => { if (o[k] && typeof o[k] === 'object') walk(o[k], dep + 1); }); })(d, 0);
+          d.app = d.app || {}; d.m6 = d.m6 || {}; d.m6.m1 = S1; d.m6.m2 = S1; d.m7 = d.m7 || {}; d.m7.m1 = S1; d.m7.m2 = S1; d.cmt = [S1, S1]; d.reqs = []; d.final = { at: '2026-12-01' }; d.finalOk = { at: '2026-12-01' };
+          for (const c of N.NFO.filter((c) => N.NF[c].k === kind)) { try { const h = await N.build(c, r, 'SAMPLE-' + c, new Date().toISOString()); const blob = await mkBlob(h, 'pdf'); const pdf = await b64(blob);
+              const t = (N.FD[c] && N.FD[c].t) || [c, c], unit = kind === 'tr' ? { title: 'وحدة التدريب الميداني', titleEn: 'Field Training Unit' } : { title: 'وحدة مشاريع التخرج', titleEn: 'Graduation Projects Unit' };
+              const B = V.mailDoc70({ subject: 'نموذج ' + c + ' — ' + t[0], titleAr: 'نموذج للمراجعة: ' + t[0] + ' (' + c + ')', titleEn: 'Sample for review: ' + t[1], dearAr: 'الإدارة المركزية', dearEn: 'Central Administration', bodyAr: 'مرفق نموذج الوثيقة كما تصدر من بوابة الخريجين، مُعبّأً ببيانات تجريبية، برقم ورمز QR للتحقق. يُرجى المراجعة والاعتماد من «مراجعة النماذج واعتمادها» قبل إصدارها رسمياً.', bodyEn: 'Attached is the document as issued by the Graduates Portal, filled with sample data, with a number and a QR code. Please review and approve it under “Review & approve forms” before it is issued officially.', sender: unit });
+              const x = await V.fn63({ action: 'mail', type: 'sample', ref_id: 'ft284:' + c, to, subject: '[نموذج للمراجعة / Sample] ' + c + ' — ' + t[0] + ' / ' + t[1], html: B.html, text: B.text, cred_without: '', cred_without_text: '', cred_with: '', cred_with_text: '', from_name: B.from_name, reply_to: B.reply_to || '', attachments: logo.concat([{ filename: 'sample-' + c.replace('ت-', 'T').replace('م-', 'G') + '.pdf', content: pdf, content_type: 'application/pdf' }]) });
+              if (x && x.ok) out.sent++; else out.bad.push(c + ':' + ((x && x.error) || 'x')); } catch (e) { out.bad.push(c + ':' + String(e.message).slice(0, 60)); } } }
+        if (out.sent) { try { await sb.rpc('ft_cfg_set', { p: { pdf279: { at: new Date().toISOString(), n: out.sent } } }); } catch (e) {} }
+        return out; });
+      console.log('TASK ft-pdf-samples', JSON.stringify(rs)); }
+  } catch (e) { console.log('TASK ft-pdf-samples FAIL', String(e).slice(0, 200)); }
   // v272: مهام خاصة بإذن الإدارة (لا تُطبع أسماء ولا عناوين)
   // v274: نماذج كل رسائل البريد إلى بريد المعهد للمراجعة (لا يصل شيء لأحد غيره)
   if (process.env.TASK === 'mail-samples') {
