@@ -41,44 +41,41 @@ function doc287(c){
   'The term runs from '+esc(dmy(a.start))+(a.end?' to '+esc(dmy(a.end))+(mo?' ('+mo+' months)':''):'')+', effective from the date of reporting for duty.',
   dutiesE.length?'Assigned duties: '+dutiesE.map(function(x){return esc(x.replace(/[.;]+$/,''))}).join('; ')+'.':'',
   'This decision is communicated to all concerned for implementation, effective from its date.'].filter(Boolean);
- var s0=sg[0]||{};
- var h='<div class="tmw" data-d14="1" data-l287="1"><div class="tmp d14 l287" style="background:#fff">'+band(1)+
-  /* الترويسة */
-  '<div style="position:absolute;top:96px;right:48px;left:48px;display:flex;align-items:flex-start;justify-content:space-between;'+A+'">'+
-   '<div style="text-align:right;line-height:1.55;font-size:15px;font-weight:700;color:#14284B">'+esc(I.nameAr||'معهد التمهيد')+'<br><span style="font-weight:400">'+esc(by)+'</span></div>'+
-   '<div style="text-align:center">'+(lg?'<img src="'+lg+'" alt="" style="height:58px;display:block;margin:0 auto">':'')+'</div>'+
-   '<div style="font-size:13px;line-height:1.75;color:#16202E;min-width:190px">'+
-    '<div>الرقم: <b dir="ltr">'+esc(c.rec)+'</b></div><div>التاريخ: '+(hd?'<bdi dir="ltr">'+esc(hd)+'</bdi> هـ — ':'')+'<bdi dir="ltr">'+esc(dmy(dt))+'</bdi> م</div><div>المرفقات: لا يوجد</div>'+
-    '<div dir="ltr" style="'+E+';font-size:11.5px;line-height:1.5;text-align:left;margin-top:2px">Ref: '+esc(c.rec)+'<br>Date: '+esc(dmy(dt))+'</div></div></div>'+
-  '<div style="position:absolute;top:202px;right:48px;left:48px;border-top:2px solid #14284B"></div>'+
-  /* الموضوع والعنوان والمتن */
-  '<div style="position:absolute;top:212px;right:56px;left:56px;'+A+';color:#16202E">'+
-   '<p style="margin:0 0 4px;font-size:15px"><b>الموضوع:</b> قرار تعيين '+w('المكرم','المكرمة')+'/ '+esc(nm)+' على وظيفة '+esc(a.rank||'—')+' ب'+esc(a.dept||'')+'</p>'+
-   '<p dir="ltr" style="margin:0 0 10px;'+E+';font-size:12px;text-align:left"><b>Subject:</b> Appointment of '+esc(ne||nm)+' as '+esc(a.rankEn||a.rank||'')+'</p>'+
-   '<div style="text-align:center;font-size:26px;font-weight:700;color:#14284B;text-decoration:underline;text-underline-offset:6px;margin:4px 0 8px">قرار <span dir="ltr" style="'+E+';font-size:15px;text-decoration:none">— Decision</span></div>'+
-   '<p style="margin:0 0 6px;font-size:15.5px;line-height:1.9;text-align:justify">إن '+esc(by)+' بمعهد التمهيد، بناءً على الصلاحيات المخوّلة له، وبناءً على قرار التعيين رقم ('+esc(a.decNo||'—')+') وتاريخ '+esc(dmy(a.decDate))+'م، وحسب مقتضيات المصلحة،</p>'+
-   '<p style="margin:0 0 4px;font-size:16px;font-weight:700;text-align:center">يقرر ما يلي:</p>'+
-   items.map(function(t,i){return '<p style="margin:0 0 5px;font-size:15px;line-height:1.85;text-align:justify"><b>'+ORD[i]+':</b> '+t+'</p>'}).join('')+
-   '<div dir="ltr" style="'+E+';font-size:11.5px;line-height:1.55;text-align:justify;color:#333;border-top:1px solid #d5dce4;margin-top:8px;padding-top:6px">The '+esc(byE)+' of At Tamhid Institute, by virtue of the powers vested in it and pursuant to appointment decision no. '+esc(a.decNo||'—')+' dated '+esc(dmy(a.decDate))+', hereby decides: '+itemsE.map(function(t,i){return '<b>'+ORDE[i]+':</b> '+t}).join(' ')+'</div>'+
-   /* الدخول إلى البوابة */
-   '<div style="display:flex;gap:12px;align-items:center;border:1px solid #c9d3df;border-radius:6px;padding:7px 10px;margin-top:9px;background:#f7f9fb">'+
-    (QP?'<img src="'+QP+'" alt="" style="width:62px;height:62px">':'')+
-    '<div style="font-size:13px;line-height:1.6;flex:1"><b>الدخول إلى «الخدمات الذاتية لأعضاء هيئة التدريس»:</b> <span dir="ltr" style="'+E+';font-weight:700">'+esc(bare(portal))+'</span><br>اسم المستخدم: '+w('رقمك','رقمك')+' العضوي <b dir="ltr">'+esc(id)+'</b>، وكلمة المرور الأولى تصل'+w('ك','ك')+' بالبريد الإلكتروني ويُطلب تغييرها عند أول دخول.'+
-    '<div dir="ltr" style="'+E+';font-size:11px;text-align:left;color:#333">Faculty Self-Service sign-in: <b>'+esc(bare(portal))+'</b> — username: faculty no. '+esc(id)+'; the initial password is sent by email and must be changed at first sign-in.</div></div></div>'+
+ var s0=sg[0]||{},AN=function(n){return String(n)};
+ var unit=a.unitAr||'إدارة شؤون أعضاء هيئة التدريس';
+ var h='<div class="tmw" data-d14="1" data-l287="1"><div class="tmp d14 l287" style="background:#fff">'+
+  /* ترويسة رسمية بسيطة: العربية يميناً، الشعار وسطاً، الإنجليزية يساراً */
+  '<div style="position:absolute;top:44px;right:54px;left:54px;display:flex;align-items:center;justify-content:space-between">'+
+   '<div style="text-align:center;'+A+';font-size:15px;line-height:1.6;color:#111;min-width:220px"><b style="font-size:17px">'+esc(I.nameAr||'معهد التمهيد')+'</b><br>'+esc(by)+'<br>'+esc(unit)+'</div>'+
+   (lg?'<img src="'+lg+'" alt="" style="height:62px">':'')+
+   '<div dir="ltr" style="text-align:center;'+E+';font-size:13px;line-height:1.6;color:#111;min-width:220px"><b style="font-size:14.5px">'+esc(I.nameEn||'At Tamhid Institute')+'</b><br>'+esc(byE)+'<br>Faculty Affairs</div></div>'+
+  '<div style="position:absolute;top:142px;right:54px;left:54px;border-top:1.5px solid #222"></div>'+
+  /* الرقم والتاريخ والمرفقات */
+  '<div style="position:absolute;top:154px;left:60px;'+A+';font-size:14px;line-height:1.75;color:#111;text-align:right;direction:rtl">'+
+   '<div>الرقم: <bdi dir="ltr">'+esc(c.rec)+'</bdi></div><div>التاريخ: '+(hd?'<bdi dir="ltr">'+esc(hd)+'</bdi>هـ':'<bdi dir="ltr">'+esc(dmy(dt))+'</bdi>م')+'</div><div>المرفقات: —</div></div>'+
+  /* المتن */
+  '<div style="position:absolute;top:252px;right:64px;left:64px;'+A+';color:#111">'+
+   '<p style="margin:0 0 14px;font-size:16px"><b>الموضوع:</b> قرار تعيين '+w('المكرم','المكرمة')+'/ '+esc(nm)+' على وظيفة '+esc(a.rank||'—')+'</p>'+
+   '<div style="text-align:center;font-size:24px;font-weight:700;margin:0 0 14px"><u>قرار</u></div>'+
+   '<p style="margin:0 0 4px;font-size:16.5px;line-height:2">إن '+esc(by)+' بمعهد التمهيد،</p>'+
+   '<p style="margin:0 0 4px;font-size:16.5px;line-height:2;text-align:justify">بناءً على الصلاحيات المخوّلة له، وبناءً على قرار التعيين رقم ('+esc(AN(a.decNo||'—'))+') وتاريخ '+esc(AN(dmy(a.decDate)))+'م، وحسب مقتضيات المصلحة،</p>'+
+   '<p style="margin:10px 0 8px;font-size:17px;font-weight:700;text-align:center">يقرر ما يلي:</p>'+
+   items.map(function(t,i){return '<p style="margin:0 0 8px;font-size:16.5px;line-height:2;text-align:justify;padding-right:26px;text-indent:-26px">'+AN(i+1)+'- '+t+'</p>'}).join('')+
+   '<p style="margin:14px 0 0;font-size:16.5px;line-height:2;text-align:center">والله الموفق،،،</p>'+
   '</div>'+
-  /* التوقيع والختم */
-  '<div style="position:absolute;top:880px;left:70px;width:300px;text-align:center;'+A+';color:#14284B">'+
-   '<div style="font-size:15px;font-weight:700">'+esc(s0.t||'')+'</div>'+(s0.te?'<div dir="ltr" style="'+E+';font-size:11.5px">'+esc(s0.te)+'</div>':'')+
-   '<div style="height:54px;position:relative">'+(X.imgOf&&s0.img?'<img src="'+X.imgOf(s0.img)+'" alt="" style="height:52px;max-width:180px;object-fit:contain">':'')+
-    (se.length?'<img src="'+se[0]+'" alt="" style="position:absolute;right:-6px;top:-14px;width:84px;height:84px;object-fit:contain;opacity:.88;transform:rotate(-8deg)">':'')+'</div>'+
-   '<div style="font-size:14.5px;font-weight:700">'+esc(s0.n||'')+'</div>'+(s0.ne?'<div dir="ltr" style="'+E+';font-size:11.5px">'+esc(s0.ne)+'</div>':'')+'</div>'+
-  /* التحقق */
-  '<div style="position:absolute;top:900px;right:56px;width:300px;display:flex;gap:8px;align-items:center;'+A+'">'+(QV?'<img src="'+QV+'" alt="" style="width:62px;height:62px">':'')+
-   '<div style="font-size:12px;line-height:1.55">للتحقق من صحة هذا القرار:<br><span dir="ltr" style="'+E+';font-weight:700;font-size:11.5px">'+esc(bare(ver))+'</span><br><span dir="ltr" style="'+E+';font-size:10.5px">Verify this decision online</span></div></div>'+
-  /* التذييل */
-  '<div style="position:absolute;bottom:58px;right:48px;left:48px;border-top:1px solid #8A97A8;padding-top:6px;text-align:center;font-size:12px;color:#33415a;'+A+'">'+
-   '<b dir="ltr" style="'+E+'">'+esc(bare(site()))+'</b>'+(H.em?' &nbsp;|&nbsp; <bdi dir="ltr">'+esc(H.em)+'</bdi>':'')+(H.p1?' &nbsp;|&nbsp; <bdi dir="ltr">'+esc(H.p1)+'</bdi>':'')+(I.addrAr?' &nbsp;|&nbsp; '+esc(I.addrAr):'')+'</div>'+
-  band(0)+'</div></div>';
+  /* التوقيع والختم (يسار الصفحة) */
+  '<div style="position:absolute;top:848px;left:70px;width:270px;text-align:center;'+A+';color:#111">'+
+   '<div style="font-size:16px;font-weight:700">'+esc(s0.t||'رئيس المعهد')+'</div>'+
+   '<div style="height:60px;position:relative;margin:2px 0">'+(X.imgOf&&s0.img?'<img src="'+X.imgOf(s0.img)+'" alt="" style="height:56px;max-width:170px;object-fit:contain">':'')+
+    (se.length?'<img src="'+se[0]+'" alt="" style="position:absolute;right:0;top:-6px;width:74px;height:74px;object-fit:contain;opacity:.8;transform:rotate(-6deg)">':'')+'</div>'+
+   '<div style="font-size:15.5px;font-weight:700">'+esc(s0.n||'')+'</div></div>'+
+  /* سطر الدخول والتحقق، ثم التذييل */
+  '<div style="position:absolute;bottom:92px;right:54px;left:54px;display:flex;align-items:center;gap:10px;'+A+';font-size:12.5px;color:#222;line-height:1.6">'+
+   (QV?'<img src="'+QV+'" alt="" style="width:50px;height:50px">':'')+
+   '<div>للتحقق من صحة القرار: <b dir="ltr" style="'+E+'">'+esc(bare(ver))+'</b><br>بوابة أعضاء هيئة التدريس: <b dir="ltr" style="'+E+'">'+esc(bare(portal))+'</b> (الدخول بالرقم العضوي <bdi dir="ltr">'+esc(id)+'</bdi>)</div></div>'+
+  '<div style="position:absolute;bottom:52px;right:54px;left:54px;border-top:1px solid #444;padding-top:6px;text-align:center;'+A+';font-size:12.5px;color:#222">'+
+   (I.addrAr?esc(I.addrAr)+' &nbsp;—&nbsp; ':'')+(H.p1?'الهاتف: <bdi dir="ltr">'+esc(H.p1)+'</bdi> &nbsp;—&nbsp; ':'')+(H.em?'البريد: <bdi dir="ltr">'+esc(H.em)+'</bdi> &nbsp;—&nbsp; ':'')+'<b dir="ltr" style="'+E+'">'+esc(bare(site()))+'</b></div>'+
+  '</div></div>';
  return h}
 
 /* ---------- كل الخطابات الرسمية: رابط الموقع كتابة، والختم بحجم طبيعي، ورابط الدخول تحت رمزه ---------- */
