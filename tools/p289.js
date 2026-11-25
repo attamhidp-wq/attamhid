@@ -67,7 +67,8 @@ function letter289(h,c){
  var K=CFG[c.type];if(!K||typeof h!=='string'||h.indexOf('l59-')<0)return null;
  var d=document.createElement('div');d.innerHTML=h;
  var tt=((d.querySelector('.l59-tt .ar')||{}).textContent||'').trim();
- var R={};[].slice.call(d.querySelectorAll('.l59-tb tr')).forEach(function(tr){var th=tr.querySelector('th.a'),td=tr.querySelector('td.a')||tr.querySelector('td.c')||tr.querySelector('td');if(th&&td){var v=td.innerHTML.trim();if(v&&v!=='—'&&v!=='-')R[th.textContent.trim()]=v}});
+ var R={},RO=[];[].slice.call(d.querySelectorAll('.l59-tb tr')).forEach(function(tr){var th=tr.querySelector('th.a'),td=tr.querySelector('td.a')||tr.querySelector('td.c')||tr.querySelector('td');if(th&&td){var v=td.innerHTML.trim();if(v&&v!=='—'&&v!=='-'){var k=th.textContent.trim();R[k]=v;RO.push([k,v])}}});
+ var DATA=RO.length?'<div style="margin:4px 0 12px;padding:6px 0;border-top:1px solid #9aa4b1;border-bottom:1px solid #9aa4b1">'+RO.map(function(r){var v=/^[0-9A-Za-z\-\/ ]+$/.test(r[1].replace(/<[^>]+>/g,''))?'<bdi dir="ltr">'+String(r[1]).replace(/^(\d{2})-(\d{2})-(\d{4})$/,'$1/$2/$3')+'</bdi>':r[1];return '<div style="display:flex;font-size:15.5px;line-height:1.85"><b style="width:140px;flex:none">'+esc(r[0])+'</b><span style="width:16px;flex:none">:</span><span>'+v+'</span></div>'}).join('')+'</div>':'';
  var pa=d.querySelector('.l59-pa'),txt=pa?pa.innerHTML:'';txt=txt.split(/<br>\s*<b>\s*إرشادات/)[0].replace(/(<br>\s*)+$/,'');
  var sgs=[].slice.call(d.querySelectorAll('.l59-sg')).map(function(s){var g=function(k){return ((s.querySelector('.'+k)||{}).textContent||'').trim()},im=s.querySelector('.im img');return {t:g('t'),n:g('n'),src:im?im.getAttribute('src'):''}});
  if(!sgs.length)sgs=signers(c.type).slice(0,2);
@@ -82,15 +83,15 @@ function letter289(h,c){
  if(c.type==='acc'){
   subj='قبول '+w('الطالب','الطالبة','الطالب/ـة')+'/ '+esc(nm)+(prog?' في برنامج '+prog:'');
   salute='<p style="margin:0 0 6px;font-size:16px"><b>'+w('المكرم الطالب','المكرمة الطالبة','المكرم/ـة الطالب/ـة')+'/ '+esc(nm)+'</b> &nbsp;&nbsp;&nbsp; '+w('المحترم','المحترمة','المحترم/ـة')+'</p>';
-  var it=['قبول '+who+' في برنامج <b>«'+prog+'»</b>'+(R['نمط الدراسة']?'، '+R['نمط الدراسة']:'')+'، بعد '+w('استيفائه','استيفائها','استيفاء')+' شروط القبول المعتمدة.',
-   (R['الفصل الدراسي']?'يبدأ قيد'+w('ه','ها','ه/ا')+' في '+R['الفصل الدراسي']:'يبدأ القيد من الفصل الدراسي المقبل')+(R['تاريخ بدء الدراسة']?'، وتبدأ الدراسة بتاريخ <bdi dir="ltr" style="white-space:nowrap">'+String(R['تاريخ بدء الدراسة']).replace(/-/g,'/')+'</bdi>م':'')+'.',
-   (R['الرقم الأكاديمي']?'الرقم الأكاديمي (<bdi dir="ltr" style="white-space:nowrap">'+R['الرقم الأكاديمي']+'</bdi>) هو رقم الدخول إلى البوابة ورقم جميع المعاملات في المعهد، وتُستكمل إجراءات التسجيل عبر البوابة قبل بدء الدراسة.':''),
+  var it=['قبول '+w('الطالب المذكورة بياناته','الطالبة المذكورة بياناتها','الطالب/ـة المذكورة بياناته/ا')+' أعلاه في '+(prog?'برنامج «'+prog+'»':'البرنامج المذكور')+'، بعد '+w('استيفائه','استيفائها','استيفاء')+' شروط القبول المعتمدة.',
+   'تبدأ الدراسة في الفصل والتاريخ المذكورين أعلاه، وتُستكمل إجراءات التسجيل عبر البوابة قبل ذلك.',
+   (R['الرقم الأكاديمي']?'يُعدّ الرقم الأكاديمي المذكور أعلاه رقم الدخول إلى البوابة ورقم جميع المعاملات في المعهد.':''),
    c.adm_cond?'يكون القبول مشروطاً بما يلي: '+esc(c.adm_cond)+'.':'',
    'الالتزام بأنظمة المعهد ولوائحه وتعليماته.'].filter(Boolean);
   body='<p style="margin:0 0 8px;font-size:16px;line-height:1.95">يسرّ '+esc(inst().nameAr||'معهد التمهيد')+' أن '+w('يُبلغكم','يُبلغكِ','يُبلغكم')+' بما يلي:</p>'+it.map(ITEM).join('')+
    '<p style="margin:6px 0 0;font-size:16px;line-height:1.95">متمنين '+w('لكم','لكِ','لكم')+' التوفيق والنجاح.</p>';
  }else{
-  var t=txt.replace(/(الطالب\/ـة|الطالبة|الطالب)\s+(المذكور\/ة|المذكورة|المذكور)\s+أعلاه/g,who).replace(/(المذكور\/ة|المذكورة|المذكور)\s+أعلاه/g,who).replace(/في البرنامج المشار إليه/g,prog?'في برنامج «'+prog+'»':'في البرنامج المسجل فيه');
+  var t=txt;
   subj=(c.type==='rec'?(c.tzk?'توصية '+w('للخريج','للخريجة','للخريج/ـة'):'توصية '+w('للطالب','للطالبة','للطالب/ـة')):c.type==='fin'?'إفادة مالية عن '+w('الطالب','الطالبة','الطالب/ـة'):'تعريف ب'+(isStu?w('الطالب','الطالبة','الطالب/ـة'):w('المكرم','المكرمة','المكرم/ـة')))+'/ '+esc(nm);
   salute='<p style="margin:0 0 6px;font-size:16px;font-weight:700">إلى من يهمه الأمر</p>';
   body='<p style="margin:0 0 8px;font-size:16px;line-height:2;text-align:justify;text-indent:28px">'+t+'</p>';
@@ -100,7 +101,7 @@ function letter289(h,c){
  var h2=head({unit:unit,unitEn:unit===K.unit?K.unitEn:'Human Resources'})+meta({rec:c.rec,date:c.date||new Date().toISOString().slice(0,10),att:c.att})+
   '<div style="position:absolute;top:262px;right:64px;left:64px;'+A+';color:#111">'+
    '<p style="margin:0 0 12px;font-size:16px"><b>الموضوع:</b> '+subj+'</p>'+TITLE(tt||'خطاب')+salute+
-   '<p style="margin:0 0 8px;font-size:16px">السلام عليكم ورحمة الله وبركاته، وبعد:</p>'+body+
+   '<p style="margin:0 0 8px;font-size:16px">السلام عليكم ورحمة الله وبركاته، وبعد:</p>'+DATA+body+
    '<p style="margin:12px 0 0;font-size:16px;text-align:center">وتقبلوا خالص التحية والتقدير،،،</p></div>'+
   '<div style="position:absolute;top:836px;right:64px;left:64px;display:flex;justify-content:space-between;align-items:flex-start">'+
    '<div style="padding-top:6px">'+cc(KCC)+'</div><div style="display:flex;gap:18px">'+sigH+'</div></div>'+
@@ -134,7 +135,21 @@ X.cert289v=cert289;/* شهادات البرامج القصيرة تبقى على
 
 /* ---------- نماذج التدريب الميداني ومشروع التخرج ---------- */
 var NFU={tr:['وحدة التدريب الميداني','Field Training Unit','grad'],gp:['وحدة مشاريع التخرج','Graduation Projects Unit','grad'],ex:['وحدة التدريب الميداني الخارجي','External Field Training Unit','trn']};
+var ORDN=['أولاً','ثانياً','ثالثاً','رابعاً','خامساً','سادساً','سابعاً','ثامناً','تاسعاً','عاشراً','حادي عشر','ثاني عشر','ثالث عشر','رابع عشر','خامس عشر'];
+var dig=function(x){return +String(x).replace(/[٠-٩]/g,function(c){return '٠١٢٣٤٥٦٧٨٩'.indexOf(c)})};
 X.nf289={geo:{t1:198,tn:198,b:955,l:790},
+ css:'.nfp .en,.nfp .tm .e,.nfp .tt .en{display:none!important}'+
+  '.nfp .sec{border-bottom:0!important;margin:12px 0 6px!important;padding:0!important}.nfp .sec h2{font:700 16.5px Amiri,serif!important;color:'+NV+'!important}'+
+  '.nfp table.kv th,.nfp table.kv td,.nfp table.tb th,.nfp table.tb td{border:.8px solid #8a929e!important;background:#fff!important}'+
+  '.nfp table.kv th,.nfp table.tb th{color:#111!important;font:700 14px Amiri,serif!important}.nfp table.kv td,.nfp table.tb td{font:400 14.5px Amiri,serif!important;color:#111}'+
+  '.nfp table.tb tr:first-child th{background:#f2f3f5!important;text-align:center!important}'+
+  '.nfp .box{border:.8px solid #8a929e!important}.nfp .boxs{background:#fff!important}.nfp p.tx{font:400 15px/1.9 Amiri,serif!important;color:#111}'+
+  '.nfp .sig>div{border:0!important;border-bottom:.8px solid #8a929e!important;padding:4px 2px!important;min-height:70px!important}.nfp .sig .r{color:#111!important;font:700 14px Amiri,serif!important}'+
+  '.nfp .chk i{border-color:#333!important}',
+ blk:function(b){return String(b).replace(/<span class="en"[^>]*>[\s\S]*?<\/span>/g,'').replace(/<span class="n">\s*([٠-٩0-9]+)\.?\s*<\/span>/g,function(m,n){var k=dig(n);return '<span class="n">'+(ORDN[k-1]||n)+': </span>'})},
+ title:function(D,term){return '<div style="text-align:center;margin:0 0 6px;'+A+'"><span style="display:inline-block;font-size:22px;font-weight:700;color:'+NV+';border-bottom:2px solid '+NV+';padding:0 16px 2px">'+esc(D.t[0])+'</span>'+(D.conf?' <span style="display:inline-block;border:1.2px solid #8a1c1c;color:#8a1c1c;padding:0 8px;font-size:13px;vertical-align:middle">سري</span>':'')+
+  '<div style="font-size:13px;color:#333;margin-top:4px">رمز النموذج: '+esc(D.code)+(term?' &nbsp;—&nbsp; الفصل الدراسي: '+esc(term):'')+'</div></div>'},
+ tt2:function(D,n){return '<div style="display:flex;justify-content:space-between;margin:0 0 8px;padding-bottom:3px;border-bottom:.8px solid #8a929e;'+A+';font-size:14.5px;color:'+NV+'"><b>'+esc(D.t[0])+' (تابع)</b><span>صفحة '+n+'</span></div>'},
  head:function(D,ref,issued){var u=NFU[D&&D.k]||NFU.tr;return '<style>.nfp .rule,.nfp .l59-band{display:none!important}</style>'+head({unit:u[0],unitEn:u[1],noWm:1})+metaLine({rec:ref,date:issued})},
  foot:function(D,ref,issued,n,N,last,url,Pr){var u=NFU[D&&D.k]||NFU.tr,h='';
   if(last){h+='<div style="position:absolute;top:800px;left:66px">'+sign({t:Pr&&Pr.t,n:Pr&&Pr.n,src:Pr&&Pr.sig})+'</div>'+
