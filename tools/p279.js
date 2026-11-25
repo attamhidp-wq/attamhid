@@ -111,12 +111,54 @@ function linksView(){var A=[['',Lx('الصفحة الرئيسة للبوابة',
 
 function tab(){if(!isAdm())return '';if(!FT.ld){if(!FT.err)FT.load().then(function(){window.__force71=1;go()});return FT.err?'<div class="msg er">'+Lx('تعذّر التحميل.','Could not load.')+'</div>'+btn(Lx('إعادة المحاولة','Try again'),'V51.h.ft231retry()'):'<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>'}
  if(!canSee())return '<div class="msg er">'+Lx('هذا القسم للإدارة المركزية والجهات المخوّلة منها.','This section is for central administration and the bodies it authorizes.')+'</div>';
- ensure();var V0=[['sum',Lx('الملخص','Summary')],['elig',Lx('الاستحقاق','Eligibility')],['cfg',Lx('الإعدادات','Settings')],['links',Lx('لوحات البوابة','Portal boards')]];
+ ensure();var V0=[['sum',Lx('الملخص','Summary')],['elig',Lx('الاستحقاق','Eligibility')],['tr',Lx('متابعة التدريب','Training follow-up')],['cfg',Lx('الإعدادات','Settings')],['links',Lx('لوحات البوابة','Portal boards')]];
  var h='<h3>'+Lx('التدريب الميداني ومشروع التخرج','Field Training & Graduation Project')+'</h3><nav style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px">'+V0.map(function(x){return btn(x[1],'V51.h.ft279v(\''+x[0]+'\')',G.v===x[0]?'':'s')}).join('')+btn(Lx('تحديث','Refresh'),'V51.h.ft279r()','s')+'</nav>';
  if(G.err)h+='<div class="msg er">'+e9(G.err)+'</div>';
  if(FT.elig==null&&G.v!=='links'&&G.v!=='cfg')return h+'<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>';
- try{return h+(G.v==='elig'?eligView():G.v==='cfg'?cfgView():G.v==='links'?linksView():sumView())}catch(e){console.error('v279 tab',e);return h+'<div class="msg er">'+e9(e.message)+'</div>'}}
+ try{return h+(G.v==='elig'?eligView():G.v==='tr'?trView():G.v==='cfg'?cfgView():G.v==='links'?linksView():sumView())}catch(e){console.error('v279 tab',e);return h+'<div class="msg er">'+e9(e.message)+'</div>'}}
 H.ft279r=function(){reload()};
 try{var TB=X.TABS51||W.V51TABS,TL=X.TABLBL51||{};if(TB&&!TB.some(function(x){return x[0]==='ft279'})){TB.push(['ft279','التدريب الميداني ومشروع التخرج','Field Training & Graduation Project',tab]);TL['التدريب الميداني ومشروع التخرج']='ft279';TL['Field Training & Graduation Project']='ft279'}}catch(e){}
+
+/* =====================================================================
+   المرحلة الثانية — التدريب الميداني: إيقاف/استئناف/عدم اجتياز بسبب إلزامي، وتقييم المتدرب للجهة،
+   وتقرير منتصف التدريب، و«متابعة التدريب» في لوحة الإدارة (الخطة، الحضور، الزيارات، التقارير، التقييمات)
+   ===================================================================== */
+try{var S0=FT.ST&&FT.ST.tr;if(S0){S0.suspended=S0.suspended||['موقوف','Suspended'];S0.failed=S0.failed||['غير مجتاز','Not passed']}}catch(e){}
+var hasR=function(k){return central()||(who().roles||[]).indexOf(k)>=0};
+var REC=function(id){return (FT.recs||[]).find(function(r){return r.id===id})};
+var TRH=function(r){var L0=(r.data&&r.data.log)||[],ok=L0.filter(function(x){return String(x.ok)==='1'||x.ok===true});return {n:L0.length,h:L0.reduce(function(a,x){return a+(+x.h||0)},0),okh:ok.reduce(function(a,x){return a+(+x.h||0)},0),pend:L0.filter(function(x){return !x.ok&&!x.rej}).length}};
+var needH=function(r){return +((r.data&&r.data.hours)||(FT.cfg||{}).hours||60)};
+var subOf=function(r,k){return ((r.data&&r.data.subs)||[]).filter(function(x){return x.stage===k}).pop()};
+var yes=function(b,t){return b?'<span class="tag ok">✔'+(t?' '+t:'')+'</span>':'<span class="tag">—</span>'};
+var RATE=[['ملاءمة بيئة التدريب','Suitability of the training environment'],['تعاون المشرف الميداني','Cooperation of the field supervisor'],['وضوح المهام','Clarity of tasks'],['الفائدة المهنية','Professional benefit'],['التوصية بالجهة لغيري','Would recommend the organization']];
+H.ft279st=function(id,act){var r=REC(id);if(!r)return;var q={tr_suspend:Lx('سبب إيقاف التدريب (إلزامي):','Reason for suspending (required):'),tr_resume:Lx('سبب الاستئناف (إلزامي):','Reason for resuming (required):'),tr_fail:Lx('سبب عدم الاجتياز (إلزامي):','Reason for “not passed” (required):')}[act];
+ var w=prompt(q);if(w===null)return;if(String(w).trim().length<5){T(Lx('السبب إلزامي (5 أحرف على الأقل).','A reason is required (at least 5 characters).'));return}
+ if(act==='tr_fail'&&!confirm(Lx('تأكيد قرار «غير مجتاز»؟ يُسجَّل باسمك مع السبب.','Confirm “not passed”? It is recorded under your name with the reason.')))return;
+ FT.act(id,act,{why:String(w).trim()})};
+H.ft279rate=function(f,id){var v=fv(f),c=RATE.map(function(_,i){return v['c'+i]});if(c.some(function(x){return !/^[1-4]$/.test(String(x))})){T(Lx('اختر تقديراً لكل معيار.','Choose a rating for every criterion.'));return}
+ FT.act(id,'ent_rate',{c:c,cmt:String(v.cmt||'').slice(0,800)},Lx('شكراً لك، سُجّل تقييمك.','Thank you; your rating is recorded.'))};
+var rateForm=function(r){var o=['','ضعيف','مقبول','جيد','ممتاز'],oe=['','Poor','Fair','Good','Excellent'];
+ return '<form class="v51g" onsubmit="V51.h.ft279rate(this,\''+e9(r.id)+'\');return false">'+RATE.map(function(x,i){return '<label>'+e9(Lx(x[0],x[1]))+'<select name="c'+i+'" required><option value="">—</option>'+[4,3,2,1].map(function(n){return '<option value="'+n+'">'+Lx(o[n],oe[n])+'</option>'}).join('')+'</select></label>'}).join('')+'<label>'+Lx('ملاحظات (اختياري)','Comments (optional)')+'<input name="cmt" maxlength="800"></label><div><button class="btn">'+Lx('إرسال التقييم','Submit rating')+'</button></div></form>'};
+var trBox=function(r){if(!r||r.kind!=='tr')return '';var d=r.data||{},o='';
+ var mine=typeof me!=='undefined'&&me&&me.r==='student';
+ if(mine&&['done','evaluated'].indexOf(r.st)>=0)o+=d.rate?'<p>'+Lx('سجّلتَ تقييمك لجهة التدريب.','You have rated the training organization.')+'</p>':'<p class="mu">'+Lx('قيّم جهة التدريب ليستفيد منها المعهد في اختيار الجهات.','Rate the training organization to help the Institute choose organizations.')+'</p>'+rateForm(r);
+ if(!mine&&hasR('tc')){var B=[];if(['approved','letter','accepted','started','running'].indexOf(r.st)>=0)B.push(btn(Lx('إيقاف مؤقت','Suspend'),'V51.h.ft279st(\''+e9(r.id)+'\',\'tr_suspend\')','s'));
+  if(r.st==='suspended')B.push(btn(Lx('استئناف','Resume'),'V51.h.ft279st(\''+e9(r.id)+'\',\'tr_resume\')','s'));
+  if(['started','running','done','evaluated','suspended'].indexOf(r.st)>=0)B.push(btn(Lx('غير مجتاز','Not passed'),'V51.h.ft279st(\''+e9(r.id)+'\',\'tr_fail\')','s'));
+  if(B.length)o+='<p>'+B.join(' ')+'</p>';
+  if(d.rate)o+='<p class="mu">'+Lx('تقييم المتدرب للجهة: ','Trainee rating of the organization: ')+(d.rate.c||[]).reduce(function(a,x){return a+(+x||0)},0)+' / 20'+(d.rate.cmt?' — '+e9(d.rate.cmt):'')+'</p>'}
+ if(d.susp&&r.st==='suspended')o+='<div class="msg er">'+Lx('موقوف: ','Suspended: ')+e9(d.susp.why||'')+'</div>';
+ if(d.fail&&r.st==='failed')o+='<div class="msg er">'+Lx('غير مجتاز: ','Not passed: ')+e9(d.fail.why||'')+'</div>';
+ return o?'<div class="box ft279tr"><b>'+Lx('حالة التدريب','Training status')+'</b>'+o+'</div>':''};
+try{var vg2=V.graduates;if(typeof vg2==='function'&&!vg2.__v279b){V.graduates=function(){var h=vg2.apply(this,arguments);try{var p=location.hash.replace(/^#\/?/,'').split('/');if(p[1]==='r'&&p[2]&&FT.ld&&typeof h==='string'&&h.indexOf('ft279tr')<0){var r=REC(decodeURIComponent(p[2])),b=trBox(r);if(b){var i=h.indexOf('</nav>');h=i>0?h.slice(0,i+6)+b+h.slice(i+6):h+b}}}catch(e){console.error('v279 tr',e)}return h};V.graduates.__v279b=1}}catch(e){}
+
+/* متابعة التدريب في لوحة الإدارة */
+G.tf='act';H.ft279tf=function(v){G.tf=v;go()};
+var GRP={act:['approved','letter','accepted','started','running','suspended'],req:['draft','submitted','returned'],end:['done','evaluated','closed','failed','rejected','withdrawn']};
+function trView(){var A=(FT.recs||[]).filter(function(r){return r.kind==='tr'}),L0=A.filter(function(r){return G.tf==='all'||(GRP[G.tf]||[]).indexOf(r.st)>=0});
+ var o='<p>'+[['act',Lx('الجارية','Active')],['req',Lx('الطلبات','Applications')],['end',Lx('المنتهية','Finished')],['all',Lx('الكل','All')]].map(function(x){return btn(x[1]+' ('+(x[0]==='all'?A.length:A.filter(function(r){return (GRP[x[0]]||[]).indexOf(r.st)>=0}).length)+')','V51.h.ft279tf(\''+x[0]+'\')',G.tf===x[0]?'':'s')}).join(' ')+'</p>';
+ return o+tbl([Lx('المتدرب','Trainee'),Lx('الجهة','Organization'),Lx('الحالة','Status'),Lx('الخطة','Plan'),Lx('الحضور (معتمد / المطلوب)','Attendance (approved / required)'),Lx('الزيارات','Visits'),Lx('منتصف التدريب','Mid report'),Lx('التقرير الختامي','Final report'),Lx('التقييمات','Evaluations'),''],L0.map(function(r){var d=r.data||{},h=TRH(r),pl=d.plan,m=subOf(r,'mid'),f=subOf(r,'report');
+  return '<tr><td>'+e9(nmOf(r))+'</td><td>'+e9(((d.app||{}).ent)||'—')+'</td><td>'+chip(r)+'</td><td>'+(pl?(pl.ok?yes(1,Lx('معتمدة','approved')):'<span class="tag">'+Lx('بانتظار الاعتماد','awaiting approval')+'</span>'):yes(0))+'</td><td>'+h.okh+' / '+needH(r)+(h.pend?' <small class="mu">('+h.pend+Lx(' يوم بانتظار الاعتماد',' day(s) pending')+')</small>':'')+'</td><td>'+(((d.visits||[]).length)||'—')+'</td><td>'+yes(!!m,m&&m.ack?Lx('مستلم','received'):'')+'</td><td>'+yes(!!f,f&&f.ack?Lx('مستلم','received'):'')+'</td><td>'+[['e8',Lx('الجهة','Org')],['e9',Lx('ذاتي','Self')],['e11',Lx('الملف','File')]].map(function(x){return d[x[0]]?'<span class="tag ok">'+x[1]+'</span>':'<span class="tag">'+x[1]+'</span>'}).join(' ')+'</td><td><a class="btn s" href="'+link('r/'+encodeURIComponent(r.id))+'">'+Lx('فتح','Open')+'</a></td></tr>'}))}
+X.ft279tr={trView:trView,trBox:trBox};
 X.ft279={tab:tab,stuBox:stuBox,eligList:eligList};
 }catch(e){console.error('v279',e)}})();

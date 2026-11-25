@@ -25,5 +25,17 @@ FT.who={roles:[]};out.unitDenied=/للإدارة المركزية والجهات
 R("me={r:'student',id:'S1'}");out.studentTabEmpty=T[3]()==='';
 // XSS: الاسم يُهرَّب
 R("me={r:'admin'}");FT.who={roles:['admin']};FT.elig=[{sid:'S2',ar:'<img src=x onerror=1>',ok:true,items:[]}];ctx.V51.h.ft279v('elig');out.escaped=!/<img src=x/.test(T[3]());
+// المرحلة الثانية: متابعة التدريب وأزرار الحالة وتقييم الجهة
+FT.act=(id,act,p)=>{out.lastAct=act+':'+(p&&p.why?'why':'')+(p&&p.c?'c'+p.c.length:'');return Promise.resolve()};
+FT.ST.tr={running:['جارٍ','Running']};vm.runInContext(code.replace(/^[\s\S]*?\(function\(\)\{try\{/,'(function(){try{').slice(0,0),ctx);
+R("me={r:'admin'}");FT.who={roles:['admin','tc']};FT.cfg.hours=60;
+FT.recs=[{id:'T1',kind:'tr',st:'running',data:{s:{ar:'م'},app:{ent:'جهة'},plan:{ok:1},log:[{h:5,ok:'1'},{h:4}],visits:[{}],subs:[{stage:'mid',ack:1}],e8:{}}},{id:'T2',kind:'tr',st:'submitted',data:{}},{id:'T3',kind:'tr',st:'done',data:{rate:{c:[4,4,3,3,2],cmt:'جيد'}}}];
+ctx.V51.h.ft279v('tr');s=T[3]();out.trTable=/5 \/ 60/.test(s)&&/جهة/.test(s)&&/يوم بانتظار الاعتماد/.test(s);out.trFilter=/الجارية \(1\)/.test(s)&&/الطلبات \(1\)/.test(s);
+ctx.location.hash='#/graduates/r/T1';h=ctx.V.graduates();out.trButtons=/tr_suspend/.test(h)&&/tr_fail/.test(h)&&!/tr_resume/.test(h);
+ctx.location.hash='#/graduates/r/T3';h=ctx.V.graduates();out.rateShown=/16 \/ 20/.test(h);
+R("me={r:'student',id:'S1'}");FT.who={role:'student',roles:[],eld:{ok:true,items:[]}};FT.recs[2].data={};h=ctx.V.graduates();out.rateForm=/ft279rate/.test(h)&&!/tr_fail/.test(h);
+ctx.fv=()=>({c0:'4',c1:'3',c2:'4',c3:'2',c4:'1',cmt:''});ctx.V51.h.ft279rate({}, 'T3');out.rateAct=out.lastAct==='ent_rate:c5';
+ctx.prompt=()=>'سبب كافٍ للإيقاف';R("me={r:'admin'}");FT.who={roles:['tc']};ctx.V51.h.ft279st('T1','tr_suspend');out.suspAct=out.lastAct==='tr_suspend:why';
+ctx.prompt=()=>'قصير';out.lastAct='';ctx.V51.h.ft279st('T1','tr_suspend');out.shortBlocked=out.lastAct==='';
 console.log(JSON.stringify(out));
 const bad=Object.entries(out).filter(([k,v])=>v===false||v===undefined);process.exit(bad.length?1:0);
