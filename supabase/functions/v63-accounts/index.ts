@@ -114,7 +114,20 @@ async function viaResend(b: MailIn, html: string, text: string, name: string) {
   try { const j = await r.json(); return String(j?.id || ""); } catch { return ""; }
 }
 type Sent = { via: string; id: string };
+// v291: إيقاف الإرسال تلقائياً لأي عنوان ارتدّ بريده مرتين بعد آخر تسليم ناجح (يُعاد تلقائياً عند تصحيح العنوان)
+async function bouncedTwice(to: string): Promise<boolean> {
+  try {
+    const addr = String(to || "").trim().toLowerCase();
+    if (!addr) return false;
+    const { data: ok } = await admin.from("v63_mail_log").select("at").ilike("to_addr", addr).eq("delivery", "delivered").order("at", { ascending: false }).limit(1);
+    let q = admin.from("v63_mail_log").select("id", { count: "exact", head: true }).ilike("to_addr", addr).eq("delivery", "bounced").gte("at", new Date(Date.now() - 60 * 864e5).toISOString());
+    if (ok && ok[0]?.at) q = q.gt("at", ok[0].at);
+    const { count } = await q;
+    return (count || 0) >= 2;
+  } catch { return false; }
+}
 async function deliver(b: MailIn & { cur?: boolean }): Promise<Sent> {
+  if (await bouncedTwice(String(b.to || ""))) throw new Error("suppressed: موقوف تلقائياً — ارتدّ البريد إلى هذا العنوان مرتين؛ صحّح العنوان في ملف صاحبه");
   const { html, text } = compose(b);
   const name = String(b.from_name || "معهد التمهيد").replace(/["<>\r\n]/g, "").slice(0, 120);
   if (RESEND && MFROM) {
