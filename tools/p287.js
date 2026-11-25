@@ -45,39 +45,52 @@ function doc287(c){
   'This decision is communicated to all concerned for implementation, effective from its date.'].filter(Boolean);
  var s0=sg[0]||{},AN=function(n){return String(n)};
  var unit=a.unitAr||'إدارة شؤون أعضاء هيئة التدريس';
+ var ORDW=['أولاً','ثانياً','ثالثاً','رابعاً','خامساً','سادساً'];
+ var P=function(t,st){return '<p style="margin:0 0 7px;font-size:16px;line-height:1.95;text-align:justify;'+(st||'')+'">'+t+'</p>'};
  var h='<div class="tmw" data-d14="1" data-l287="1"><div class="tmp d14 l287" style="background:#fff">'+
-  /* ترويسة رسمية بسيطة: العربية يميناً، الشعار وسطاً، الإنجليزية يساراً */
-  '<div style="position:absolute;top:44px;right:54px;left:54px;display:flex;align-items:center;justify-content:space-between">'+
-   '<div style="text-align:center;'+A+';font-size:15px;line-height:1.6;color:#111;min-width:220px"><b style="font-size:17px">'+esc(I.nameAr||'معهد التمهيد')+'</b><br>'+esc(by)+'<br>'+esc(unit)+'</div>'+
-   (lg?'<img src="'+lg+'" alt="" style="height:62px">':'')+
-   '<div dir="ltr" style="text-align:center;'+E+';font-size:13px;line-height:1.6;color:#111;min-width:220px"><b style="font-size:14.5px">'+esc(I.nameEn||'At Tamhid Institute')+'</b><br>'+esc(byE)+'<br>Faculty Affairs</div></div>'+
-  '<div style="position:absolute;top:142px;right:54px;left:54px;border-top:1.5px solid #222"></div>'+
-  /* الرقم والتاريخ والمرفقات */
-  '<div style="position:absolute;top:154px;left:60px;'+A+';font-size:14px;line-height:1.75;color:#111;text-align:right;direction:rtl">'+
-   '<div>الرقم: <bdi dir="ltr">'+esc(c.rec)+'</bdi></div><div>التاريخ: '+(hd?'<bdi dir="ltr">'+esc(hd)+'</bdi>هـ':'<bdi dir="ltr">'+esc(dmy(dt))+'</bdi>م')+'</div><div>المرفقات: '+(a.att||c.att?esc(a.att||c.att):'بدون')+'</div></div>'+
+  /* علامة مائية خفيفة */
+  (lg?'<img src="'+lg+'" alt="" style="position:absolute;top:50%;left:50%;width:430px;transform:translate(-50%,-50%);opacity:.045">':'')+
+  /* الترويسة */
+  '<div style="position:absolute;top:30px;right:0;left:0;text-align:center;'+A+';font-size:15px;color:#14284B">بسم الله الرحمن الرحيم</div>'+
+  '<div style="position:absolute;top:56px;right:54px;left:54px;display:flex;align-items:center;justify-content:space-between">'+
+   '<div style="text-align:center;'+A+';font-size:15px;line-height:1.6;color:#14284B;min-width:230px"><b style="font-size:18px">'+esc(I.nameAr||'معهد التمهيد')+'</b><br>'+esc(by)+'<br>'+esc(unit)+'</div>'+
+   (lg?'<img src="'+lg+'" alt="" style="height:64px">':'')+
+   '<div dir="ltr" style="text-align:center;'+E+';font-size:13px;line-height:1.6;color:#14284B;min-width:230px"><b style="font-size:15px">'+esc(I.nameEn||'At Tamhid Institute')+'</b><br>'+esc(byE)+'<br>Faculty Affairs Department</div></div>'+
+  '<div style="position:absolute;top:150px;right:54px;left:54px;border-top:2.5px solid #14284B"></div><div style="position:absolute;top:155px;right:54px;left:54px;border-top:.8px solid #14284B"></div>'+
+  /* بيانات القرار */
+  '<div style="position:absolute;top:166px;left:58px;'+A+';font-size:14px;line-height:1.8;color:#111;direction:rtl">'+
+   '<div>'+'<span style="display:inline-block;width:62px">الرقم</span>: <bdi dir="ltr">'+esc(c.rec)+'</bdi></div>'+
+   '<div>'+'<span style="display:inline-block;width:62px">التاريخ</span>: '+(hd?'<bdi dir="ltr">'+esc(hd)+'</bdi>هـ الموافق ':'')+'<bdi dir="ltr">'+esc(dmy(dt))+'</bdi>م</div>'+
+   '<div>'+'<span style="display:inline-block;width:62px">المرفقات</span>: '+(a.att||c.att?esc(a.att||c.att):'بدون')+'</div></div>'+
   /* المتن */
-  '<div style="position:absolute;top:252px;right:64px;left:64px;'+A+';color:#111">'+
-   '<p style="margin:0 0 14px;font-size:16px"><b>الموضوع:</b> قرار تعيين '+w('المكرم','المكرمة')+'/ '+esc(nm)+' على وظيفة '+esc(a.rank||'—')+'</p>'+
-   '<div style="text-align:center;font-size:24px;font-weight:700;margin:0 0 14px"><u>قرار</u></div>'+
-   '<p style="margin:0 0 4px;font-size:16.5px;line-height:2">إن '+esc(by)+' بمعهد التمهيد،</p>'+
-   '<p style="margin:0 0 4px;font-size:16.5px;line-height:2;text-align:justify">بناءً على الصلاحيات المخوّلة له، وبناءً على قرار التعيين رقم ('+esc(AN(a.decNo||'—'))+') وتاريخ '+esc(AN(dmy(a.decDate)))+'م، وحسب مقتضيات المصلحة،</p>'+
-   '<p style="margin:10px 0 8px;font-size:17px;font-weight:700;text-align:center">يقرر ما يلي:</p>'+
-   items.map(function(t,i){return '<p style="margin:0 0 8px;font-size:16.5px;line-height:2;text-align:justify;padding-right:26px;text-indent:-26px">'+AN(i+1)+'- '+t+'</p>'}).join('')+
-   '<p style="margin:14px 0 0;font-size:16.5px;line-height:2;text-align:center">والله الموفق،،،</p>'+
+  '<div style="position:absolute;top:262px;right:64px;left:64px;'+A+';color:#111">'+
+   '<p style="margin:0 0 12px;font-size:16px"><b>الموضوع:</b> تعيين '+w('المكرم','المكرمة')+'/ '+esc(nm)+' على وظيفة '+esc(a.rank||'—')+' ب'+esc(a.dept||'')+'</p>'+
+   '<div style="text-align:center;margin:0 0 12px"><span style="display:inline-block;font-size:24px;font-weight:700;color:#14284B;border-bottom:2px solid #14284B;padding:0 18px 2px">قـرار</span></div>'+
+   P('إن رئيس '+esc(by)+' بمعهد التمهيد،')+
+   P('بناءً على الصلاحيات المخوّلة له بموجب أنظمة المعهد ولوائحه،')+
+   P('وبعد الاطلاع على قرار التعيين رقم ('+esc(a.decNo||'—')+') بتاريخ '+esc(dmy(a.decDate))+'م،')+
+   P('ونظراً لما تقتضيه مصلحة العمل،')+
+   '<p style="margin:8px 0 8px;font-size:17px;font-weight:700;text-align:center">يقـرر ما يلي:</p>'+
+   items.map(function(t,k){return '<p style="margin:0 0 7px;font-size:16px;line-height:1.95;text-align:justify;padding-right:64px;text-indent:-64px"><b style="display:inline-block;width:64px;text-indent:0">'+ORDW[k]+':</b>'+t+'</p>'}).join('')+
+   '<p style="margin:12px 0 0;font-size:16px;line-height:1.9;text-align:center">والله ولي التوفيق،،،</p>'+
   '</div>'+
-  /* التوقيع والختم (يسار الصفحة) */
-  '<div style="position:absolute;top:826px;left:70px;width:270px;text-align:center;'+A+';color:#111">'+
+  /* التوقيع والختم */
+  '<div style="position:absolute;top:836px;left:66px;width:280px;text-align:center;'+A+';color:#111">'+
    '<div style="font-size:16px;font-weight:700">'+esc(s0.t||'رئيس المعهد')+'</div>'+
-   '<div style="height:60px;position:relative;margin:2px 0">'+(X.imgOf&&s0.img?'<img src="'+X.imgOf(s0.img)+'" alt="" style="height:56px;max-width:170px;object-fit:contain">':'')+
+   '<div style="height:58px;position:relative;margin:2px 0">'+(X.imgOf&&s0.img?'<img src="'+X.imgOf(s0.img)+'" alt="" style="height:54px;max-width:170px;object-fit:contain">':'')+
     (se.length?'<img src="'+se[0]+'" alt="" style="position:absolute;right:-52px;top:-18px;width:88px;height:88px;object-fit:contain">':'')+'</div>'+
    '<div style="font-size:15.5px;font-weight:700">'+esc(s0.n||'')+'</div></div>'+
-  /* التحقق والدخول: نص واضح، والرابط الكامل في الرمز */
-  '<div style="position:absolute;bottom:90px;right:54px;left:54px;display:flex;align-items:center;gap:12px;'+A+';font-size:13px;color:#222;line-height:1.7;border-top:1px dashed #9aa4b1;padding-top:8px">'+
-   (QV?'<img src="'+QV+'" alt="" style="width:56px;height:56px">':'')+
+  /* صورة إلى */
+  '<div style="position:absolute;top:842px;right:64px;'+A+';font-size:12.5px;line-height:1.7;color:#333">'+
+   '<b>صورة مع التحية إلى:</b><br>- '+w('المعني','المعنية')+' بالقرار.<br>- '+esc(unit)+'.<br>- الإدارة المالية.<br>- الملف الوظيفي.</div>'+
+  /* التحقق والدخول */
+  '<div style="position:absolute;bottom:90px;right:54px;left:54px;display:flex;align-items:center;gap:12px;'+A+';font-size:12.5px;color:#222;line-height:1.7;border-top:1px dashed #9aa4b1;padding-top:8px">'+
+   (QV?'<img src="'+QV+'" alt="" style="width:54px;height:54px">':'')+
    '<div><b>التحقق من القرار:</b> امسح الرمز، أو أدخل رقمه <bdi dir="ltr">'+esc(c.rec)+'</bdi> في صفحة «التحقق من الوثائق» على موقع المعهد <b dir="ltr" style="'+E+'">attamhid.com</b><br>'+
-   '<b>الدخول إلى البوابة:</b> «الخدمات الذاتية لأعضاء هيئة التدريس» <b dir="ltr" style="'+E+'">attamhid.com/faculty-services</b> برقمك العضوي <bdi dir="ltr">'+esc(id)+'</bdi></div></div>'+
-  '<div style="position:absolute;bottom:52px;right:54px;left:54px;border-top:1px solid #444;padding-top:6px;text-align:center;'+A+';font-size:12.5px;color:#222">'+
-   (I.addrAr?esc(I.addrAr)+' &nbsp;—&nbsp; ':'')+(H.p1?'الهاتف: <bdi dir="ltr">'+esc(H.p1)+'</bdi> &nbsp;—&nbsp; ':'')+(H.em?'البريد: <bdi dir="ltr">'+esc(H.em)+'</bdi> &nbsp;—&nbsp; ':'')+'<b dir="ltr" style="'+E+'">'+esc(bare(site()))+'</b></div>'+
+   '<b>الدخول إلى البوابة:</b> «الخدمات الذاتية لأعضاء هيئة التدريس» <b dir="ltr" style="'+E+'">attamhid.com/faculty-services</b> '+w('برقمك','برقمك')+' العضوي <bdi dir="ltr">'+esc(id)+'</bdi></div></div>'+
+  /* التذييل */
+  '<div style="position:absolute;bottom:50px;right:54px;left:54px;border-top:2px solid #14284B;padding-top:6px;text-align:center;'+A+';font-size:12.5px;color:#14284B">'+
+   (I.addrAr?esc(I.addrAr)+' &nbsp;|&nbsp; ':'')+(H.p1?'الهاتف: <bdi dir="ltr">'+esc(H.p1)+'</bdi> &nbsp;|&nbsp; ':'')+(H.em?'البريد: <bdi dir="ltr">'+esc(H.em)+'</bdi> &nbsp;|&nbsp; ':'')+'<b dir="ltr" style="'+E+'">attamhid.com</b></div>'+
   '</div></div>';
  return h}
 
