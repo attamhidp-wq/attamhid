@@ -46,7 +46,7 @@ function view(){if(!central())return '<div class="msg er">'+L('نشر نتائج
  return h+'</div></section>'}
 /* v272: ملخص نتيجة الطالب في الفصل لرسالة البريد الواحدة (المقررات والدرجات والمعدل الفصلي والتراكمي) */
 var GR0=function(g){return g>=4.5?['ممتاز','Excellent']:g>=3.75?['جيد جداً','Very good']:g>=2.75?['جيد','Good']:g>=2?['مقبول','Acceptable']:['راسب','Fail']};
-var glEn0={'أ+':'A+','أ':'A','ب+':'B+','ب':'B','ج+':'C+','ج':'C','د+':'D+','د':'D','هـ':'F','ممتاز':'Excellent','جيد جداً':'Very good','جيد جدا':'Very good','جيد':'Good','مقبول':'Acceptable','راسب':'Fail'};
+var glEn0={'أ+':'A+','أ':'A','ب+':'B+','ب':'B','ج+':'C+','ج':'C','د+':'D+','د':'D','هـ':'F','ممتاز مرتفع':'Excellent (High)','جيد جداً مرتفع':'Very Good (High)','جيد جدا مرتفع':'Very Good (High)','جيد مرتفع':'Good (High)','مقبول مرتفع':'Acceptable (High)','ممتاز':'Excellent','جيد جداً':'Very good','جيد جدا':'Very good','جيد':'Good','مقبول':'Acceptable','راسب':'Fail'};
 function sum272(s,term,cids){try{var c2=JSON.parse(JSON.stringify(s));var G=c2.gr||{};(cids||[]).forEach(function(c){if(G[c])G[c].rel=1});
  var rows=[],H=0,Q=0;Object.keys(G).forEach(function(cid){var g=G[cid];if(!g||!g.fin||!g.rel)return;var t=termOf(s,cid);if(t==null&&(cids||[]).indexOf(cid)>=0)t=term;if(t!==term)return;var c=crsOf(s,cid)||{};var h=+c.hrs||0;var pt=W.ptsOf37?W.ptsOf37(g):+g.pts||0;H+=h;Q+=pt*h;
   rows.push({id:cid,code:c.code||'',name:c.name||cid,nameEn:c.nameEn||c.name||cid,hrs:h||'',score:g.score!=null?Math.round(+g.score*100)/100:'',gl:g.gl||'',glEn:glEn0[g.gl]||g.gl||''})});
