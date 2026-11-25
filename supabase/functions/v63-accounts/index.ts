@@ -4,6 +4,7 @@
 // بيانات Gmail: أسرار الدالة GMAIL_USER/GMAIL_APP_PASSWORD، أو الخزنة المشفّرة (vault: gmail_user, gmail_app_password)
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import nodemailer from "npm:nodemailer@6.9.16";
+import webpush from "npm:web-push@3.6.7";
 import { nameEn274 } from "./tr274.ts";
 
 const CORS = {
@@ -112,6 +113,31 @@ async function viaResend(b: MailIn, html: string, text: string, name: string) {
   });
   if (!r.ok) throw new Error("resend " + r.status + ": " + (await r.text()).slice(0, 300));
   try { const j = await r.json(); return String(j?.id || ""); } catch { return ""; }
+}
+// v293: إشعارات الجوال (Web Push) — مفاتيح VAPID تُولَّد مرة واحدة وتُحفظ في الخزنة المشفّرة
+let VAPID: { pub: string; priv: string } | null = null;
+async function vapid() {
+  if (VAPID) return VAPID;
+  const { data } = await admin.rpc("v293_vapid_get");
+  let k = (data || {}) as { pub?: string; priv?: string };
+  if (!k.pub || !k.priv) { const g = webpush.generateVAPIDKeys(); await admin.rpc("v293_vapid_set", { p_pub: g.publicKey, p_priv: g.privateKey }); const r2 = await admin.rpc("v293_vapid_get"); k = (r2.data || {}) as { pub?: string; priv?: string }; }
+  if (!k.pub || !k.priv) throw new Error("vapid");
+  VAPID = { pub: k.pub, priv: k.priv }; webpush.setVapidDetails("https://attamhid.com", VAPID.pub, VAPID.priv); return VAPID;
+}
+async function pushRun() {
+  const { data: q } = await admin.from("v293_push_q").select("id,user_id,title,body,url,tries").is("sent_at", null).lt("tries", 3).order("at").limit(50);
+  if (!q || !q.length) return { sent: 0 };
+  await vapid(); let sent = 0;
+  for (const m of q) {
+    const { data: subs } = await admin.from("v293_push").select("endpoint,sub").eq("user_id", m.user_id);
+    let ok = false;
+    for (const s of subs || []) {
+      try { await webpush.sendNotification(s.sub as any, JSON.stringify({ title: m.title || "معهد التمهيد", body: m.body || "", url: m.url || "https://attamhid.com/" }), { TTL: 86400 }); ok = true; sent++; await admin.from("v293_push").update({ last_ok: new Date().toISOString() }).eq("endpoint", s.endpoint); }
+      catch (e) { const sc = (e as { statusCode?: number }).statusCode; if (sc === 404 || sc === 410) await admin.from("v293_push").delete().eq("endpoint", s.endpoint); }
+    }
+    await admin.from("v293_push_q").update(ok || !(subs || []).length ? { sent_at: new Date().toISOString() } : { tries: (m.tries || 0) + 1 }).eq("id", m.id);
+  }
+  return { sent };
 }
 type Sent = { via: string; id: string };
 // v291: إيقاف الإرسال تلقائياً لأي عنوان ارتدّ بريده مرتين بعد آخر تسليم ناجح (يُعاد تلقائياً عند تصحيح العنوان)
@@ -234,7 +260,8 @@ Deno.serve(async (req) => {
     if (!TOKEN || String(body.token || "") !== TOKEN) return json({ error: "forbidden" });
     const n = await notifyRun();
     const r = await retryDue();
-    return json({ ok: true, notify: n, retry: r });
+    let pu: unknown = null; try { pu = await pushRun(); } catch (e) { pu = String((e as Error)?.message || e).slice(0, 200); }
+    return json({ ok: true, notify: n, retry: r, push: pu });
   }
 
   const me = await caller(req);

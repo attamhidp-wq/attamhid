@@ -12,3 +12,6 @@ self.addEventListener('fetch',function(e){var r=e.request;if(r.method!=='GET')re
  if(/\/(js|img)\//.test(p)||/\.(js|css|webp|png|jpg|svg|woff2?)$/.test(p)){e.respondWith(caches.match(r).then(function(h){return h||fetch(r).then(function(x){return put(ASSET,r,x)})}));return}
  e.respondWith(fetch(r).then(function(x){return put(ASSET,r,x)}).catch(function(){return caches.match(r)}))});
 self.addEventListener('message',function(e){if(e.data==='skip')self.skipWaiting()});
+/* v293: إشعارات الجوال */
+self.addEventListener('push',function(e){var d={};try{d=e.data?e.data.json():{}}catch(x){d={body:e.data?e.data.text():''}}e.waitUntil(self.registration.showNotification(d.title||'معهد التمهيد',{body:d.body||'',icon:'img/app-192-v132.png',badge:'img/app-192-v132.png',dir:'rtl',lang:'ar',data:{url:d.url||'./'}}))});
+self.addEventListener('notificationclick',function(e){e.notification.close();var u=(e.notification.data&&e.notification.data.url)||'./';e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(function(L){for(var i=0;i<L.length;i++){var c=L[i];if('focus' in c){c.navigate&&c.navigate(u);return c.focus()}}return self.clients.openWindow(u)}))});

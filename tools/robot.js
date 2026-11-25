@@ -108,6 +108,12 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
           out[c] = { ov, miss: m, pages: (h.match(/class="g9p/g) || []).length, vals: (h.match(/TEST-/g) || []).length, sig: /l59-sgs|data-sg289/.test(h) /* v288: لا ختم في النماذج؛ الختم في السجل الأكاديمي وحده */, seal: /l59-seal" src/.test(h), qr: (h.match(/l59-qr|data-qr289/g) || []).length, term: /الفصل الدراسي: الفصل/.test(h), err }; } }
       return out; });
     console.log('CHECK autofill', Object.values(af).every((x) => !x.err && x.pages > 0 && x.sig && !x.seal && x.qr >= x.pages && !(x.ov || []).length) ? 'OK' : 'FAIL', JSON.stringify(af));
+    // v293: أرشيف المشاريع العام، ومعاينة استبيان الخريجين، وتبويبا الإدارة الجديدان
+    const v293 = await p.evaluate(async () => { const o = {}; location.hash = '#/projects'; go(); await new Promise((z) => setTimeout(z, 4000)); const t = (document.querySelector('#app') || {}).innerText || ''; o.archive = /أرشيف مشاريع التخرج/.test(t) && !/تعذّر تحميل الأرشيف/.test(t);
+      location.hash = '#/alumni-survey/SAMPLE'; go(); await new Promise((z) => setTimeout(z, 4000)); o.survey = !!document.querySelector('#app form') && /معاينة/.test((document.querySelector('#app') || {}).innerText || '');
+      try { V51.h.ft279v('load'); await new Promise((z) => setTimeout(z, 3000)); o.load = /عبء الإشراف|المشرف/.test(document.body.innerText); V51.h.ft279v('alumni'); await new Promise((z) => setTimeout(z, 3000)); o.alumni = /متابعة الخريجين|استبيان/.test(document.body.innerText); } catch (e) { o.err = e.message; }
+      return o; });
+    console.log('CHECK v293', v293.archive && v293.survey ? 'OK' : 'FAIL', JSON.stringify(v293));
     // v291: الخطابات على نموذج خطاب التعيين: الإطار الرسمي، لا ختم ولا جداول، رابط الموقع وعبارة التحقق، ورابط الدخول حيث يلزم (لا إصدار ولا حفظ)
     const lt = await p.evaluate(async () => { const out = {}; const st = (S.students || []).find((x) => !x.deleted) || {}, fa = (S.faculty || [])[0] || {}, mb = ((S.v51 || {}).members || [])[0];
       const C = [['acc', { type: 'acc', rec: 'TEST-ACC', sid: st.id, uid: st.id, name: st.name, prog: st.prog, date: '2026-12-01', lang: 'ar' }, 'student-services'], ['rec', { type: 'rec', rec: 'TEST-REC', sid: st.id, uid: st.id, name: st.name, prog: st.prog, date: '2026-12-01', lang: 'ar' }, ''], ['appt-f', { type: 'appt', rec: 'TEST-APF', uid: fa.id, name: fa.name, date: '2026-12-01' }, 'faculty-services']];
