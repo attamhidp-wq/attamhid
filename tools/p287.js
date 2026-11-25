@@ -31,10 +31,12 @@ function doc287(c){
  var lg='';try{lg=LOGO}catch(e){}
  var band=X.band59||function(){return ''};
  var A='font-family:Amiri,\'Traditional Arabic\',serif',E='font-family:Tinos,\'Times New Roman\',serif';
+ var TPH={contract:'بنظام التعاقد',perm:'تعييناً رسمياً',permanent:'تعييناً رسمياً',part:'بنظام التعاون (دوام جزئي)',visiting:'أستاذاً زائراً'}[a.type]||'';
+ var AB=['أ','ب','ج','د','هـ','و','ز','ح','ط','ي'];
  var items=[
-  'تعيين '+w('المكرم','المكرمة')+'/ <b>'+esc(nm)+'</b>'+(o.nat?' ('+w('الجنسية','الجنسية')+': '+esc(o.nat)+')':'')+' على وظيفة <b>'+esc(a.rank||'—')+'</b> ب'+esc(a.dept||'القسم المختص')+'، بنوع تعيين: '+esc(tp[0])+'، و'+w('رقمه','رقمها')+' العضوي ('+esc(id)+').',
+  'تعيين '+w('المكرم','المكرمة')+'/ <b>'+esc(nm)+'</b>'+(o.nat?' (الجنسية: '+esc(o.nat)+')':'')+' على وظيفة <b>'+esc(a.rank||'—')+'</b> ب'+esc(a.dept||'القسم المختص')+(TPH?'، '+TPH:'')+'، ويكون '+w('رقمه','رقمها')+' العضوي ('+esc(id)+').',
   'تبدأ مدة التكليف من '+esc(dmy(a.start))+'م'+(a.end?' إلى '+esc(dmy(a.end))+'م'+(mo?' ('+mo+' شهراً)':''):'')+'، ويُعدّ التعيين نافذاً اعتباراً من تاريخ المباشرة.',
-  duties.length?'يُسند إلي'+w('ه','ها')+' ما يلي: '+duties.map(function(x){return esc(x.replace(/[.،]+$/,''))}).join('؛ ')+'.':'',
+  duties.length?'يُكلَّف'+w('','')+' بالمهام الآتية:'+duties.map(function(x,k){return '<span style="display:block;padding-right:22px">'+(AB[k]||(k+1))+'- '+esc(x.replace(/[.،]+$/,''))+'.</span>'}).join(''):'',
   'يُبلَّغ هذا القرار لمن يلزم لتنفيذه، ويُعمل به من تاريخه.'].filter(Boolean);
  var itemsE=[
   'To appoint '+w('Mr.','Ms.')+' <b>'+esc(ne||nm)+'</b> as <b>'+esc(a.rankEn||a.rank||'—')+'</b>, '+esc(a.deptEn||a.dept||'')+', on a '+esc(tp[1])+' basis, faculty no. '+esc(id)+'.',
@@ -52,7 +54,7 @@ function doc287(c){
   '<div style="position:absolute;top:142px;right:54px;left:54px;border-top:1.5px solid #222"></div>'+
   /* الرقم والتاريخ والمرفقات */
   '<div style="position:absolute;top:154px;left:60px;'+A+';font-size:14px;line-height:1.75;color:#111;text-align:right;direction:rtl">'+
-   '<div>الرقم: <bdi dir="ltr">'+esc(c.rec)+'</bdi></div><div>التاريخ: '+(hd?'<bdi dir="ltr">'+esc(hd)+'</bdi>هـ':'<bdi dir="ltr">'+esc(dmy(dt))+'</bdi>م')+'</div><div>المرفقات: —</div></div>'+
+   '<div>الرقم: <bdi dir="ltr">'+esc(c.rec)+'</bdi></div><div>التاريخ: '+(hd?'<bdi dir="ltr">'+esc(hd)+'</bdi>هـ':'<bdi dir="ltr">'+esc(dmy(dt))+'</bdi>م')+'</div><div>المرفقات: '+(a.att||c.att?esc(a.att||c.att):'بدون')+'</div></div>'+
   /* المتن */
   '<div style="position:absolute;top:252px;right:64px;left:64px;'+A+';color:#111">'+
    '<p style="margin:0 0 14px;font-size:16px"><b>الموضوع:</b> قرار تعيين '+w('المكرم','المكرمة')+'/ '+esc(nm)+' على وظيفة '+esc(a.rank||'—')+'</p>'+
@@ -64,15 +66,16 @@ function doc287(c){
    '<p style="margin:14px 0 0;font-size:16.5px;line-height:2;text-align:center">والله الموفق،،،</p>'+
   '</div>'+
   /* التوقيع والختم (يسار الصفحة) */
-  '<div style="position:absolute;top:848px;left:70px;width:270px;text-align:center;'+A+';color:#111">'+
+  '<div style="position:absolute;top:826px;left:70px;width:270px;text-align:center;'+A+';color:#111">'+
    '<div style="font-size:16px;font-weight:700">'+esc(s0.t||'رئيس المعهد')+'</div>'+
    '<div style="height:60px;position:relative;margin:2px 0">'+(X.imgOf&&s0.img?'<img src="'+X.imgOf(s0.img)+'" alt="" style="height:56px;max-width:170px;object-fit:contain">':'')+
-    (se.length?'<img src="'+se[0]+'" alt="" style="position:absolute;right:0;top:-6px;width:74px;height:74px;object-fit:contain;opacity:.8;transform:rotate(-6deg)">':'')+'</div>'+
+    (se.length?'<img src="'+se[0]+'" alt="" style="position:absolute;right:-52px;top:-18px;width:88px;height:88px;object-fit:contain">':'')+'</div>'+
    '<div style="font-size:15.5px;font-weight:700">'+esc(s0.n||'')+'</div></div>'+
-  /* سطر الدخول والتحقق، ثم التذييل */
-  '<div style="position:absolute;bottom:92px;right:54px;left:54px;display:flex;align-items:center;gap:10px;'+A+';font-size:12.5px;color:#222;line-height:1.6">'+
-   (QV?'<img src="'+QV+'" alt="" style="width:50px;height:50px">':'')+
-   '<div>للتحقق من صحة القرار: <b dir="ltr" style="'+E+'">'+esc(bare(ver))+'</b><br>بوابة أعضاء هيئة التدريس: <b dir="ltr" style="'+E+'">'+esc(bare(portal))+'</b> (الدخول بالرقم العضوي <bdi dir="ltr">'+esc(id)+'</bdi>)</div></div>'+
+  /* التحقق والدخول: نص واضح، والرابط الكامل في الرمز */
+  '<div style="position:absolute;bottom:90px;right:54px;left:54px;display:flex;align-items:center;gap:12px;'+A+';font-size:13px;color:#222;line-height:1.7;border-top:1px dashed #9aa4b1;padding-top:8px">'+
+   (QV?'<img src="'+QV+'" alt="" style="width:56px;height:56px">':'')+
+   '<div><b>التحقق من القرار:</b> امسح الرمز، أو أدخل رقمه <bdi dir="ltr">'+esc(c.rec)+'</bdi> في صفحة «التحقق من الوثائق» على موقع المعهد <b dir="ltr" style="'+E+'">attamhid.com</b><br>'+
+   '<b>الدخول إلى البوابة:</b> «الخدمات الذاتية لأعضاء هيئة التدريس» <b dir="ltr" style="'+E+'">attamhid.com/faculty-services</b> برقمك العضوي <bdi dir="ltr">'+esc(id)+'</bdi></div></div>'+
   '<div style="position:absolute;bottom:52px;right:54px;left:54px;border-top:1px solid #444;padding-top:6px;text-align:center;'+A+';font-size:12.5px;color:#222">'+
    (I.addrAr?esc(I.addrAr)+' &nbsp;—&nbsp; ':'')+(H.p1?'الهاتف: <bdi dir="ltr">'+esc(H.p1)+'</bdi> &nbsp;—&nbsp; ':'')+(H.em?'البريد: <bdi dir="ltr">'+esc(H.em)+'</bdi> &nbsp;—&nbsp; ':'')+'<b dir="ltr" style="'+E+'">'+esc(bare(site()))+'</b></div>'+
   '</div></div>';
