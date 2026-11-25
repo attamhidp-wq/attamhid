@@ -19541,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v293';
+window.__BUILD__='v294';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -23438,11 +23438,11 @@ function linksView(){var A=[['',Lx('الصفحة الرئيسة للبوابة',
 
 function tab(){if(!isAdm())return '';if(!FT.ld){if(!FT.err)FT.load().then(function(){window.__force71=1;go()});return FT.err?'<div class="msg er">'+Lx('تعذّر التحميل.','Could not load.')+'</div>'+btn(Lx('إعادة المحاولة','Try again'),'V51.h.ft231retry()'):'<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>'}
  if(!canSee())return '<div class="msg er">'+Lx('هذا القسم للإدارة المركزية والجهات المخوّلة منها.','This section is for central administration and the bodies it authorizes.')+'</div>';
- ensure();var V0=[['sum',Lx('الملخص','Summary')],['elig',Lx('الاستحقاق','Eligibility')],['tr',Lx('متابعة التدريب','Training follow-up')],['gp',Lx('المشاريع والمراحل','Projects & stages')],['cmt',Lx('لجان المناقشة','Defence committees')],['grades',Lx('الدرجات','Grades')],['grad',Lx('التخرج','Graduation')],['docs',Lx('الوثائق','Documents')],['rep',Lx('التقارير','Reports')],['load',Lx('عبء الإشراف','Supervision load')],['alumni',Lx('متابعة الخريجين','Alumni follow-up')],['mail',Lx('الرسائل','Messages')],['cfg',Lx('الإعدادات','Settings')],['links',Lx('لوحات البوابة','Portal boards')]];
+ ensure();var V0=[['sum',Lx('الملخص','Summary')],['elig',Lx('الاستحقاق','Eligibility')],['tr',Lx('متابعة التدريب','Training follow-up')],['gp',Lx('المشاريع والمراحل','Projects & stages')],['cmt',Lx('لجان المناقشة','Defence committees')],['grades',Lx('الدرجات','Grades')],['grad',Lx('التخرج','Graduation')],['docs',Lx('الوثائق','Documents')],['rep',Lx('التقارير','Reports')],['load',Lx('عبء الإشراف','Supervision load')],['alumni',Lx('متابعة الخريجين','Alumni follow-up')],['eval',Lx('تقييم المشرفين','Supervisor evaluations')],['mail',Lx('الرسائل','Messages')],['cfg',Lx('الإعدادات','Settings')],['links',Lx('لوحات البوابة','Portal boards')]];
  var h='<h3>'+Lx('التدريب الميداني ومشروع التخرج','Field Training & Graduation Project')+'</h3><nav style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px">'+V0.map(function(x){return btn(x[1],'V51.h.ft279v(\''+x[0]+'\')',G.v===x[0]?'':'s')}).join('')+btn(Lx('تحديث','Refresh'),'V51.h.ft279r()','s')+'</nav>';
  if(G.err)h+='<div class="msg er">'+e9(G.err)+'</div>';
  if(FT.elig==null&&G.v!=='links'&&G.v!=='cfg')return h+'<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>';
- try{return h+(G.v==='elig'?eligView():G.v==='tr'?trView():G.v==='gp'?gpView():G.v==='cmt'?cmtView():G.v==='grades'?gradesView():G.v==='grad'?gradView():G.v==='docs'?docsView():G.v==='rep'?repView():G.v==='mail'?mailView():G.v==='cfg'?cfgView():G.v==='links'?linksView():G.v==='load'&&X.ft293?X.ft293.loadView():G.v==='alumni'&&X.ft293?X.ft293.alumniView():sumView())}catch(e){console.error('v279 tab',e);return h+'<div class="msg er">'+e9(e.message)+'</div>'}}
+ try{return h+(G.v==='elig'?eligView():G.v==='tr'?trView():G.v==='gp'?gpView():G.v==='cmt'?cmtView():G.v==='grades'?gradesView():G.v==='grad'?gradView():G.v==='docs'?docsView():G.v==='rep'?repView():G.v==='mail'?mailView():G.v==='cfg'?cfgView():G.v==='links'?linksView():G.v==='load'&&X.ft293?X.ft293.loadView():G.v==='alumni'&&X.ft293?X.ft293.alumniView():G.v==='eval'&&X.ft294?X.ft294.evalView():sumView())}catch(e){console.error('v279 tab',e);return h+'<div class="msg er">'+e9(e.message)+'</div>'}}
 H.ft279r=function(){reload()};
 try{var TB=X.TABS51||W.V51TABS,TL=X.TABLBL51||{};if(TB&&!TB.some(function(x){return x[0]==='ft279'})){TB.push(['ft279','التدريب الميداني ومشروع التخرج','Field Training & Graduation Project',tab]);TL['التدريب الميداني ومشروع التخرج']='ft279';TL['Field Training & Graduation Project']='ft279'}}catch(e){}
 
@@ -24094,6 +24094,99 @@ var btn0=function(t,on){return '<button class="btn s" onclick="'+on+'">'+e9(t)+'
 H.al293on=function(v){if(v&&!confirm(Lx('اعتماد رسالة الاستبيان وتفعيل إرسالها آلياً للخريجين بعد ستة أشهر من التخرج؟','Approve the survey email and enable automatic sending to graduates six months after graduation?')))return;FT.rpc('v293_alumni_approve',{p_on:!!v}).then(function(){FT.cfg=FT.cfg||{};FT.cfg.alumni293={ok:!!v};toast(v?Lx('فُعّل الإرسال.','Enabled.'):Lx('أُوقف الإرسال.','Disabled.'));go()}).catch(function(e){toast(String(e&&e.message||e))})};
 X.ft293={loadView:loadView,alumniView:alumniView,calBox:calBox,evOf:evOf,icsOf:icsOf};
 }catch(e){console.error('v293',e)}})();
+</script>
+<script id="p294">
+/* =====================================================================
+   v294 — تقييم الطلاب لمشرفيهم (اختيار من قوائم ثم كتابة، دون اسم)، وحجز المواعيد مع المشرف،
+   وملف الخريج الموحّد (PDF)، وزر إرسال الاستبيان للخريجين السابقين. لا بيانات شخصية في الشيفرة.
+   ===================================================================== */
+(function(){try{
+var W=window,X=W.V51;if(!X)return;var H=X.h||(X.h={}),FT=X.ft225||{};
+var Lx=function(a,e){try{return L(a,e)}catch(x){return a}};
+var e9=function(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var rpc=async function(n,a){if(typeof sb==='undefined'||!sb)throw new Error('offline');var r=await sb.rpc(n,a||{});if(r.error)throw r.error;return r.data};
+var T=function(m){try{toast(m)}catch(e){}};
+var G=X.g294||(X.g294={ev:{},sl:null});
+var fmt=function(iso){try{var d=new Date(iso);return d.toLocaleDateString(Lx('ar-SA-u-ca-gregory-nu-latn','en-GB'),{weekday:'long',year:'numeric',month:'2-digit',day:'2-digit'})+' — '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}catch(e){return iso}};
+
+/* ---------- 1) تقييم المشرف ---------- */
+var QS=[['q1','وضوح التوجيه والإرشاد','Clarity of guidance'],['q2','سرعة الرد على الاستفسارات','Responsiveness to questions'],['q3','الالتزام بمواعيد اللقاءات','Keeping meeting times'],['q4','عدالة التقويم وموضوعيته','Fairness of assessment'],['q5','الإفادة العلمية والعملية','Academic and practical benefit'],['q6','الرضا العام عن الإشراف','Overall satisfaction']];
+var OPT=[['5','ممتاز','Excellent'],['4','جيد جداً','Very good'],['3','جيد','Good'],['2','مقبول','Fair'],['1','ضعيف','Poor']];
+var evalBox=function(r){var c=G.ev[r.id];if(c===undefined){G.ev[r.id]=null;rpc('v294_eval_ctx',{p_rec:r.id}).then(function(d){G.ev[r.id]=d||{ok:false};try{go()}catch(e){}}).catch(function(){G.ev[r.id]={ok:false}});return ''}
+ if(!c||!c.ok)return '';if(c.done)return '<div class="box" data-ev294="1"><span class="tag ok">'+Lx('شكراً، وصل تقييمك للمشرف.','Thank you; your supervisor evaluation was received.')+'</span></div>';
+ return '<div class="box" data-ev294="1"><b>'+Lx('تقييم المشرف','Evaluate your supervisor')+'</b><p class="mu">'+Lx('اختر من القوائم ثم اكتب ملاحظتك إن شئت. التقييم لا يحمل اسمك، ولا يرى المشرف إلا المتوسطات المجمّعة.','Choose from the lists, then add a comment if you wish. The evaluation does not carry your name; only aggregated averages are shown.')+'</p>'+
+  '<form onsubmit="return V51.h.ev294(this,\''+e9(r.id)+'\')">'+QS.map(function(q){return '<label style="display:block;margin:6px 0">'+Lx(q[1],q[2])+'<select name="'+q[0]+'" required><option value=""></option>'+OPT.map(function(o){return '<option value="'+o[0]+'">'+Lx(o[1],o[2])+'</option>'}).join('')+'</select></label>'}).join('')+
+  '<label style="display:block;margin:6px 0">'+Lx('ملاحظات واقتراحات (اختياري)','Comments and suggestions (optional)')+'<textarea name="note" rows="3" maxlength="800" style="width:100%"></textarea></label><button class="btn">'+Lx('إرسال التقييم','Submit evaluation')+'</button></form></div>'};
+H.ev294=function(f,id){var v={};new FormData(f).forEach(function(x,k){v[k]=x});rpc('v294_eval_save',{p_rec:id,p:v}).then(function(d){if(d&&d.ok){G.ev[id]={ok:true,done:true};T(Lx('شكراً، وصل تقييمك.','Thank you; received.'));go()}else T(Lx('أكمل الاختيارات كلها.','Complete all choices.'))}).catch(function(){T(Lx('تعذّر الإرسال.','Could not submit.'))});return false};
+
+/* ---------- 2) حجز المواعيد ---------- */
+var loadSl=function(){G.sl=G.sl||{};G.sl.busy=1;rpc('v294_slots').then(function(d){G.sl=d||{};try{go()}catch(e){}}).catch(function(){G.sl={err:1}})};
+var icsOne=function(s,title){var p=function(n){return (n<10?'0':'')+n},d=new Date(s.at),e=new Date(d.getTime()+(s.dur||30)*60000),z=function(x){return x.getUTCFullYear()+p(x.getUTCMonth()+1)+p(x.getUTCDate())+'T'+p(x.getUTCHours())+p(x.getUTCMinutes())+'00Z'};
+ return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//At Tamhid Institute//attamhid.com//AR','BEGIN:VEVENT','UID:slot-'+s.id+'@attamhid.com','DTSTAMP:'+z(new Date()),'DTSTART:'+z(d),'DTEND:'+z(e),'SUMMARY:'+title,s.place?'LOCATION:'+String(s.place).replace(/[,;]/g,' '):'','BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+title,'TRIGGER:-PT1H','END:VALARM','END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n')};
+H.ics294=function(id){var s=((G.sl||{}).booked||[]).concat((G.sl||{}).mine||[]).find(function(x){return String(x.id)===String(id)});if(!s)return;var b=new Blob([icsOne(s,Lx('موعد مع المشرف — معهد التمهيد','Supervisor appointment — At Tamhid'))],{type:'text/calendar;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='attamhid-appointment.ics';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
+var slotBox=function(){if(G.sl===null||G.sl===undefined){G.sl={};loadSl();return ''}var S0=G.sl;if(S0.err)return '';var h='';
+ var cal=function(id){return ' <a href="javascript:void 0" onclick="V51.h.ics294('+id+')">'+Lx('أضف إلى التقويم','Add to calendar')+'</a>'};
+ if(S0.isSup||(S0.mine||[]).length){h+='<div class="box" data-sl294="1"><b>'+Lx('مواعيدي المتاحة للطلاب','My appointment slots')+'</b>'+
+  '<form onsubmit="return V51.h.sla294(this)" style="display:flex;flex-wrap:wrap;gap:6px;align-items:end;margin:6px 0"><label>'+Lx('التاريخ والوقت','Date & time')+'<input name="at" type="datetime-local" required></label><label>'+Lx('المدة (دقيقة)','Minutes')+'<select name="dur"><option>15</option><option selected>30</option><option>45</option><option>60</option></select></label><label>'+Lx('عدد المواعيد المتتالية','Consecutive slots')+'<select name="n"><option>1</option><option>2</option><option>3</option><option>4</option><option>6</option><option>8</option></select></label><label>'+Lx('المكان أو الرابط','Place or link')+'<input name="place" maxlength="200"></label><button class="btn s">'+Lx('إضافة','Add')+'</button></form>'+
+  ((S0.mine||[]).length?'<ul>'+S0.mine.map(function(s){return '<li>'+e9(fmt(s.at))+' ('+s.dur+' '+Lx('دقيقة','min')+')'+(s.place?' — '+e9(s.place):'')+' — '+(s.booked?'<b>'+Lx('محجوز: ','Booked: ')+e9(s.who||'')+'</b>'+(s.note?' — '+e9(s.note):'')+cal(s.id):'<span class="mu">'+Lx('متاح','Free')+'</span>')+' <a href="javascript:void 0" onclick="V51.h.sld294('+s.id+','+(s.booked?1:0)+')">'+Lx('حذف','Delete')+'</a></li>'}).join('')+'</ul>':'<p class="mu">'+Lx('لم تُضف مواعيد بعد.','No slots yet.')+'</p>')+'</div>'}
+ if((S0.avail||[]).length||(S0.booked||[]).length){h+='<div class="box" data-sl294="1"><b>'+Lx('المواعيد مع المشرف','Appointments with your supervisor')+'</b>'+
+  ((S0.booked||[]).length?'<p><b>'+Lx('حجوزاتي:','My bookings:')+'</b></p><ul>'+S0.booked.map(function(s){return '<li>'+e9(fmt(s.at))+' — '+e9(s.supName)+(s.place?' — '+e9(s.place):'')+cal(s.id)+' <a href="javascript:void 0" onclick="V51.h.slc294('+s.id+')">'+Lx('إلغاء الحجز','Cancel')+'</a></li>'}).join('')+'</ul>':'')+
+  ((S0.avail||[]).length?'<p><b>'+Lx('المواعيد المتاحة:','Available slots:')+'</b></p><ul>'+S0.avail.slice(0,30).map(function(s){return '<li>'+e9(fmt(s.at))+' ('+s.dur+' '+Lx('دقيقة','min')+') — '+e9(s.supName)+(s.place?' — '+e9(s.place):'')+' <button class="btn s" onclick="V51.h.slb294('+s.id+')">'+Lx('احجز','Book')+'</button></li>'}).join('')+'</ul>':'')+'</div>'}
+ return h};
+H.sla294=function(f){var v={};new FormData(f).forEach(function(x,k){v[k]=x});var at=new Date(v.at);if(isNaN(at)){T(Lx('اختر التاريخ والوقت.','Pick date and time.'));return false}
+ rpc('v294_slot_add',{p_at:at.toISOString(),p_dur:+v.dur||30,p_place:v.place||'',p_n:+v.n||1}).then(function(d){if(d&&d.ok){T(Lx('أُضيفت المواعيد: ','Slots added: ')+d.n);loadSl()}else T(d&&d.error==='past'?Lx('الوقت مضى.','That time has passed.'):Lx('تعذّرت الإضافة.','Could not add.'))}).catch(function(){T(Lx('تعذّرت الإضافة.','Could not add.'))});return false};
+H.sld294=function(id,booked){if(booked&&!confirm(Lx('الموعد محجوز؛ سيُبلَّغ الطالب بالإلغاء. متابعة؟','This slot is booked; the student will be notified. Continue?')))return;rpc('v294_slot_del',{p_id:id}).then(function(){loadSl()}).catch(function(){T(Lx('تعذّر الحذف.','Could not delete.'))})};
+H.slb294=function(id){var n=prompt(Lx('موضوع اللقاء باختصار (اختياري):','Meeting topic (optional):'),'');if(n===null)return;rpc('v294_slot_book',{p_id:id,p_note:n||''}).then(function(d){if(d&&d.ok){T(Lx('تم الحجز، وأُبلغ المشرف.','Booked; your supervisor was notified.'));loadSl()}else{T(d&&d.error==='taken'?Lx('حُجز هذا الموعد للتو؛ اختر غيره.','Just taken; choose another.'):Lx('الموعد لم يعد متاحاً.','No longer available.'));loadSl()}}).catch(function(){T(Lx('تعذّر الحجز.','Could not book.'))})};
+H.slc294=function(id){if(!confirm(Lx('إلغاء الحجز؟','Cancel this booking?')))return;rpc('v294_slot_cancel',{p_id:id}).then(function(){T(Lx('أُلغي الحجز.','Cancelled.'));loadSl()}).catch(function(){T(Lx('تعذّر الإلغاء.','Could not cancel.'))})};
+
+/* ---------- 3) ملف الخريج الموحّد ---------- */
+var pdfLib=async function(){if(W.jspdf)return;try{if(typeof loadJsPDF==='function'){await loadJsPDF();return}}catch(e){}await new Promise(function(ok,no){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})};
+var cover=function(st,certs){var F=X.f289;if(!F)return '';var d=new Date().toISOString().slice(0,10),P=null;try{P=(typeof prog==='function'?prog(st.prog):null)||(S.programs||[]).find(function(p){return String(p.id)===String(st.prog)})}catch(e){}
+ var recs=(FT.recs||[]).filter(function(r){return r.sid===st.id&&(r.kind==='tr'||r.kind==='gp')}),tr=recs.find(function(r){return r.kind==='tr'}),gp=recs.find(function(r){return r.kind==='gp'});
+ var row=function(k,v){return v?'<div style="display:flex;font-size:15px;line-height:1.85"><b style="width:150px;flex:none">'+k+'</b><span style="width:14px;flex:none">:</span><span>'+v+'</span></div>':''};
+ var gr=function(id){var g=(st.gr||{})[id]||{};return g.rel==1||g.rel===true||g.rel==='1'?(g.gl||g.score||''):''};
+ var CTN=function(c){var M={acc:'خطاب قبول',rec:c.tzk?'خطاب توصية خريج':'خطاب توصية',intro:'شهادة تعريف',fin:'إفادة مالية',dgrad:'وثيقة التخرج',skill77:'سجل البرامج القصيرة'};try{if(typeof CT!=='undefined'&&CT[c.type])return CT[c.type][0]}catch(e){}return M[c.type]||c.title||c.type};
+ var body='<div style="position:absolute;top:250px;right:64px;left:64px;font-family:Amiri,serif;color:#111">'+
+  '<div style="text-align:center;margin:0 0 14px"><span style="display:inline-block;font-size:26px;font-weight:700;color:#14284B;border-bottom:2px solid #14284B;padding:0 18px 2px">ملف الخريج</span></div>'+
+  '<p style="font-size:15.5px;line-height:1.9;text-align:justify;margin:0 0 8px">يتضمن هذا الملف البيانات الأساسية للخريج، وملخص التدريب الميداني ومشروع التخرج، وقائمة الشهادات الصادرة له، ويليه السجل الأكاديمي والشهادات بصفحاتها الرسمية.</p>'+
+  '<div style="margin:6px 0 12px">'+row('الاسم',e9(st.name))+row('الجنسية',e9(st.nat))+row('الرقم الأكاديمي','<bdi dir="ltr">'+e9(st.id)+'</bdi>')+row('البرنامج',e9(P&&P.name||''))+row('تاريخ التخرج',st.gradDate?'<bdi dir="ltr">'+e9(String(st.gradDate).replace(/^(\d{4})-(\d{2})-(\d{2}).*/,'$3/$2/$1'))+'</bdi>م':'')+'</div>'+
+  ((tr||gp)?'<p style="font-size:16px;font-weight:700;color:#14284B;margin:8px 0 4px">التدريب الميداني ومشروع التخرج</p>'+(tr?row('جهة التدريب',e9(((tr.data||{}).app||{}).ent||((tr.data||{}).app||{}).org||''))+row('تقدير التدريب',e9(gr('P23-4401'))):'')+(gp?row('عنوان المشروع',e9(((gp.data||{}).reg||{}).title||'')):''):'')+
+  (certs.length?'<p style="font-size:16px;font-weight:700;color:#14284B;margin:10px 0 4px">الوثائق والشهادات الصادرة</p><ol style="font-size:14.5px;line-height:1.8;margin:0;padding-right:22px">'+certs.slice(0,14).map(function(c){return '<li>'+e9(CTN(c))+(c.title?' — '+e9(c.title):'')+' — <bdi dir="ltr">'+e9(c.rec)+'</bdi></li>'}).join('')+'</ol>':'')+'</div>';
+ var vu='https://attamhid.com/#/verify/'+encodeURIComponent(st.id);
+ return F.page(F.head({unit:'إدارة شؤون الطلاب',unitEn:'Student Affairs'})+F.meta({rec:'PF-'+st.id,date:d,att:'السجل الأكاديمي والشهادات'})+body+F.verify({rec:st.id,qr:vu,vl:'التحقق من الخريج'})+F.foot(),'pf')};
+H.pf294=async function(sid){try{var st=(S.students||[]).find(function(x){return String(x.id)===String(sid||((typeof me!=='undefined'&&me)?me.id:''))});if(!st){T(Lx('لم يُعثر على بيانات الطالب.','Student data not found.'));return}
+ T(Lx('جارٍ تجهيز ملف الخريج… قد يستغرق دقيقة.','Preparing the graduate portfolio… this may take a minute.'));await pdfLib();
+ var certs=(S.certs||[]).filter(function(c){return !c.revoked&&(String(c.sid)===String(st.id)||String(c.uid)===String(st.id))&&c.type!=='fin'});
+ var docs=[cover(st,certs)];try{if(typeof W.trHTML==='function'){var t=W.trHTML(st.id);if(t)docs.push(t)}}catch(e){}
+ certs.forEach(function(c){try{docs.push(certHTML(c))}catch(e){}});
+ var A4=1123/794,d=null;
+ for(var i=0;i<docs.length;i++){if(!docs[i])continue;var cv=await mkCanvas(docs[i],2),w=cv.width,h=cv.height,ph=Math.round(w*A4);
+  var land=w>h;if(land||h<=ph*1.08){if(!d)d=pdfNew(cv,2);else d.addPage([w/2,h/2],land?'l':'p');d.addImage(cv.toDataURL('image/jpeg',.9),'JPEG',0,0,w/2,h/2);continue}
+  for(var y=0;y<h;y+=ph){var c2=document.createElement('canvas');c2.width=w;c2.height=Math.min(ph,h-y);var x2=c2.getContext('2d');x2.fillStyle='#fff';x2.fillRect(0,0,w,c2.height);x2.drawImage(cv,0,y,w,c2.height,0,0,w,c2.height);if(!d)d=pdfNew(c2,2);else d.addPage([w/2,c2.height/2],'p');d.addImage(c2.toDataURL('image/jpeg',.9),'JPEG',0,0,w/2,c2.height/2)}}
+ if(!d){T(Lx('تعذّر التجهيز.','Could not prepare.'));return}
+ var blob=d.output('blob'),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='graduate-portfolio-'+st.id+'.pdf';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800);
+ try{typeof aud==='function'&&aud(Lx('تنزيل ملف الخريج','Graduate portfolio downloaded'),st.id,'')}catch(e){}}catch(e){console.error('pf294',e);T(Lx('تعذّر تجهيز الملف.','Could not prepare the file.'))}};
+var pfBtn=function(){try{if(typeof me==='undefined'||!me||me.r!=='student')return '';var st=(S.students||[]).find(function(x){return String(x.id)===String(me.id)});if(!st||String(st.status||'')!=='متخرج')return '';
+ return '<button class="btn" onclick="V51.h.pf294()">'+Lx('تنزيل ملف الخريج الموحّد (PDF)','Download the graduate portfolio (PDF)')+'</button>'}catch(e){return ''}};
+
+/* ---------- الحقن في بوابة الخريجين ---------- */
+try{var vg=V.graduates;if(typeof vg==='function'&&!vg.__v294){V.graduates=function(){var h=vg.apply(this,arguments);try{if(typeof h!=='string'||typeof me==='undefined'||!me)return h;var p=location.hash.replace(/^#\/?/,'').split('/');
+  var put=function(x){var i=h.indexOf('</nav>');h=i>0?h.slice(0,i+6)+x+h.slice(i+6):h+x};
+  if(p[1]==='r'&&p[2]&&FT.ld){var r=(FT.recs||[]).find(function(x){return x.id===decodeURIComponent(p[2])});if(r&&me.r==='student'&&h.indexOf('data-ev294')<0){var eb=evalBox(r);if(eb)put(eb)}}
+  else if(!p[1]){var sbx=slotBox(),pf=pfBtn();if(pf&&h.indexOf('pf294')<0)put('<div class="box">'+pf+'</div>');if(sbx&&h.indexOf('data-sl294')<0)put(sbx)}
+ }catch(e){console.error('v294 grad',e)}return h};V.graduates.__v294=1}}catch(e){}
+
+/* ---------- لوحة الإدارة: تقييمات المشرفين، وزر الاستبيان للخريجين السابقين ---------- */
+var evalView=function(){if(G.es===undefined){G.es=null;FT.rpc('v294_eval_stats').then(function(d){G.es=d||[];go()}).catch(function(){G.es=[];go()})}
+ if(G.es===null)return '<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>';
+ return '<p class="mu">'+Lx('تقييمات الطلاب لمشرفيهم دون أسماء. لا تظهر المتوسطات والملاحظات إلا بعد 3 تقييمات فأكثر للمشرف، حتى لا يُعرف المقيِّم. (5 = ممتاز)','Anonymous student evaluations of supervisors. Averages and comments appear only after 3 or more evaluations, so evaluators cannot be identified. (5 = Excellent)')+'</p>'+
+  (!G.es.length?'<p class="mu">'+Lx('لا تقييمات بعد.','No evaluations yet.')+'</p>':G.es.map(function(x){return '<div class="box"><b>'+e9(x.name)+'</b> — '+Lx('عدد التقييمات: ','Evaluations: ')+x.n+(x.avg?'<table style="margin-top:6px">'+QS.map(function(q){return '<tr><td>'+Lx(q[1],q[2])+'</td><td><b>'+x.avg[q[0]]+'</b> / 5</td></tr>'}).join('')+'</table>'+((x.notes||[]).length?'<details><summary>'+Lx('الملاحظات','Comments')+' ('+x.notes.length+')</summary><ul>'+x.notes.map(function(n){return '<li>'+e9(n)+'</li>'}).join('')+'</ul></details>':''):'<p class="mu">'+Lx('تظهر التفاصيل بعد 3 تقييمات.','Details appear after 3 evaluations.')+'</p>')+'</div>'}).join(''))};
+H.alb294=function(){if(!confirm(Lx('إرسال الاستبيان الآن لكل الخريجين السابقين الذين مضى على تخرجهم ستة أشهر فأكثر ولم يصلهم؟','Send the survey now to all earlier graduates (6+ months) who have not received it?')))return;FT.rpc('v294_alumni_backfill').then(function(d){T(d&&d.ok?Lx('أُرسل إلى: ','Sent to: ')+d.n:Lx('اعتمد الاستبيان أولاً.','Approve the survey first.'));G.alp=undefined;try{X.g293.ast=undefined}catch(e){}go()}).catch(function(e){T(String(e&&e.message||e))})};
+var alExtra=function(){if(G.alp===undefined){G.alp=null;FT.rpc('v294_alumni_pending').then(function(n){G.alp=+n||0;go()}).catch(function(){G.alp=0})}
+ return G.alp?'<div class="box">'+Lx('خريجون سابقون لم يصلهم الاستبيان: ','Earlier graduates not yet surveyed: ')+'<b>'+G.alp+'</b> <button class="btn s" onclick="V51.h.alb294()">'+Lx('إرسال الاستبيان لهم الآن','Send them the survey now')+'</button></div>':''};
+try{var A0=X.ft293&&X.ft293.alumniView;if(A0&&!A0.__v294){X.ft293.alumniView=function(){return A0.apply(this,arguments)+alExtra()};X.ft293.alumniView.__v294=1}}catch(e){}
+X.ft294={evalView:evalView,slotBox:slotBox,cover:cover};
+}catch(e){console.error('v294',e)}})();
 </script>
 </body>
 </html>
