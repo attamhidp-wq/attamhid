@@ -23861,11 +23861,11 @@ function meta(o){var hd=hij(o.date);
   (o.att===false?'':row('المرفقات',o.att?esc(o.att):'بدون'))+'</div>'}
 /* سطر واحد للرقم والتاريخ والمرفقات (للنماذج متعددة الصفحات) */
 function metaLine(o){var hd=hij(o.date);
- return '<div style="position:absolute;top:163px;right:71px;left:71px;display:flex;justify-content:space-between;'+A+';font-size:13.5px;color:#111;direction:rtl">'+
+ return '<div style="position:absolute;top:161px;right:71px;left:71px;display:flex;justify-content:space-between;'+A+';font-size:13.5px;color:#111;direction:rtl">'+
   '<span>الرقم: <bdi dir="ltr">'+esc(o.rec)+'</bdi></span><span>التاريخ: '+(hd?'<bdi dir="ltr">'+esc(hd)+'</bdi>هـ الموافق ':'')+'<bdi dir="ltr">'+esc(dmy(o.date))+'</bdi>م</span><span>المرفقات: '+(o.att?esc(o.att):'بدون')+'</span></div>'}
 function sign(s,w){s=s||{};var im='';try{im=s.src||(s.img&&X.imgOf?X.imgOf(s.img):'')}catch(e){}
  return '<div style="width:'+(w||260)+'px;text-align:center;'+A+';color:#111"><div style="font-size:16px;font-weight:700">'+esc(s.t||'رئيس المعهد')+'</div>'+
-  '<div style="height:58px;margin:2px 0;display:flex;align-items:center;justify-content:center">'+(im?'<img src="'+im+'" alt="" style="height:54px;max-width:170px;object-fit:contain">':'')+'</div>'+
+  '<div style="height:'+(s.sm?46:58)+'px;margin:2px 0;display:flex;align-items:center;justify-content:center">'+(im?'<img src="'+im+'" alt="" style="height:'+(s.sm?42:54)+'px;max-width:170px;object-fit:contain">':'')+'</div>'+
   '<div style="font-size:15.5px;font-weight:700">'+esc(s.n||'')+'</div></div>'}
 function signers(type){var r=[];try{r=(X.resolveSigners&&X.resolveSigners(type))||[]}catch(e){}return r}
 function cc(list){return list&&list.length?'<div style="'+A+';font-size:12.5px;line-height:1.7;color:#333"><b>صورة مع التحية إلى:</b>'+list.map(function(x){return '<br>- '+esc(x)+'.'}).join('')+'</div>':''}
@@ -23895,8 +23895,8 @@ function letter289(h,c){
  var K=CFG[c.type];if(!K||typeof h!=='string'||h.indexOf('l59-')<0)return null;
  var d=document.createElement('div');d.innerHTML=h;
  var tt=((d.querySelector('.l59-tt .ar')||{}).textContent||'').trim();
- var R={},RO=[];[].slice.call(d.querySelectorAll('.l59-tb tr')).forEach(function(tr){var th=tr.querySelector('th.a'),td=tr.querySelector('td.a')||tr.querySelector('td.c')||tr.querySelector('td');if(th&&td){var v=td.innerHTML.trim();if(v&&v!=='—'&&v!=='-'){var k=th.textContent.trim();R[k]=v;RO.push([k,v])}}});
- var DATA=RO.length?'<div style="margin:4px 0 12px;padding:6px 0;border-top:1px solid #9aa4b1;border-bottom:1px solid #9aa4b1">'+RO.map(function(r){var v=/^[0-9A-Za-z\-\/ ]+$/.test(r[1].replace(/<[^>]+>/g,''))?'<bdi dir="ltr">'+String(r[1]).replace(/^(\d{2})-(\d{2})-(\d{4})$/,'$1/$2/$3')+'</bdi>':r[1];return '<div style="display:flex;font-size:15.5px;line-height:1.85"><b style="width:140px;flex:none">'+esc(r[0])+'</b><span style="width:16px;flex:none">:</span><span>'+v+'</span></div>'}).join('')+'</div>':'';
+ var R={},RO=[];[].slice.call(d.querySelectorAll('.l59-tb tr')).forEach(function(tr){var th=tr.querySelector('th.a'),td=tr.querySelector('td.a')||tr.querySelector('td.c')||tr.querySelector('td');if(th&&td){var v=td.innerHTML.trim();if(v&&v!=='—'&&v!=='-'){var k=th.textContent.trim();if(k==='نمط الدراسة'&&/المستوى/.test(v))k='المستوى';R[k]=v;RO.push([k,v])}}});
+ var DATA=RO.length?'<div style="margin:6px 0 12px;padding:0 4px">'+RO.map(function(r){var v=/^[0-9A-Za-z\-\/ ]+$/.test(r[1].replace(/<[^>]+>/g,''))?'<bdi dir="ltr">'+String(r[1]).replace(/^(\d{2})-(\d{2})-(\d{4})$/,'$1/$2/$3')+'</bdi>':r[1];return '<div style="display:flex;font-size:15.5px;line-height:1.85"><b style="width:140px;flex:none">'+esc(r[0])+'</b><span style="width:16px;flex:none">:</span><span>'+v+'</span></div>'}).join('')+'</div>':'';
  var pa=d.querySelector('.l59-pa'),txt=pa?pa.innerHTML:'';txt=txt.split(/<br>\s*<b>\s*إرشادات/)[0].replace(/(<br>\s*)+$/,'');
  var sgs=[].slice.call(d.querySelectorAll('.l59-sg')).map(function(s){var g=function(k){return ((s.querySelector('.'+k)||{}).textContent||'').trim()},im=s.querySelector('.im img');return {t:g('t'),n:g('n'),src:im?im.getAttribute('src'):''}});
  if(!sgs.length)sgs=signers(c.type).slice(0,2);
@@ -23965,13 +23965,13 @@ X.cert289v=cert289;/* شهادات البرامج القصيرة تبقى على
 var NFU={tr:['وحدة التدريب الميداني','Field Training Unit','grad'],gp:['وحدة مشاريع التخرج','Graduation Projects Unit','grad'],ex:['وحدة التدريب الميداني الخارجي','External Field Training Unit','trn']};
 var ORDN=['أولاً','ثانياً','ثالثاً','رابعاً','خامساً','سادساً','سابعاً','ثامناً','تاسعاً','عاشراً','حادي عشر','ثاني عشر','ثالث عشر','رابع عشر','خامس عشر'];
 var dig=function(x){return +String(x).replace(/[٠-٩]/g,function(c){return '٠١٢٣٤٥٦٧٨٩'.indexOf(c)})};
-X.nf289={geo:{t1:198,tn:198,b:955,l:790},
- css:'.nfp .en,.nfp .tm .e,.nfp .tt .en{display:none!important}'+
+X.nf289={geo:{t1:192,tn:192,b:958,l:852},
+ css:'.nfp .en,.nfp .tm .e,.nfp .tt .en,.nfp .nfbd [dir="ltr"][style*="display:block"],.nfp .nfbd p[dir="ltr"]{display:none!important}'+
   '.nfp .sec{border-bottom:0!important;margin:12px 0 6px!important;padding:0!important}.nfp .sec h2{font:700 16.5px Amiri,serif!important;color:'+NV+'!important}'+
-  '.nfp table.kv th,.nfp table.kv td,.nfp table.tb th,.nfp table.tb td{border:.8px solid #8a929e!important;background:#fff!important}'+
+  '.nfp table.kv th,.nfp table.kv td,.nfp table.tb th,.nfp table.tb td{border:.8px solid #8a929e!important;background:#fff!important;height:26px!important;padding:2px 8px!important}'+
   '.nfp table.kv th,.nfp table.tb th{color:#111!important;font:700 14px Amiri,serif!important}.nfp table.kv td,.nfp table.tb td{font:400 14.5px Amiri,serif!important;color:#111}'+
   '.nfp table.tb tr:first-child th{background:#f2f3f5!important;text-align:center!important}'+
-  '.nfp .box{border:.8px solid #8a929e!important}.nfp .boxs{background:#fff!important}.nfp p.tx{font:400 15px/1.9 Amiri,serif!important;color:#111}'+
+  '.nfp .box{border:.8px solid #8a929e!important}.nfp .boxs{background:#fff!important}.nfp p.tx{font:400 15px/1.8 Amiri,serif!important;color:#111}'+
   '.nfp .sig>div{border:0!important;border-bottom:.8px solid #8a929e!important;padding:4px 2px!important;min-height:70px!important}.nfp .sig .r{color:#111!important;font:700 14px Amiri,serif!important}'+
   '.nfp .chk i{border-color:#333!important}',
  blk:function(b){return String(b).replace(/<span class="en"[^>]*>[\s\S]*?<\/span>/g,'').replace(/<span class="n">\s*([٠-٩0-9]+)\.?\s*<\/span>/g,function(m,n){var k=dig(n);return '<span class="n">'+(ORDN[k-1]||n)+': </span>'})},
@@ -23980,8 +23980,8 @@ X.nf289={geo:{t1:198,tn:198,b:955,l:790},
  tt2:function(D,n){return '<div style="display:flex;justify-content:space-between;margin:0 0 8px;padding-bottom:3px;border-bottom:.8px solid #8a929e;'+A+';font-size:14.5px;color:'+NV+'"><b>'+esc(D.t[0])+' (تابع)</b><span>صفحة '+n+'</span></div>'},
  head:function(D,ref,issued){var u=NFU[D&&D.k]||NFU.tr;return '<style>.nfp .rule,.nfp .l59-band{display:none!important}</style>'+head({unit:u[0],unitEn:u[1],noWm:1})+metaLine({rec:ref,date:issued})},
  foot:function(D,ref,issued,n,N,last,url,Pr){var u=NFU[D&&D.k]||NFU.tr,h='';
-  if(last){h+='<div style="position:absolute;top:800px;left:66px">'+sign({t:Pr&&Pr.t,n:Pr&&Pr.n,src:Pr&&Pr.sig})+'</div>'+
-   '<div style="position:absolute;top:822px;right:71px;width:330px;'+A+';font-size:12.5px;line-height:1.7;color:#333">التوقيع المعتمد في هذا النموذج هو توقيع رئيس المعهد، وما سواه من توقيعات يُضاف بخط اليد بعد الطباعة.</div>'}
+  if(last){h+='<div style="position:absolute;top:856px;left:66px">'+sign({t:Pr&&Pr.t,n:Pr&&Pr.n,src:Pr&&Pr.sig,sm:1})+'</div>'+
+   '<div style="position:absolute;top:890px;right:71px;width:330px;'+A+';font-size:12.5px;line-height:1.7;color:#333">التوقيع المعتمد في هذا النموذج هو توقيع رئيس المعهد، وما سواه من توقيعات يُضاف بخط اليد بعد الطباعة.</div>'}
   return h+verify({rec:ref,qr:url,vl:'التحقق من النموذج',login:{k:u[2]},pg:'صفحة '+n+' من '+N})+foot()}};
 
 /* ---------- التوجيه: القبول والتوصية إلى الإطار الجديد ---------- */
