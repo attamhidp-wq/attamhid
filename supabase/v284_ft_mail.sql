@@ -114,7 +114,7 @@ end $function$;
 create or replace function public.ft_mail_samples() returns jsonb
 language plpgsql security definer set search_path to 'public' as $$
 declare to_ text := lower(trim((select data->>'em' from public.settings where key='home'))); r public.ft_rec; e record; n int := 0; t jsonb;
-  stu jsonb := '{"ar":"عزيزي الطالب محمد عبد الله (نموذج)","en":"Dear Mohammad Abdullah (sample)"}'; fac jsonb := '{"ar":"الأستاذ الفاضل أحمد كريم (نموذج)","en":"Dear Ahmad Karim (sample)"}';
+  stu jsonb := '{"ar":"عزيزي الطالب محمد عبد الله (نموذج)","en":"Dear Mohammad Abdullah (sample)"}'; fac jsonb := '{"ar":"الأستاذ الفاضل أحمد كريم (نموذج)","en":"Dear Ahmad Karim (sample)","staff":true}';
   P text := '[نموذج للمراجعة / Sample] ';
 begin
   if coalesce(auth.role(),'') not in ('service_role','') and not public.is_admin() then raise exception 'forbidden' using errcode='42501'; end if;
