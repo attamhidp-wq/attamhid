@@ -44,8 +44,8 @@ function cc(list){return list&&list.length?'<div style="'+A+';font-size:12.5px;l
 function verify(o){var Q='';try{Q=o.qr?qr(o.qr):''}catch(e){}var P=o.login&&PORT[o.login.k];
  return '<div style="position:absolute;bottom:90px;right:54px;left:54px;display:flex;align-items:center;gap:12px;'+A+';font-size:12.5px;color:#222;line-height:1.7;border-top:1px dashed #9aa4b1;padding-top:8px">'+
   (Q?'<img src="'+Q+'" alt="" style="width:54px;height:54px">':'')+
-  '<div style="flex:1"><b>'+esc(o.vl||'التحقق من الوثيقة')+':</b> امسح الرمز، أو أدخل رقمها <bdi dir="ltr">'+esc(o.rec)+'</bdi> في صفحة «التحقق من الوثائق» على موقع المعهد <b dir="ltr" style="'+E+'">'+SITE+'</b>'+
-  (P?'<br><b>الدخول إلى البوابة:</b> «'+P[0]+'» <b dir="ltr" style="'+E+'">'+SITE+'/'+P[1]+'</b> '+(o.login.how||P[2])+(o.login.id?' <bdi dir="ltr">'+esc(o.login.id)+'</bdi>':'')+(o.login.tail||''):'')+'</div>'+
+  '<div style="flex:1"><b>للتحقق يرجى مسح الرمز.</b>'+
+  (P?'<br>الدخول إلى «'+P[0]+'»: <b dir="ltr" style="'+E+'">'+SITE+'/'+P[1]+'</b>':'')+'</div>'+
   (o.pg?'<div style="white-space:nowrap;font-size:12px;color:#555">'+o.pg+'</div>':'')+'</div>'}
 function foot(){var I=inst(),H={};try{H=S.home||{}}catch(e){}
  return '<div style="position:absolute;bottom:50px;right:54px;left:54px;border-top:2px solid '+NV+';padding-top:6px;text-align:center;'+A+';font-size:12.5px;color:'+NV+'">'+
@@ -145,7 +145,7 @@ X.nf289={geo:{t1:192,tn:192,b:958,l:852},
   '.nfp table.tb tr:first-child th{background:#f2f3f5!important;text-align:center!important}'+
   '.nfp .box{border:.8px solid #8a929e!important}.nfp .boxs{background:#fff!important}.nfp p.tx{font:400 15px/1.8 Amiri,serif!important;color:#111}'+
   '.nfp .sig>div{border:0!important;border-bottom:.8px solid #8a929e!important;padding:4px 2px!important;min-height:70px!important}.nfp .sig .r{color:#111!important;font:700 14px Amiri,serif!important}'+
-  '.nfp .chk i{border-color:#333!important}',
+  '.nfp .chk i{border-color:#333!important}.nfp span[style*="flex:1"] .blank{border-bottom:1px dotted #8b94a6;height:20px}',
  blk:function(b){return String(b).replace(/<span class="en"[^>]*>[\s\S]*?<\/span>/g,'').replace(/<span class="n">\s*([٠-٩0-9]+)\.?\s*<\/span>/g,function(m,n){var k=dig(n);return '<span class="n">'+(ORDN[k-1]||n)+': </span>'})},
  title:function(D,term){return '<div style="text-align:center;margin:0 0 6px;'+A+'"><span style="display:inline-block;font-size:22px;font-weight:700;color:'+NV+';border-bottom:2px solid '+NV+';padding:0 16px 2px">'+esc(D.t[0])+'</span>'+(D.conf?' <span style="display:inline-block;border:1.2px solid #8a1c1c;color:#8a1c1c;padding:0 8px;font-size:13px;vertical-align:middle">سري</span>':'')+
   '<div style="font-size:13px;color:#333;margin-top:4px">رمز النموذج: '+esc(D.code)+(term?' &nbsp;—&nbsp; الفصل الدراسي: '+esc(term):'')+'</div></div>'},
@@ -153,7 +153,7 @@ X.nf289={geo:{t1:192,tn:192,b:958,l:852},
  head:function(D,ref,issued){var u=NFU[D&&D.k]||NFU.tr;return '<style>.nfp .rule,.nfp .l59-band{display:none!important}</style>'+head({unit:u[0],unitEn:u[1],noWm:1})+metaLine({rec:ref,date:issued})},
  foot:function(D,ref,issued,n,N,last,url,Pr){var u=NFU[D&&D.k]||NFU.tr,h='';
   if(last){h+='<div style="position:absolute;top:856px;left:66px">'+sign({t:Pr&&Pr.t,n:Pr&&Pr.n,src:Pr&&Pr.sig,sm:1})+'</div>'+
-   '<div style="position:absolute;top:890px;right:71px;width:330px;'+A+';font-size:12.5px;line-height:1.7;color:#333">التوقيع المعتمد في هذا النموذج هو توقيع رئيس المعهد، وما سواه من توقيعات يُضاف بخط اليد بعد الطباعة.</div>'}
+   ''}
   return h+verify({rec:ref,qr:url,vl:'التحقق من النموذج',login:{k:u[2]},pg:'صفحة '+n+' من '+N})+foot()}};
 
 /* ---------- التوجيه: القبول والتوصية إلى الإطار الجديد ---------- */

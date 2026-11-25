@@ -86,8 +86,7 @@ function doc287(c){
   /* التحقق والدخول */
   '<div style="position:absolute;bottom:90px;right:54px;left:54px;display:flex;align-items:center;gap:12px;'+A+';font-size:12.5px;color:#222;line-height:1.7;border-top:1px dashed #9aa4b1;padding-top:8px">'+
    (QV?'<img src="'+QV+'" alt="" style="width:54px;height:54px">':'')+
-   '<div><b>التحقق من القرار:</b> امسح الرمز، أو أدخل رقمه <bdi dir="ltr">'+esc(c.rec)+'</bdi> في صفحة «التحقق من الوثائق» على موقع المعهد <b dir="ltr" style="'+E+'">attamhid.com</b><br>'+
-   '<b>الدخول إلى البوابة:</b> «الخدمات الذاتية لأعضاء هيئة التدريس» <b dir="ltr" style="'+E+'">attamhid.com/faculty-services</b> '+w('برقمك','برقمك')+' العضوي <bdi dir="ltr">'+esc(id)+'</bdi></div></div>'+
+   '<div><b>للتحقق يرجى مسح الرمز.</b><br>الدخول إلى «الخدمات الذاتية لأعضاء هيئة التدريس»: <b dir="ltr" style="'+E+'">attamhid.com/faculty-services</b></div></div>'+
   /* التذييل */
   '<div style="position:absolute;bottom:50px;right:54px;left:54px;border-top:2px solid #14284B;padding-top:6px;text-align:center;'+A+';font-size:12.5px;color:#14284B">'+
    (I.addrAr?esc(I.addrAr)+' &nbsp;|&nbsp; ':'')+(H.p1?'الهاتف: <bdi dir="ltr">'+esc(H.p1)+'</bdi> &nbsp;|&nbsp; ':'')+(H.em?'البريد: <bdi dir="ltr">'+esc(H.em)+'</bdi> &nbsp;|&nbsp; ':'')+'<b dir="ltr" style="'+E+'">attamhid.com</b></div>'+
