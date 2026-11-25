@@ -135,6 +135,17 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
 
     await p.evaluate(() => { location.hash = '#/graduates'; }); await p.waitForTimeout(8000);
     console.log('CHECK graduates', /بوابة الخريجين/.test(t) && !/جارٍ التحميل/.test(t) ? 'OK' : 'FAIL', t);
+    // v279: المرحلة الأولى — قسم «التدريب الميداني ومشروع التخرج» في أقسام اللوحة، وقائمة الاستحقاق من الخادم، والعزل (بلا أسماء في السجل)
+    try { const z = await p.evaluate(async () => { const X = window.V51, FT = X.ft225, T = (X.TABS51 || []).find((x) => x[0] === 'ft279'); const o = { tab: !!T };
+        if (!FT.ld) await FT.load(1); const L1 = await sb.rpc('ft_elig_list'); o.list = !L1.error && Array.isArray(L1.data); o.n = o.list ? L1.data.length : -1; o.items = o.list && L1.data.every((x) => Array.isArray(x.items) && x.items.length === 8);
+        FT.elig = L1.data || []; FT.exc = (await sb.rpc('ft_exc_list')).data || []; const h1 = T ? T[3]() : ''; X.h.ft279v('elig'); const h2 = T ? T[3]() : ''; X.h.ft279v('cfg'); const h3 = T ? T[3]() : ''; X.h.ft279v('sum');
+        o.sum = /يحتاج إجراء الآن/.test(h1); o.elig = /الاستثناءات/.test(h2); o.cfg = /ft279c/.test(h3);
+        o.nav = (typeof NAV === 'undefined') || !NAV.some((x) => /admin|ft279/.test(String(x[0])));
+        const bad = await sb.rpc('ft_exc_set', { p_sid: '__none__', p_k: 'x', p_reason: 'robot check' }); o.excGuard = !!bad.error;
+        const r = await fetch(SB_URL + '/rest/v1/rpc/ft_elig_list', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }, body: '{}' }); o.anonBlocked = !r.ok;
+        const r2 = await fetch(SB_URL + '/rest/v1/rpc/ft_elig_detail', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }, body: JSON.stringify({ p_sid: '0' }) }); o.anonDetail = !r2.ok;
+        return o; });
+      console.log('CHECK ft279-admin', z.tab && z.list && z.items !== false && z.sum && z.elig && z.cfg && z.nav && z.excGuard && z.anonBlocked && z.anonDetail ? 'OK' : 'FAIL', JSON.stringify(z)); } catch (e) { console.log('CHECK ft279-admin FAIL', String(e).slice(0, 200)); }
     // v263: السجل المالي — يفتح للإدارة المركزية، والإجمالي التراكمي من التأكيدات فقط
     try { await p.evaluate(() => { location.hash = '#/fin'; }); await p.waitForFunction(() => /السجل المالي/.test((document.querySelector('#app') || {}).innerText || '') && document.querySelector('#app .fin263g'), null, { timeout: 45000 });
       const fz = await p.evaluate(() => { const a = document.querySelector('#app'); const k = [...a.querySelectorAll('.fin263k')].map((x) => x.innerText.replace(/\s+/g, ' ')); return { cards: k.length, cum: k[0] || '', rows: a.querySelectorAll('.fin263t tbody tr').length, adm: !!a }; });
@@ -174,6 +185,11 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       try { await q.evaluate(() => { location.hash = '#/graduates'; }); await q.waitForTimeout(20000);
         const gr = await q.evaluate(() => { const a = document.querySelector('#app'); const t = ((a && a.innerText) || '').replace(/\s+/g, ' ').trim(); return { loading: /جارٍ التحميل|Loading/.test(t.slice(0, 200)) && t.length < 400, len: t.length, h: [...document.querySelectorAll('#app h2,#app h3')].map((x) => x.textContent.trim()).slice(0, 4), ft: typeof FT !== 'undefined' ? { ld: !!FT.ld, err: FT.err || '', busy: !!FT.busy } : 'no-FT' }; });
         console.log('CHECK e2e-graduates-' + role, gr.loading ? 'FAIL' : 'OK', JSON.stringify(gr), 'errs', e2.slice(0, 6).join(' | ').slice(0, 600));
+        // v279: الطالب يرى ما استوفاه وما بقي عليه؛ ولا يرى قائمة غيره ولا قسم الإدارة
+        if (role === 'student') { const el = await q.evaluate(async () => { const b = document.querySelector('#app .ft279s'); const L1 = await sb.rpc('ft_elig_list'); const T = (V51.TABS51 || []).find((x) => x[0] === 'ft279'); return { box: !!b, items: b ? b.querySelectorAll('li').length : 0, listBlocked: !!L1.error, tabEmpty: !T || T[3]() === '' }; });
+          console.log('CHECK ft279-student', el.box && el.items >= 1 && el.listBlocked && el.tabEmpty ? 'OK' : 'FAIL', JSON.stringify(el)); }
+        if (role === 'faculty') { const fl = await q.evaluate(async () => { const L1 = await sb.rpc('ft_exc_set', { p_sid: '__none__', p_k: '*', p_reason: 'robot check' }); return { excBlocked: !!L1.error }; });
+          console.log('CHECK ft279-faculty', fl.excBlocked ? 'OK' : 'FAIL', JSON.stringify(fl)); }
         // فتح مباشر للرابط بعد إعادة تحميل الصفحة (كما يفعل المستخدم من الجوال)
         await q.goto(SITE.replace(/app\.html.*$/, '') + '?gd=1' + (liveV ? '&_b=' + liveV : '') + '#/graduates', { waitUntil: 'load', timeout: 90000 }); await q.waitForTimeout(25000);
         const gd = await q.evaluate(() => { const a = document.querySelector('#app'); const t = ((a && a.innerText) || '').replace(/\s+/g, ' ').trim(); return { url: location.pathname + location.hash, loading: /جارٍ التحميل|Loading/.test(t.slice(0, 200)) && t.length < 400, len: t.length, h: [...document.querySelectorAll('#app h2,#app h3')].map((x) => x.textContent.trim()).slice(0, 3), me: typeof me !== 'undefined' && me ? me.r : null }; });
