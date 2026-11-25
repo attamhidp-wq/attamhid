@@ -16982,7 +16982,7 @@ function resolveSigners(type,date){var pr=profileOf(type),out=[];
  if(!out.length){var g=posById('pos-gm'),o2=g&&(occNow(g,date)||(g.occ||[]).filter(function(x){return!x.deleted}).slice(-1)[0]);
   if(o2)out.push({p:'pos-gm',o:o2.id,n:o2.name||'',ne:o2.nameEn||'',t:g.titleAr,te:g.titleEn,img:resolveRef(o2.sig||'global:sig'),fb:1})}
  return out}
-function sealOn(type){var P=S.v51.profiles||{},p=P[type];if(p&&p.showSeal!=null)return !!+p.showSeal;return !(type==='dgrad'||type==='ggrad'||type==='gtr'||type==='transcript')}
+/* v288: الختم في السجل الأكاديمي وحده؛ وكل الوثائق والشهادات والخطابات الأخرى بالتوقيع فقط */function sealOn(type){if(!(type==='transcript'||type==='gtr'))return false;var P=S.v51.profiles||{},p=P[type];if(p&&p.showSeal!=null)return !!+p.showSeal;return true}
 V5.sealOn=sealOn;
 function resolveSeals(type){var pr=profileOf(type);if(!sealOn(type))return [];return (pr.seals||[]).map(sealById).filter(function(s){return s&&!s.deleted&&s.active!==0}).map(function(s){return resolveRef(s.img||'global:seal')})}
 function isDefaultSig(sg,se,sealIds){if(sg.length!==1)return false;var s=sg[0];
@@ -19541,7 +19541,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v287';
+window.__BUILD__='v288';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
@@ -23820,7 +23820,7 @@ var addLinks=function(h,c){try{
  if(c&&c.sid&&X.qrP64&&h.indexOf('Portal Login</span>')>=0){var pu=bare(X.qrP64(c.sid));h=h.replace('Portal Login</span>','Portal Login</span><br><span dir="ltr" style="font-size:9px;font-weight:700">'+esc(pu)+'</span>')}
  if(c&&c.rec&&X.qrV64&&h.indexOf('Verify Document</span>')>=0){var vu=bare(X.qrV64(c.rec));h=h.replace('Verify Document</span>','Verify Document</span><br><span dir="ltr" style="font-size:9px;font-weight:700">'+esc(vu)+'</span>')}
  return h}catch(e){return h}};
-try{var css=document.createElement('style');css.id='css287';css.textContent='.l59 .l59-seal{width:108px!important;height:108px!important;object-fit:contain!important;opacity:.88!important;transform:rotate(-8deg)}';document.head.appendChild(css)}catch(e){}
+try{var css=document.createElement('style');css.id='css287';css.textContent='/* v288: لا ختم إلا في السجل الأكاديمي (g9-seal) */.l59-seal,.m9-seal,.k3-seal,.sp6-seal,.g5-xseals,.x-sl2,.g-sl,.seal-slot,.g6-seal,.g5-seal{display:none!important}';document.head.appendChild(css)}catch(e){}
 try{var _ch=certHTML;if(typeof _ch==='function'&&!_ch.__v287){certHTML=function(c){if(c&&c.type==='appt'&&!c.old287){try{return doc287(c)}catch(e){console.error('v287 appt',e)}}return addLinks(_ch.apply(this,arguments),c)};certHTML.__v287=1;try{W.certHTML=certHTML}catch(e){}}}catch(e){console.error('v287 wrap',e)}
 X.doc287=doc287;X.addLinks287=addLinks;
 }catch(e){console.error('v287',e)}})();

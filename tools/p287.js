@@ -103,7 +103,7 @@ var addLinks=function(h,c){try{
  if(c&&c.sid&&X.qrP64&&h.indexOf('Portal Login</span>')>=0){var pu=bare(X.qrP64(c.sid));h=h.replace('Portal Login</span>','Portal Login</span><br><span dir="ltr" style="font-size:9px;font-weight:700">'+esc(pu)+'</span>')}
  if(c&&c.rec&&X.qrV64&&h.indexOf('Verify Document</span>')>=0){var vu=bare(X.qrV64(c.rec));h=h.replace('Verify Document</span>','Verify Document</span><br><span dir="ltr" style="font-size:9px;font-weight:700">'+esc(vu)+'</span>')}
  return h}catch(e){return h}};
-try{var css=document.createElement('style');css.id='css287';css.textContent='.l59 .l59-seal{width:108px!important;height:108px!important;object-fit:contain!important;opacity:.88!important;transform:rotate(-8deg)}';document.head.appendChild(css)}catch(e){}
+try{var css=document.createElement('style');css.id='css287';css.textContent='/* v288: لا ختم إلا في السجل الأكاديمي (g9-seal) */.l59-seal,.m9-seal,.k3-seal,.sp6-seal,.g5-xseals,.x-sl2,.g-sl,.seal-slot,.g6-seal,.g5-seal{display:none!important}';document.head.appendChild(css)}catch(e){}
 try{var _ch=certHTML;if(typeof _ch==='function'&&!_ch.__v287){certHTML=function(c){if(c&&c.type==='appt'&&!c.old287){try{return doc287(c)}catch(e){console.error('v287 appt',e)}}return addLinks(_ch.apply(this,arguments),c)};certHTML.__v287=1;try{W.certHTML=certHTML}catch(e){}}}catch(e){console.error('v287 wrap',e)}
 X.doc287=doc287;X.addLinks287=addLinks;
 }catch(e){console.error('v287',e)}})();

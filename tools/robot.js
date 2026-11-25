@@ -104,7 +104,7 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
         (function walk(o, dep) { if (!o || typeof o !== 'object' || dep > 6) return; if (!Array.isArray(o) && o.at === undefined) o.at = '2026-12-01'; Object.keys(o).forEach((k) => { if (o[k] && typeof o[k] === 'object') walk(o[k], dep + 1); }); })(d, 0);
         d.app.entType = 'TEST'; d.app.city = 'TEST'; d.app.contact = 'TEST'; d.app.contactTitle = 'TEST'; d.m6 = d.m6 || {}; d.m6.m1 = S1; d.m6.m2 = S1; d.m7 = d.m7 || {}; d.m7.m1 = S1; d.m7.m2 = S1; d.cmt = [S1, S1]; d.reqs = []; d.final = { at: '2026-12-01' }; d.finalOk = { at: '2026-12-01' };
         for (const c of N.NFO.filter((c) => N.NF[c].k === kind)) { let m = [], h = '', err = ''; try { m = N.missing(c, r).map((x) => x[0]); } catch (e) { m = ['ERR ' + e.message]; } try { h = await N.build(c, r, (kind === 'tr' ? '20' : '21') + '202600000', new Date().toISOString()); } catch (e) { err = e.message; }
-          out[c] = { miss: m, pages: (h.match(/class="g9p/g) || []).length, vals: (h.match(/TEST-/g) || []).length, sig: /l59-sgs/.test(h) && /<img[^>]+l59-seal|l59-seal/.test(h), qr: (h.match(/l59-qr/g) || []).length, term: /الفصل الدراسي: الفصل/.test(h), err }; } }
+          out[c] = { miss: m, pages: (h.match(/class="g9p/g) || []).length, vals: (h.match(/TEST-/g) || []).length, sig: /l59-sgs/.test(h) /* v288: لا ختم في النماذج؛ الختم في السجل الأكاديمي وحده */, qr: (h.match(/l59-qr/g) || []).length, term: /الفصل الدراسي: الفصل/.test(h), err }; } }
       return out; });
     console.log('CHECK autofill', Object.values(af).every((x) => !x.err && x.pages > 0 && x.sig && x.qr >= x.pages) ? 'OK' : 'FAIL', JSON.stringify(af));
     // v234: بوابة التدريب الميداني الخارجي — الصفحة العامة وصفحة الإدارة
