@@ -46,5 +46,15 @@ h=ctx.V.graduates();out.hubRunning=/دوّن يومك/.test(h)&&/ft225day\('T9'\
 FT.who={role:'student',ref:'S1',elig:false,roles:[],eld:{ok:false,items:[{k:'pre',on:true,ok:false,ar:'3102',en:'3102'}]}};FT.recs=[];
 h=ctx.V.graduates();out.hubLocked=/استكمل شروط الاستحقاق/.test(h)&&/ft231na/.test(h)&&!/ft225newTr\(\)/.test(h);
 ctx.location.hash='#/graduates/opp';h=ctx.V.graduates();out.hubOnlyHome=!/c279/.test(h);
+// v282: مركز المشرفين
+ctx.location.hash='#/graduates';R("me={r:'faculty',id:'F1'}");FT.who={role:'faculty',ref:'F1',sup:true,roles:[]};FT.cfg={hours:60,revDays:14,meetDays:21,dead:{}};
+FT.recs=[{id:'A1',kind:'tr',sid:'S1',st:'running',data:{isup:'F1',s:{ar:'سعيد'},plan:{weeks:[1]},log:[{h:5,ok:'1',date:'2026-11-20'}],start:{date:'2026-10-01'},app:{ent:'مكتبة'}}},
+ {id:'A2',kind:'gp',sid:'S2',st:'draft_final',data:{gsup:'F1',s:{ar:'خالد'},reg:{title:'عنوان المشروع'},subs:[{stage:'draft'}],meets:[{date:'2026-11-24'}]}},
+ {id:'A3',kind:'gp',sid:'S3',st:'approved_def',data:{cmt:['F1','F2'],s:{ar:'عمر'},reg:{title:'مشروع ثالث'},m7:{date:'2026-12-01',place:'القاعة 1'}}},
+ {id:'A4',kind:'tr',sid:'S9',st:'running',data:{isup:'F7'}}];
+h=ctx.V.graduates();
+out.staffHub=/بانتظار قرارك/.test(h)&&/سعيد/.test(h)&&/عنوان المشروع/.test(h)&&/القاعة 1/.test(h)&&!/A4/.test(h);
+out.staffPending=/tr_plan_ok/.test(h)&&/ft225visit\('A1'\)/.test(h)&&/ft225m6\('A2'\)/.test(h)&&/ft225m8\('A3'\)/.test(h)&&/مراجعة تسليم/.test(h);
+R("me={r:'faculty',id:'F9'}");FT.who={role:'faculty',ref:'F9',roles:[]};h=ctx.V.graduates();out.staffNoHubIfNone=!/بانتظار قرارك/.test(h);
 console.log(JSON.stringify(out));
 const bad=Object.entries(out).filter(([k,v])=>v===false||v===undefined);process.exit(bad.length?1:0);
