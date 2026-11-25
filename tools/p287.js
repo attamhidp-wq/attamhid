@@ -19,11 +19,11 @@ var TYPE={contract:['متعاقد','contract'],perm:['رسمي','permanent'],per
 
 /* ---------- خطاب التعيين: قرار رسمي ---------- */
 function doc287(c){
- var o=(S.faculty||[]).find(function(f){return String(f.id)===String(c.uid)})||{},a=o.appt64||{},I=(S.v51&&S.v51.inst)||{},H=S.home||{};
+ var EN=(X.apptEnt64&&X.apptEnt64(c))||{},o=EN.o||(S.faculty||[]).find(function(f){return String(f.id)===String(c.uid)})||{},STF=EN.k==='staff',a=Object.assign({},o.appt64||{},c.ap64||{});if(STF){a.rank=a.rank||a.title||o.title||'';a.rankEn=a.rankEn||a.titleEn||'';try{if(!a.dept&&o.unitId&&X.unitName){a.dept=X.unitName(o.unitId);a.deptEn=a.deptEn||X.unitName(o.unitId,true)}}catch(e){}}var I=(S.v51&&S.v51.inst)||{},H=S.home||{};
  var fem=/^(أنثى|انثى|female|f)$/i.test(String(o.sex||o.gender||'')),w=function(m,f){return fem?f:m};
  var nm=c.name||o.name||'',ne=c.nameEn||o.nameEn||a.nameEn||'',id=String(o.id||c.uid||'');
  var dt=c.date||new Date().toISOString().slice(0,10),hd=hij(dt),tp=TYPE[a.type]||[a.type||'—',a.type||'—'],mo=months(a.start,a.end);
- var by=a.decBy||'مجلس الشؤون التعليمية',byE=a.decByEn||'Board of Educational Affairs';
+ var by=a.decBy||(STF?'الإدارة المركزية':'مجلس الشؤون التعليمية'),byE=a.decByEn||(STF?'Central Administration':'Board of Educational Affairs');
  var portal=X.qrP64?X.qrP64(id):site()+'?p='+encodeURIComponent(id),ver=X.qrV64?X.qrV64(c.rec):site()+'?v='+encodeURIComponent(c.rec);
  var QP='',QV='';try{QP=qr(portal);QV=qr(ver)}catch(e){}
  var sg=[],se=[];try{sg=(X.resolveSigners&&X.resolveSigners('appt'))||[]}catch(e){}try{se=((X.resolveSeals&&X.resolveSeals('appt'))||[]).map(function(s){return X.imgOf?X.imgOf(typeof s==='string'?s:s&&s.img):''}).filter(Boolean)}catch(e){}
@@ -34,7 +34,7 @@ function doc287(c){
  var TPH={contract:'بموجب عقد عمل محدد المدة قابل للتجديد',perm:'تعييناً رسمياً دائماً',permanent:'تعييناً رسمياً دائماً',part:'بنظام الدوام الجزئي',visiting:'أستاذاً زائراً'}[a.type]||'';
  var AB=['أ','ب','ج','د','هـ','و','ز','ح','ط','ي'];
  var items=[
-  'تعيين '+w('المكرم','المكرمة')+'/ <b>'+esc(nm)+'</b>'+(o.nat?' (الجنسية: '+esc(o.nat)+')':'')+' على وظيفة <b>'+esc(a.rank||'—')+'</b> ب'+esc(a.dept||'القسم المختص')+(TPH?'، '+TPH:'')+'، ويكون '+w('رقمه','رقمها')+' العضوي ('+esc(id)+').',
+  'تعيين '+w('المكرم','المكرمة')+'/ <b>'+esc(nm)+'</b>'+(o.nat?' (الجنسية: '+esc(o.nat)+')':'')+' على وظيفة <b>'+esc(a.rank||'—')+'</b> ب'+esc(a.dept||'القسم المختص')+(TPH?'، '+TPH:'')+'، ويكون '+w('رقمه','رقمها')+(STF?' الوظيفي (':' العضوي (')+esc(id)+').',
   'تبدأ مدة التكليف من '+esc(dmy(a.start))+'م'+(a.end?' إلى '+esc(dmy(a.end))+'م'+(mo?' ('+mo+' شهراً)':''):'')+'، ويُعدّ التعيين نافذاً اعتباراً من تاريخ المباشرة.',
   duties.length?'يُكلَّف'+w('','')+' بالمهام الآتية:'+duties.map(function(x,k){return '<span style="display:block;padding-right:22px">'+(AB[k]||(k+1))+'- '+esc(x.replace(/[.،]+$/,''))+'.</span>'}).join(''):'',
   'يُبلَّغ هذا القرار لمن يلزم لتنفيذه، ويُعمل به من تاريخه.'].filter(Boolean);
@@ -44,7 +44,7 @@ function doc287(c){
   dutiesE.length?'Assigned duties: '+dutiesE.map(function(x){return esc(x.replace(/[.;]+$/,''))}).join('; ')+'.':'',
   'This decision is communicated to all concerned for implementation, effective from its date.'].filter(Boolean);
  var s0=sg[0]||{},AN=function(n){return String(n)};
- var unit=a.unitAr||'إدارة شؤون أعضاء هيئة التدريس';
+ var unit=a.unitAr||(STF?'إدارة شؤون الموظفين':'إدارة شؤون أعضاء هيئة التدريس');
  var ORDW=['أولاً','ثانياً','ثالثاً','رابعاً','خامساً','سادساً'];
  var P=function(t,st){return '<p style="margin:0 0 7px;font-size:16px;line-height:1.95;text-align:justify;'+(st||'')+'">'+t+'</p>'};
  var h='<div class="tmw" data-d14="1" data-l287="1"><div class="tmp d14 l287" style="background:#fff">'+
@@ -55,7 +55,7 @@ function doc287(c){
   '<div style="position:absolute;top:56px;right:54px;left:54px;display:flex;align-items:center;justify-content:space-between">'+
    '<div style="text-align:center;'+A+';font-size:15px;line-height:1.6;color:#14284B;min-width:230px"><b style="font-size:18px">'+esc(I.nameAr||'معهد التمهيد')+'</b><br>'+esc(by)+'<br>'+esc(unit)+'</div>'+
    (lg?'<img src="'+lg+'" alt="" style="height:64px">':'')+
-   '<div dir="ltr" style="text-align:center;'+E+';font-size:13px;line-height:1.6;color:#14284B;min-width:230px"><b style="font-size:15px">'+esc(I.nameEn||'At Tamhid Institute')+'</b><br>'+esc(byE)+'<br>Faculty Affairs Department</div></div>'+
+   '<div dir="ltr" style="text-align:center;'+E+';font-size:13px;line-height:1.6;color:#14284B;min-width:230px"><b style="font-size:15px">'+esc(I.nameEn||'At Tamhid Institute')+'</b><br>'+esc(byE)+'<br>'+(STF?'Staff Affairs Department':'Faculty Affairs Department')+'</div></div>'+
   '<div style="position:absolute;top:150px;right:54px;left:54px;border-top:2.5px solid #14284B"></div><div style="position:absolute;top:155px;right:54px;left:54px;border-top:.8px solid #14284B"></div>'+
   /* بيانات القرار */
   '<div style="position:absolute;top:166px;left:58px;'+A+';font-size:14px;line-height:1.8;color:#111;direction:rtl">'+
@@ -86,7 +86,7 @@ function doc287(c){
   /* التحقق والدخول */
   '<div style="position:absolute;bottom:90px;right:54px;left:54px;display:flex;align-items:center;gap:12px;'+A+';font-size:12.5px;color:#222;line-height:1.7;border-top:1px dashed #9aa4b1;padding-top:8px">'+
    (QV?'<img src="'+QV+'" alt="" style="width:54px;height:54px">':'')+
-   '<div><b>للتحقق يرجى مسح الرمز.</b><br>الدخول إلى «الخدمات الذاتية لأعضاء هيئة التدريس»: <b dir="ltr" style="'+E+'">attamhid.com/faculty-services</b></div></div>'+
+   '<div><b>للتحقق يرجى مسح الرمز.</b><br>الدخول إلى «'+(STF?'بوابة الموظفين':'الخدمات الذاتية لأعضاء هيئة التدريس')+'»: <b dir="ltr" style="'+E+'">attamhid.com/'+(STF?'#/login/staff':'faculty-services')+'</b></div></div>'+
   /* التذييل */
   '<div style="position:absolute;bottom:50px;right:54px;left:54px;border-top:2px solid #14284B;padding-top:6px;text-align:center;'+A+';font-size:12.5px;color:#14284B">'+
    (I.addrAr?esc(I.addrAr)+' &nbsp;|&nbsp; ':'')+(H.p1?'الهاتف: <bdi dir="ltr">'+esc(H.p1)+'</bdi> &nbsp;|&nbsp; ':'')+(H.em?'البريد: <bdi dir="ltr">'+esc(H.em)+'</bdi> &nbsp;|&nbsp; ':'')+'<b dir="ltr" style="'+E+'">attamhid.com</b></div>'+
