@@ -56,5 +56,16 @@ h=ctx.V.graduates();
 out.staffHub=/بانتظار قرارك/.test(h)&&/سعيد/.test(h)&&/عنوان المشروع/.test(h)&&/القاعة 1/.test(h)&&!/A4/.test(h);
 out.staffPending=/tr_plan_ok/.test(h)&&/ft225visit\('A1'\)/.test(h)&&/ft225m6\('A2'\)/.test(h)&&/ft225m8\('A3'\)/.test(h)&&/مراجعة تسليم/.test(h);
 R("me={r:'faculty',id:'F9'}");FT.who={role:'faculty',ref:'F9',roles:[]};h=ctx.V.graduates();out.staffNoHubIfNone=!/بانتظار قرارك/.test(h);
+// v283: المشاريع ولجان المناقشة وقرار الإعادة
+R("me={r:'admin'}");FT.who={roles:['admin','pc']};FT.cfg={dead:{plan:'2020-01-01',final:'2099-01-01'}};
+FT.recs=[{id:'P1',kind:'gp',sid:'S1',st:'inprogress',data:{s:{ar:'هند'},reg:{title:'عنوان أ',titleEn:'Title A',timeline:'خطة'},sim:['عنوان قديم'],gsup:'F1',nm:{F1:'د. سالم'},meets:[{}]}},
+ {id:'P2',kind:'gp',sid:'S2',st:'approved_def',data:{s:{ar:'ليلى'},reg:{title:'عنوان ب'},m7:{date:'2099-02-01',place:'القاعة 2'},cmt:['F1','F2','F3'],m8:[{id:'F1',c:[1]}]}},
+ {id:'P3',kind:'gp',sid:'S3',st:'discussed',data:{s:{ar:'منى'},reg:{title:'ج'}}},{id:'P4',kind:'gp',sid:'S4',st:'approved_def',data:{s:{ar:'سعاد'},reg:{title:'د'}}}];
+ctx.location.hash='#/graduates';ctx.V51.h.ft279v('gp');s=T[3]();out.gpTable=/عنوان أ/.test(s)&&/Title A/.test(s)&&/⚠ الخطة/.test(s)&&/مشابه/.test(s)&&/د. سالم/.test(s);
+ctx.V51.h.ft283gf('late');s=T[3]();out.gpLate=/المتأخرة \(1\)/.test(s)&&/عنوان أ/.test(s)&&!/>ج</.test(s);
+ctx.V51.h.ft279v('cmt');s=T[3]();out.cmtView=/القاعة 2/.test(s)&&/1 \/ 3/.test(s)&&/بلا لجنة أو موعد: 1/.test(s);
+ctx.location.hash='#/graduates/r/P3';h=ctx.V.graduates();out.redoBtn=/ft283redo\('P3'\)/.test(h);
+ctx.location.hash='#/graduates/r/P1';h=ctx.V.graduates();out.gpBoxInfo=/Title A/.test(h)&&/الخطة الزمنية/.test(h)&&/عناوين سابقة مشابهة/.test(h);
+ctx.prompt=()=>'لم تتحقق الأهداف';out.lastAct='';ctx.V51.h.ft283redo('P3');out.redoAct=out.lastAct==='gp_redo:why';
 console.log(JSON.stringify(out));
 const bad=Object.entries(out).filter(([k,v])=>v===false||v===undefined);process.exit(bad.length?1:0);

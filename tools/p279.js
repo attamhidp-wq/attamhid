@@ -111,11 +111,11 @@ function linksView(){var A=[['',Lx('الصفحة الرئيسة للبوابة',
 
 function tab(){if(!isAdm())return '';if(!FT.ld){if(!FT.err)FT.load().then(function(){window.__force71=1;go()});return FT.err?'<div class="msg er">'+Lx('تعذّر التحميل.','Could not load.')+'</div>'+btn(Lx('إعادة المحاولة','Try again'),'V51.h.ft231retry()'):'<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>'}
  if(!canSee())return '<div class="msg er">'+Lx('هذا القسم للإدارة المركزية والجهات المخوّلة منها.','This section is for central administration and the bodies it authorizes.')+'</div>';
- ensure();var V0=[['sum',Lx('الملخص','Summary')],['elig',Lx('الاستحقاق','Eligibility')],['tr',Lx('متابعة التدريب','Training follow-up')],['cfg',Lx('الإعدادات','Settings')],['links',Lx('لوحات البوابة','Portal boards')]];
+ ensure();var V0=[['sum',Lx('الملخص','Summary')],['elig',Lx('الاستحقاق','Eligibility')],['tr',Lx('متابعة التدريب','Training follow-up')],['gp',Lx('المشاريع والمراحل','Projects & stages')],['cmt',Lx('لجان المناقشة','Defence committees')],['cfg',Lx('الإعدادات','Settings')],['links',Lx('لوحات البوابة','Portal boards')]];
  var h='<h3>'+Lx('التدريب الميداني ومشروع التخرج','Field Training & Graduation Project')+'</h3><nav style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px">'+V0.map(function(x){return btn(x[1],'V51.h.ft279v(\''+x[0]+'\')',G.v===x[0]?'':'s')}).join('')+btn(Lx('تحديث','Refresh'),'V51.h.ft279r()','s')+'</nav>';
  if(G.err)h+='<div class="msg er">'+e9(G.err)+'</div>';
  if(FT.elig==null&&G.v!=='links'&&G.v!=='cfg')return h+'<p class="mu">'+Lx('جارٍ التحميل…','Loading…')+'</p>';
- try{return h+(G.v==='elig'?eligView():G.v==='tr'?trView():G.v==='cfg'?cfgView():G.v==='links'?linksView():sumView())}catch(e){console.error('v279 tab',e);return h+'<div class="msg er">'+e9(e.message)+'</div>'}}
+ try{return h+(G.v==='elig'?eligView():G.v==='tr'?trView():G.v==='gp'?gpView():G.v==='cmt'?cmtView():G.v==='cfg'?cfgView():G.v==='links'?linksView():sumView())}catch(e){console.error('v279 tab',e);return h+'<div class="msg er">'+e9(e.message)+'</div>'}}
 H.ft279r=function(){reload()};
 try{var TB=X.TABS51||W.V51TABS,TL=X.TABLBL51||{};if(TB&&!TB.some(function(x){return x[0]==='ft279'})){TB.push(['ft279','التدريب الميداني ومشروع التخرج','Field Training & Graduation Project',tab]);TL['التدريب الميداني ومشروع التخرج']='ft279';TL['Field Training & Graduation Project']='ft279'}}catch(e){}
 
@@ -294,6 +294,35 @@ var SGUIDE=[['المشرف الأكاديمي (التدريب)','Academic superv
 H.ft282guide=function(){MD(Lx('دليل المشرف في بوابة الخريجين','Supervisor guide to the Graduates Portal'),'<ul>'+SGUIDE.map(function(g){return '<li><b>'+e9(Lx(g[0],g[1]))+':</b> '+e9(Lx(g[2],g[3]))+'</li>'}).join('')+'</ul>')};
 try{var vg4=V.graduates;if(typeof vg4==='function'&&!vg4.__v282){V.graduates=function(){var h=vg4.apply(this,arguments);try{var p=location.hash.replace(/^#\/?/,'').split('/');if(typeof me!=='undefined'&&me&&me.r==='faculty'&&FT.ld&&!p[1]&&typeof h==='string'){var w=who();if((w.roles||[]).length||w.sup||(FT.recs||[]).some(function(r){return rolesOn(r,myRef()).length})){var i=h.indexOf('</nav>');if(i>0)h=h.slice(0,i+6)+hubStaff()}}}catch(e){console.error('v282 hub',e)}return h};V.graduates.__v282=1}}catch(e){}
 X.ft282={hubStaff:hubStaff,pendingFor:pendingFor};
+/* =====================================================================
+   v283 — المرحلة الثالثة (مشروع التخرج): قرار «إعادة» بسبب، ومتابعة المقترحات والمشاريع والمراحل،
+   وجدول لجان المناقشة في لوحة الإدارة. منع تكرار العناوين والتنبيهات اليومية على الخادم.
+   ===================================================================== */
+try{var S1=FT.ST&&FT.ST.gp;if(S1){S1.inprogress=S1.inprogress||['قيد الإنجاز','In progress']}}catch(e){}
+H.ft283redo=function(id){var w=prompt(Lx('سبب قرار الإعادة (إلزامي):','Reason for the redo decision (required):'));if(w===null)return;if(String(w).trim().length<5){T(Lx('السبب إلزامي (5 أحرف على الأقل).','A reason is required (at least 5 characters).'));return}
+ if(!confirm(Lx('تأكيد قرار «إعادة المشروع»؟ يعود المشروع إلى «قيد الإنجاز» ويُناقش من جديد.','Confirm “redo”? The project returns to “in progress” and is defended again.')))return;FT.act(id,'gp_redo',{why:String(w).trim()})};
+var gpBox=function(r){if(!r||r.kind!=='gp')return '';var d=r.data||{},o='';
+ if(hasR('pc')&&IN(r,['discussed','revisions'])&&!(typeof me!=='undefined'&&me&&me.r==='student'))o+='<p>'+B(Lx('قرار اللجنة: إعادة المشروع','Committee decision: redo the project'),'V51.h.ft283redo('+q(r.id)+')')+'</p>';
+ if(d.redo&&r.st==='inprogress')o+='<div class="msg er">'+Lx('قررت اللجنة إعادة المشروع: ','The committee decided to redo the project: ')+e9(d.redo.why||'')+'</div>';
+ if((d.sim||[]).length&&hasR('pc'))o+='<div class="msg">'+Lx('عناوين سابقة مشابهة: ','Similar earlier titles: ')+e9(d.sim.join(' | '))+'</div>';
+ if(d.reg&&(d.reg.titleEn||d.reg.timeline))o+='<p class="mu">'+(d.reg.titleEn?'<span dir="ltr">'+e9(d.reg.titleEn)+'</span><br>':'')+(d.reg.timeline?Lx('الخطة الزمنية: ','Timeline: ')+e9(d.reg.timeline):'')+'</p>';
+ return o?'<div class="box ft283gp"><b>'+Lx('مشروع التخرج','Graduation project')+'</b>'+o+'</div>':''};
+try{var vg5=V.graduates;if(typeof vg5==='function'&&!vg5.__v283){V.graduates=function(){var h=vg5.apply(this,arguments);try{var p=location.hash.replace(/^#\/?/,'').split('/');if(p[1]==='r'&&p[2]&&FT.ld&&typeof h==='string'&&h.indexOf('ft283gp')<0){var b=gpBox(REC(decodeURIComponent(p[2])));if(b){var i=h.indexOf('</nav>');h=i>0?h.slice(0,i+6)+b+h.slice(i+6):h+b}}}catch(e){console.error('v283 gp',e)}return h};V.graduates.__v283=1}}catch(e){}
+
+G.gf='act';H.ft283gf=function(v){G.gf=v;go()};
+var GGRP={req:['proposed','returned'],act:['assigned','plan_ok','inprogress','draft_final','approved_def','discussed','revisions'],end:['final_ok','archived','rejected']};
+var lateStages=function(r){var dl=(FT.cfg||{}).dead||{};if(!IN(r,['assigned','plan_ok','inprogress','draft_final']))return [];return ['plan','ch','draft','final'].filter(function(k){return dl[k]&&dl[k]<today()&&!subOf(r,k)})};
+function gpView(){var A=(FT.recs||[]).filter(function(r){return r.kind==='gp'}),L0=A.filter(function(r){return G.gf==='all'||(GGRP[G.gf]||[]).indexOf(r.st)>=0||(G.gf==='late'&&IN(r,GGRP.act)&&lateStages(r).length)});
+ var o='<p>'+[['act',Lx('القائمة','Active')],['req',Lx('المقترحات','Proposals')],['late',Lx('المتأخرة','Late')],['end',Lx('المنتهية','Finished')],['all',Lx('الكل','All')]].map(function(x){var n=x[0]==='all'?A.length:x[0]==='late'?A.filter(function(r){return IN(r,GGRP.act)&&lateStages(r).length}).length:A.filter(function(r){return (GGRP[x[0]]||[]).indexOf(r.st)>=0}).length;return btn(x[1]+' ('+n+')','V51.h.ft283gf(\''+x[0]+'\')',G.gf===x[0]?'':'s')}).join(' ')+'</p>';
+ return o+tbl([Lx('الطالب','Student'),Lx('العنوان','Title'),Lx('المشرف','Supervisor'),Lx('الحالة','Status'),Lx('المراحل','Stages'),Lx('اللقاءات','Meetings'),Lx('المناقشة','Defence'),''],L0.map(function(r){var d=r.data||{},lt=lateStages(r);
+  return '<tr><td>'+e9(nmOf(r))+((d.mem||[]).length?' <small>(+'+d.mem.length+')</small>':'')+'</td><td>'+e9((d.reg||{}).title||'')+((d.reg||{}).titleEn?'<br><small dir="ltr">'+e9(d.reg.titleEn)+'</small>':'')+((d.sim||[]).length?' <span class="tag er">'+Lx('مشابه','similar')+'</span>':'')+'</td><td>'+e9(d.gsup?((d.nm&&d.nm[d.gsup])||d.gsup):'—')+'</td><td>'+chip(r)+'</td><td>'+['plan','ch','draft','final'].map(function(k){var y=subOf(r,k);return y?tag('✔ '+STG[k],'ok'):lt.indexOf(k)>=0?tag('⚠ '+STG[k],'er'):tag(STG[k])}).join(' ')+'</td><td>'+((d.meets||[]).length)+'</td><td dir="ltr">'+e9(d.m7?((d.m7.date||'')+' '+(d.m7.time||'')):'—')+'</td><td><a class="btn s" href="'+link('r/'+encodeURIComponent(r.id))+'">'+Lx('فتح','Open')+'</a></td></tr>'}))}
+function cmtView(){var A=(FT.recs||[]).filter(function(r){return r.kind==='gp'&&r.data&&r.data.m7}).sort(function(a,b){return String(a.data.m7.date).localeCompare(String(b.data.m7.date))}),up=A.filter(function(r){return String(r.data.m7.date)>=today()}),past=A.filter(function(r){return String(r.data.m7.date)<today()});
+ var row=function(r){var d=r.data,m=d.m7,ev=(d.m8||[]).filter(function(x){return x.c}).length,cm=(d.cmt||[]);return '<tr><td dir="ltr">'+e9((m.date||'')+' '+(m.time||''))+'</td><td>'+e9(m.place||m.link||'—')+'</td><td>'+e9(nmOf(r))+'</td><td>'+e9((d.reg||{}).title||'')+'</td><td>'+e9(cm.map(function(x){return (d.nm&&d.nm[x])||x}).join('، '))+'</td><td>'+ev+' / '+(cm.length||3)+'</td><td>'+chip(r)+'</td><td><a class="btn s" href="'+link('r/'+encodeURIComponent(r.id))+'">'+Lx('فتح','Open')+'</a></td></tr>'};
+ var H0=[Lx('الموعد','Date'),Lx('المكان أو الرابط','Place or link'),Lx('الطالب','Student'),Lx('العنوان','Title'),Lx('اللجنة','Committee'),Lx('التقويمات','Evaluations'),Lx('الحالة','Status'),''];
+ var wait=(FT.recs||[]).filter(function(r){return r.kind==='gp'&&r.st==='approved_def'&&!(r.data&&r.data.m7)});
+ return (wait.length?'<div class="msg">'+Lx('مشاريع مُجازة للمناقشة بلا لجنة أو موعد: ','Projects approved for defence without a committee or date: ')+wait.length+' — '+wait.map(function(r){return '<a href="'+link('r/'+encodeURIComponent(r.id))+'">'+e9(nmOf(r))+'</a>'}).join('، ')+'</div>':'')+'<h4>'+Lx('المناقشات القادمة','Upcoming defences')+'</h4>'+tbl(H0,up.map(row))+'<h4>'+Lx('المناقشات السابقة','Past defences')+'</h4>'+tbl(H0,past.map(row))}
+X.ft283={gpView:gpView,cmtView:cmtView,gpBox:gpBox};
+
 
 X.ft279={tab:tab,stuBox:stuBox,eligList:eligList};
 }catch(e){console.error('v279',e)}})();
