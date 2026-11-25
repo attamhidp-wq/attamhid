@@ -83,18 +83,23 @@ open(os.path.join(R, 'app.html'), 'w', encoding='utf-8', newline='').write(out)
 _ix = os.path.join(R, 'index.html')
 if not (os.path.exists(_ix) and 'data-ati-shell=' in open(_ix, encoding='utf-8').read(400)):
     open(_ix, 'w', encoding='utf-8', newline='').write(out)  # قبل أول توليد للصفحة الخفيفة: نسخة كاملة تعمل كما كانت
-# تنظيف: يبقى ملف البناء الحالي والسابق فقط (حتى لا تنكسر صفحة محفوظة مؤقتاً لدى زائر)
+# تنظيف (v291): تبقى ملفات آخر 12 بناءً مختلفاً، حتى لا تنكسر صفحة محفوظة مؤقتاً لدى زائر بعد عدة تحديثات متتالية
 mp = os.path.join(R, 'js/manifest.json')
-prev = []
+hist = []
 if os.path.exists(mp):
-    try: prev = json.load(open(mp)).get('cur', [])
-    except Exception: prev = []
-keep = set(files) | (set(prev) if set(prev) != set(files) else set(json.load(open(mp)).get('prev', [])) if os.path.exists(mp) else set())
+    try:
+        M = json.load(open(mp))
+        hist = M.get('hist') or [M.get('cur', []), M.get('prev', [])]
+    except Exception: hist = []
+hist = [h for h in hist if h]
+if not hist or set(hist[0]) != set(files): hist = [files] + hist
+hist = hist[:12]
+keep = set(x for h in hist for x in h)
 for f in os.listdir(os.path.join(R, 'js')):
     p = 'js/' + f
     if (f.endswith('.js') or f.endswith('.css')) and p not in keep:
         os.remove(os.path.join(R, p))
-json.dump({'cur': files, 'prev': prev if set(prev) != set(files) else (json.load(open(mp)).get('prev', []) if os.path.exists(mp) else [])}, open(mp, 'w'), indent=0)
+json.dump({'cur': files, 'prev': hist[1] if len(hist) > 1 else [], 'hist': hist}, open(mp, 'w'), indent=0)
 # v132: عامل الخدمة (تطبيق قابل للتثبيت يعمل دون اتصال): يُولَّد بإصدار البناء وقائمة الملفات الحالية
 try:
     bv = re.search(r"__BUILD__='(v\d+)'", src).group(1)
