@@ -37,7 +37,7 @@ function metaLine(o){var hd=hij(o.date);
   '<span>الرقم: <bdi dir="ltr">'+esc(o.rec)+'</bdi></span><span>التاريخ: '+(hd?'<bdi dir="ltr">'+esc(hd)+'</bdi>هـ الموافق ':'')+'<bdi dir="ltr">'+esc(dmy(o.date))+'</bdi>م</span><span>المرفقات: '+(o.att?esc(o.att):'بدون')+'</span></div>'}
 function sign(s,w){s=s||{};var im='';try{im=s.src||(s.img&&X.imgOf?X.imgOf(s.img):'')}catch(e){}
  return '<div style="width:'+(w||260)+'px;text-align:center;'+A+';color:#111"><div style="font-size:16px;font-weight:700">'+esc(s.t||'رئيس المعهد')+'</div>'+
-  '<div style="height:'+(s.sm?46:58)+'px;margin:2px 0;display:flex;align-items:center;justify-content:center">'+(im?'<img src="'+im+'" alt="" style="height:'+(s.sm?42:54)+'px;max-width:170px;object-fit:contain">':'')+'</div>'+
+  '<div style="height:'+(s.sm?40:58)+'px;margin:2px 0;display:flex;align-items:center;justify-content:center">'+(im?'<img src="'+im+'" alt="" style="height:'+(s.sm?38:54)+'px;max-width:170px;object-fit:contain">':'')+'</div>'+
   '<div style="font-size:15.5px;font-weight:700">'+esc(s.n||'')+'</div></div>'}
 function signers(type){var r=[];try{r=(X.resolveSigners&&X.resolveSigners(type))||[]}catch(e){}return r}
 function cc(list){return list&&list.length?'<div style="'+A+';font-size:12.5px;line-height:1.7;color:#333"><b>صورة مع التحية إلى:</b>'+list.map(function(x){return '<br>- '+esc(x)+'.'}).join('')+'</div>':''}
@@ -57,7 +57,7 @@ var F={head:head,meta:meta,metaLine:metaLine,sign:sign,cc:cc,verify:verify,foot:
 X.f289=F;
 
 /* ---------- الخطابات (القبول، التوصية، التعريف، الإفادة المالية): نص رسمي متصل على نموذج خطاب التعيين، دون جداول ---------- */
-var CFG={acc:{unit:'إدارة القبول والتسجيل',unitEn:'Admission & Registration',login:'stu',vl:'التحقق من الخطاب',cc:['@','إدارة القبول والتسجيل','الملف الأكاديمي']},
+var CFG={acc:{unit:'إدارة القبول والتسجيل',unitEn:'Admission & Registration',login:'stu',vl:'التحقق من الخطاب',cc:['إدارة القبول والتسجيل','الإدارة المالية','الملف الأكاديمي']},
  rec:{unit:'إدارة شؤون الطلاب',unitEn:'Student Affairs',vl:'التحقق من الخطاب',cc:['الملف الأكاديمي']},
  intro:{unit:'إدارة شؤون الطلاب',unitEn:'Student Affairs',vl:'التحقق من الخطاب',cc:['الملف']},
  fin:{unit:'الإدارة المالية',unitEn:'Finance Department',vl:'التحقق من الإفادة',cc:['الإدارة المالية','الملف الأكاديمي']}};
@@ -82,14 +82,15 @@ function letter289(h,c){
  var body='',salute='',subj='';
  if(c.type==='acc'){
   subj='قبول '+w('الطالب','الطالبة','الطالب/ـة')+'/ '+esc(nm)+(prog?' في برنامج '+prog:'');
-  salute='<p style="margin:0 0 6px;font-size:16px"><b>'+w('المكرم الطالب','المكرمة الطالبة','المكرم/ـة الطالب/ـة')+'/ '+esc(nm)+'</b> &nbsp;&nbsp;&nbsp; '+w('المحترم','المحترمة','المحترم/ـة')+'</p>';
-  var it=['قبول '+w('الطالب المذكورة بياناته','الطالبة المذكورة بياناتها','الطالب/ـة المذكورة بياناته/ا')+' أعلاه في '+(prog?'برنامج «'+prog+'»':'البرنامج المذكور')+'، بعد '+w('استيفائه','استيفائها','استيفاء')+' شروط القبول المعتمدة.',
-   'تبدأ الدراسة في الفصل والتاريخ المذكورين أعلاه، وتُستكمل إجراءات التسجيل عبر البوابة قبل ذلك.',
-   (R['الرقم الأكاديمي']?'يُعدّ الرقم الأكاديمي المذكور أعلاه رقم الدخول إلى البوابة ورقم جميع المعاملات في المعهد.':''),
+  salute='<p style="margin:0 0 6px;font-size:16px"><b>'+w('عزيزي الطالب','عزيزتي الطالبة','عزيزي الطالب/ عزيزتي الطالبة')+'/ '+esc(nm)+'</b></p>';
+  var it=['قبول'+w('ك','كِ','ك')+' '+w('طالباً','طالبةً','طالباً/ـة')+' في '+(prog?'برنامج <b>«'+prog+'»</b>':'البرنامج المذكور أعلاه')+'، بعد استيفائ'+w('ك','كِ','ك')+' شروط القبول المعتمدة.',
+   'تبدأ دراست'+w('ك','كِ','ك')+' في الفصل الدراسي والتاريخ المذكورين أعلاه، وتُستكمل إجراءات التسجيل عبر البوابة قبل ذلك.',
+   (R['الرقم الأكاديمي']?'رقم'+w('ك','كِ','ك')+' الأكاديمي المذكور أعلاه هو رقم الدخول إلى البوابة ورقم جميع المعاملات في المعهد.':''),
+   'الالتزام بسداد رسوم البرنامج المقررة لكل فصل دراسي، وما يتعلق بها من رسوم مقررة إن وُجدت، في مواعيدها المحددة.',
    c.adm_cond?'يكون القبول مشروطاً بما يلي: '+esc(c.adm_cond)+'.':'',
    'الالتزام بأنظمة المعهد ولوائحه وتعليماته.'].filter(Boolean);
-  body='<p style="margin:0 0 8px;font-size:16px;line-height:1.95">يسرّ '+esc(inst().nameAr||'معهد التمهيد')+' أن '+w('يُبلغكم','يُبلغكِ','يُبلغكم')+' بما يلي:</p>'+it.map(ITEM).join('')+
-   '<p style="margin:6px 0 0;font-size:16px;line-height:1.95">متمنين '+w('لكم','لكِ','لكم')+' التوفيق والنجاح.</p>';
+  body='<p style="margin:0 0 8px;font-size:16px;line-height:1.95">يسرّ '+esc(inst().nameAr||'معهد التمهيد')+' أن '+w('يهنئك','يهنئكِ','يهنئك')+' ويُبلغ'+w('ك','كِ','ك')+' بما يلي:</p>'+it.map(ITEM).join('')+
+   '<p style="margin:6px 0 0;font-size:16px;line-height:1.95">متمنين ل'+w('ك','كِ','ك')+' التوفيق والنجاح.</p>';
  }else{
   var t=txt;
   subj=(c.type==='rec'?(c.tzk?'توصية '+w('للخريج','للخريجة','للخريج/ـة'):'توصية '+w('للطالب','للطالبة','للطالب/ـة')):c.type==='fin'?'إفادة مالية عن '+w('الطالب','الطالبة','الطالب/ـة'):'تعريف ب'+(isStu?w('الطالب','الطالبة','الطالب/ـة'):w('المكرم','المكرمة','المكرم/ـة')))+'/ '+esc(nm);
@@ -101,8 +102,8 @@ function letter289(h,c){
  var h2=head({unit:unit,unitEn:unit===K.unit?K.unitEn:'Human Resources'})+meta({rec:c.rec,date:c.date||new Date().toISOString().slice(0,10),att:c.att})+
   '<div style="position:absolute;top:262px;right:64px;left:64px;'+A+';color:#111">'+
    '<p style="margin:0 0 12px;font-size:16px"><b>الموضوع:</b> '+subj+'</p>'+TITLE(tt||'خطاب')+salute+
-   '<p style="margin:0 0 8px;font-size:16px">السلام عليكم ورحمة الله وبركاته، وبعد:</p>'+DATA+body+
-   '<p style="margin:12px 0 0;font-size:16px;text-align:center">وتقبلوا خالص التحية والتقدير،،،</p></div>'+
+   '<p style="margin:0 0 8px;font-size:16px">السلام علي'+(c.type==='acc'?'ك':'كم')+' ورحمة الله وبركاته، وبعد:</p>'+DATA+body+
+   '<p style="margin:12px 0 0;font-size:16px;text-align:center">'+(c.type==='acc'?'والله ولي التوفيق،،،':'وتقبلوا خالص التحية والتقدير،،،')+'</p></div>'+
   '<div style="position:absolute;top:836px;right:64px;left:64px;display:flex;justify-content:space-between;align-items:flex-start">'+
    '<div style="padding-top:6px">'+cc(KCC)+'</div><div style="display:flex;gap:18px">'+sigH+'</div></div>'+
   verify({rec:c.rec,qr:X.qrV64?X.qrV64(c.rec):'',vl:K.vl,login:K.login?{k:K.login,id:c.sid||c.uid,how:'بالرقم الأكاديمي'}:null})+foot();
@@ -137,7 +138,7 @@ X.cert289v=cert289;/* شهادات البرامج القصيرة تبقى على
 var NFU={tr:['وحدة التدريب الميداني','Field Training Unit','grad'],gp:['وحدة مشاريع التخرج','Graduation Projects Unit','grad'],ex:['وحدة التدريب الميداني الخارجي','External Field Training Unit','trn']};
 var ORDN=['أولاً','ثانياً','ثالثاً','رابعاً','خامساً','سادساً','سابعاً','ثامناً','تاسعاً','عاشراً','حادي عشر','ثاني عشر','ثالث عشر','رابع عشر','خامس عشر'];
 var dig=function(x){return +String(x).replace(/[٠-٩]/g,function(c){return '٠١٢٣٤٥٦٧٨٩'.indexOf(c)})};
-X.nf289={geo:{t1:192,tn:192,b:958,l:852},
+X.nf289={geo:{t1:192,tn:192,b:958,l:868},
  css:'.nfp .en,.nfp .tm .e,.nfp .tt .en,.nfp .nfbd [dir="ltr"][style*="display:block"],.nfp .nfbd p[dir="ltr"]{display:none!important}'+
   '.nfp .sec{border-bottom:0!important;margin:12px 0 6px!important;padding:0!important}.nfp .sec h2{font:700 16.5px Amiri,serif!important;color:'+NV+'!important}'+
   '.nfp table.kv th,.nfp table.kv td,.nfp table.tb th,.nfp table.tb td{border:.8px solid #8a929e!important;background:#fff!important;height:26px!important;padding:2px 8px!important}'+
@@ -145,14 +146,18 @@ X.nf289={geo:{t1:192,tn:192,b:958,l:852},
   '.nfp table.tb tr:first-child th{background:#f2f3f5!important;text-align:center!important}'+
   '.nfp .box{border:.8px solid #8a929e!important}.nfp .boxs{background:#fff!important}.nfp p.tx{font:400 15px/1.8 Amiri,serif!important;color:#111}'+
   '.nfp .sig>div{border:0!important;border-bottom:.8px solid #8a929e!important;padding:4px 2px!important;min-height:70px!important}.nfp .sig .r{color:#111!important;font:700 14px Amiri,serif!important}'+
-  '.nfp .chk i{border-color:#333!important}.nfp span[style*="flex:1"] .blank{border-bottom:1px dotted #8b94a6;height:20px}',
+  '.nfp .sec h2 + *{margin-top:0}.nfp .chk i{border-color:#333!important}.nfp span[style*="flex:1"] .blank{border-bottom:1px dotted #8b94a6;height:20px}',
  blk:function(b){return String(b).replace(/<span class="en"[^>]*>[\s\S]*?<\/span>/g,'').replace(/<span class="n">\s*([٠-٩0-9]+)\.?\s*<\/span>/g,function(m,n){var k=dig(n);return '<span class="n">'+(ORDN[k-1]||n)+': </span>'})},
  title:function(D,term){return '<div style="text-align:center;margin:0 0 6px;'+A+'"><span style="display:inline-block;font-size:22px;font-weight:700;color:'+NV+';border-bottom:2px solid '+NV+';padding:0 16px 2px">'+esc(D.t[0])+'</span>'+(D.conf?' <span style="display:inline-block;border:1.2px solid #8a1c1c;color:#8a1c1c;padding:0 8px;font-size:13px;vertical-align:middle">سري</span>':'')+
   '<div style="font-size:13px;color:#333;margin-top:4px">رمز النموذج: '+esc(D.code)+(term?' &nbsp;—&nbsp; الفصل الدراسي: '+esc(term):'')+'</div></div>'},
+ lines:function(h){var d=document.createElement('div');d.innerHTML=h;
+  var one=function(k,v,w){return '<div style="display:flex;'+(w?'width:50%;':'flex:1;')+'"><b style="width:112px;flex:none">'+k+'</b><span style="width:14px;flex:none">:</span><span style="flex:1;padding-left:10px">'+v+'</span></div>'};
+  [].slice.call(d.querySelectorAll('table.kv')).forEach(function(tb){var L=[];[].slice.call(tb.querySelectorAll('tr')).forEach(function(tr){var c=[].slice.call(tr.children),P=[];for(var i=0;i+1<c.length;i+=2)if(c[i].tagName==='TH')P.push([c[i].innerHTML,c[i+1].innerHTML]);if(P.length)L.push('<div style="display:flex;font-size:15px;line-height:1.85;'+A+'">'+P.map(function(p){return one(p[0],p[1],P.length>1)}).join('')+'</div>')});
+   var w=document.createElement('div');w.innerHTML='<div style="margin:2px 0 8px;padding:0 4px">'+L.join('')+'</div>';tb.parentNode.replaceChild(w.firstChild,tb)});return d.innerHTML},
  tt2:function(D,n){return '<div style="display:flex;justify-content:space-between;margin:0 0 8px;padding-bottom:3px;border-bottom:.8px solid #8a929e;'+A+';font-size:14.5px;color:'+NV+'"><b>'+esc(D.t[0])+' (تابع)</b><span>صفحة '+n+'</span></div>'},
  head:function(D,ref,issued){var u=NFU[D&&D.k]||NFU.tr;return '<style>.nfp .rule,.nfp .l59-band{display:none!important}</style>'+head({unit:u[0],unitEn:u[1],noWm:1})+metaLine({rec:ref,date:issued})},
  foot:function(D,ref,issued,n,N,last,url,Pr){var u=NFU[D&&D.k]||NFU.tr,h='';
-  if(last){h+='<div style="position:absolute;top:856px;left:66px">'+sign({t:Pr&&Pr.t,n:Pr&&Pr.n,src:Pr&&Pr.sig,sm:1})+'</div>'+
+  if(last){h+='<div style="position:absolute;top:866px;left:66px">'+sign({t:Pr&&Pr.t,n:Pr&&Pr.n,src:Pr&&Pr.sig,sm:1})+'</div>'+
    ''}
   return h+verify({rec:ref,qr:url,vl:'التحقق من النموذج',login:{k:u[2]},pg:'صفحة '+n+' من '+N})+foot()}};
 
