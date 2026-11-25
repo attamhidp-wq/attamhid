@@ -67,5 +67,19 @@ ctx.V51.h.ft279v('cmt');s=T[3]();out.cmtView=/القاعة 2/.test(s)&&/1 \/ 3/.
 ctx.location.hash='#/graduates/r/P3';h=ctx.V.graduates();out.redoBtn=/ft283redo\('P3'\)/.test(h);
 ctx.location.hash='#/graduates/r/P1';h=ctx.V.graduates();out.gpBoxInfo=/Title A/.test(h)&&/الخطة الزمنية/.test(h)&&/عناوين سابقة مشابهة/.test(h);
 ctx.prompt=()=>'لم تتحقق الأهداف';out.lastAct='';ctx.V51.h.ft283redo('P3');out.redoAct=out.lastAct==='gp_redo:why';
-console.log(JSON.stringify(out));
-const bad=Object.entries(out).filter(([k,v])=>v===false||v===undefined);process.exit(bad.length?1:0);
+// v285: الدرجات والتخرج والوثائق والتقارير والرسائل
+R("me={r:'admin'}");FT.who={roles:['admin','tc','pc']};FT.cfg={course:'P23-4401',mail279:{ok:false}};FT.recs=[];FT.elig=[];
+ctx.S={students:[{id:'S1',name:'أ',prog:1000,lvl:4,status:'منتظم',gr:{'P23-4401':{score:88,fin:1,rel:1}}},{id:'S2',name:'ب',prog:1000,lvl:4,status:'منتظم',gr:{}},{id:'S3',name:'ج',prog:1000,lvl:2,status:'منتظم'}]};
+ctx.V51.gradReq223=function(s){return s.id==='S1'?[{ok:true,ar:'x',en:'x'}]:[{ok:false,ar:'ناقص',en:'missing'}]};ctx.DIP=1000;ctx.save=()=>{out.saved=1};
+const calls=[];FT.rpc=(n,a)=>{calls.push(n);if(n==='ft_grad_check')return Promise.resolve({S1:{dues:0,unpub:0,c4401:'pub'},S2:{dues:1,unpub:2,c4401:'none'}});if(n==='ft_docs_all')return Promise.resolve([{ref:'FT-1',form:'ت-14',tar:'شهادة',st:'valid',issued:'2026-11-01',rec:'T1'}]);if(n==='ft_report')return Promise.resolve({from:'2026-11-01',to:'2026-11-25',acts:{tr_submit:3,grade_auto:1},hours:12,tr_new:2,gp_new:1,tr_st:{running:1},gp_st:{},defences:0,docs:1,docs_cancelled:0});return Promise.resolve({ok:true})};
+ctx.location.hash='#/graduates';ctx.V51.h.ft279v('grad');s=T[3]();
+setTimeout(()=>{s=T[3]();out.gradCand=/المرشحون للتخرج \(1\)/.test(s)&&/value="S1"/.test(s)&&/مستحقات غير مسددة: 1/.test(s)&&!/S3/.test(s);
+ ctx.V51.h.ft279v('grades');s=T[3]();out.gradesView=/منشورة/.test(s)&&/1 غير مسددة/.test(s)&&/v270r/.test(s);
+ ctx.V51.h.ft279v('docs');T[3]();setTimeout(()=>{s=T[3]();out.docsView=/FT-1/.test(s)&&/ft285dc\('FT-1'\)/.test(s);
+  ctx.V51.h.ft279v('rep');T[3]();setTimeout(()=>{s=T[3]();out.repView=/طلبات تدريب مقدّمة/.test(s)&&/درجات رُصدت آلياً/.test(s)&&/ft285csv/.test(s);
+   ctx.V51.h.ft279v('mail');s=T[3]();out.mailView=/بانتظار الاعتماد/.test(s)&&/ft285mail\(true\)/.test(s);
+   ctx.confirm=()=>true;ctx.fv=()=>({no:'12/1448',date:'2026-11-25'});const form={querySelectorAll:()=>[{value:'S1'}]};
+   ctx.V51.h.ft285grad(form).then(()=>{out.gradDone=ctx.S.students[0].status==='متخرج'&&ctx.S.students[0].paper61.no==='12/1448'&&out.saved===1&&calls.indexOf('ft_grad_log')>=0;
+    console.log(JSON.stringify(out));const bad=Object.entries(out).filter(([k,v])=>v===false||v===undefined);process.exit(bad.length?1:0)})},20)},20)},20);
+/*console.log(JSON.stringify(out));
+*/

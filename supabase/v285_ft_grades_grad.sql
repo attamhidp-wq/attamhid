@@ -26,7 +26,7 @@ begin
   end if;
   return null;
 end $$;
-drop trigger if exists ft_grade_auto on public.ft_rec;
+
 create trigger ft_grade_auto after update on public.ft_rec for each row execute function public.ft_grade_auto_trg();
 
 -- الترشيح للتخرج: المستحقات، والدرجات غير المنشورة، ودرجة 4401 (يُضاف إليها في الواجهة شرط اكتمال متطلبات البرنامج)
