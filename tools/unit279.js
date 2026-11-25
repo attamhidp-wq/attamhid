@@ -10,7 +10,7 @@ ctx.window=ctx;ctx.V51={h:{},ft225:FT,TABS51:[],TABLBL51:{}};
 vm.createContext(ctx);vm.runInContext(code,ctx);
 const out={};const R=(s)=>vm.runInContext(s,ctx);
 FT.who={role:'student',roles:[],eld:{ok:false,items}};R("me={r:'student',id:'S1'}");
-let h=ctx.V.graduates();out.stuBox=/ft279s/.test(h)&&h.indexOf('ft279s')>h.indexOf('</nav>');out.left1=/بقي عليك 1 من الشروط/.test(h);out.excShown=/قرار 1/.test(h);
+let h=ctx.V.graduates();out.stuBox=/sec279/.test(h)&&h.indexOf('sec279')>h.indexOf('</nav>');out.left1=/بقي عليك 1 من الشروط/.test(h);out.excShown=/قرار 1/.test(h);
 ctx.location.hash='#/graduates/r/X';out.notOnDetail=!/ft279s/.test(ctx.V.graduates());ctx.location.hash='#/graduates';
 R("me={r:'faculty',id:'F1'}");out.noBoxFaculty=!/ft279s/.test(ctx.V.graduates());
 const T=ctx.V51.TABS51.find(x=>x[0]==='ft279');out.tab=!!T;
@@ -37,5 +37,14 @@ R("me={r:'student',id:'S1'}");FT.who={role:'student',roles:[],eld:{ok:true,items
 ctx.fv=()=>({c0:'4',c1:'3',c2:'4',c3:'2',c4:'1',cmt:''});ctx.V51.h.ft279rate({}, 'T3');out.rateAct=out.lastAct==='ent_rate:c5';
 ctx.prompt=()=>'سبب كافٍ للإيقاف';R("me={r:'admin'}");FT.who={roles:['tc']};ctx.V51.h.ft279st('T1','tr_suspend');out.suspAct=out.lastAct==='tr_suspend:why';
 ctx.prompt=()=>'قصير';out.lastAct='';ctx.V51.h.ft279st('T1','tr_suspend');out.shortBlocked=out.lastAct==='';
+// v281: مركز خدمات الطالب
+ctx.location.hash='#/graduates';R("me={r:'student',id:'S1'}");FT.notes=[{ar:'إشعار',at:'2026-11-25'}];
+FT.who={role:'student',ref:'S1',elig:true,roles:[],eld:{ok:true,items:[]}};FT.recs=[{id:'O1',kind:'opp',st:'pub',data:{}}];
+h=ctx.V.graduates();out.hubEmpty=/خطوتك التالية: ابدأ تدريبك الميداني/.test(h)&&/ft225newTr/.test(h)&&(h.match(/class="c279/g)||[]).length>=20&&/1 فرصة منشورة/.test(h);
+FT.recs=[{id:'T9',kind:'tr',sid:'S1',st:'running',data:{plan:{weeks:[1],ok:1},log:[{h:6,ok:'1'}],app:{ent:'مكتبة'}}},{id:'G9',kind:'gp',sid:'S1',st:'assigned',data:{reg:{title:'عنوان'},gsup:'F1',nm:{F1:'د. أحمد'}}}];
+h=ctx.V.graduates();out.hubRunning=/دوّن يومك/.test(h)&&/ft225day\('T9'\)/.test(h)&&/6<\/b> \/ 60/.test(h)&&/د. أحمد/.test(h)&&/ft225m2\('G9'\)/.test(h);
+FT.who={role:'student',ref:'S1',elig:false,roles:[],eld:{ok:false,items:[{k:'pre',on:true,ok:false,ar:'3102',en:'3102'}]}};FT.recs=[];
+h=ctx.V.graduates();out.hubLocked=/استكمل شروط الاستحقاق/.test(h)&&/ft231na/.test(h)&&!/ft225newTr\(\)/.test(h);
+ctx.location.hash='#/graduates/opp';h=ctx.V.graduates();out.hubOnlyHome=!/c279/.test(h);
 console.log(JSON.stringify(out));
 const bad=Object.entries(out).filter(([k,v])=>v===false||v===undefined);process.exit(bad.length?1:0);
