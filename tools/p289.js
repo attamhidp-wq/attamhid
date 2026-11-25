@@ -56,34 +56,54 @@ var TITLE=function(t){return '<div style="text-align:center;margin:0 0 12px"><sp
 var F={head:head,meta:meta,metaLine:metaLine,sign:sign,cc:cc,verify:verify,foot:foot,page:page,P:P,TITLE:TITLE,PORT:PORT};
 X.f289=F;
 
-/* ---------- خطاب القبول وخطابات التوصية: يُبنى من بيانات الخطاب الأصلي في الإطار الرسمي ---------- */
-var CFG={acc:{unit:'إدارة القبول والتسجيل',unitEn:'Admission & Registration',login:'stu',vl:'التحقق من الخطاب',cc:['الطالب المعني','إدارة القبول والتسجيل','الملف الأكاديمي'],sal:1},
- rec:{unit:'إدارة شؤون الطلاب',unitEn:'Student Affairs',vl:'التحقق من الخطاب',cc:['الملف الأكاديمي']}};
+/* ---------- الخطابات (القبول، التوصية، التعريف، الإفادة المالية): نص رسمي متصل على نموذج خطاب التعيين، دون جداول ---------- */
+var CFG={acc:{unit:'إدارة القبول والتسجيل',unitEn:'Admission & Registration',login:'stu',vl:'التحقق من الخطاب',cc:['@','إدارة القبول والتسجيل','الملف الأكاديمي']},
+ rec:{unit:'إدارة شؤون الطلاب',unitEn:'Student Affairs',vl:'التحقق من الخطاب',cc:['الملف الأكاديمي']},
+ intro:{unit:'إدارة شؤون الطلاب',unitEn:'Student Affairs',vl:'التحقق من الخطاب',cc:['الملف']},
+ fin:{unit:'الإدارة المالية',unitEn:'Finance Department',vl:'التحقق من الإفادة',cc:['الإدارة المالية','الملف الأكاديمي']}};
+var ORD=['أولاً','ثانياً','ثالثاً','رابعاً','خامساً','سادساً'];
+var ITEM=function(t,k){return '<p style="margin:0 0 7px;font-size:16px;line-height:1.95;text-align:justify;padding-right:64px;text-indent:-64px"><b style="display:inline-block;width:64px;text-indent:0">'+ORD[k]+':</b>'+t+'</p>'};
 function letter289(h,c){
- var K=CFG[c.type];if(!K||typeof h!=='string'||h.indexOf('data-l59="1"')<0&&h.indexOf('l59-')<0)return null;
+ var K=CFG[c.type];if(!K||typeof h!=='string'||h.indexOf('l59-')<0)return null;
  var d=document.createElement('div');d.innerHTML=h;
- var tt=((d.querySelector('.l59-tt .ar')||{}).textContent||'').trim()||(c.type==='acc'?'خطاب قبول':'خطاب توصية');
- var to=((d.querySelector('.l59-to .ar')||{}).textContent||'').trim()||'إلى من يهمه الأمر';
- var rows=[].slice.call(d.querySelectorAll('.l59-tb tr')).map(function(tr){var th=tr.querySelector('th.a'),td=tr.querySelector('td.a')||tr.querySelector('td.c')||tr.querySelector('td');return th&&td?[th.textContent.trim(),td.innerHTML.trim()]:null}).filter(function(r){return r&&r[1]&&r[1]!=='—'});
- var pa=d.querySelector('.l59-pa'),body=pa?pa.innerHTML:'';body=body.split(/<br>\s*<b>\s*إرشادات/)[0].replace(/(<br>\s*)+$/,'');
+ var tt=((d.querySelector('.l59-tt .ar')||{}).textContent||'').trim();
+ var R={};[].slice.call(d.querySelectorAll('.l59-tb tr')).forEach(function(tr){var th=tr.querySelector('th.a'),td=tr.querySelector('td.a')||tr.querySelector('td.c')||tr.querySelector('td');if(th&&td){var v=td.innerHTML.trim();if(v&&v!=='—'&&v!=='-')R[th.textContent.trim()]=v}});
+ var pa=d.querySelector('.l59-pa'),txt=pa?pa.innerHTML:'';txt=txt.split(/<br>\s*<b>\s*إرشادات/)[0].replace(/(<br>\s*)+$/,'');
  var sgs=[].slice.call(d.querySelectorAll('.l59-sg')).map(function(s){var g=function(k){return ((s.querySelector('.'+k)||{}).textContent||'').trim()},im=s.querySelector('.im img');return {t:g('t'),n:g('n'),src:im?im.getAttribute('src'):''}});
  if(!sgs.length)sgs=signers(c.type).slice(0,2);
  var st={};try{st=(S.students||[]).find(function(x){return String(x.id)===String(c.sid||c.uid)})||{}}catch(e){}
+ var isStu=!!(R['الرقم الأكاديمي']||st.id);
  var sx=String(st.sex||st.gender||c.sex||''),w=function(m,f,b){return /^(أنثى|انثى|female|f)$/i.test(sx)?f:/^(ذكر|male|m)$/i.test(sx)?m:b};
- var nm=c.name||'',sal=K.sal?'<p style="margin:0 0 6px;font-size:16px"><b>'+w('المكرم الطالب','المكرمة الطالبة','المكرم/ـة الطالب/ـة')+': '+esc(nm)+'</b> &nbsp;&nbsp;&nbsp; '+w('المحترم','المحترمة','المحترم/ـة')+'</p>':'<p style="margin:0 0 6px;font-size:16px;font-weight:700">'+esc(to)+'</p>';
- var tb=rows.length?'<div style="margin:4px 0 12px;border:1px solid #b9c2cf;border-radius:2px">'+rows.map(function(r,i){return '<div style="display:flex;font-size:14.5px;line-height:1.6;'+(i?'border-top:1px solid #dde2ea;':'')+'"><div style="width:150px;flex:none;background:#f3f5f9;padding:3px 10px;font-weight:700;color:'+NV+';border-left:1px solid #dde2ea">'+esc(r[0])+'</div><div style="padding:3px 10px">'+r[1]+'</div></div>'}).join('')+'</div>':'';
- var subj=(c.type==='acc'?'قبول '+w('الطالب','الطالبة','الطالب/ـة')+' ':(c.tzk?'توصية '+w('للخريج','للخريجة','للخريج/ـة')+' ':'توصية '+w('للطالب','للطالبة','للطالب/ـة')+' '))+esc(nm);
- var KCC=K.cc.map(function(x){return x==='الطالب المعني'?w('الطالب المعني','الطالبة المعنية','الطالب/ـة المعني/ـة'):x});
+ var nm=c.name||R['الاسم']||'',prog=R['البرنامج']||'';
+ var ids=[];if(R['الجنسية'])ids.push('الجنسية: '+R['الجنسية']);if(R['رقم الهوية'])ids.push('رقم الهوية: <bdi dir="ltr" style="white-space:nowrap">'+R['رقم الهوية']+'</bdi>');if(R['الرقم الأكاديمي']&&c.type!=='acc')ids.push('الرقم الأكاديمي: <bdi dir="ltr" style="white-space:nowrap">'+R['الرقم الأكاديمي']+'</bdi>');if(R['الرقم الوظيفي'])ids.push('الرقم الوظيفي: <bdi dir="ltr" style="white-space:nowrap">'+R['الرقم الوظيفي']+'</bdi>');
+ var who=(isStu?w('الطالب','الطالبة','الطالب/ـة'):w('المكرم','المكرمة','المكرم/ـة'))+'/ <b>'+esc(nm)+'</b>'+(ids.length?' ('+ids.join('، ')+')':'');
+ var unit=K.unit;if(c.type==='intro'&&!isStu)unit='إدارة الموارد البشرية';
+ var body='',salute='',subj='';
+ if(c.type==='acc'){
+  subj='قبول '+w('الطالب','الطالبة','الطالب/ـة')+'/ '+esc(nm)+(prog?' في برنامج '+prog:'');
+  salute='<p style="margin:0 0 6px;font-size:16px"><b>'+w('المكرم الطالب','المكرمة الطالبة','المكرم/ـة الطالب/ـة')+'/ '+esc(nm)+'</b> &nbsp;&nbsp;&nbsp; '+w('المحترم','المحترمة','المحترم/ـة')+'</p>';
+  var it=['قبول '+who+' في برنامج <b>«'+prog+'»</b>'+(R['نمط الدراسة']?'، '+R['نمط الدراسة']:'')+'، بعد '+w('استيفائه','استيفائها','استيفاء')+' شروط القبول المعتمدة.',
+   (R['الفصل الدراسي']?'يبدأ قيد'+w('ه','ها','ه/ا')+' في '+R['الفصل الدراسي']:'يبدأ القيد من الفصل الدراسي المقبل')+(R['تاريخ بدء الدراسة']?'، وتبدأ الدراسة بتاريخ <bdi dir="ltr" style="white-space:nowrap">'+String(R['تاريخ بدء الدراسة']).replace(/-/g,'/')+'</bdi>م':'')+'.',
+   (R['الرقم الأكاديمي']?'الرقم الأكاديمي (<bdi dir="ltr" style="white-space:nowrap">'+R['الرقم الأكاديمي']+'</bdi>) هو رقم الدخول إلى البوابة ورقم جميع المعاملات في المعهد، وتُستكمل إجراءات التسجيل عبر البوابة قبل بدء الدراسة.':''),
+   c.adm_cond?'يكون القبول مشروطاً بما يلي: '+esc(c.adm_cond)+'.':'',
+   'الالتزام بأنظمة المعهد ولوائحه وتعليماته.'].filter(Boolean);
+  body='<p style="margin:0 0 8px;font-size:16px;line-height:1.95">يسرّ '+esc(inst().nameAr||'معهد التمهيد')+' أن '+w('يُبلغكم','يُبلغكِ','يُبلغكم')+' بما يلي:</p>'+it.map(ITEM).join('')+
+   '<p style="margin:6px 0 0;font-size:16px;line-height:1.95">متمنين '+w('لكم','لكِ','لكم')+' التوفيق والنجاح.</p>';
+ }else{
+  var t=txt.replace(/(الطالب\/ـة|الطالبة|الطالب)\s+(المذكور\/ة|المذكورة|المذكور)\s+أعلاه/g,who).replace(/(المذكور\/ة|المذكورة|المذكور)\s+أعلاه/g,who).replace(/في البرنامج المشار إليه/g,prog?'في برنامج «'+prog+'»':'في البرنامج المسجل فيه');
+  subj=(c.type==='rec'?(c.tzk?'توصية '+w('للخريج','للخريجة','للخريج/ـة'):'توصية '+w('للطالب','للطالبة','للطالب/ـة')):c.type==='fin'?'إفادة مالية عن '+w('الطالب','الطالبة','الطالب/ـة'):'تعريف ب'+(isStu?w('الطالب','الطالبة','الطالب/ـة'):w('المكرم','المكرمة','المكرم/ـة')))+'/ '+esc(nm);
+  salute='<p style="margin:0 0 6px;font-size:16px;font-weight:700">إلى من يهمه الأمر</p>';
+  body='<p style="margin:0 0 8px;font-size:16px;line-height:2;text-align:justify;text-indent:28px">'+t+'</p>';
+ }
+ var KCC=K.cc.map(function(x){return x==='@'?w('الطالب المعني','الطالبة المعنية','الطالب/ـة المعني/ـة'):x==='الملف'?(isStu?'الملف الأكاديمي':'الملف الوظيفي'):x});
  var sigH=sgs.slice(0,3).map(function(s){return sign(s,sgs.length>2?200:250)}).join('');
- var h2=head({unit:K.unit,unitEn:K.unitEn})+meta({rec:c.rec,date:c.date||new Date().toISOString().slice(0,10),att:c.att})+
+ var h2=head({unit:unit,unitEn:unit===K.unit?K.unitEn:'Human Resources'})+meta({rec:c.rec,date:c.date||new Date().toISOString().slice(0,10),att:c.att})+
   '<div style="position:absolute;top:262px;right:64px;left:64px;'+A+';color:#111">'+
-   '<p style="margin:0 0 10px;font-size:16px"><b>الموضوع:</b> '+subj+'</p>'+TITLE(tt)+sal+
-   '<p style="margin:0 0 8px;font-size:16px">السلام عليكم ورحمة الله وبركاته، وبعد:</p>'+tb+
-   P(body)+
-   '<p style="margin:8px 0 0;font-size:16px;text-align:center">وتقبلوا خالص التحية والتقدير،،،</p>'+
-   '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:14px">'+
-    '<div style="padding-top:30px">'+cc(KCC)+'</div><div style="display:flex;gap:18px">'+sigH+'</div></div>'+
-  '</div>'+
+   '<p style="margin:0 0 12px;font-size:16px"><b>الموضوع:</b> '+subj+'</p>'+TITLE(tt||'خطاب')+salute+
+   '<p style="margin:0 0 8px;font-size:16px">السلام عليكم ورحمة الله وبركاته، وبعد:</p>'+body+
+   '<p style="margin:12px 0 0;font-size:16px;text-align:center">وتقبلوا خالص التحية والتقدير،،،</p></div>'+
+  '<div style="position:absolute;top:836px;right:64px;left:64px;display:flex;justify-content:space-between;align-items:flex-start">'+
+   '<div style="padding-top:6px">'+cc(KCC)+'</div><div style="display:flex;gap:18px">'+sigH+'</div></div>'+
   verify({rec:c.rec,qr:X.qrV64?X.qrV64(c.rec):'',vl:K.vl,login:K.login?{k:K.login,id:c.sid||c.uid,how:'بالرقم الأكاديمي'}:null})+foot();
  return page(h2,c.type)}
 X.letter289=letter289;
@@ -110,7 +130,7 @@ function cert289(o){
   (o.miss&&o.miss.length?'<div style="position:absolute;top:700px;right:64px;left:64px;border:2px solid #a01414;color:#a01414;padding:6px 10px;'+A+';font-size:13px;background:#fff"><b>مسودة — لا تصدر لنقص البيانات:</b> '+o.miss.map(function(m){return esc(m.ar)}).join('، ')+'</div>':'')+
   verify({rec:o.rec,qr:X.qrV64?X.qrV64(o.rec):'',vl:'التحقق من الشهادة'})+foot();
  var out=page(h,'sp');if(o.miss&&o.miss.length)out=out.replace('data-l289="sp"','data-l289="sp" data-incomplete="1"');return out}
-X.cert287=cert289;X.cert289=cert289;
+X.cert289v=cert289;/* شهادات البرامج القصيرة تبقى على تصميمها الأفقي الأصلي */
 
 /* ---------- نماذج التدريب الميداني ومشروع التخرج ---------- */
 var NFU={tr:['وحدة التدريب الميداني','Field Training Unit','grad'],gp:['وحدة مشاريع التخرج','Graduation Projects Unit','grad'],ex:['وحدة التدريب الميداني الخارجي','External Field Training Unit','trn']};
@@ -123,5 +143,5 @@ X.nf289={geo:{t1:198,tn:198,b:955,l:790},
 
 /* ---------- التوجيه: القبول والتوصية إلى الإطار الجديد ---------- */
 try{var _ch=certHTML;if(typeof _ch==='function'&&!_ch.__v289){certHTML=function(c){var h=_ch.apply(this,arguments);
-  if(c&&(c.type==='acc'||c.type==='rec')&&c.lang!=='en'&&!c.old289){try{var n=letter289(h,c);if(n)return n}catch(e){console.error('v289 letter',e)}}return h};certHTML.__v289=1;certHTML.__v287=1;try{W.certHTML=certHTML}catch(e){}}}catch(e){console.error('v289 wrap',e)}
+  if(c&&/^(acc|rec|intro|fin)$/.test(c.type)&&c.lang!=='en'&&!c.old289){try{var n=letter289(h,c);if(n)return n}catch(e){console.error('v289 letter',e)}}return h};certHTML.__v289=1;certHTML.__v287=1;try{W.certHTML=certHTML}catch(e){}}}catch(e){console.error('v289 wrap',e)}
 }catch(e){console.error('v289',e)}})();
