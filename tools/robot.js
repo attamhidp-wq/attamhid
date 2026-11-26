@@ -126,7 +126,8 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       await p.setViewportSize({ width: vw, height: 900 });
       const g8 = await p.evaluate(async () => { const o = {}; try {
         const gs = (S.students || []).filter((x) => !x.deleted && /متخرج|graduat/i.test(x.status || '')); const st = gs[0] || (S.students || [])[0] || {}; o.realGrad = !!gs.length;
-        const mk = (nm, ne, sex) => ({ type: 'dgrad', rec: 'TEST-DG', sid: st.id, uid: st.id, name: nm || st.name, nameEn: ne || st.nameEn, prog: st.prog, nat: st.nat, natEn: st.natEn, pid: 'TEST', date: '2026-12-01', gdate: '2026-12-01', gpa: '3.85', sex: sex || st.sex, lang: 'bi' });
+        const real = (S.certs || []).filter((c) => c && c.type === 'dgrad' && !/g8-draft/.test(certHTML(c)))[0]; o.realDoc = !!real;
+        const mk = (nm, ne, sex) => real ? Object.assign({}, real, nm ? { name: nm, nameEn: ne, sex: sex } : {}) : ({ type: 'dgrad', rec: 'TEST-DG', sid: st.id, uid: st.id, name: nm || st.name, nameEn: ne || st.nameEn, prog: st.prog, nat: st.nat, natEn: st.natEn, pid: 'TEST', date: '2026-12-01', gdate: '2026-12-01', gpa: '3.85', sex: sex || st.sex, lang: 'bi' });
         const cases = [mk(), mk('عبد الرحمن بن محمد بن عبد الله بن إبراهيم بن عبد العزيز الأنصاري (اختبار)', 'Abdur Rahman Bin Mohammad Bin Abdullah Bin Ibrahim Bin Abdul Aziz Al-Ansari (TEST)', 'ذكر'), mk('فاطمة الزهراء (اختبار)', 'Fatema Al-Zahra (TEST)', 'أنثى')];
         o.cases = [];
         for (const c of cases) { const h = certHTML(c); const r = { skin: / g8x g8i"/.test(h), verify: /للتحقق يرجى مسح الرمز/.test(h), site: /attamhid\.com/.test(h), qr: /g8-qr/.test(h) };
@@ -143,7 +144,7 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
           try { const bl = await mkBlob(h, 'pdf'); r.pdf = bl && bl.size > 50000; } catch (e) { r.pdf = 'ERR ' + e.message; }
           o.cases.push(r); }
       } catch (e) { o.err = e.message; } return o; });
-      const ok = !g8.err && g8.cases.length === 3 && g8.cases.every((r) => r.skin && r.verify && r.site && r.qr && !r.inScaled && r.nameFit && r.inside && r.colsClear && r.pdf === true && r.canvas === '1123x794');
+      const ok = !g8.err && g8.cases.length === 3 && g8.cases.every((r) => r.skin && r.verify && r.site && r.qr && !r.inScaled && r.nameFit && r.inside && r.colsClear && (r.pdf === true || (r.draft && /ناقصة/.test(String(r.pdf)))) && r.canvas === '1123x794');
       console.log('CHECK grad298 w' + vw, ok ? 'OK' : 'FAIL', JSON.stringify(g8));
     }
     await p.setViewportSize({ width: 1280, height: 900 });
@@ -200,7 +201,7 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
     // v279: المرحلة الأولى — قسم «التدريب الميداني ومشروع التخرج» في أقسام اللوحة، وقائمة الاستحقاق من الخادم، والعزل (بلا أسماء في السجل)
     try { const z = await p.evaluate(async () => { const X = window.V51, FT = X.ft225, T = (X.TABS51 || []).find((x) => x[0] === 'ft279'); const o = { tab: !!T };
         if (!FT.ld) await FT.load(1); const L1 = await sb.rpc('ft_elig_list'); o.list = !L1.error && Array.isArray(L1.data); o.n = o.list ? L1.data.length : -1; o.items = o.list && L1.data.every((x) => Array.isArray(x.items) && x.items.length === 8);
-        FT.elig = L1.data || []; FT.exc = (await sb.rpc('ft_exc_list')).data || []; const h1 = T ? T[3]() : ''; X.h.ft279v('elig'); const h2 = T ? T[3]() : ''; X.h.ft279v('cfg'); const h3 = T ? T[3]() : ''; X.h.ft279v('sum');
+        FT.elig = L1.data || []; FT.exc = (await sb.rpc('ft_exc_list')).data || []; X.h.ft279v('sum'); const h1 = T ? T[3]() : ''; X.h.ft279v('elig'); const h2 = T ? T[3]() : ''; X.h.ft279v('cfg'); const h3 = T ? T[3]() : ''; X.h.ft279v('sum');
         o.sum = /يحتاج إجراء الآن/.test(h1); o.elig = /الاستثناءات/.test(h2); o.cfg = /ft279c/.test(h3);
         o.nav = (typeof NAV === 'undefined') || !NAV.some((x) => /admin|ft279/.test(String(x[0])));
         const bad = await sb.rpc('ft_exc_set', { p_sid: '__none__', p_k: 'x', p_reason: 'robot check' }); o.excGuard = !!bad.error;
