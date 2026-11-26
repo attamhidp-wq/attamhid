@@ -207,7 +207,7 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
           const iss = []; if (pe.length) iss.push('err:' + pe.slice(0, 2).join(' | ')); if (z.ovx) iss.push('overflow:' + z.ovx + 'px ' + z.wide.join(',')); if (z.bad.length) iss.push('text:' + z.bad.join(',')); if (z.img.length) iss.push('img:' + z.img.join(',')); if (z.len < 80) iss.push('empty');
           if (iss.length) rep[vw + ' ' + r] = iss; }
         await cc.close(); }
-      const ST = ['programs/', 'training/', 'graduates/', 'external-training/', 'student-services/', 'faculty-services/', 'news/', 'en/', 'bn/', 'sitemap.xml', 'robots.txt', 'manifest.webmanifest', 'version.json'];
+      const ST = ['programs/', 'training/', 'graduates/', 'external-training/', 'student-services/', 'faculty-services/', 'news/', 'en/training/', 'bn/training/', 'sitemap.xml', 'robots.txt', 'manifest.webmanifest', 'version.json'];
       for (const s of ST) { try { const rs = await fetch(new URL(s, SITE), { redirect: 'follow' }); if (rs.status >= 400) rep['static ' + s] = ['http ' + rs.status]; } catch (e) { rep['static ' + s] = ['fetch ' + e.message.slice(0, 60)]; } }
       console.log('CHECK crawl300', Object.keys(rep).length ? 'FAIL' : 'OK', JSON.stringify(rep));
     } catch (e) { console.log('CHECK crawl300 FAIL', String(e).slice(0, 200)); }
