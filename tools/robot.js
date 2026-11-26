@@ -148,6 +148,14 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       console.log('CHECK grad298 w' + vw, ok ? 'OK' : 'FAIL', JSON.stringify(g8));
     }
     await p.setViewportSize({ width: 1280, height: 900 });
+    // v299: إصدار شهادات التخرج للدفعة بضغطة واحدة + الترشيح الاختياري للتدريب الميداني (أعلام وأرقام فقط)
+    const b299 = await p.evaluate(async () => { const o = {}; try {
+      o.fn = typeof gradBatch299 === 'function'; const h = gradBatch299(); o.box = /name="boardNo"/.test(h) && /name="sessNo"/.test(h) && /name="decDate"/.test(h);
+      o.inTab = /id="b299"/.test(typeof gradBox === 'function' ? gradBox() : ''); o.noOldBox = !/issueGradBatch48/.test(typeof gradBox === 'function' ? gradBox() : '');
+      const R = V51.batch299.scan(); o.ready = R.ready.length; o.status = R.status.length; o.miss = R.miss.length;
+      const L = (await sb.rpc('ft_elig_list')).data || []; o.selItem = L.every((x) => (x.items || []).some((i) => i.k === 'sel')); o.nSel = L.filter((x) => (x.items || []).some((i) => i.k === 'sel' && i.ok)).length;
+    } catch (e) { o.err = e.message } return o; });
+    console.log('CHECK batch299', !b299.err && b299.fn && b299.box && b299.inTab && b299.noOldBox && b299.selItem ? 'OK' : 'FAIL', JSON.stringify(b299));
     // v234: بوابة التدريب الميداني الخارجي — الصفحة العامة وصفحة الإدارة
     await p.evaluate(() => { location.hash = '#/ext-training'; }); await p.waitForTimeout(5000);
     const ex1 = await p.evaluate(() => ({ form: !!document.querySelector('#exform'), conds: (document.querySelector('#app') || {}).innerText.indexOf('الشروط والمتطلبات') >= 0 }));
