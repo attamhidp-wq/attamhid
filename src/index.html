@@ -870,7 +870,8 @@ return `<h2>الخدمات الذاتية لأعضاء هيئة التدريس</
 const out=h=>{const o=$('#out');if(o)o.innerHTML=h};
 function ver(f){const q=fv(f).n.toUpperCase();const byId=S.certs.filter(x=>x.type=='exam'&&String(x.pid||'').toUpperCase()==q);if(byId.length)return out(byId.map(exVer).join('')),false;const c=S.certs.find(x=>x.rec==q),m=!c&&[...S.students,...S.faculty].find(x=>x.id==q&&x.active!==false);if(m)return out(`<div class="msg"><b style="color:var(--ok)">✔ بطاقة سارية</b><br>الاسم: ${esc(m.name)}<br>الرقم: ${m.id}</div>`),false;out(c?`<div class="msg${c.revoked?' er':''}"><b style="color:var(${c.revoked?'--er':'--ok'})">${c.revoked?'✖ وثيقة ملغاة'+(c.reason?' — '+esc(c.reason):'')+(c.rdate?' ('+c.rdate+')':''):'✔ وثيقة معتمدة'}</b><br>الاسم: ${esc(c.name)}<br>${c.type=='exam'?'الاختبار: '+esc(c.examTitle)+'<br>تاريخ الاختبار: '+c.testDate+' · الدرجة: '+c.score+'/'+c.max+' · المستوى: '+esc(c.level):'البرنامج: '+esc(P(c.prog).name)+'<br>الساعات: '+c.hours+' · التقدير: '+c.grade} · الإصدار: ${c.date}</div>`:'<div class="msg er">رقم السجل غير موجود. تحقق من الرقم المطبوع على الوثيقة.</div>');return false}
 const SB_URL='https://ttuelhswxyjbjdnydmns.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0dWVsaHN3eHlqYmpkbnlkbW5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NDk3MDYsImV4cCI6MjEwNzUyNTcwNn0.tkO2kZLHpKbgPx_II4cepqCVftjjG46oseR6aGGCbPA';
-let sb=null;try{sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{lock:function(n,t,f){return f()}}})}catch(e){console.error('Supabase init failed',e)}
+let sb=null;try{sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{lock:function(n,t,f){return f()}},global:{fetch:async function(u,o){/* v300: عند انتهاء صلاحية الجلسة (401) يُجدَّد الرمز ويُعاد الطلب مرة واحدة دون فقد العمل؛ وإن تعذّر التجديد يُنبَّه المستخدم */
+ var r=await fetch(u,o);try{if(r.status===401&&sb&&!/\/auth\/v1\//.test(String(u&&u.url||u))){var h=new Headers((o&&o.headers)||{}),a=h.get('Authorization')||'';if(a&&a.indexOf(SB_KEY)<0){var x=await sb.auth.refreshSession(),t=x&&x.data&&x.data.session&&x.data.session.access_token;if(t){h.set('Authorization','Bearer '+t);r=await fetch(u,Object.assign({},o,{headers:h}))}if(r.status===401&&Date.now()-(window.__exp300||0)>6e4){window.__exp300=Date.now();try{toast(/en/.test(document.documentElement.lang||'')?'Your session has expired. Please sign in again; your unsaved work is kept on this page.':'انتهت جلستك. سجّل الدخول من جديد، وما لم يُحفظ يبقى في الصفحة.')}catch(e){}}}}}catch(e){}return r}}})}catch(e){console.error('Supabase init failed',e)}
 async function sbSend(v,id){if(!sb)return;const p=S.programs.find(x=>x.id==+v.prog);
 const {error}=await sb.from('requests').insert([{id,data:{...v,id,prog:+v.prog,progName:p?p.name:'',status:'قيد المراجعة',date:new Date().toISOString().slice(0,10)}}]);
 if(error){console.error('Supabase:',error.message);toast('حُفظ طلبك محليًا، لكن تعذّر إرساله إلى الخادم. تواصل مع الإدارة.')}}
@@ -19541,7 +19542,7 @@ try{Object.assign(EN,{'صدرت له شهادة التخرج سارية':'A vali
 </script>
 <script>
 /* v84 — الشعار الرسمي الجديد في كل مكان + تحديث تلقائي لنسخة الموقع */
-window.__BUILD__='v300';
+window.__BUILD__='v301';
 /* v132 — تطبيق قابل للتثبيت (PWA): عامل خدمة للسرعة والعمل دون اتصال، ودعوة لطيفة للتثبيت */
 (function(){var W=window,N=navigator,D=document;
 var T=function(a,b,c){var l=D.documentElement.lang;return l==='en'?b:l==='bn'?c:a};
