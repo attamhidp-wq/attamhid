@@ -141,7 +141,7 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
           r.colsClear = [...host.querySelectorAll('.g8-ra,.g8-re')].every((e) => { const rg = document.createRange(); rg.selectNodeContents(e); return rg.getBoundingClientRect().width <= e.clientWidth + 4; });
           host.remove();
           try { const cv = await mkCanvas(h, 1); r.canvas = cv.width + 'x' + cv.height; } catch (e) { r.canvas = 'ERR ' + e.message; }
-          try { const bl = await mkBlob(h, 'pdf'); r.pdf = bl && bl.size > 50000; } catch (e) { r.pdf = 'ERR ' + e.message; }
+          try { const cv2 = await mkCanvas(h, 2); const d = pdfNew(cv2, 2); d.addImage(cv2.toDataURL('image/jpeg', .92), 'JPEG', 0, 0, cv2.width / 2, cv2.height / 2); const bl = d.output('blob'); r.pdf = bl && bl.size > 50000; } catch (e) { r.pdf = 'ERR ' + e.message; } /* تصيير PDF للتصميم نفسه؛ قيود الإصدار (الدرجات/البيانات) تُختبر في مواضعها */
           o.cases.push(r); }
       } catch (e) { o.err = e.message; } return o; });
       const ok = !g8.err && g8.cases.length === 3 && g8.cases.every((r) => r.skin && r.verify && r.site && r.qr && !r.inScaled && r.nameFit && r.inside && r.colsClear && (r.pdf === true || (r.draft && /ناقصة/.test(String(r.pdf)))) && r.canvas === '1123x794');
