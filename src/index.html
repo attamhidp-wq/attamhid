@@ -24542,7 +24542,7 @@ var CSK=function(){return '@font-face{font-family:"LSN298";font-weight:700;src:u
  '.g8.g8q .q-rs{top:672px;width:100px;height:100px;background-size:100px 100px;pointer-events:none}.g8.g8q .q-rs.l{left:-40px}.g8.g8q .q-rs.r{right:-40px}'+
  '.g8.g8q .q-vu{top:752px;left:70px;right:70px;color:#14532D!important}.g8.g8q .q-vu b{text-decoration:underline}'};
 var STY={a:'الميدالية',b:'الزخارف الهندسية',c:'الإطار الإسلامي',d:'عصري',e:'رسمي مؤمَّن',k:'نهج جامعة الملك عبدالعزيز',i:'نهج جامعة الإمام',q:'مطابق لجامعة الملك عبدالعزيز'};
-var skin=function(h,pk,sk){if(typeof h!=='string'||h.indexOf('class="g5 g8"')<0||h.indexOf('g8x')>=0)return h;sk=sk||W.__g8sty298||'i';use(pk||W.__g8pal298||(sk==='i'?'gray':DEF));var AL=W.__g8al298||'c';var CSS=css()+CS2()+CS3()+CS4()+CS5()+(sk==='q'||sk==='i'?CSK():'')+(sk==='i'?(AL==='c'?'.g8.g8i .g8-re,.g8.g8i .g8-ra{text-align:center!important}':'.g8.g8i .g8-re{text-align:left!important}.g8.g8i .g8-ra{text-align:right!important}'):'');
+var skin=function(h,pk,sk){if(typeof h!=='string'||!/class="g5 g8( g8-draft)?"/.test(h)||h.indexOf('g8x')>=0)return h;sk=sk||W.__g8sty298||'i';use(pk||W.__g8pal298||(sk==='i'?'gray':DEF));var AL=W.__g8al298||'c';var CSS=css()+CS2()+CS3()+CS4()+CS5()+(sk==='q'||sk==='i'?CSK():'')+(sk==='i'?(AL==='c'?'.g8.g8i .g8-re,.g8.g8i .g8-ra{text-align:center!important}':'.g8.g8i .g8-re{text-align:left!important}.g8.g8i .g8-ra{text-align:right!important}'):'');
  var q=function(u){return 'url(&quot;'+u+'&quot;)'};
  var lm=/<img class="g8-wml" src="([^"]+)"/.exec(h),LG=lm?tintLogo(lm[1],sk==='c'?NV:MB):'';
  var lg=LG?'<img class="x-lg" src="'+LG+'" alt="" style="position:absolute;left:50%;top:'+(sk==='k'?420:392)+'px;width:'+(sk==='k'?380:330)+'px;height:'+(sk==='k'?380:330)+'px;margin:-'+(sk==='k'?190:165)+'px 0 0 -'+(sk==='k'?190:165)+'px;opacity:'+(sk==='a'?'.16':sk==='b'?'.09':sk==='d'?'.06':sk==='e'?'.15':sk==='k'?'.3':sk==='i'?'.2':'.07')+';pointer-events:none">':'';
@@ -24588,8 +24588,8 @@ var skin=function(h,pk,sk){if(typeof h!=='string'||h.indexOf('class="g5 g8"')<0|
   tail=vu();
  }
  var NS=sk==='q'?[30,22]:sk==='i'?[30,18]:[30,20];h=h.replace(/(class="g8-ra nm" style="[^"]*?font-size:)[\d.]+px/,'$1'+NS[0]+'px').replace(/(class="g8-re nm" style="[^"]*?font-size:)[\d.]+px/,'$1'+NS[1]+'px');
- h=h.replace('class="g5 g8"','class="g5 g8 g8x g8'+sk+'"');
- var i=h.indexOf('>',h.indexOf('class="g5 g8 g8x'))+1;h=h.slice(0,i)+add+h.slice(i);
+ h=h.replace(/class="g5 g8( g8-draft)?"/,function(m,d){return 'class="g5 g8'+(d||'')+' g8x g8'+sk+'"'});
+ var i=h.indexOf('>',h.search(/class="g5 g8[^"]* g8x/))+1;h=h.slice(0,i)+add+h.slice(i);
  h=h.replace(/(<div class="g8-vf g8-vq"[^>]*>[\s\S]*?<\/div>)/,function(m){return m+tail});
  return h};
 X.g8skin298=skin;X.g8pal298=PAL;X.g8sty298=STY;

@@ -121,6 +121,32 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       for (const [k, c, lg] of C) { try { const h = certHTML(c); out[k] = { frame: /data-l28[79]/.test(h), noTable: !/l59-tb/.test(h), noSeal: !/(l59|m9|k3|sp6|g6|g5)-seal" src/.test(h), site: /attamhid\.com/.test(h), verify: /للتحقق يرجى مسح الرمز/.test(h), login: !lg || h.indexOf(lg) >= 0 }; } catch (e) { out[k] = { err: e.message }; } }
       return out; });
     console.log('CHECK letters289', Object.values(lt).every((x) => !x.err && x.frame && x.noTable && x.noSeal && x.site && x.verify && x.login) ? 'OK' : 'FAIL', JSON.stringify(lt));
+    // v298: وثيقة التخرج بالتصميم المعتمد (نهج الإمام) — تُختبر لخريج حقيقي ولأسماء طويلة، شاشة وجوال، وPDF؛ المخرجات أرقام وأعلام فقط (لا بيانات شخصية)
+    for (const vw of [1280, 390]) {
+      await p.setViewportSize({ width: vw, height: 900 });
+      const g8 = await p.evaluate(async () => { const o = {}; try {
+        const gs = (S.students || []).filter((x) => !x.deleted && /متخرج|graduat/i.test(x.status || '')); const st = gs[0] || (S.students || [])[0] || {}; o.realGrad = !!gs.length;
+        const mk = (nm, ne, sex) => ({ type: 'dgrad', rec: 'TEST-DG', sid: st.id, uid: st.id, name: nm || st.name, nameEn: ne || st.nameEn, prog: st.prog, nat: st.nat, natEn: st.natEn, pid: 'TEST', date: '2026-12-01', gdate: '2026-12-01', gpa: '3.85', sex: sex || st.sex, lang: 'bi' });
+        const cases = [mk(), mk('عبد الرحمن بن محمد بن عبد الله بن إبراهيم بن عبد العزيز الأنصاري (اختبار)', 'Abdur Rahman Bin Mohammad Bin Abdullah Bin Ibrahim Bin Abdul Aziz Al-Ansari (TEST)', 'ذكر'), mk('فاطمة الزهراء (اختبار)', 'Fatema Al-Zahra (TEST)', 'أنثى')];
+        o.cases = [];
+        for (const c of cases) { const h = certHTML(c); const r = { skin: / g8x g8i"/.test(h), verify: /للتحقق يرجى مسح الرمز/.test(h), site: /attamhid\.com/.test(h), qr: /g8-qr/.test(h) };
+          const host = document.createElement('div'); host.style.cssText = 'position:fixed;left:-9000px;top:0'; host.innerHTML = h; document.body.appendChild(host); await new Promise((z) => setTimeout(z, 300));
+          if (window.__fit170) window.__fit170(host); const root = host.querySelector('.g8'); const ob = root.getBoundingClientRect();
+          r.draft = /g8-draft/.test(h); r.inScaled = !r.draft && getComputedStyle(host.querySelector('.g8-in')).transform !== 'none';
+          r.nameFit = [...host.querySelectorAll('.g8-ra.nm,.g8-re.nm')].every((e) => e.scrollWidth <= e.clientWidth + 2);
+          const B = [...host.querySelectorAll('.g8-ra,.g8-re,.g8-fr,.g8-fl,.g8-sg')].map((e) => e.getBoundingClientRect());
+          r.inside = B.every((b) => b.left >= ob.left - 1 && b.right <= ob.right + 1 && b.bottom <= ob.bottom + 1);
+          const ar = [...host.querySelectorAll('.g8-ra')].map((e) => e.getBoundingClientRect()), en = [...host.querySelectorAll('.g8-re')].map((e) => e.getBoundingClientRect());
+          r.colsClear = [...host.querySelectorAll('.g8-ra,.g8-re')].every((e) => { const rg = document.createRange(); rg.selectNodeContents(e); return rg.getBoundingClientRect().width <= e.clientWidth + 4; });
+          host.remove();
+          try { const cv = await mkCanvas(h, 1); r.canvas = cv.width + 'x' + cv.height; } catch (e) { r.canvas = 'ERR ' + e.message; }
+          try { const bl = await mkBlob(h, 'pdf'); r.pdf = bl && bl.size > 50000; } catch (e) { r.pdf = 'ERR ' + e.message; }
+          o.cases.push(r); }
+      } catch (e) { o.err = e.message; } return o; });
+      const ok = !g8.err && g8.cases.length === 3 && g8.cases.every((r) => r.skin && r.verify && r.site && r.qr && !r.inScaled && r.nameFit && r.inside && r.colsClear && r.pdf === true && r.canvas === '1123x794');
+      console.log('CHECK grad298 w' + vw, ok ? 'OK' : 'FAIL', JSON.stringify(g8));
+    }
+    await p.setViewportSize({ width: 1280, height: 900 });
     // v234: بوابة التدريب الميداني الخارجي — الصفحة العامة وصفحة الإدارة
     await p.evaluate(() => { location.hash = '#/ext-training'; }); await p.waitForTimeout(5000);
     const ex1 = await p.evaluate(() => ({ form: !!document.querySelector('#exform'), conds: (document.querySelector('#app') || {}).innerText.indexOf('الشروط والمتطلبات') >= 0 }));
