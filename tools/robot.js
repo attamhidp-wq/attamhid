@@ -189,6 +189,28 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       const ad = await p.evaluate(() => { const a = document.getElementById('app'); const s = a && a.querySelector('.adm255'); const bx = [...document.querySelectorAll('#app .ft231adm,#app .idn235adm')]; return { sec: !!s, inSec: bx.filter((b) => s && s.contains(b)).length, boxes: bx.length, last: !!(s && a.lastElementChild === s), fin: !!(s && s.querySelector('.fin263adm')) }; });
       console.log('CHECK fin-adm-box', ad.fin ? 'OK' : 'FAIL', JSON.stringify({ fin: ad.fin }));
       console.log('CHECK adm255', ad.sec && ad.inSec === ad.boxes ? 'OK' : 'FAIL', JSON.stringify(ad)); } catch (e) { console.log('CHECK adm255 FAIL', String(e).slice(0, 150)); }
+    // v300: مسح شامل للصفحات العامة (زائر) على الجوال والحاسب: أخطاء الصفحة، تجاوز العرض، نصوص undefined/NaN، صور معطوبة، صفحات فارغة، وروابط ثابتة
+    try {
+      const RT = ['#/', '#/programs', '#/program/1000', '#/admission', '#/register', '#/review', '#/plt', '#/placement', '#/verify', '#/track', '#/news', '#/partners', '#/portals', '#/privacy', '#/terms', '#/jobs', '#/alumni', '#/projects', '#/board', '#/training', '#/training/join', '#/training/forgot', '#/graduates', '#/ext-training', '#/idn', '#/login', '#/login/student', '#/login/staff', '#/recover', '#/fin'];
+      const rep = {};
+      for (const vw of [390, 1280]) {
+        const cc = await b.newContext({ viewport: { width: vw, height: 860 }, serviceWorkers: 'block', locale: 'ar' }); const q = await cc.newPage(); let pe = [];
+        q.on('pageerror', (e) => pe.push(e.message.slice(0, 160))); q.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource|favicon|net::|status of 4/.test(m.text())) pe.push('c: ' + m.text().slice(0, 160)); });
+        q.on('dialog', (d) => d.dismiss().catch(() => {}));
+        for (const r of RT) { pe = [];
+          await q.goto(SITE.replace(/app\.html.*$/, '') + 'app.html' + (liveV ? '?_b=' + liveV : '') + r, { waitUntil: 'load', timeout: 90000 }).catch(() => {}); await q.waitForTimeout(5000);
+          const z = await q.evaluate(() => { const o = {}; const se = document.scrollingElement; o.ovx = se.scrollWidth - innerWidth > 2 ? se.scrollWidth - innerWidth : 0;
+            const txt = document.body.innerText || ''; o.len = txt.length; o.bad = (txt.match(/\bundefined\b|\bNaN\b|\[object Object\]|\bnull\b/g) || []).slice(0, 3);
+            o.img = [...document.images].filter((i) => i.complete && i.naturalWidth === 0 && i.src && !/^data:/.test(i.src)).map((i) => i.src.split('/').pop().slice(0, 40)).slice(0, 3);
+            o.wide = o.ovx ? [...document.querySelectorAll('body *')].filter((e) => { const b = e.getBoundingClientRect(); return b.right > innerWidth + 2 && b.width > 0 && getComputedStyle(e).position !== 'fixed'; }).slice(0, 2).map((e) => e.tagName + '.' + String(e.className || '').split(' ')[0]) : [];
+            return o; });
+          const iss = []; if (pe.length) iss.push('err:' + pe.slice(0, 2).join(' | ')); if (z.ovx) iss.push('overflow:' + z.ovx + 'px ' + z.wide.join(',')); if (z.bad.length) iss.push('text:' + z.bad.join(',')); if (z.img.length) iss.push('img:' + z.img.join(',')); if (z.len < 80) iss.push('empty');
+          if (iss.length) rep[vw + ' ' + r] = iss; }
+        await cc.close(); }
+      const ST = ['programs/', 'training/', 'graduates/', 'external-training/', 'student-services/', 'faculty-services/', 'news/', 'verify/', 'admission/', 'placement/', 'privacy/', 'terms/', 'sitemap.xml', 'robots.txt', 'manifest.webmanifest', 'version.json'];
+      for (const s of ST) { try { const rs = await fetch(new URL(s, SITE), { redirect: 'follow' }); if (rs.status >= 400) rep['static ' + s] = ['http ' + rs.status]; } catch (e) { rep['static ' + s] = ['fetch ' + e.message.slice(0, 60)]; } }
+      console.log('CHECK crawl300', Object.keys(rep).length ? 'FAIL' : 'OK', JSON.stringify(rep));
+    } catch (e) { console.log('CHECK crawl300 FAIL', String(e).slice(0, 200)); }
     // v255: الوضع البنغالي — نصوص بقيت بالإنجليزية في الصفحات العامة (لا بيانات شخصية: صفحات عامة فقط)
     try {
       const bc = await b.newContext({ viewport: { width: 412, height: 880 }, serviceWorkers: 'block' });
