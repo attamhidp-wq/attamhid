@@ -156,6 +156,13 @@ const SB = 'https://ttuelhswxyjbjdnydmns.supabase.co', SITE = process.env.SITE |
       const L = (await sb.rpc('ft_elig_list')).data || []; o.selItem = L.every((x) => (x.items || []).some((i) => i.k === 'sel')); o.nSel = L.filter((x) => (x.items || []).some((i) => i.k === 'sel' && i.ok)).length;
     } catch (e) { o.err = e.message } return o; });
     console.log('CHECK batch299', !b299.err && b299.fn && b299.box && b299.inTab && b299.noOldBox && b299.selItem ? 'OK' : 'FAIL', JSON.stringify(b299));
+    // v302: نشر نتائج الخريجين السابقين (أعلام وأرقام فقط، دون نشر فعلي)
+    const g302 = await p.evaluate(async () => { const o = {}; try {
+      o.fn = typeof gradPub302Go === 'function'; o.wrap = /id="gp302"/.test(typeof gradBox === 'function' ? gradBox() : '');
+      const r = await sb.rpc('grad_pub_scan'); o.rpc = !r.error; o.n = (r.data || []).length; document.body.insertAdjacentHTML('beforeend', gradBox().split('</div>')[0] + '</div>');
+      document.querySelectorAll('[id=gp302]').forEach((e, i) => { if (i) e.remove(); }); const host = document.getElementById('gp302'); if (host) { gradPub302Load(); await new Promise((z) => setTimeout(z, 2500)); o.drawn = o.n ? !!host.querySelector('input[name=gp302]') : true; host.remove(); }
+    } catch (e) { o.err = e.message } return o; });
+    console.log('CHECK pubold302', !g302.err && g302.fn && g302.wrap && g302.rpc && g302.drawn !== false ? 'OK' : 'FAIL', JSON.stringify(g302));
     // v234: بوابة التدريب الميداني الخارجي — الصفحة العامة وصفحة الإدارة
     await p.evaluate(() => { location.hash = '#/ext-training'; }); await p.waitForTimeout(5000);
     const ex1 = await p.evaluate(() => ({ form: !!document.querySelector('#exform'), conds: (document.querySelector('#app') || {}).innerText.indexOf('الشروط والمتطلبات') >= 0 }));
